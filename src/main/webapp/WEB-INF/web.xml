@@ -1,12 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" id="WebApp_ID" version="4.0">
-  <display-name>PAYZON_clone</display-name>
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-    <welcome-file>index.jsp</welcome-file>
-    <welcome-file>index.htm</welcome-file>
-    <welcome-file>default.html</welcome-file>
-    <welcome-file>default.jsp</welcome-file>
-    <welcome-file>default.htm</welcome-file>
-  </welcome-file-list>
+<!-- 웹 애플리케이션의 전체적인 설정을 담당하는 Deployment Descriptor(web.xml) 파일 -->
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+	id="WebApp_ID" version="4.0">
+	
+	<!-- 프로젝트(웹 애플리케이션)의 표시 이름 -->
+	<display-name>PAYZON_clone</display-name>
+
+	<!-- 리스너(Listener) 설정 -->
+	<!-- 톰캣과 같은 웹 서버가 구동될 때 가장 먼저 실행되어 DB 커넥션 풀 등을 초기화하는 클래스를 등록 -->
+	<listener>
+		<listener-class>jdbc.DBCPInitListener</listener-class>
+	</listener>
+
+	<!-- 컨텍스트 파라미터(Context Parameter) 설정 -->
+	<!-- 애플리케이션 전체에서 전역적으로 공유해서 사용할 설정값을 정의 -->
+	<!-- 주로 DB 연결 정보(오라클 계정, URL, 커넥션 풀 크기 등)를 담아두고 리스너에게 제공 -->
+	<context-param>
+		<param-name>poolConfig</param-name>
+		<param-value>
+			jdbcdriver=oracle.jdbc.driver.OracleDriver
+			jdbcUrl=jdbc:oracle:thin:@localhost:1521:XE
+			dbUser=system
+			dbPass=1234
+			validationQuery=select 1
+			minIdle=3
+			maxTotal=30
+			poolName=payzon
+		</param-value>
+	</context-param>
+
+	<!-- 필터(Filter) 설정 -->
+	<!-- 클라이언트의 요청이 컨트롤러(서블릿)에 도달하기 전에 공통으로 처리할 작업을 정의 -->
+	<!-- 한글 깨짐 방지를 위한 문자 인코딩 클래스를 등록 -->
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>util.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<!-- 파라미터 값으로 utf-8을 넘겨주어 UTF-8 인코딩을 적용 -->
+			<param-name>encoding</param-name>
+			<param-value>utf-8</param-value>
+		</init-param>
+	</filter>
+
+	<!-- 필터 매핑(Filter Mapping) 설정 -->
+	<!-- 위에서 정의한 encodingFilter를 어떤 URL 요청에 적용할지 설정 -->
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern> <!-- 사이트로 들어오는 '모든' 요청에 필터를 거치게 한다는 의미 -->
+	</filter-mapping>
+
+	<!-- 서블릿(Servlet) 설정 -->
+	<!-- 사용자의 요청을 가장 먼저 받아 길잡이 역할을 하는 '프론트 컨트롤러' 서블릿을 등록 -->
+	<servlet>
+		<servlet-name>ControllerUsingURI</servlet-name>
+		<servlet-class>mvc.controller.ControllerUsingURI</servlet-class>
+		<init-param>
+			<!-- 각 URL(명령어)에 따라 어떤 비즈니스 로직(Handler)을 실행할지 적혀있는 설정 파일의 경로를 전달 -->
+			<param-name>configFile</param-name>
+			<param-value>/WEB-INF/commandHandlerURI.properties</param-value>
+		</init-param>
+		<!-- 톰캣 서버가 켜질 때 이 서블릿을 1순위로 미리 메모리에 올려두라는(초기화하라는) 설정 -->
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<!-- 서블릿 매핑(Servlet Mapping) 설정 -->
+	<!-- 위에서 만든 프론트 컨트롤러 서블릿이 어떤 요청을 가로채서 처리할지 URL 패턴을 지정 -->
+	<servlet-mapping>
+		<servlet-name>ControllerUsingURI</servlet-name>
+		<url-pattern>*.do</url-pattern> <!-- 사용자의 요청 주소가 '.do'로 끝나는 모든 요청을 해당 서블릿으로 보냄 -->
+	</servlet-mapping>
+
+	<!-- 시작 페이지(Welcome File) 설정 -->
+	<!-- 사용자가 특정 파일 이름 없이 도메인이나 폴더 경로까지만 입력했을 때, 서버가 자동으로 찾아 보여줄 기본 파일들의 우선순위 목록 -->
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+	</welcome-file-list>
 </web-app>
