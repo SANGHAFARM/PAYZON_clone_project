@@ -1,0 +1,111 @@
+/* 푸터 내부 모든 요소에 동일한 크기 계산 방식을 적용 */
+.site-footer, .site-footer * {
+	box-sizing: border-box;
+}
+
+/* 푸터 전체의 크기, 글꼴, 색상과 격자 배경 */
+.site-footer {
+	min-width: 960px;
+	padding: 20px 34px 15px;
+	color: #dce8ff;
+	font-family: "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
+	background-color: #526da9;
+	background-image: linear-gradient(45deg, rgba(255, 255, 255, .04) 25%,
+		transparent 25%, transparent 75%, rgba(255, 255, 255, .04) 75%),
+		linear-gradient(-45deg, rgba(255, 255, 255, .04) 25%, transparent 25%,
+		transparent 75%, rgba(255, 255, 255, .04) 75%);
+	background-position: 0 0, 9px 9px;
+	background-size: 18px 18px;
+}
+
+/* 푸터 내용의 최대 표시 폭 */
+.site-footer__inner {
+	max-width: 1180px;
+}
+
+/* 고객센터 번호와 운영시간을 가로로 배치 */
+.site-footer__summary {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	padding-bottom: 6px;
+}
+
+/* CUSTOMER CENTER 제목 */
+.site-footer__center-label {
+	margin: 0 0 2px;
+	color: #fff;
+	font-size: 18px;
+	font-weight: 700;
+	line-height: 1.1;
+}
+
+/* 고객센터 전화번호 */
+.site-footer__phone {
+	margin: 0;
+	color: #b9dcff;
+	font-family: Arial, sans-serif;
+	font-size: 36px;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: 1px;
+}
+
+/* 상담 가능 시간 목록 */
+.site-footer__hours {
+	margin: 0;
+	padding-left: 20px;
+	border-left: 1px solid rgba(255, 255, 255, .2);
+	font-size: 12px;
+	line-height: 1.55;
+}
+
+.site-footer__hours-row {
+	display: flex;
+	gap: 12px;
+}
+
+.site-footer__hours dt {
+	width: 52px;
+	margin: 0;
+	color: #b9c9e6;
+	white-space: nowrap;
+}
+
+.site-footer__hours dd {
+	margin: 0;
+	color: #fff;
+}
+
+.site-footer__company {
+	padding-top: 0;
+	color: #aebfdf;
+	font-size: 11px;
+	line-height: 1.65;
+}
+
+.site-footer__company p {
+	margin: 0;
+}
+
+/* 저작권 영문을 대문자로 표시 */
+.site-footer__copyright {
+	text-transform: uppercase;
+}
+
+/* 작은 화면에서는 고객센터 정보를 세로로 배치 */
+@media ( max-width : 720px) {
+	.site-footer {
+		min-width: 0;
+		padding: 20px;
+	}
+	.site-footer__summary {
+		align-items: flex-start;
+		flex-direction: column;
+		gap: 12px;
+	}
+	.site-footer__hours {
+		padding-left: 0;
+		border-left: 0;
+	}
+}

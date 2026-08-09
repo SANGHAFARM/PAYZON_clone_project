@@ -1,0 +1,152 @@
+.retirement-card {
+    padding: 16px;
+    border: 1px solid #d7dee8;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 3px 12px rgba(35, 54, 80, .05);
+}
+
+.retirement-toolbar {
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    padding: 10px 12px;
+    border: 1px solid #d4deea;
+    background: #f5f8fb;
+}
+
+.retirement-toolbar select:first-child { width: 112px; }
+.retirement-toolbar input[type="search"] { width: 210px; }
+.retirement-toolbar .status-filter { width: 100px; margin-left: auto; }
+
+.retirement-toolbar .search-button,
+.retirement-toolbar .all-view {
+    min-width: 76px;
+    width: 76px;
+    padding: 0 10px;
+}
+
+.retirement-table-wrap { overflow-x: auto; }
+.retirement-table { width: 100%; min-width: 1110px; }
+.retirement-table .col-number { width: 48px; }
+.retirement-table .col-status { width: 72px; }
+.retirement-table .col-employee-no { width: 100px; }
+.retirement-table .col-name { width: 84px; }
+.retirement-table .col-department,
+.retirement-table .col-position { width: 105px; }
+.retirement-table .col-date { width: 108px; }
+.retirement-table .col-years { width: 96px; }
+.retirement-table .col-settlement { width: 82px; }
+
+.employee-row a {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    text-decoration: none;
+}
+
+.employee-row:hover td { background: #f3f8fd; }
+.employee-status { font-weight: 700; }
+.employee-status.is-active { color: #2375b9; }
+.employee-status.is-retired { color: #d9535f; }
+
+.retirement-modal-overlay {
+    position: fixed;
+    z-index: 3000;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, .48);
+}
+
+.retirement-modal-overlay:target { display: flex; }
+
+.retirement-modal {
+    width: 408px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 18px 55px rgba(0, 0, 0, .35);
+}
+
+.retirement-modal,
+.retirement-modal * {
+    box-sizing: border-box;
+}
+
+.retirement-modal > header {
+    min-height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid #d7dee8;
+}
+
+.retirement-modal > header h2 {
+    margin: 0;
+    color: #555;
+    font-size: 20px;
+}
+
+.modal-close {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #77808a;
+    font-size: 23px;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.retirement-modal form { padding: 8px 20px 20px; }
+.retirement-modal__body { border-top: 2px solid #333; }
+
+.retirement-modal__body label {
+    min-height: 41px;
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    align-items: center;
+    border-bottom: 1px solid #d9dfe6;
+}
+
+.retirement-modal__body label > span {
+    color: #59616a;
+    text-align: center;
+}
+
+.retirement-modal__body input,
+.retirement-modal__body select {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.retirement-modal__body select:disabled,
+.retirement-modal__body input[readonly] {
+    color: #59616a;
+    background: #f2f4f7;
+    cursor: not-allowed;
+}
+
+.retirement-modal__actions {
+    display: flex;
+    justify-content: center;
+    padding-top: 14px;
+}
+
+.retirement-modal__actions .button {
+    min-width: 84px;
+    height: 34px;
+    color: #fff;
+    border-color: #347fc3;
+    background: #347fc3;
+}
