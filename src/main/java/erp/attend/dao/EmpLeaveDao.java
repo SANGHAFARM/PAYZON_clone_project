@@ -11,14 +11,14 @@ import erp.attend.model.EmpLeave;
 import erp.attend.model.EmpLeaveStatusItem;
 import erp.attend.model.LeaveStatusCondition;
 
-public class EmpLeaveDAO {
-	private static EmpLeaveDAO empLeaveDAO = new EmpLeaveDAO();
+public class EmpLeaveDao {
+	private static EmpLeaveDao empLeaveDao = new EmpLeaveDao();
 
-	public static EmpLeaveDAO getInstance() {
-		return empLeaveDAO;
+	public static EmpLeaveDao getInstance() {
+		return empLeaveDao;
 	}
 
-	private EmpLeaveDAO() {
+	private EmpLeaveDao() {
 
 	}
 	

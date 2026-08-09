@@ -9,14 +9,14 @@ import java.sql.SQLException;
 import erp.attend.model.LeaveItem;
 import jdbc.JdbcUtil;
 
-public class LeaveItemDAO {
-	private static LeaveItemDAO leaveItemDAO = new LeaveItemDAO();
+public class LeaveItemDao {
+	private static LeaveItemDao leaveItemDao = new LeaveItemDao();
 
-	public LeaveItemDAO getInstance() {
-		return leaveItemDAO;
+	public LeaveItemDao getInstance() {
+		return leaveItemDao;
 	}
 
-	private LeaveItemDAO() {
+	private LeaveItemDao() {
 
 	}
 
