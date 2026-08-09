@@ -8,15 +8,15 @@ import java.sql.SQLException;
 import erp.common.model.Company;
 import jdbc.JdbcUtil;
 
-public class CompanyDAO {
+public class CompanyDao {
 
-	private static CompanyDAO companyDAO = new CompanyDAO();
+	private static CompanyDao companyDao = new CompanyDao();
 
-	public static CompanyDAO getInstance() {
-		return companyDAO;
+	public static CompanyDao getInstance() {
+		return companyDao;
 	}
 
-	private CompanyDAO() {
+	private CompanyDao() {
 	}
 
 	/*

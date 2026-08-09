@@ -12,15 +12,15 @@ import erp.attend.model.AttendSearchCondition;
 import erp.attend.model.EmpAttendRecord;
 import jdbc.JdbcUtil;
 
-public class EmpAttendRecordDAO {
+public class EmpAttendRecordDao {
 
-	private static EmpAttendRecordDAO empAttendRecordDAO = new EmpAttendRecordDAO();
+	private static EmpAttendRecordDao empAttendRecordDao = new EmpAttendRecordDao();
 
-	public static EmpAttendRecordDAO getInstance() {
-		return empAttendRecordDAO;
+	public static EmpAttendRecordDao getInstance() {
+		return empAttendRecordDao;
 	}
 
-	private EmpAttendRecordDAO() {
+	private EmpAttendRecordDao() {
 	}
 
 	/*

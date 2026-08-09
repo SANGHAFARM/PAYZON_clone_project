@@ -10,14 +10,14 @@ import java.util.List;
 import erp.hr.model.Employee;
 import erp.hr.model.EmployeeListItem;
 
-public class EmployeeDAO {
-	private static EmployeeDAO employeeDAO = new EmployeeDAO();
+public class EmployeeDao {
+	private static EmployeeDao employeeDao = new EmployeeDao();
 
-	public static EmployeeDAO getInstance() {
-		return employeeDAO;
+	public static EmployeeDao getInstance() {
+		return employeeDao;
 	}
 
-	private EmployeeDAO() {
+	private EmployeeDao() {
 	}
 
 	/*

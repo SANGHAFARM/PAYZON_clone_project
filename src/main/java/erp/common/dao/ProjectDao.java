@@ -10,14 +10,14 @@ import java.util.List;
 import erp.common.model.Project;
 import jdbc.JdbcUtil;
 
-public class ProjectDAO {
-	private static ProjectDAO projectDAO = new ProjectDAO();
+public class ProjectDao {
+	private static ProjectDao projectDao = new ProjectDao();
 	
-	public static ProjectDAO getInstance() {
-		return projectDAO;
+	public static ProjectDao getInstance() {
+		return projectDao;
 	}
 	
-	private ProjectDAO() {
+	private ProjectDao() {
 	}
 	
 	/*
