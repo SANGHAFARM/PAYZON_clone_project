@@ -13,6 +13,17 @@ import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
 // 사원별 지급·공제 상세 데이터베이스 접근(DAO) 클래스
 public class PayrollDetailDao {
+	
+	// 싱글톤 인스턴스 생성
+	private static PayrollDetailDao payrollDetailDao = new PayrollDetailDao();
+	
+	// 싱글톤 접근 메서드
+	public static PayrollDetailDao getInstance() {
+		return payrollDetailDao;
+	}
+	
+	// 외부에서 객체 생성을 못 하도록 생성자를 private으로 제한
+	private PayrollDetailDao() {}
 
     // 사원별 지급·공제 상세 등록 (INSERT)
     // SEQ_PAYROLL_DTL_ID 시퀀스를 사용하여 PK 발급 및 데이터 저장

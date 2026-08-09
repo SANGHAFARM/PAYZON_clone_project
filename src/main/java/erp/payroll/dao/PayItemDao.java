@@ -14,6 +14,17 @@ import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 // 지급항목 데이터베이스 접근(DAO) 클래스
 public class PayItemDao {
 
+	// 싱글톤 인스턴스 생성
+	private static PayItemDao payItemDao = new PayItemDao();
+	
+	// 싱글톤 접근 메서드
+	public static PayItemDao getInstance() {
+		return payItemDao;
+	}
+	
+	// 외부에서 객체 생성을 못 하도록 생성자를 private으로 제한
+	private PayItemDao() {}
+	
     // 지급항목 등록 (INSERT)
     // SEQ_PAY_ITEM_ID 시퀀스를 사용하여 PK 발급 및 데이터 저장
     public void insert(Connection conn, PayItem item) throws SQLException {

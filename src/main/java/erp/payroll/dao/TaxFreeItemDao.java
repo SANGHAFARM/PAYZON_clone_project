@@ -12,6 +12,17 @@ import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
 // 비과세 목록 데이터베이스 접근(DAO) 클래스
 public class TaxFreeItemDao {
+	
+	// 싱글톤 인스턴스 생성
+	private static TaxFreeItemDao taxFreeItemDao = new TaxFreeItemDao();
+	
+	// 싱글톤 접근 메서드
+	public static TaxFreeItemDao getInstance() {
+		return taxFreeItemDao;
+	}
+	
+	// 외부에서 객체 생성을 못 하도록 생성자를 private으로 제한
+	private TaxFreeItemDao() {}
 
     // 비과세 목록 등록
     // 기본키(TAX_FREE_CODE)를 포함하여 데이터 저장

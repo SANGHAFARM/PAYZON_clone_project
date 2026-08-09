@@ -61,6 +61,4 @@ public class EmployeeListItem {
 		this.posName = posName;
 	}
 	
-	
-	
 }

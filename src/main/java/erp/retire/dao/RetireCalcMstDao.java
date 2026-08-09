@@ -13,6 +13,17 @@ import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
 // 퇴직급여 계산 내역 데이터베이스 접근(DAO) 클래스
 public class RetireCalcMstDao {
+	
+	// 싱글톤 인스턴스 생성
+	private static RetireCalcMstDao retireCalcMstDao = new RetireCalcMstDao();
+	
+	// 싱글톤 접근 메서드
+	public static RetireCalcMstDao getInstance() {
+		return retireCalcMstDao;
+	}
+	
+	// 외부에서 객체 생성을 못 하도록 생성자를 private으로 제한
+	private RetireCalcMstDao() {}
 
 	// 퇴직급여 계산 내역 등록 (INSERT)
 	// 시퀀스를 사용하여 PK 발급 및 데이터 저장
