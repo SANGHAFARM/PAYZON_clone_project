@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%-- 푸터 전용 스타일 --%>
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/footer.css">
+	href="${pageContext.request.contextPath}/css/common/footer.css">
 
 <footer class="site-footer">
 	<div class="site-footer__inner">

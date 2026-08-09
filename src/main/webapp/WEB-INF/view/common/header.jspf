@@ -1,9 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%-- 전체 페이지 레이아웃과 헤더 전용 스타일 --%>
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/common.css">
+	href="${pageContext.request.contextPath}/css/common/common.css">
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/header.css">
+	href="${pageContext.request.contextPath}/css/common/header.css">
 
 <header class="site-header">
 	<!-- 사이트 이름과 홈 링크 영역 -->
