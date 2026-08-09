@@ -10,12 +10,12 @@ import java.util.List;
 import erp.common.model.Position;
 import jdbc.JdbcUtil;
 
-public class PositionDAO {
-	private static PositionDAO positionDAO = new PositionDAO();
-	public static PositionDAO getInstance() {
-		return positionDAO;
+public class PositionDao {
+	private static PositionDao positionDao = new PositionDao();
+	public static PositionDao getInstance() {
+		return positionDao;
 	}
-	private PositionDAO() {
+	private PositionDao() {
 	}
 	
 	

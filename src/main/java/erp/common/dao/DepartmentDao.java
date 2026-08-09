@@ -10,14 +10,14 @@ import java.util.List;
 import erp.common.model.Department;
 import jdbc.JdbcUtil;
 
-public class DepartmentDAO {
-	private static DepartmentDAO departmentDAO = new DepartmentDAO();
+public class DepartmentDao {
+	private static DepartmentDao departmentDao = new DepartmentDao();
 	
-	public static DepartmentDAO getInstance() {
-		return departmentDAO;
+	public static DepartmentDao getInstance() {
+		return departmentDao;
 	}
 	
-	private DepartmentDAO() {
+	private DepartmentDao() {
 	}
 	
 	/*
