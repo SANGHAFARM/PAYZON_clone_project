@@ -12,6 +12,17 @@ import jdbc.JdbcUtil; // 교재에서 사용하는 자원 반환용 유틸리티
 
 // 공제항목 데이터베이스 접근(DAO) 클래스
 public class DeductItemDao {
+	
+	// 싱글톤 인스턴스 생성
+	private static DeductItemDao deductItemDao = new DeductItemDao();
+	
+	// 싱글톤 접근 메서드
+	public static DeductItemDao getInstance() {
+		return deductItemDao;
+	}
+	
+	// 외부에서 객체 생성을 못 하도록 생성자를 private으로 제한
+	private DeductItemDao() {}
 
     // 공제항목 등록 (INSERT)
     // SEQ_DEDUCT_ITEM_ID 시퀀스를 사용하여 PK를 자동 발급

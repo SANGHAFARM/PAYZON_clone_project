@@ -14,6 +14,17 @@ import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
 // 퇴직소득세 과세이연 내역 데이터베이스 접근(DAO) 클래스
 public class RetireTaxDeferDao {
+	
+	// 싱글톤 인스턴스 생성
+	private static RetireTaxDeferDao retireTaxDeferDao = new RetireTaxDeferDao();
+	
+	// 싱글톤 접근 메서드
+	public static RetireTaxDeferDao getInstance() {
+		return retireTaxDeferDao;
+	}
+	
+	// 외부에서 객체 생성을 못 하도록 생성자를 private으로 제한
+	private RetireTaxDeferDao() {}
 
     // 과세이연 내역 등록 (INSERT)
     // 시퀀스를 활용한 기본키 발급 및 데이터 저장
