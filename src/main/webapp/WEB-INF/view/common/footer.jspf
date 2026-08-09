@@ -1,0 +1,39 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%-- 푸터 전용 스타일 --%>
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/css/footer.css">
+
+<footer class="site-footer">
+	<div class="site-footer__inner">
+		<!-- 고객센터 전화번호와 운영시간 -->
+		<div class="site-footer__summary">
+			<section>
+				<p class="site-footer__center-label">CUSTOMER CENTER</p>
+				<p class="site-footer__phone">0000-0000</p>
+			</section>
+
+			<dl class="site-footer__hours">
+				<div class="site-footer__hours-row">
+					<dt>평일</dt>
+					<dd>오전 10:00 ~ 오후 5:50</dd>
+				</div>
+				<div class="site-footer__hours-row">
+					<dt>점심시간</dt>
+					<dd>오전 12:50 ~ 오후 2:00</dd>
+				</div>
+				<div class="site-footer__hours-row">
+					<dt>휴무일</dt>
+					<dd>주말 및 공휴일</dd>
+				</div>
+			</dl>
+		</div>
+
+		<!-- 회사 정보와 저작권 표시 -->
+		<div class="site-footer__company">
+			<p>서울시 강남구 언주로603 · 사업자등록번호 000-00-0000 · TEL 0000-0000 · FAX
+				00-0000-0000</p>
+			<p class="site-footer__copyright">Copyright &copy; 2026 HEXAGON.
+				LTD. All rights reserved.</p>
+		</div>
+	</div>
+</footer>
