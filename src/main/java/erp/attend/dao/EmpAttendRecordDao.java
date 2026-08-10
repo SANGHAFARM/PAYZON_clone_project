@@ -31,7 +31,7 @@ public class EmpAttendRecordDao {
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, ear.getEmpId());
 			pstmt.setInt(2, ear.getAttendItemId());
-			pstmt.setInt(3, ear.getLeaveItemId());
+			setIntOrNull(pstmt, 3, ear.getLeaveItemId());
 			pstmt.setDate(4, dateToSQLDate(ear.getInputDate()));
 			pstmt.setDate(5, dateToSQLDate(ear.getStartDate()));
 			pstmt.setDate(6, dateToSQLDate(ear.getEndDate()));
@@ -195,7 +195,7 @@ public class EmpAttendRecordDao {
 		String sql = "UPDATE EMP_ATTEND_RECORD SET ATTEND_ITEM_ID=?, LEAVE_ITEM_ID=?, INPUT_DATE=?, START_DATE=?, END_DATE=?, ATTEND_VALUE=?, PAY_AMOUNT=?, NOTE=? WHERE ATTEND_REC_ID=?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, ear.getAttendItemId());
-			pstmt.setInt(2, ear.getLeaveItemId());
+			setIntOrNull(pstmt, 2, ear.getLeaveItemId());
 			pstmt.setDate(3, dateToSQLDate(ear.getInputDate()));
 			pstmt.setDate(4, dateToSQLDate(ear.getStartDate()));
 			pstmt.setDate(5, dateToSQLDate(ear.getEndDate()));
@@ -235,7 +235,8 @@ public class EmpAttendRecordDao {
 		ear.setAttendRecId(rs.getInt("ATTEND_REC_ID"));
 		ear.setEmpId(rs.getInt("EMP_ID"));
 		ear.setAttendItemId(rs.getInt("ATTEND_ITEM_ID"));
-		ear.setLeaveItemId(rs.getInt("LEAVE_ITEM_ID"));
+		int leaveItemId = rs.getInt("LEAVE_ITEM_ID");
+		ear.setLeaveItemId(rs.wasNull()?null:leaveItemId);
 		ear.setInputDate(rs.getDate("INPUT_DATE"));
 		ear.setStartDate(rs.getDate("START_DATE"));
 		ear.setEndDate(rs.getDate("END_DATE"));
@@ -276,5 +277,12 @@ public class EmpAttendRecordDao {
 			pstmt.setNull(idx1, java.sql.Types.NUMERIC);
 			pstmt.setNull(idx2, java.sql.Types.NUMERIC);
 		}
+	}
+	private void setIntOrNull(PreparedStatement pstmt, int idx, Integer value) throws SQLException {
+	    if (value != null) {
+	        pstmt.setInt(idx, value);
+	    } else {
+	        pstmt.setNull(idx, java.sql.Types.NUMERIC);
+	    }
 	}
 }
