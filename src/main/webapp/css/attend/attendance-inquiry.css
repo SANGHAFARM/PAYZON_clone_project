@@ -17,9 +17,11 @@
 .detail-actions button,.detail-actions a{width:72px;height:32px;display:flex;align-items:center;justify-content:center;border:1px solid #347fc3;border-radius:4px;color:#fff;background:#347fc3;text-decoration:none;font-weight:700}
 .detail-actions a{border-color:#929aa3;background:#929aa3}
 .detail-layout .detail-table-wrap{min-width:0}
-.detail-layout .detail-table{min-width:840px}
+.detail-layout .detail-table{min-width:1050px}
 .detail-layout .detail-table th,.detail-layout .detail-table td{height:37px;padding:5px}
 .detail-layout .detail-table th:nth-child(1){width:95px}.detail-layout .detail-table th:nth-child(2){width:72px}.detail-layout .detail-table th:nth-child(3){width:82px}.detail-layout .detail-table th:nth-child(4){width:110px}.detail-layout .detail-table th:nth-child(5){width:80px}.detail-layout .detail-table th:nth-child(6){width:95px}.detail-layout .detail-table th:nth-child(7){width:180px}.detail-layout .detail-table th:nth-child(8){width:88px}.detail-layout .detail-table th:nth-child(9){width:90px}
+.detail-layout .detail-table th:nth-child(10){width:158px}
+.detail-layout .detail-table td:nth-child(10){padding-left:10px;padding-right:10px;text-align:left;white-space:normal;word-break:break-word}
 @media(max-width:1100px){.detail-layout{grid-template-columns:250px minmax(0,1fr);gap:16px}}
 .monthly-table .day-heading{color:#173f64!important}
 .attendance-dot{width:8px;height:8px;display:block;border-radius:50%;background:#ef5263}

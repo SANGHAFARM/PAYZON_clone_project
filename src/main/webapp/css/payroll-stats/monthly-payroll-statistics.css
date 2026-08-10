@@ -1,0 +1,26 @@
+.monthly-chart {
+	grid-template-columns: repeat(12, minmax(58px, 1fr));
+}
+
+.monthly-chart .annual-chart__bar {
+	width: 18px;
+}
+
+.monthly-statistics-table {
+	min-width: 1180px;
+}
+
+.monthly-statistics-table thead th:first-child,
+.monthly-statistics-table tbody th {
+	width: 165px;
+}
+
+.monthly-statistics-table th:not(:first-child),
+.monthly-statistics-table td:not(:first-child) {
+	width: 78px;
+}
+
+.monthly-statistics-table .statistics-total {
+	background: #fffced;
+	font-weight: 700;
+}
