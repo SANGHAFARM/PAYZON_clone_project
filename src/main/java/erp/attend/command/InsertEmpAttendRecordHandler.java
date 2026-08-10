@@ -23,7 +23,7 @@ import jdbc.connection.ConnectionProvider;
 import mvc.command.CommandHandler;
 
 public class InsertEmpAttendRecordHandler implements CommandHandler {
-	private static final String FORM_VIEW = "/WEB-INF/view/attend/attendance-management.jsp"; // 임시적으로 적은 경로
+	private static final String FORM_VIEW = "/WEB-INF/view/attend/attendance-management-test.jsp"; // 임시적으로 적은 경로
 	private static final String SUCCESS_VIEW = ""; // 임시적으로 적은 경로
 
 	InsertEmpAttendRecordService insertService = new InsertEmpAttendRecordService();
