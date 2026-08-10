@@ -60,6 +60,7 @@ public class InsertEmpAttendRecordHandler implements CommandHandler {
 			req.setAttribute("attendanceItems", attendItems);
 			
 			req.setAttribute("today", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+			
 
 		} finally {
 			JdbcUtil.close(conn);
