@@ -1,0 +1,118 @@
+@charset "UTF-8";
+
+.payment-management-page,.payment-management-page *{box-sizing:border-box}
+.payment-management-page{width:min(1400px,calc(100% - 36px));min-width:960px;margin:28px auto 44px;color:#334155;font:12px "Malgun Gothic","맑은 고딕",Arial,sans-serif}
+.payment-management-page .page-heading{display:block;margin-bottom:18px;padding:20px 26px;border:1px solid #d7dee8;border-radius:8px;background:linear-gradient(135deg,#fff,#f5f8fc);box-shadow:0 4px 14px rgba(35,54,80,.07)}
+.payment-management-page .page-heading>div{display:block;text-align:left}
+.payment-management-page .page-heading p{margin:0 0 4px;color:#347fc3;font-size:12px;font-weight:700}
+.payment-management-page .page-heading h1{margin:0;color:#1f2937;font-size:25px}
+.payment-management-page .button{min-width:76px;height:36px;display:inline-flex;align-items:center;justify-content:center;margin:0;padding:0 14px;border:1px solid #2673b8;border-radius:4px;color:#1765a5;background:#fff;font:700 12px inherit;text-decoration:none;cursor:pointer;white-space:nowrap}
+.payment-management-page .button-primary{color:#fff;background:#3485c9}
+.payment-management-page .button-neutral{color:#fff;border-color:#9ca3aa;background:#a5a5a5}
+.payment-management-page .button-outline{min-width:116px;color:#64748b;border-color:#cbd5df;background:#fff}
+.payment-management-page .button-clear{min-width:96px}
+
+.period-panel{display:flex;align-items:flex-end;gap:10px;margin-bottom:14px;padding:12px;border:1px solid #ccd6e0;border-radius:0;background:#f7f9fc;box-shadow:none}
+.period-field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.period-field label{color:#173f64;font-size:12px;font-weight:700}
+.period-field select,.period-field input{width:100%;height:34px;padding:5px 9px;border:1px solid #c5d2e1;border-radius:3px;color:#26384c;background:#fff;font:12px inherit}
+.period-field:nth-child(1){width:104px}.period-field:nth-child(2){width:86px}.period-field:nth-child(3){width:112px}.period-field:nth-child(5){width:140px}
+.period-range{width:304px;display:grid;grid-template-columns:140px 14px 140px;align-items:end}
+.period-range label{grid-column:1/-1}.period-range span{text-align:center;line-height:34px}
+.calc-switch-field{display:flex;align-items:center;gap:8px;margin-left:auto;padding:0 8px 1px 14px;border-left:1px solid #d4deea;white-space:nowrap}
+.calc-switch-field>span{color:#173f64;font-weight:700}.calc-switch-field input{position:absolute;width:1px;height:1px;opacity:0}
+.calc-switch-field label{position:relative;width:58px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:15px;color:#fff;background:#a5aeb7;cursor:pointer;overflow:hidden}
+.calc-switch-field label:before{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.15s}
+.calc-switch-field label b,.calc-switch-field label i{position:absolute;font-size:10px;font-style:normal}.calc-switch-field label b{right:8px;display:none}.calc-switch-field label i{left:7px}
+.calc-switch-field input:checked+label{background:#21b28c}.calc-switch-field input:checked+label:before{left:33px}.calc-switch-field input:checked+label b{display:block}.calc-switch-field input:checked+label i{display:none}
+
+.payroll-workspace{display:grid;grid-template-columns:minmax(420px,.9fr) minmax(540px,1.1fr);gap:18px;padding:18px;border:1px solid #d7dee8;border-radius:8px;background:#fff;box-shadow:0 3px 12px rgba(35,54,80,.05)}
+.employee-area,.payment-area{min-width:0}
+.section-toolbar{min-height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 6px;border:1px solid #d4deea;border-bottom:1px solid #347fc3;background:#f4f8fc}
+.section-toolbar h2,.amount-panel h2{margin:0;color:#18588f;font-size:16px}
+.toolbar-buttons,.form-actions,.modal-actions{display:flex;align-items:center;gap:10px}
+.table-wrap{overflow:auto}
+.data-table,.input-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:11px}
+.data-table th,.data-table td,.input-table th,.input-table td{height:36px;padding:5px;border:1px solid #ccd6e0;text-align:center;vertical-align:middle}
+.data-table th,.input-table th{color:#173f64;background:#eaf2f7;font-weight:700}
+.employee-table-wrap{max-height:455px}
+.check-column{width:48px}
+.employee-table a{display:block;color:inherit;text-decoration:none}
+.employee-table tbody tr:hover td{background:#f3f8fd}
+.employee-table .selected-row td{color:#174f7f;background:#e4f1fb;font-weight:700}
+.amount{text-align:right!important}.give{color:#1765a5}.deduction{color:#d15860}
+.empty-row{height:90px!important;color:#8795a8!important;background:#fff!important;font-weight:400!important;text-align:center!important}
+
+.income-tabs{display:flex;justify-content:flex-end;gap:8px;margin-bottom:10px}
+.income-tabs a{width:122px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid #8eb5db;border-radius:4px;color:#1765a5;background:#fff;font-size:12px;font-weight:700;text-decoration:none}.income-tabs a:last-child{width:154px}
+.income-tabs a.active{color:#fff;border-color:#347fc3;background:#347fc3}
+.amount-panels{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.amount-panel{min-width:0;display:flex;flex-direction:column;overflow:hidden;border:1px solid #d7dee8;border-radius:6px;background:#fff}
+.amount-panel>header{min-height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 13px;border-bottom:1px solid #347fc3;background:#f4f8fc}
+.amount-panel>header span{color:#718096;font-size:10px}
+.item-manage-button{height:28px;display:inline-flex;align-items:center;justify-content:center;padding:0 9px;border:1px solid #8db3d8;border-radius:3px;color:#1765a5;background:#fff;font-size:11px;font-weight:700;text-decoration:none}
+.deduction-panel>header{border-bottom-color:#d66b73}
+.input-table th:first-child{width:40%}.input-table th:nth-child(2),.input-table td:nth-child(2){width:60%}
+.input-table tbody th{background:#edf4f8}
+.input-table input{width:100%;height:29px;padding:4px 7px;border:1px solid #c5d2e1;border-radius:3px;color:#26384c;background:#fff;font:11px inherit;text-align:right}
+.input-table td:last-child input{text-align:left}
+.input-table .calculation-row{display:none}
+.payment-management-page:has(#calculationSwitch:checked) .input-table .calculation-row{display:table-row}
+.input-table .calculation-row th{color:#52677d;background:#f8fafc;font-weight:600}
+.input-table .calculation-row td{background:#f8fafc}
+.input-table .calculation-row input{text-align:left}
+.panel-total{min-height:38px;display:grid;grid-template-columns:40% 60%;align-items:center;margin-top:auto;border-top:1px solid #ccd6e0;color:#173f64;background:#f4f8fc;font-size:11px;font-weight:700}
+.panel-total strong{height:100%;display:flex;align-items:center;justify-content:center;border-right:1px solid #ccd6e0}
+.panel-total span{padding:0 8px;text-align:right}
+.input-table em{margin-left:3px;color:#d15860;font-size:9px;font-style:normal}
+.input-table tfoot th,.input-table tfoot td{color:#173f64;background:#f4f8fc;font-weight:700}
+.net-payment{height:44px;display:flex;align-items:center;justify-content:center;gap:4px;margin-top:12px;border-radius:4px;color:#fff;background:#2f6089;font-size:14px;line-height:1}
+.net-payment span,.net-payment strong,.net-payment em{font-size:14px;line-height:1}.net-payment strong{color:#fff5a5}.net-payment em{color:#fff;font-style:normal}
+.business-panels .input-table tbody tr{height:48px}
+.form-actions{justify-content:center;margin-top:18px}
+
+.modal-overlay{position:fixed;z-index:3000;inset:0;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.48)}
+.modal-overlay:target{display:flex}
+.modal{width:670px;overflow:hidden;border-radius:10px;background:#fff;box-shadow:0 18px 55px rgba(0,0,0,.35)}
+.modal>header{height:52px;min-height:52px;display:flex;align-items:center;justify-content:space-between;padding:8px 18px;border-bottom:1px solid #d7dee8}
+.modal>header h2{margin:0;color:#555;font-size:20px}.modal>header a{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;color:#77808a;font-size:23px;text-decoration:none}
+.modal>header h2{letter-spacing:-.7px;word-spacing:0}
+.modal-body{height:340px;overflow-y:auto;margin:14px 20px 0;border:1px solid #d4deea}
+.modal-actions{justify-content:center;padding:14px 20px 20px}
+.modal-actions .button{min-width:96px}
+.employee-modal .modal-actions .button{flex:0 0 112px;width:112px;min-width:112px;height:36px;padding:0;box-sizing:border-box}
+.employee-modal{width:690px}
+.employee-modal .modal-body{height:auto;max-height:none;margin:10px 20px 0;padding:0;border:0;overflow:visible}
+.employee-modal-search{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.employee-modal-search input[type="search"]{flex:0 0 220px;width:220px}
+.employee-modal-search .modal-search-button{flex:0 0 58px;width:58px}
+.employee-modal-search select{flex:0 0 86px;width:86px}
+.employee-modal-search select:first-of-type{margin-left:auto}
+.employee-modal-search input,.employee-modal-search select{width:100%;height:30px;padding:3px 7px;border:1px solid #cbd6e2;background:#fff;font:11px inherit}
+.modal-search-button{height:30px;border:1px solid #347fc3;border-radius:3px;color:#fff;background:#347fc3;font:700 11px inherit;cursor:pointer}
+.employee-modal .data-table th,.employee-modal .data-table td{height:33px;padding:4px}
+.employee-modal .data-table{border-top:2px solid #3c8ddd}
+.modal-pagination{height:36px;display:flex;align-items:center;justify-content:center;gap:12px;border:1px solid #d4deea;border-top:0}
+.modal-pagination a{color:#57687b;text-decoration:none}.modal-pagination strong{width:24px;height:22px;display:flex;align-items:center;justify-content:center;border:1px solid #ef7a62;color:#e85d45;background:#fff}
+.modal-pagination .is-disabled{color:#b2bac3;cursor:default}
+.item-modal{width:430px}
+.deduction-item-modal{width:430px}
+.item-modal-body{margin:10px 20px 0;padding:10px 14px;border:1px solid #d7dee8}
+.item-guide{margin:0 0 8px;color:#687789;font-size:0;line-height:1.5}
+.item-guide:before,.item-guide:after{display:block;font-size:11px}
+#give-item-manager .item-guide:before{content:"지급항목별로 수정하실 수 있습니다."}#give-item-manager .item-guide:after{content:"계산 수정은 급여항목 설정에서 진행하세요."}
+#deduction-item-manager .item-guide:before{content:"공제항목별로 수정하실 수 있습니다."}#deduction-item-manager .item-guide:after{content:"계산 변경은 급여항목 설정에서 진행하세요."}
+.item-select-line{display:grid;grid-template-columns:154px 96px;align-items:center;justify-content:space-between;gap:10px;padding-bottom:7px;border-bottom:2px solid #222}
+.item-modal-body .item-select-line select{width:154px}.text-delete{width:96px;height:28px;padding:0 6px;border:1px solid #efb3b7;border-radius:3px;color:#c75d64;background:#fff;font:11px inherit;cursor:pointer;white-space:nowrap}
+.item-modal-body>label,.item-radio-line{min-height:42px;display:grid;grid-template-columns:118px minmax(0,1fr);align-items:center;column-gap:8px;border-bottom:1px solid #e0e4e8}
+.item-modal-body>label>span:first-child,.item-radio-line>span{color:#4e5d6e;text-align:center;font-weight:700}
+.item-modal-body input[type="text"],.item-modal-body input[type="number"],.item-modal-body select{width:100%;min-width:0;height:30px;padding:4px 8px;border:1px solid #cbd6e2;background:#fff;font:11px inherit;box-sizing:border-box}
+.item-radio-line{grid-template-columns:118px 1fr 1fr;column-gap:8px}.item-radio-line label{display:flex;align-items:center;gap:4px;white-space:nowrap}.item-radio-line input{margin:0}
+.unit-field{width:100%;display:grid;grid-template-columns:minmax(0,1fr) 18px;align-items:center;gap:5px}.unit-field input{width:100%;min-width:0}.unit-field em{text-align:right;font-style:normal;white-space:nowrap}
+.item-modal .modal-actions{padding-top:12px}.item-modal .modal-actions .button{min-width:72px;width:72px}
+.previous-payment-modal{width:270px}
+.previous-payment-modal>header{height:50px;padding:8px 16px}.previous-payment-modal>header h2{font-size:19px}
+.previous-payment-body{display:flex;flex-direction:column;align-items:center;gap:12px;padding:12px 20px 18px}
+.previous-payment-body select{width:100%;height:34px;padding:4px 8px;border:1px solid #cbd6e2;background:#fff;font:12px inherit}
+.previous-payment-body .button{min-width:142px}
+@media(max-width:1080px){.payroll-workspace{grid-template-columns:1fr}.period-panel{flex-wrap:wrap}.amount-panels{grid-template-columns:1fr}}
