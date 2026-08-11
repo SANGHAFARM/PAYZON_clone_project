@@ -150,12 +150,6 @@
 						href="${pageContext.request.contextPath}/example.do?menu=employee-payroll">사원별
 							급여내역</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=pay-transfer">급여이체
-							신청</a></li>
-					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=transfer-result">급여이체
-							결과조회</a></li>
-					<li><a class="dropdown-menu__link"
 						href="${pageContext.request.contextPath}/example.do?menu=item-ledger">항목별
 							대장</a></li>
 					<li><a class="dropdown-menu__link"
