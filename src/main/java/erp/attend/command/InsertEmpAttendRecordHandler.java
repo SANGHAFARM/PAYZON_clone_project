@@ -13,7 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import erp.attend.dao.AttendItemDao;
+import erp.attend.dao.EmpAttendRecordDao;
 import erp.attend.model.AttendItem;
+import erp.attend.model.EmpAttendRecord;
 import erp.attend.service.AttendRecordRequest;
 import erp.attend.service.InsertEmpAttendRecordService;
 import erp.hr.dao.EmployeeListItemDao;
@@ -41,15 +43,19 @@ public class InsertEmpAttendRecordHandler implements CommandHandler {
 
 	private String processForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String status = req.getParameter("status");
-		if (status == null || status.isEmpty()) {
-			status = "재직";
+		if(status==null) {
+			status="재직";
 		}
+		req.setAttribute("status", status);
 		String keyword = req.getParameter("keyword");
 		if (keyword==null) {
 			keyword="";
 		}
+		
 		EmployeeListItemDao employeeListItemDao = EmployeeListItemDao.getInstance();
 		AttendItemDao attendItemDao = AttendItemDao.getInstance();
+		EmpAttendRecordDao empAttendRecordDao = EmpAttendRecordDao.getInstance();
+		
 		Connection conn = null;
 		try {
 			conn = ConnectionProvider.getConnection();
@@ -60,6 +66,25 @@ public class InsertEmpAttendRecordHandler implements CommandHandler {
 			req.setAttribute("attendanceItems", attendItems);
 			
 			req.setAttribute("today", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+			
+			String empIdVal = req.getParameter("empId");
+			if (empIdVal!=null && !empIdVal.isEmpty()) {
+				int empId = Integer.parseInt(empIdVal);
+				
+				EmployeeListItem selectedEmployee = employeeListItemDao.selectById(conn, empId);
+				req.setAttribute("selectedEmployee", selectedEmployee);
+				
+				String yearVal = req.getParameter("recordYear");
+				int recordYear = (yearVal!=null && !yearVal.isEmpty())?Integer.parseInt(yearVal):2026;
+				req.setAttribute("recordYear", recordYear);
+				
+				String monthVal = req.getParameter("recordMonth");
+				Integer recordMonth = (monthVal != null && !monthVal.isEmpty())
+	                    ? Integer.parseInt(monthVal) : null;
+	            req.setAttribute("recordMonth", recordMonth);
+	            List<EmpAttendRecord> records = empAttendRecordDao.selectByEmpIdAndYearAndMonth(conn, empId, recordYear, recordMonth);
+	            req.setAttribute("attendanceRecords", records);
+			}
 			
 
 		} finally {
