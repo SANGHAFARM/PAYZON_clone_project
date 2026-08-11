@@ -72,6 +72,60 @@ public class EmployeeListItemDao {
 			JdbcUtil.close(pstmt);
 		}
 	}
+	
+	//조건으로 사원 저옵 조회
+	public List<EmployeeListItem> selectByCondition(Connection conn, String status, String empType,
+	        Integer deptId, Integer posId, String keyword) throws SQLException {
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    try {
+	        String sql = "SELECT E.EMP_ID, E.EMP_TYPE, E.EMP_NO, E.EMP_NAME_KR, D.DEPT_NAME, P.POS_NAME "
+	                + "FROM EMPLOYEE E "
+	                + "LEFT JOIN DEPARTMENT D ON E.DEPT_ID = D.DEPT_ID "
+	                + "LEFT JOIN POSITION P ON E.POS_ID = P.POS_ID "
+	                + "WHERE (? IS NULL OR E.STATUS = ?) "
+	                + "AND (? IS NULL OR E.EMP_TYPE = ?) "
+	                + "AND (? IS NULL OR E.DEPT_ID = ?) "
+	                + "AND (? IS NULL OR E.POS_ID = ?) "
+	                + "AND (E.EMP_NAME_KR LIKE ? OR E.EMP_NO LIKE ?) "
+	                + "ORDER BY E.EMP_ID DESC";
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setString(1, status);
+	        pstmt.setString(2, status);
+	        pstmt.setString(3, empType);
+	        pstmt.setString(4, empType);
+
+	        if (deptId == null) {
+	            pstmt.setNull(5, java.sql.Types.INTEGER);
+	            pstmt.setNull(6, java.sql.Types.INTEGER);
+	        } else {
+	            pstmt.setInt(5, deptId);
+	            pstmt.setInt(6, deptId);
+	        }
+
+	        if (posId == null) {
+	            pstmt.setNull(7, java.sql.Types.INTEGER);
+	            pstmt.setNull(8, java.sql.Types.INTEGER);
+	        } else {
+	            pstmt.setInt(7, posId);
+	            pstmt.setInt(8, posId);
+	        }
+
+	        String kw = (keyword != null) ? keyword : "";
+	        pstmt.setString(9, "%" + kw + "%");
+	        pstmt.setString(10, "%" + kw + "%");
+
+	        rs = pstmt.executeQuery();
+	        List<EmployeeListItem> result = new ArrayList<>();
+	        while (rs.next()) {
+	            result.add(makeEmployeeListItemFromResultSet(rs));
+	        }
+	        return result;
+	    } finally {
+	        JdbcUtil.close(rs);
+	        JdbcUtil.close(pstmt);
+	    }
+	}
 
 	// ResultSet 데이터를 EmployeeListItem 객체로 변환
 	// 코드 중복 방지를 위한 공통 매핑 처리
