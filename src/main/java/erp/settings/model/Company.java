@@ -1,4 +1,4 @@
-package erp.common.model;
+package erp.settings.model;
 
 import java.util.Date;
 

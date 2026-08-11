@@ -1,4 +1,4 @@
-package erp.common.dao;
+package erp.settings.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import erp.common.model.Department;
+import erp.settings.model.Department;
 import jdbc.JdbcUtil;
 
 public class DepartmentDao {
