@@ -1,4 +1,4 @@
-package erp.common.model;
+package erp.settings.model;
 
 // POSITION: 직위 설정
 public class Position {

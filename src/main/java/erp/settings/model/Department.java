@@ -1,4 +1,4 @@
-package erp.common.model;
+package erp.settings.model;
 
 // DEPARTMENT: 부서 설정
 public class Department {

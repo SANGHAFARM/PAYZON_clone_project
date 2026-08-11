@@ -1,4 +1,4 @@
-package erp.common.model;
+package erp.settings.model;
 
 // PROJECT: 현장/프로젝트 목록
 public class Project {

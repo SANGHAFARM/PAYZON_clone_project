@@ -1,11 +1,11 @@
-package erp.common.dao;
+package erp.settings.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import erp.common.model.Company;
+import erp.settings.model.Company;
 import jdbc.JdbcUtil;
 
 public class CompanyDao {
