@@ -1,23 +1,24 @@
 package erp.attend.service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public class AttendRecordRequest {
-	private int empId;
+	private List<Integer> empIds;
 	private int attendItemId;
 	private Date inputDate;
 	private Date startDate;
 	private Date endDate;
 	private double attendValue;
+
 	private long payAmount;
 	private String note;
-	public AttendRecordRequest() {
-	}
-	public AttendRecordRequest(int empId, int attendItemId,  Date inputDate, Date startDate,
-			Date endDate, double attendValue, long payAmount, String note) {
+	
+	public AttendRecordRequest(List<Integer> empIds, int attendItemId, Date inputDate, Date startDate, Date endDate,
+			double attendValue, long payAmount, String note) {
 		super();
-		this.empId = empId;
+		this.empIds = empIds;
 		this.attendItemId = attendItemId;
 		this.inputDate = inputDate;
 		this.startDate = startDate;
@@ -26,12 +27,21 @@ public class AttendRecordRequest {
 		this.payAmount = payAmount;
 		this.note = note;
 	}
-	public int getEmpId() {
-		return empId;
+	
+	
+	public List<Integer> getEmpIds() {
+		return empIds;
 	}
-	public void setEmpId(int empId) {
-		this.empId = empId;
+
+
+	public void setEmpIds(List<Integer> empIds) {
+		this.empIds = empIds;
 	}
+
+
+	public AttendRecordRequest() {
+	}
+
 	public int getAttendItemId() {
 		return attendItemId;
 	}
@@ -75,7 +85,7 @@ public class AttendRecordRequest {
 		this.note = note;
 	}
 	public void validate(Map<String, Boolean> errors) {
-		if (empId<=0) {
+		if (empIds.isEmpty() || empIds==null) {
 			errors.put("empId", Boolean.TRUE);
 		}
 		if (attendItemId<=0) {

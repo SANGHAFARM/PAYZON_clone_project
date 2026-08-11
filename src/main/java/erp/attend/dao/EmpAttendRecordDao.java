@@ -27,19 +27,19 @@ public class EmpAttendRecordDao {
 	 * EmpAttendRecord테이블에 기록을 입력하는 메서드 EmpAttendRecordテーブルに記録を入力するメソッド
 	 */
 	public int insert(Connection conn, EmpAttendRecord ear) throws SQLException {
-		String sql = "INSERT INTO EMP_ATTEND_RECORD VALUES (SEQ_EMP_ATTEND_REC_ID.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, ear.getEmpId());
-			pstmt.setInt(2, ear.getAttendItemId());
-			pstmt.setInt(3, ear.getLeaveItemId());
-			pstmt.setDate(4, dateToSQLDate(ear.getInputDate()));
-			pstmt.setDate(5, dateToSQLDate(ear.getStartDate()));
-			pstmt.setDate(6, dateToSQLDate(ear.getEndDate()));
-			pstmt.setDouble(7, ear.getAttendValue());
-			pstmt.setLong(8, ear.getPayAmount());
-			pstmt.setString(9, ear.getNote());
-			return pstmt.executeUpdate();
-		}
+	    String sql = "INSERT INTO EMP_ATTEND_RECORD VALUES (SEQ_EMP_ATTEND_REC_ID.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        pstmt.setInt(1, ear.getEmpId());
+	        pstmt.setInt(2, ear.getAttendItemId());
+	        setIntOrNull(pstmt, 3, ear.getLeaveItemId());   // ← 수정
+	        pstmt.setDate(4, dateToSQLDate(ear.getInputDate()));
+	        pstmt.setDate(5, dateToSQLDate(ear.getStartDate()));
+	        pstmt.setDate(6, dateToSQLDate(ear.getEndDate()));
+	        pstmt.setDouble(7, ear.getAttendValue());
+	        pstmt.setLong(8, ear.getPayAmount());
+	        pstmt.setString(9, ear.getNote());
+	        return pstmt.executeUpdate();
+	    }
 	}
 
 	/*
@@ -192,19 +192,19 @@ public class EmpAttendRecordDao {
 	 * EmpAttendRecord테이블에 있는 기록을 수정하는 메서드 EmpAttendRecordテーブルにある記録を修正するメソッド
 	 */
 	public int update(Connection conn, EmpAttendRecord ear) throws SQLException {
-		String sql = "UPDATE EMP_ATTEND_RECORD SET ATTEND_ITEM_ID=?, LEAVE_ITEM_ID=?, INPUT_DATE=?, START_DATE=?, END_DATE=?, ATTEND_VALUE=?, PAY_AMOUNT=?, NOTE=? WHERE ATTEND_REC_ID=?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, ear.getAttendItemId());
-			pstmt.setInt(2, ear.getLeaveItemId());
-			pstmt.setDate(3, dateToSQLDate(ear.getInputDate()));
-			pstmt.setDate(4, dateToSQLDate(ear.getStartDate()));
-			pstmt.setDate(5, dateToSQLDate(ear.getEndDate()));
-			pstmt.setDouble(6, ear.getAttendValue());
-			pstmt.setLong(7, ear.getPayAmount());
-			pstmt.setString(8, ear.getNote());
-			pstmt.setInt(9, ear.getAttendRecId());
-			return pstmt.executeUpdate();
-		}
+	    String sql = "UPDATE EMP_ATTEND_RECORD SET ATTEND_ITEM_ID=?, LEAVE_ITEM_ID=?, INPUT_DATE=?, START_DATE=?, END_DATE=?, ATTEND_VALUE=?, PAY_AMOUNT=?, NOTE=? WHERE ATTEND_REC_ID=?";
+	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        pstmt.setInt(1, ear.getAttendItemId());
+	        setIntOrNull(pstmt, 2, ear.getLeaveItemId());   // ← 수정
+	        pstmt.setDate(3, dateToSQLDate(ear.getInputDate()));
+	        pstmt.setDate(4, dateToSQLDate(ear.getStartDate()));
+	        pstmt.setDate(5, dateToSQLDate(ear.getEndDate()));
+	        pstmt.setDouble(6, ear.getAttendValue());
+	        pstmt.setLong(7, ear.getPayAmount());
+	        pstmt.setString(8, ear.getNote());
+	        pstmt.setInt(9, ear.getAttendRecId());
+	        return pstmt.executeUpdate();
+	    }
 	}
 
 	/*
@@ -231,18 +231,21 @@ public class EmpAttendRecordDao {
 	 * ResultSetでEmpAttendRecordオブジェクトを作って返すメソッド
 	 */
 	private EmpAttendRecord convertEmpAttendRecord(ResultSet rs) throws SQLException {
-		EmpAttendRecord ear = new EmpAttendRecord();
-		ear.setAttendRecId(rs.getInt("ATTEND_REC_ID"));
-		ear.setEmpId(rs.getInt("EMP_ID"));
-		ear.setAttendItemId(rs.getInt("ATTEND_ITEM_ID"));
-		ear.setLeaveItemId(rs.getInt("LEAVE_ITEM_ID"));
-		ear.setInputDate(rs.getDate("INPUT_DATE"));
-		ear.setStartDate(rs.getDate("START_DATE"));
-		ear.setEndDate(rs.getDate("END_DATE"));
-		ear.setAttendValue(rs.getDouble("ATTEND_VALUE"));
-		ear.setPayAmount(rs.getLong("PAY_AMOUNT"));
-		ear.setNote(rs.getString("NOTE"));
-		return ear;
+	    EmpAttendRecord ear = new EmpAttendRecord();
+	    ear.setAttendRecId(rs.getInt("ATTEND_REC_ID"));
+	    ear.setEmpId(rs.getInt("EMP_ID"));
+	    ear.setAttendItemId(rs.getInt("ATTEND_ITEM_ID"));
+
+	    int leaveItemId = rs.getInt("LEAVE_ITEM_ID");
+	    ear.setLeaveItemId(rs.wasNull() ? null : leaveItemId);   // ← 수정
+
+	    ear.setInputDate(rs.getDate("INPUT_DATE"));
+	    ear.setStartDate(rs.getDate("START_DATE"));
+	    ear.setEndDate(rs.getDate("END_DATE"));
+	    ear.setAttendValue(rs.getDouble("ATTEND_VALUE"));
+	    ear.setPayAmount(rs.getLong("PAY_AMOUNT"));
+	    ear.setNote(rs.getString("NOTE"));
+	    return ear;
 	}
 
 	/*
@@ -276,5 +279,12 @@ public class EmpAttendRecordDao {
 			pstmt.setNull(idx1, java.sql.Types.NUMERIC);
 			pstmt.setNull(idx2, java.sql.Types.NUMERIC);
 		}
+	}
+	private void setIntOrNull(PreparedStatement pstmt, int idx, Integer value) throws SQLException {
+	    if (value != null) {
+	        pstmt.setInt(idx, value);
+	    } else {
+	        pstmt.setNull(idx, java.sql.Types.NUMERIC);
+	    }
 	}
 }

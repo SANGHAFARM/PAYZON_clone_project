@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import erp.attend.model.AttendItem;
 
@@ -26,6 +28,20 @@ public class AttendItemDao {
 			}
 		}
 		return null;
+	}
+	
+	//모든 근태항목 조회
+	public List<AttendItem> selectAll(Connection conn) throws SQLException {
+	    String sql = "SELECT * FROM ATTEND_ITEM";
+	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            List<AttendItem> list = new ArrayList<>();
+	            while (rs.next()) {           // ← 여기 있습니다
+	                list.add(convertAttendItem(rs));
+	            }
+	            return list;
+	        }
+	    }
 	}
 	
     private AttendItem convertAttendItem(ResultSet rs) throws SQLException {
