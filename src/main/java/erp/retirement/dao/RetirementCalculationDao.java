@@ -5,70 +5,87 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
 import erp.retirement.model.RetirementCalculation;
 import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
-// 퇴직급여 계산 내역 데이터베이스 접근(DAO) 클래스
+// 퇴직급여 계산내역 데이터베이스 접근(DAO) 클래스
 public class RetirementCalculationDao {
-	
+
 	// 싱글톤 인스턴스 생성
 	private static RetirementCalculationDao retirementCalculationDao = new RetirementCalculationDao();
-	
+
 	// 싱글톤 접근 메서드
 	public static RetirementCalculationDao getInstance() {
 		return retirementCalculationDao;
 	}
-	
-	// 외부에서 객체 생성을 못 하도록 생성자를 private으로 제한
-	private RetirementCalculationDao() {}
 
-	// 퇴직급여 계산 내역 등록 (INSERT)
-	// 시퀀스를 사용하여 PK 발급 및 데이터 저장
-	public void insert(Connection conn, RetirementCalculation mst) throws SQLException {
+	// 외부에서 객체 생성을 못 하도록 생성자를 private으로 제한
+	private RetirementCalculationDao() {
+	}
+
+	// 퇴직급여 계산내역 등록
+	// 시퀀스를 사용하여 기본키 발급 및 퇴직금 정산 데이터 저장
+	public void insert(Connection conn, RetirementCalculation calc) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
 			String sql = "INSERT INTO RETIREMENT_CALCULATION ("
-					+ "RETIREMENT_CALCULATION_ID, EMPLOYEE_ID, CALC_TYPE, CALC_START_DATE, RETIRE_DATE, "
-					+ "SERVICE_YEARS, SERVICE_DAYS, EXCLUDE_DAYS, COMPENSATION_AMT, DISMISSAL_AMT, "
-					+ "TAX_FREE_RETIRE_AMT, PREPAID_TAX_AMT, TAX_CREDIT_AMT, THREE_MONTH_TOTAL, AVG_MONTH_WAGE, "
-					+ "AVG_DAY_WAGE, ORDINARY_DAY_WAGE, RETIRE_INCOME, CALCULATED_TAX_AMT, INCOME_TAX, "
-					+ "LOCAL_INCOME_TAX, DEFERRED_INCOME_TAX, DEFERRED_LOCAL_TAX, SPECIAL_RURAL_TAX, OTHER_DEDUCT_AMT, "
-					+ "TAXABLE_RETIRE_AMT, WITHHOLDING_TAX_AMT, ACTUAL_PAY_AMT, PAY_METHOD, PAY_DATE) "
-					+ "VALUES (SEQ_RETIRE_CALC_MST_ID.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+					+ "RETIREMENT_CALCULATION_ID, EMPLOYEE_ID, CALC_TYPE, CALC_START_DATE, RETIRE_DATE, SERVICE_YEARS, SERVICE_DAYS, EXCLUDE_DAYS, "
+					+ "COMPENSATION_AMT, DISMISSAL_AMT, TAX_FREE_RETIRE_AMT, PREPAID_TAX_AMT, TAX_CREDIT_AMT, THREE_MONTH_TOTAL, AVG_MONTH_WAGE, "
+					+ "AVG_DAY_WAGE, ORDINARY_DAY_WAGE, RETIRE_INCOME, CALCULATED_TAX_AMT, INCOME_TAX, LOCAL_INCOME_TAX, DEFERRED_INCOME_TAX, "
+					+ "DEFERRED_LOCAL_TAX, SPECIAL_RURAL_TAX, OTHER_DEDUCT_AMT, TAXABLE_RETIRE_AMT, WITHHOLDING_TAX_AMT, ACTUAL_PAY_AMT, PAY_METHOD, PAY_DATE) "
+					+ "VALUES (RETIREMENT_CALCULATION_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setLong(1, mst.getEmployeeId());
-			pstmt.setString(2, mst.getCalcType());
-			pstmt.setTimestamp(3, new Timestamp(mst.getCalcStartDate().getTime()));
-			pstmt.setTimestamp(4, new Timestamp(mst.getRetireDate().getTime()));
-			pstmt.setInt(5, mst.getServiceYears());
-			pstmt.setInt(6, mst.getServiceDays());
-			pstmt.setInt(7, mst.getExcludeDays());
-			pstmt.setLong(8, mst.getCompensationAmt());
-			pstmt.setLong(9, mst.getDismissalAmt());
-			pstmt.setLong(10, mst.getTaxFreeRetireAmt());
-			pstmt.setLong(11, mst.getPrepaidTaxAmt());
-			pstmt.setLong(12, mst.getTaxCreditAmt());
-			pstmt.setLong(13, mst.getThreeMonthTotal());
-			pstmt.setLong(14, mst.getAvgMonthWage());
-			pstmt.setLong(15, mst.getAvgDayWage());
-			pstmt.setLong(16, mst.getOrdinaryDayWage());
-			pstmt.setLong(17, mst.getRetireIncome());
-			pstmt.setLong(18, mst.getCalculatedTaxAmt());
-			pstmt.setLong(19, mst.getIncomeTax());
-			pstmt.setLong(20, mst.getLocalIncomeTax());
-			pstmt.setLong(21, mst.getDeferredIncomeTax());
-			pstmt.setLong(22, mst.getDeferredLocalTax());
-			pstmt.setLong(23, mst.getSpecialRuralTax());
-			pstmt.setLong(24, mst.getOtherDeductAmt());
-			pstmt.setLong(25, mst.getTaxableRetireAmt());
-			pstmt.setLong(26, mst.getWithholdingTaxAmt());
-			pstmt.setLong(27, mst.getActualPayAmt());
-			pstmt.setString(28, mst.getPayMethod());
-			pstmt.setTimestamp(29, new Timestamp(mst.getPayDate().getTime()));
+			pstmt.setInt(1, calc.getEmployeeId());
+			pstmt.setString(2, calc.getCalcType());
+
+			// 날짜 null 방어 로직 적용
+			if (calc.getCalcStartDate() == null) {
+				pstmt.setNull(3, Types.DATE);
+			} else {
+				pstmt.setTimestamp(3, new Timestamp(calc.getCalcStartDate().getTime()));
+			}
+
+			if (calc.getRetireDate() == null) {
+				pstmt.setNull(4, Types.DATE);
+			} else {
+				pstmt.setTimestamp(4, new Timestamp(calc.getRetireDate().getTime()));
+			}
+
+			pstmt.setInt(5, calc.getServiceYears());
+			pstmt.setInt(6, calc.getServiceDays());
+			pstmt.setInt(7, calc.getExcludeDays());
+			pstmt.setLong(8, calc.getCompensationAmt());
+			pstmt.setLong(9, calc.getDismissalAmt());
+			pstmt.setLong(10, calc.getTaxFreeRetireAmt());
+			pstmt.setLong(11, calc.getPrepaidTaxAmt());
+			pstmt.setLong(12, calc.getTaxCreditAmt());
+			pstmt.setLong(13, calc.getThreeMonthTotal());
+			pstmt.setLong(14, calc.getAvgMonthWage());
+			pstmt.setLong(15, calc.getAvgDayWage());
+			pstmt.setLong(16, calc.getOrdinaryDayWage());
+			pstmt.setLong(17, calc.getRetireIncome());
+			pstmt.setLong(18, calc.getCalculatedTaxAmt());
+			pstmt.setLong(19, calc.getIncomeTax());
+			pstmt.setLong(20, calc.getLocalIncomeTax());
+			pstmt.setLong(21, calc.getDeferredIncomeTax());
+			pstmt.setLong(22, calc.getDeferredLocalTax());
+			pstmt.setLong(23, calc.getSpecialRuralTax());
+			pstmt.setLong(24, calc.getOtherDeductAmt());
+			pstmt.setLong(25, calc.getTaxableRetireAmt());
+			pstmt.setLong(26, calc.getWithholdingTaxAmt());
+			pstmt.setLong(27, calc.getActualPayAmt());
+			pstmt.setString(28, calc.getPayMethod());
+
+			if (calc.getPayDate() == null) {
+				pstmt.setNull(29, Types.DATE);
+			} else {
+				pstmt.setTimestamp(29, new Timestamp(calc.getPayDate().getTime()));
+			}
 
 			pstmt.executeUpdate();
 		} finally {
@@ -76,69 +93,41 @@ public class RetirementCalculationDao {
 		}
 	}
 
-	// 퇴직급여 계산 내역 단건 조회 (SELECT BY ID)
-	// 기본키(RETIREMENT_CALCULATION_ID)를 기준으로 1건의 데이터 조회
-	public RetirementCalculation selectById(Connection conn, int retireCalcMstId) throws SQLException {
+	// 퇴직급여 계산내역 단건 조회
+	// 기본키(RETIREMENT_CALCULATION_ID)를 기준으로 1건의 데이터 반환
+	public RetirementCalculation selectById(Connection conn, int calcId) throws SQLException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
 			String sql = "SELECT * FROM RETIREMENT_CALCULATION WHERE RETIREMENT_CALCULATION_ID = ?";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, retireCalcMstId);
+			pstmt.setInt(1, calcId);
 			rs = pstmt.executeQuery();
 
 			if (rs.next()) {
-				return makeRetireCalcMstFromResultSet(rs);
+				return makeCalcFromResultSet(rs);
 			}
-			return null;
+			return null; // 조회된 데이터가 없을 경우 null 반환
 		} finally {
 			JdbcUtil.close(rs);
 			JdbcUtil.close(pstmt);
 		}
 	}
 
-	// 유니크 조건 기준 단건 조회 (SELECT BY UNIQUE KEY)
-	// 사원번호, 정산구분, 입사일, 퇴직일 조합으로 특정 정산 내역 조회
-	public RetirementCalculation selectByUniqueKey(Connection conn, int empId, String calcType, java.util.Date calcStartDate,
-			java.util.Date retireDate) throws SQLException {
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			String sql = "SELECT * FROM RETIREMENT_CALCULATION "
-					+ "WHERE EMPLOYEE_ID = ? AND CALC_TYPE = ? AND CALC_START_DATE = ? AND RETIRE_DATE = ?";
-
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, empId);
-			pstmt.setString(2, calcType);
-			pstmt.setTimestamp(3, new Timestamp(calcStartDate.getTime()));
-			pstmt.setTimestamp(4, new Timestamp(retireDate.getTime()));
-			rs = pstmt.executeQuery();
-
-			if (rs.next()) {
-				return makeRetireCalcMstFromResultSet(rs);
-			}
-			return null;
-		} finally {
-			JdbcUtil.close(rs);
-			JdbcUtil.close(pstmt);
-		}
-	}
-
-	// 사원별 퇴직급여 계산 내역 전체 조회
-	// 특정 사원(EMPLOYEE_ID)의 모든 퇴직급여 계산 내역을 최신순으로 정렬하여 조회
+	// 특정 사원의 퇴직급여 계산내역 목록 조회
+	// 사원번호(EMPLOYEE_ID)를 기준으로 최근 정산 내역순 정렬
 	public List<RetirementCalculation> selectByEmpId(Connection conn, int empId) throws SQLException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
 			String sql = "SELECT * FROM RETIREMENT_CALCULATION WHERE EMPLOYEE_ID = ? ORDER BY RETIREMENT_CALCULATION_ID DESC";
-
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, empId);
 			rs = pstmt.executeQuery();
 
 			List<RetirementCalculation> result = new ArrayList<>();
 			while (rs.next()) {
-				result.add(makeRetireCalcMstFromResultSet(rs));
+				result.add(makeCalcFromResultSet(rs));
 			}
 			return result;
 		} finally {
@@ -147,68 +136,14 @@ public class RetirementCalculationDao {
 		}
 	}
 
-	// 퇴직급여 계산 내역 수정 (UPDATE)
-	// 기본키를 기준으로 전체 계산 항목 및 금액 데이터 수정
-	public int update(Connection conn, RetirementCalculation mst) throws SQLException {
-		PreparedStatement pstmt = null;
-		try {
-			String sql = "UPDATE RETIREMENT_CALCULATION SET "
-					+ "EMPLOYEE_ID = ?, CALC_TYPE = ?, CALC_START_DATE = ?, RETIRE_DATE = ?, "
-					+ "SERVICE_YEARS = ?, SERVICE_DAYS = ?, EXCLUDE_DAYS = ?, COMPENSATION_AMT = ?, DISMISSAL_AMT = ?, "
-					+ "TAX_FREE_RETIRE_AMT = ?, PREPAID_TAX_AMT = ?, TAX_CREDIT_AMT = ?, THREE_MONTH_TOTAL = ?, AVG_MONTH_WAGE = ?, "
-					+ "AVG_DAY_WAGE = ?, ORDINARY_DAY_WAGE = ?, RETIRE_INCOME = ?, CALCULATED_TAX_AMT = ?, INCOME_TAX = ?, "
-					+ "LOCAL_INCOME_TAX = ?, DEFERRED_INCOME_TAX = ?, DEFERRED_LOCAL_TAX = ?, SPECIAL_RURAL_TAX = ?, OTHER_DEDUCT_AMT = ?, "
-					+ "TAXABLE_RETIRE_AMT = ?, WITHHOLDING_TAX_AMT = ?, ACTUAL_PAY_AMT = ?, PAY_METHOD = ?, PAY_DATE = ? "
-					+ "WHERE RETIREMENT_CALCULATION_ID = ?";
-
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setLong(1, mst.getEmployeeId());
-			pstmt.setString(2, mst.getCalcType());
-			pstmt.setTimestamp(3, new Timestamp(mst.getCalcStartDate().getTime()));
-			pstmt.setTimestamp(4, new Timestamp(mst.getRetireDate().getTime()));
-			pstmt.setInt(5, mst.getServiceYears());
-			pstmt.setInt(6, mst.getServiceDays());
-			pstmt.setInt(7, mst.getExcludeDays());
-			pstmt.setLong(8, mst.getCompensationAmt());
-			pstmt.setLong(9, mst.getDismissalAmt());
-			pstmt.setLong(10, mst.getTaxFreeRetireAmt());
-			pstmt.setLong(11, mst.getPrepaidTaxAmt());
-			pstmt.setLong(12, mst.getTaxCreditAmt());
-			pstmt.setLong(13, mst.getThreeMonthTotal());
-			pstmt.setLong(14, mst.getAvgMonthWage());
-			pstmt.setLong(15, mst.getAvgDayWage());
-			pstmt.setLong(16, mst.getOrdinaryDayWage());
-			pstmt.setLong(17, mst.getRetireIncome());
-			pstmt.setLong(18, mst.getCalculatedTaxAmt());
-			pstmt.setLong(19, mst.getIncomeTax());
-			pstmt.setLong(20, mst.getLocalIncomeTax());
-			pstmt.setLong(21, mst.getDeferredIncomeTax());
-			pstmt.setLong(22, mst.getDeferredLocalTax());
-			pstmt.setLong(23, mst.getSpecialRuralTax());
-			pstmt.setLong(24, mst.getOtherDeductAmt());
-			pstmt.setLong(25, mst.getTaxableRetireAmt());
-			pstmt.setLong(26, mst.getWithholdingTaxAmt());
-			pstmt.setLong(27, mst.getActualPayAmt());
-			pstmt.setString(28, mst.getPayMethod());
-			pstmt.setTimestamp(29, new Timestamp(mst.getPayDate().getTime()));
-			pstmt.setLong(30, mst.getRetirementCalculationId());
-
-			return pstmt.executeUpdate(); // 수정된 행의 개수 반환
-		} finally {
-			JdbcUtil.close(pstmt);
-		}
-	}
-
-	// 퇴직급여 계산 내역 삭제 (DELETE)
-	// 기본키를 기준으로 해당 계산 내역 삭제
-	public int delete(Connection conn, int retireCalcMstId) throws SQLException {
+	// 퇴직급여 계산내역 삭제
+	// 기본키를 기준으로 해당 데이터 삭제
+	public int delete(Connection conn, int calcId) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
 			String sql = "DELETE FROM RETIREMENT_CALCULATION WHERE RETIREMENT_CALCULATION_ID = ?";
-
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, retireCalcMstId);
-
+			pstmt.setInt(1, calcId);
 			return pstmt.executeUpdate(); // 삭제된 행의 개수 반환
 		} finally {
 			JdbcUtil.close(pstmt);
@@ -216,39 +151,54 @@ public class RetirementCalculationDao {
 	}
 
 	// ResultSet 데이터를 RetirementCalculation 객체로 변환
-	// 코드 중복 방지를 위한 공통 매핑 객체 반환
-	private RetirementCalculation makeRetireCalcMstFromResultSet(ResultSet rs) throws SQLException {
-		RetirementCalculation mst = new RetirementCalculation();
-		mst.setRetirementCalculationId(rs.getLong("RETIREMENT_CALCULATION_ID"));
-		mst.setEmployeeId(rs.getLong("EMPLOYEE_ID"));
-		mst.setCalcType(rs.getString("CALC_TYPE"));
-		mst.setCalcStartDate(new java.util.Date(rs.getTimestamp("CALC_START_DATE").getTime()));
-		mst.setRetireDate(new java.util.Date(rs.getTimestamp("RETIRE_DATE").getTime()));
-		mst.setServiceYears(rs.getInt("SERVICE_YEARS"));
-		mst.setServiceDays(rs.getInt("SERVICE_DAYS"));
-		mst.setExcludeDays(rs.getInt("EXCLUDE_DAYS"));
-		mst.setCompensationAmt(rs.getLong("COMPENSATION_AMT"));
-		mst.setDismissalAmt(rs.getLong("DISMISSAL_AMT"));
-		mst.setTaxFreeRetireAmt(rs.getLong("TAX_FREE_RETIRE_AMT"));
-		mst.setPrepaidTaxAmt(rs.getLong("PREPAID_TAX_AMT"));
-		mst.setTaxCreditAmt(rs.getLong("TAX_CREDIT_AMT"));
-		mst.setThreeMonthTotal(rs.getLong("THREE_MONTH_TOTAL"));
-		mst.setAvgMonthWage(rs.getLong("AVG_MONTH_WAGE"));
-		mst.setAvgDayWage(rs.getLong("AVG_DAY_WAGE"));
-		mst.setOrdinaryDayWage(rs.getLong("ORDINARY_DAY_WAGE"));
-		mst.setRetireIncome(rs.getLong("RETIRE_INCOME"));
-		mst.setCalculatedTaxAmt(rs.getLong("CALCULATED_TAX_AMT"));
-		mst.setIncomeTax(rs.getLong("INCOME_TAX"));
-		mst.setLocalIncomeTax(rs.getLong("LOCAL_INCOME_TAX"));
-		mst.setDeferredIncomeTax(rs.getLong("DEFERRED_INCOME_TAX"));
-		mst.setDeferredLocalTax(rs.getLong("DEFERRED_LOCAL_TAX"));
-		mst.setSpecialRuralTax(rs.getLong("SPECIAL_RURAL_TAX"));
-		mst.setOtherDeductAmt(rs.getLong("OTHER_DEDUCT_AMT"));
-		mst.setTaxableRetireAmt(rs.getLong("TAXABLE_RETIRE_AMT"));
-		mst.setWithholdingTaxAmt(rs.getLong("WITHHOLDING_TAX_AMT"));
-		mst.setActualPayAmt(rs.getLong("ACTUAL_PAY_AMT"));
-		mst.setPayMethod(rs.getString("PAY_METHOD"));
-		mst.setPayDate(new java.util.Date(rs.getTimestamp("PAY_DATE").getTime()));
-		return mst;
+	// 코드 중복 방지를 위한 공통 매핑 처리
+	private RetirementCalculation makeCalcFromResultSet(ResultSet rs) throws SQLException {
+		RetirementCalculation calc = new RetirementCalculation();
+
+		calc.setRetirementCalculationId(rs.getInt("RETIREMENT_CALCULATION_ID"));
+		calc.setEmployeeId(rs.getInt("EMPLOYEE_ID"));
+		calc.setCalcType(rs.getString("CALC_TYPE"));
+
+		Timestamp startTs = rs.getTimestamp("CALC_START_DATE");
+		if (startTs != null) {
+			calc.setCalcStartDate(new java.util.Date(startTs.getTime()));
+		}
+
+		Timestamp retireTs = rs.getTimestamp("RETIRE_DATE");
+		if (retireTs != null) {
+			calc.setRetireDate(new java.util.Date(retireTs.getTime()));
+		}
+
+		calc.setServiceYears(rs.getInt("SERVICE_YEARS"));
+		calc.setServiceDays(rs.getInt("SERVICE_DAYS"));
+		calc.setExcludeDays(rs.getInt("EXCLUDE_DAYS"));
+		calc.setCompensationAmt(rs.getLong("COMPENSATION_AMT"));
+		calc.setDismissalAmt(rs.getLong("DISMISSAL_AMT"));
+		calc.setTaxFreeRetireAmt(rs.getLong("TAX_FREE_RETIRE_AMT"));
+		calc.setPrepaidTaxAmt(rs.getLong("PREPAID_TAX_AMT"));
+		calc.setTaxCreditAmt(rs.getLong("TAX_CREDIT_AMT"));
+		calc.setThreeMonthTotal(rs.getLong("THREE_MONTH_TOTAL"));
+		calc.setAvgMonthWage(rs.getLong("AVG_MONTH_WAGE"));
+		calc.setAvgDayWage(rs.getLong("AVG_DAY_WAGE"));
+		calc.setOrdinaryDayWage(rs.getLong("ORDINARY_DAY_WAGE"));
+		calc.setRetireIncome(rs.getLong("RETIRE_INCOME"));
+		calc.setCalculatedTaxAmt(rs.getLong("CALCULATED_TAX_AMT"));
+		calc.setIncomeTax(rs.getLong("INCOME_TAX"));
+		calc.setLocalIncomeTax(rs.getLong("LOCAL_INCOME_TAX"));
+		calc.setDeferredIncomeTax(rs.getLong("DEFERRED_INCOME_TAX"));
+		calc.setDeferredLocalTax(rs.getLong("DEFERRED_LOCAL_TAX"));
+		calc.setSpecialRuralTax(rs.getLong("SPECIAL_RURAL_TAX"));
+		calc.setOtherDeductAmt(rs.getLong("OTHER_DEDUCT_AMT"));
+		calc.setTaxableRetireAmt(rs.getLong("TAXABLE_RETIRE_AMT"));
+		calc.setWithholdingTaxAmt(rs.getLong("WITHHOLDING_TAX_AMT"));
+		calc.setActualPayAmt(rs.getLong("ACTUAL_PAY_AMT"));
+		calc.setPayMethod(rs.getString("PAY_METHOD"));
+
+		Timestamp payTs = rs.getTimestamp("PAY_DATE");
+		if (payTs != null) {
+			calc.setPayDate(new java.util.Date(payTs.getTime()));
+		}
+
+		return calc;
 	}
 }

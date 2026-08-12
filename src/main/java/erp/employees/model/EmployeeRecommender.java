@@ -6,8 +6,8 @@ package erp.employees.model;
 public class EmployeeRecommender {
 
 	// [DB 관리 항목]
-	private Long employeeRecommenderId; // 추천인 식별 번호 (PK)
-	private Long employeeId; // 사원 식별 번호 (FK)
+	private int employeeRecommenderId; // 추천인 식별 번호 (PK)
+	private int employeeId; // 사원 식별 번호 (FK)
 
 	// [추천인 입력 항목]
 	private String recommenderName; // 추천인 성명
@@ -20,19 +20,19 @@ public class EmployeeRecommender {
 	}
 
 	// Getter & Setter
-	public Long getEmployeeRecommenderId() {
+	public int getEmployeeRecommenderId() {
 		return employeeRecommenderId;
 	}
 
-	public void setEmployeeRecommenderId(Long employeeRecommenderId) {
+	public void setEmployeeRecommenderId(int employeeRecommenderId) {
 		this.employeeRecommenderId = employeeRecommenderId;
 	}
 
-	public Long getEmployeeId() {
+	public int getEmployeeId() {
 		return employeeId;
 	}
 
-	public void setEmployeeId(Long employeeId) {
+	public void setEmployeeId(int employeeId) {
 		this.employeeId = employeeId;
 	}
 

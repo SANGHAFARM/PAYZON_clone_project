@@ -6,8 +6,8 @@ package erp.employees.model;
 public class EmployeeDependent {
 
 	// [DB 관리 항목]
-	private Long employeeDependentId; // 부양가족 식별 번호 (PK)
-	private Long employeeId; // 사원 식별 번호 (FK)
+	private int employeeDependentId; // 부양가족 식별 번호 (PK)
+	private int employeeId; // 사원 식별 번호 (FK)
 
 	// [부양가족 기본정보]
 	private String relation; // 관계
@@ -27,19 +27,19 @@ public class EmployeeDependent {
 	}
 
 	// Getter & Setter
-	public Long getEmployeeDependentId() {
+	public int getEmployeeDependentId() {
 		return employeeDependentId;
 	}
 
-	public void setEmployeeDependentId(Long employeeDependentId) {
+	public void setEmployeeDependentId(int employeeDependentId) {
 		this.employeeDependentId = employeeDependentId;
 	}
 
-	public Long getEmployeeId() {
+	public int getEmployeeId() {
 		return employeeId;
 	}
 
-	public void setEmployeeId(Long employeeId) {
+	public void setEmployeeId(int employeeId) {
 		this.employeeId = employeeId;
 	}
 

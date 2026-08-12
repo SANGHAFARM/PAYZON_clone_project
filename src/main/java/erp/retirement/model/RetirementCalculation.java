@@ -8,8 +8,8 @@ import java.util.Date;
 public class RetirementCalculation {
 
 	// [DB 관리 항목]
-	private Long retirementCalculationId; // 퇴직급여 계산내역 식별 번호 (PK)
-	private Long employeeId; // 퇴직 대상 사원 식별 번호 (FK)
+	private int retirementCalculationId; // 퇴직급여 계산내역 식별 번호 (PK)
+	private int employeeId; // 퇴직 대상 사원 식별 번호 (FK)
 
 	// [퇴직급여 계산구분]
 	private String calcType; // 구분 (퇴직정산 / 중간정산)
@@ -17,37 +17,37 @@ public class RetirementCalculation {
 	// [입사일·퇴직일·근속기간]
 	private Date calcStartDate; // 입사일 (정산 시작일)
 	private Date retireDate; // 퇴직일
-	private Integer serviceYears; // 근속년수
-	private Integer serviceDays; // 근속일수
-	private Integer excludeDays; // 제외일수
+	private int serviceYears; // 근속년수
+	private int serviceDays; // 근속일수
+	private int excludeDays; // 제외일수
 
 	// [추가 지급·공제 입력액]
-	private Long compensationAmt; // 퇴직위로금
-	private Long dismissalAmt; // 해고예고수당
-	private Long taxFreeRetireAmt; // 비과세 퇴직급여
-	private Long prepaidTaxAmt; // 기납부(또는 기과세이연) 세액
-	private Long taxCreditAmt; // 세액공제
+	private long compensationAmt; // 퇴직위로금
+	private long dismissalAmt; // 해고예고수당
+	private long taxFreeRetireAmt; // 비과세 퇴직급여
+	private long prepaidTaxAmt; // 기납부(또는 기과세이연) 세액
+	private long taxCreditAmt; // 세액공제
 
 	// [평균임금·퇴직급여 계산결과]
-	private Long threeMonthTotal; // 3개월 급여 총계
-	private Long avgMonthWage; // 평균임금 (월)
-	private Long avgDayWage; // 1일 평균임금
-	private Long ordinaryDayWage; // 1일 통상임금
+	private long threeMonthTotal; // 3개월 급여 총계
+	private long avgMonthWage; // 평균임금 (월)
+	private long avgDayWage; // 1일 평균임금
+	private long ordinaryDayWage; // 1일 통상임금
 
 	// [퇴직소득세 계산과정]
-	private Long retireIncome; // 퇴직소득
-	private Long calculatedTaxAmt; // 산출세액
+	private long retireIncome; // 퇴직소득
+	private long calculatedTaxAmt; // 산출세액
 
 	// [세금·공제 및 실지급액]
-	private Long incomeTax; // 퇴직소득세
-	private Long localIncomeTax; // 지방소득세
-	private Long deferredIncomeTax; // 이연 퇴직소득세
-	private Long deferredLocalTax; // 이연 지방소득세
-	private Long specialRuralTax; // 농어촌특별세
-	private Long otherDeductAmt; // 기타공제
-	private Long taxableRetireAmt; // 과세대상 퇴직급여 (자동 계산)
-	private Long withholdingTaxAmt; // 차감원천징수세액 (자동 계산)
-	private Long actualPayAmt; // 실수령액 (자동 계산)
+	private long incomeTax; // 퇴직소득세
+	private long localIncomeTax; // 지방소득세
+	private long deferredIncomeTax; // 이연 퇴직소득세
+	private long deferredLocalTax; // 이연 지방소득세
+	private long specialRuralTax; // 농어촌특별세
+	private long otherDeductAmt; // 기타공제
+	private long taxableRetireAmt; // 과세대상 퇴직급여 (자동 계산)
+	private long withholdingTaxAmt; // 차감원천징수세액 (자동 계산)
+	private long actualPayAmt; // 실수령액 (자동 계산)
 
 	// [지급정보]
 	private String payMethod; // 지급방법 (현금, 계좌이체 등)
@@ -56,20 +56,20 @@ public class RetirementCalculation {
 	public RetirementCalculation() {
 	}
 
-	// Getter & Setter (요약형)
-	public Long getRetirementCalculationId() {
+	// Getter & Setter
+	public int getRetirementCalculationId() {
 		return retirementCalculationId;
 	}
 
-	public void setRetirementCalculationId(Long retirementCalculationId) {
+	public void setRetirementCalculationId(int retirementCalculationId) {
 		this.retirementCalculationId = retirementCalculationId;
 	}
 
-	public Long getEmployeeId() {
+	public int getEmployeeId() {
 		return employeeId;
 	}
 
-	public void setEmployeeId(Long employeeId) {
+	public void setEmployeeId(int employeeId) {
 		this.employeeId = employeeId;
 	}
 
@@ -97,187 +97,187 @@ public class RetirementCalculation {
 		this.retireDate = retireDate;
 	}
 
-	public Integer getServiceYears() {
+	public int getServiceYears() {
 		return serviceYears;
 	}
 
-	public void setServiceYears(Integer serviceYears) {
+	public void setServiceYears(int serviceYears) {
 		this.serviceYears = serviceYears;
 	}
 
-	public Integer getServiceDays() {
+	public int getServiceDays() {
 		return serviceDays;
 	}
 
-	public void setServiceDays(Integer serviceDays) {
+	public void setServiceDays(int serviceDays) {
 		this.serviceDays = serviceDays;
 	}
 
-	public Integer getExcludeDays() {
+	public int getExcludeDays() {
 		return excludeDays;
 	}
 
-	public void setExcludeDays(Integer excludeDays) {
+	public void setExcludeDays(int excludeDays) {
 		this.excludeDays = excludeDays;
 	}
 
-	public Long getCompensationAmt() {
+	public long getCompensationAmt() {
 		return compensationAmt;
 	}
 
-	public void setCompensationAmt(Long compensationAmt) {
+	public void setCompensationAmt(long compensationAmt) {
 		this.compensationAmt = compensationAmt;
 	}
 
-	public Long getDismissalAmt() {
+	public long getDismissalAmt() {
 		return dismissalAmt;
 	}
 
-	public void setDismissalAmt(Long dismissalAmt) {
+	public void setDismissalAmt(long dismissalAmt) {
 		this.dismissalAmt = dismissalAmt;
 	}
 
-	public Long getTaxFreeRetireAmt() {
+	public long getTaxFreeRetireAmt() {
 		return taxFreeRetireAmt;
 	}
 
-	public void setTaxFreeRetireAmt(Long taxFreeRetireAmt) {
+	public void setTaxFreeRetireAmt(long taxFreeRetireAmt) {
 		this.taxFreeRetireAmt = taxFreeRetireAmt;
 	}
 
-	public Long getPrepaidTaxAmt() {
+	public long getPrepaidTaxAmt() {
 		return prepaidTaxAmt;
 	}
 
-	public void setPrepaidTaxAmt(Long prepaidTaxAmt) {
+	public void setPrepaidTaxAmt(long prepaidTaxAmt) {
 		this.prepaidTaxAmt = prepaidTaxAmt;
 	}
 
-	public Long getTaxCreditAmt() {
+	public long getTaxCreditAmt() {
 		return taxCreditAmt;
 	}
 
-	public void setTaxCreditAmt(Long taxCreditAmt) {
+	public void setTaxCreditAmt(long taxCreditAmt) {
 		this.taxCreditAmt = taxCreditAmt;
 	}
 
-	public Long getThreeMonthTotal() {
+	public long getThreeMonthTotal() {
 		return threeMonthTotal;
 	}
 
-	public void setThreeMonthTotal(Long threeMonthTotal) {
+	public void setThreeMonthTotal(long threeMonthTotal) {
 		this.threeMonthTotal = threeMonthTotal;
 	}
 
-	public Long getAvgMonthWage() {
+	public long getAvgMonthWage() {
 		return avgMonthWage;
 	}
 
-	public void setAvgMonthWage(Long avgMonthWage) {
+	public void setAvgMonthWage(long avgMonthWage) {
 		this.avgMonthWage = avgMonthWage;
 	}
 
-	public Long getAvgDayWage() {
+	public long getAvgDayWage() {
 		return avgDayWage;
 	}
 
-	public void setAvgDayWage(Long avgDayWage) {
+	public void setAvgDayWage(long avgDayWage) {
 		this.avgDayWage = avgDayWage;
 	}
 
-	public Long getOrdinaryDayWage() {
+	public long getOrdinaryDayWage() {
 		return ordinaryDayWage;
 	}
 
-	public void setOrdinaryDayWage(Long ordinaryDayWage) {
+	public void setOrdinaryDayWage(long ordinaryDayWage) {
 		this.ordinaryDayWage = ordinaryDayWage;
 	}
 
-	public Long getRetireIncome() {
+	public long getRetireIncome() {
 		return retireIncome;
 	}
 
-	public void setRetireIncome(Long retireIncome) {
+	public void setRetireIncome(long retireIncome) {
 		this.retireIncome = retireIncome;
 	}
 
-	public Long getCalculatedTaxAmt() {
+	public long getCalculatedTaxAmt() {
 		return calculatedTaxAmt;
 	}
 
-	public void setCalculatedTaxAmt(Long calculatedTaxAmt) {
+	public void setCalculatedTaxAmt(long calculatedTaxAmt) {
 		this.calculatedTaxAmt = calculatedTaxAmt;
 	}
 
-	public Long getIncomeTax() {
+	public long getIncomeTax() {
 		return incomeTax;
 	}
 
-	public void setIncomeTax(Long incomeTax) {
+	public void setIncomeTax(long incomeTax) {
 		this.incomeTax = incomeTax;
 	}
 
-	public Long getLocalIncomeTax() {
+	public long getLocalIncomeTax() {
 		return localIncomeTax;
 	}
 
-	public void setLocalIncomeTax(Long localIncomeTax) {
+	public void setLocalIncomeTax(long localIncomeTax) {
 		this.localIncomeTax = localIncomeTax;
 	}
 
-	public Long getDeferredIncomeTax() {
+	public long getDeferredIncomeTax() {
 		return deferredIncomeTax;
 	}
 
-	public void setDeferredIncomeTax(Long deferredIncomeTax) {
+	public void setDeferredIncomeTax(long deferredIncomeTax) {
 		this.deferredIncomeTax = deferredIncomeTax;
 	}
 
-	public Long getDeferredLocalTax() {
+	public long getDeferredLocalTax() {
 		return deferredLocalTax;
 	}
 
-	public void setDeferredLocalTax(Long deferredLocalTax) {
+	public void setDeferredLocalTax(long deferredLocalTax) {
 		this.deferredLocalTax = deferredLocalTax;
 	}
 
-	public Long getSpecialRuralTax() {
+	public long getSpecialRuralTax() {
 		return specialRuralTax;
 	}
 
-	public void setSpecialRuralTax(Long specialRuralTax) {
+	public void setSpecialRuralTax(long specialRuralTax) {
 		this.specialRuralTax = specialRuralTax;
 	}
 
-	public Long getOtherDeductAmt() {
+	public long getOtherDeductAmt() {
 		return otherDeductAmt;
 	}
 
-	public void setOtherDeductAmt(Long otherDeductAmt) {
+	public void setOtherDeductAmt(long otherDeductAmt) {
 		this.otherDeductAmt = otherDeductAmt;
 	}
 
-	public Long getTaxableRetireAmt() {
+	public long getTaxableRetireAmt() {
 		return taxableRetireAmt;
 	}
 
-	public void setTaxableRetireAmt(Long taxableRetireAmt) {
+	public void setTaxableRetireAmt(long taxableRetireAmt) {
 		this.taxableRetireAmt = taxableRetireAmt;
 	}
 
-	public Long getWithholdingTaxAmt() {
+	public long getWithholdingTaxAmt() {
 		return withholdingTaxAmt;
 	}
 
-	public void setWithholdingTaxAmt(Long withholdingTaxAmt) {
+	public void setWithholdingTaxAmt(long withholdingTaxAmt) {
 		this.withholdingTaxAmt = withholdingTaxAmt;
 	}
 
-	public Long getActualPayAmt() {
+	public long getActualPayAmt() {
 		return actualPayAmt;
 	}
 
-	public void setActualPayAmt(Long actualPayAmt) {
+	public void setActualPayAmt(long actualPayAmt) {
 		this.actualPayAmt = actualPayAmt;
 	}
 

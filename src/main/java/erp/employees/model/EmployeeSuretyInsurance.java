@@ -8,13 +8,13 @@ import java.util.Date;
 public class EmployeeSuretyInsurance {
 
 	// [DB 관리 항목]
-	private Long employeeSuretyInsuranceId; // 보증보험 식별 번호 (PK)
-	private Long employeeId; // 사원 식별 번호 (FK)
+	private int employeeSuretyInsuranceId; // 보증보험 식별 번호 (PK)
+	private int employeeId; // 사원 식별 번호 (FK)
 
 	// [보증보험 입력 항목]
 	private String providerName; // 가입기관명
 	private String insuranceNo; // 보험번호
-	private Long insuranceAmt; // 보험금액 (Wrapper)
+	private Long insuranceAmt; // 보험금액
 	private Date signupDate; // 가입일자
 	private Date expireDate; // 만료일자
 	private String note; // 비고
@@ -23,19 +23,19 @@ public class EmployeeSuretyInsurance {
 	}
 
 	// Getter & Setter
-	public Long getEmployeeSuretyInsuranceId() {
+	public int getEmployeeSuretyInsuranceId() {
 		return employeeSuretyInsuranceId;
 	}
 
-	public void setEmployeeSuretyInsuranceId(Long employeeSuretyInsuranceId) {
+	public void setEmployeeSuretyInsuranceId(int employeeSuretyInsuranceId) {
 		this.employeeSuretyInsuranceId = employeeSuretyInsuranceId;
 	}
 
-	public Long getEmployeeId() {
+	public int getEmployeeId() {
 		return employeeId;
 	}
 
-	public void setEmployeeId(Long employeeId) {
+	public void setEmployeeId(int employeeId) {
 		this.employeeId = employeeId;
 	}
 

@@ -8,8 +8,8 @@ import java.util.Date;
 public class EmployeeAppointment {
 
 	// [DB 관리 항목]
-	private Long employeeAppointmentId; // 인사발령 이력 식별 번호 (PK)
-	private Long employeeId; // 사원 식별 번호 (FK)
+	private int employeeAppointmentId; // 인사발령 이력 식별 번호 (PK)
+	private int employeeId; // 사원 식별 번호 (FK)
 
 	// [인사발령 입력 항목]
 	private String appType; // 발령구분 (승진, 부서이동 등)
@@ -23,19 +23,19 @@ public class EmployeeAppointment {
 	}
 
 	// Getter & Setter
-	public Long getEmployeeAppointmentId() {
+	public int getEmployeeAppointmentId() {
 		return employeeAppointmentId;
 	}
 
-	public void setEmployeeAppointmentId(Long employeeAppointmentId) {
+	public void setEmployeeAppointmentId(int employeeAppointmentId) {
 		this.employeeAppointmentId = employeeAppointmentId;
 	}
 
-	public Long getEmployeeId() {
+	public int getEmployeeId() {
 		return employeeId;
 	}
 
-	public void setEmployeeId(Long employeeId) {
+	public void setEmployeeId(int employeeId) {
 		this.employeeId = employeeId;
 	}
 

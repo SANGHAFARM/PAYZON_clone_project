@@ -8,8 +8,8 @@ import java.util.Date;
 public class EmployeeLicense {
 
 	// [DB 관리 항목]
-	private Long employeeLicenseId; // 자격/면허 식별 번호 (PK)
-	private Long employeeId; // 사원 식별 번호 (FK)
+	private int employeeLicenseId; // 자격/면허 식별 번호 (PK)
+	private int employeeId; // 사원 식별 번호 (FK)
 
 	// [자격·면허 입력 항목]
 	private String licName; // 자격/면허명
@@ -22,19 +22,19 @@ public class EmployeeLicense {
 	}
 
 	// Getter & Setter
-	public Long getEmployeeLicenseId() {
+	public int getEmployeeLicenseId() {
 		return employeeLicenseId;
 	}
 
-	public void setEmployeeLicenseId(Long employeeLicenseId) {
+	public void setEmployeeLicenseId(int employeeLicenseId) {
 		this.employeeLicenseId = employeeLicenseId;
 	}
 
-	public Long getEmployeeId() {
+	public int getEmployeeId() {
 		return employeeId;
 	}
 
-	public void setEmployeeId(Long employeeId) {
+	public void setEmployeeId(int employeeId) {
 		this.employeeId = employeeId;
 	}
 

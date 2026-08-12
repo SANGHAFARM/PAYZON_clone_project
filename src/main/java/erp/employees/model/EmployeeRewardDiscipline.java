@@ -8,8 +8,8 @@ import java.util.Date;
 public class EmployeeRewardDiscipline {
 
 	// [DB 관리 항목]
-	private Long employeeRewardDisciplineId; // 상벌 이력 식별 번호 (PK)
-	private Long employeeId; // 사원 식별 번호 (FK)
+	private int employeeRewardDisciplineId; // 상벌 이력 식별 번호 (PK)
+	private int employeeId; // 사원 식별 번호 (FK)
 
 	// [상벌 입력 항목]
 	private String rpType; // 구분 (상/벌)
@@ -23,19 +23,19 @@ public class EmployeeRewardDiscipline {
 	}
 
 	// Getter & Setter
-	public Long getEmployeeRewardDisciplineId() {
+	public int getEmployeeRewardDisciplineId() {
 		return employeeRewardDisciplineId;
 	}
 
-	public void setEmployeeRewardDisciplineId(Long employeeRewardDisciplineId) {
+	public void setEmployeeRewardDisciplineId(int employeeRewardDisciplineId) {
 		this.employeeRewardDisciplineId = employeeRewardDisciplineId;
 	}
 
-	public Long getEmployeeId() {
+	public int getEmployeeId() {
 		return employeeId;
 	}
 
-	public void setEmployeeId(Long employeeId) {
+	public void setEmployeeId(int employeeId) {
 		this.employeeId = employeeId;
 	}
 

@@ -8,8 +8,8 @@ import java.util.Date;
 public class RetirementIncomeEntry {
 
 	// [DB 관리 항목]
-	private Long retirementIncomeEntryId; // 퇴직급여 산정자료 식별 번호 (PK)
-	private Long retirementCalculationId; // 퇴직급여 계산내역 식별 번호 (FK)
+	private int retirementIncomeEntryId; // 퇴직급여 산정자료 식별 번호 (PK)
+	private int retirementCalculationId; // 퇴직급여 계산내역 식별 번호 (FK)
 
 	// [산정자료 구분]
 	private String dataType; // 입력 영역 구분 (SALARY: 급여내역, ETC_INCOME: 기타 과세소득)
@@ -17,15 +17,15 @@ public class RetirementIncomeEntry {
 	// [급여내역 입력 항목]
 	private Date periodStartDate; // 급여내역 산정기간 시작일 (null 허용)
 	private Date periodEndDate; // 급여내역 산정기간 종료일 (null 허용)
-	private Double calcDays; // 급여내역 산정일수 (소수점 처리, NUMBER 7,2)
+	private Double calcDays; // 급여내역 산정일수 (소수점이 포함되므로 Double Wrapper 사용)
 
 	// [기타 과세소득 입력 항목]
-	private String payYm; // 기타 과세소득 지급년월 (YYYYMM, null 허용)
+	private String payYm; // 기타 과세소득 지급년월 (null 허용)
 	private String itemName; // 기타 과세소득 지급항목명 (null 허용)
 
 	// [금액]
-	private Long amount; // 급여총액 또는 기타소득 금액
-	private Long threeMonthAmount; // 3개월분 환산 금액 (급여내역이면 0)
+	private long amount; // 급여총액 또는 기타소득 금액
+	private long threeMonthAmount; // 3개월분 환산 금액 (급여내역이면 0)
 
 	public RetirementIncomeEntry() {
 	}
@@ -40,19 +40,19 @@ public class RetirementIncomeEntry {
 	}
 
 	// Getter & Setter
-	public Long getRetirementIncomeEntryId() {
+	public int getRetirementIncomeEntryId() {
 		return retirementIncomeEntryId;
 	}
 
-	public void setRetirementIncomeEntryId(Long retirementIncomeEntryId) {
+	public void setRetirementIncomeEntryId(int retirementIncomeEntryId) {
 		this.retirementIncomeEntryId = retirementIncomeEntryId;
 	}
 
-	public Long getRetirementCalculationId() {
+	public int getRetirementCalculationId() {
 		return retirementCalculationId;
 	}
 
-	public void setRetirementCalculationId(Long retirementCalculationId) {
+	public void setRetirementCalculationId(int retirementCalculationId) {
 		this.retirementCalculationId = retirementCalculationId;
 	}
 
@@ -104,19 +104,19 @@ public class RetirementIncomeEntry {
 		this.itemName = itemName;
 	}
 
-	public Long getAmount() {
+	public long getAmount() {
 		return amount;
 	}
 
-	public void setAmount(Long amount) {
+	public void setAmount(long amount) {
 		this.amount = amount;
 	}
 
-	public Long getThreeMonthAmount() {
+	public long getThreeMonthAmount() {
 		return threeMonthAmount;
 	}
 
-	public void setThreeMonthAmount(Long threeMonthAmount) {
+	public void setThreeMonthAmount(long threeMonthAmount) {
 		this.threeMonthAmount = threeMonthAmount;
 	}
 }

@@ -8,8 +8,8 @@ import java.util.Date;
 public class EmployeeCareer {
 
 	// [DB 관리 항목]
-	private Long employeeCareerId; // 경력 이력 식별 번호 (PK)
-	private Long employeeId; // 사원 식별 번호 (FK)
+	private int employeeCareerId; // 경력 이력 식별 번호 (PK)
+	private int employeeId; // 사원 식별 번호 (FK)
 
 	// [경력 입력 항목]
 	private String companyName; // 회사명
@@ -23,19 +23,19 @@ public class EmployeeCareer {
 	}
 
 	// Getter & Setter
-	public Long getEmployeeCareerId() {
+	public int getEmployeeCareerId() {
 		return employeeCareerId;
 	}
 
-	public void setEmployeeCareerId(Long employeeCareerId) {
+	public void setEmployeeCareerId(int employeeCareerId) {
 		this.employeeCareerId = employeeCareerId;
 	}
 
-	public Long getEmployeeId() {
+	public int getEmployeeId() {
 		return employeeId;
 	}
 
-	public void setEmployeeId(Long employeeId) {
+	public void setEmployeeId(int employeeId) {
 		this.employeeId = employeeId;
 	}
 

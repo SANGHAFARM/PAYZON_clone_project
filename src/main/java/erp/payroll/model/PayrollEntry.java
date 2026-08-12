@@ -6,16 +6,16 @@ package erp.payroll.model;
 public class PayrollEntry {
 
 	// [연결 정보]
-	private Long payrollEntryId; // 지급·공제 상세내역 식별 번호 (PK)
-	private Long payrollEmployeeId; // 사원별 급여결과 식별 번호 (FK)
+	private int payrollEntryId; // 지급·공제 상세내역 식별 번호 (PK)
+	private int payrollEmployeeId; // 사원별 급여결과 식별 번호 (FK)
 
 	// [지급·공제 항목]
 	// ※ 하나는 값이 있고, 다른 하나는 반드시 NULL이어야 하는 상호 배타적 구조
-	private Long payItemId; // 지급행일 경우 지급항목(PayItem) 식별 번호 (FK, null 허용)
-	private Long deductItemId; // 공제행일 경우 공제항목(DeductItem) 식별 번호 (FK, null 허용)
+	private Integer payItemId; // 지급행일 경우 지급항목 식별 번호 (선택적 FK)
+	private Integer deductItemId; // 공제행일 경우 공제항목 식별 번호 (선택적 FK)
 
 	// [항목별 금액]
-	private Long amount; // 지급액 또는 공제액
+	private long amount; // 지급액 또는 공제액
 
 	public PayrollEntry() {
 	}
@@ -30,43 +30,43 @@ public class PayrollEntry {
 	}
 
 	// Getter & Setter
-	public Long getPayrollEntryId() {
+	public int getPayrollEntryId() {
 		return payrollEntryId;
 	}
 
-	public void setPayrollEntryId(Long payrollEntryId) {
+	public void setPayrollEntryId(int payrollEntryId) {
 		this.payrollEntryId = payrollEntryId;
 	}
 
-	public Long getPayrollEmployeeId() {
+	public int getPayrollEmployeeId() {
 		return payrollEmployeeId;
 	}
 
-	public void setPayrollEmployeeId(Long payrollEmployeeId) {
+	public void setPayrollEmployeeId(int payrollEmployeeId) {
 		this.payrollEmployeeId = payrollEmployeeId;
 	}
 
-	public Long getPayItemId() {
+	public Integer getPayItemId() {
 		return payItemId;
 	}
 
-	public void setPayItemId(Long payItemId) {
+	public void setPayItemId(Integer payItemId) {
 		this.payItemId = payItemId;
 	}
 
-	public Long getDeductItemId() {
+	public Integer getDeductItemId() {
 		return deductItemId;
 	}
 
-	public void setDeductItemId(Long deductItemId) {
+	public void setDeductItemId(Integer deductItemId) {
 		this.deductItemId = deductItemId;
 	}
 
-	public Long getAmount() {
+	public long getAmount() {
 		return amount;
 	}
 
-	public void setAmount(Long amount) {
+	public void setAmount(long amount) {
 		this.amount = amount;
 	}
 }

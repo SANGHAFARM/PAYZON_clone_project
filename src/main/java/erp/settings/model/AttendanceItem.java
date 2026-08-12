@@ -5,14 +5,14 @@ package erp.settings.model;
  */
 public class AttendanceItem {
 
-	private Long attendanceItemId;
+	private int attendanceItemId; // 근태항목 식별 번호 (PK)
+	private int attendanceGroupId; // 근태그룹 외래키 (FK)
 	private String attendName;
 	private String unitType;
-	private Long attendanceGroupId; // 근태그룹 외래키
-
-	private Long deductLeaveId; // 휴가공제 외래키 (null 허용)
-	private String workHourType; // 근로시간연계 (null 허용)
 	private String useYn;
+
+	private Integer deductLeaveId; // 휴가공제 외래키 (선택적 FK)
+	private String workHourType; // 근로시간연계
 
 	public AttendanceItem() {
 	}
@@ -23,12 +23,20 @@ public class AttendanceItem {
 	}
 
 	// Getter & Setter
-	public Long getAttendanceItemId() {
+	public int getAttendanceItemId() {
 		return attendanceItemId;
 	}
 
-	public void setAttendanceItemId(Long attendanceItemId) {
+	public void setAttendanceItemId(int attendanceItemId) {
 		this.attendanceItemId = attendanceItemId;
+	}
+
+	public int getAttendanceGroupId() {
+		return attendanceGroupId;
+	}
+
+	public void setAttendanceGroupId(int attendanceGroupId) {
+		this.attendanceGroupId = attendanceGroupId;
 	}
 
 	public String getAttendName() {
@@ -47,19 +55,11 @@ public class AttendanceItem {
 		this.unitType = unitType;
 	}
 
-	public Long getAttendanceGroupId() {
-		return attendanceGroupId;
-	}
-
-	public void setAttendanceGroupId(Long attendanceGroupId) {
-		this.attendanceGroupId = attendanceGroupId;
-	}
-
-	public Long getDeductLeaveId() {
+	public Integer getDeductLeaveId() {
 		return deductLeaveId;
 	}
 
-	public void setDeductLeaveId(Long deductLeaveId) {
+	public void setDeductLeaveId(Integer deductLeaveId) {
 		this.deductLeaveId = deductLeaveId;
 	}
 

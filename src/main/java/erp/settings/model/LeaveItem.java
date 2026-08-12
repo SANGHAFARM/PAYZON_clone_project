@@ -7,7 +7,7 @@ import java.util.Date;
  */
 public class LeaveItem {
 
-	private Long leaveItemId;
+	private int leaveItemId; // 휴가항목 식별 번호 (PK)
 	private String itemName;
 	private Date applyStartDate;
 	private Date applyEndDate;
@@ -17,11 +17,11 @@ public class LeaveItem {
 	}
 
 	// Getter & Setter
-	public Long getLeaveItemId() {
+	public int getLeaveItemId() {
 		return leaveItemId;
 	}
 
-	public void setLeaveItemId(Long leaveItemId) {
+	public void setLeaveItemId(int leaveItemId) {
 		this.leaveItemId = leaveItemId;
 	}
 

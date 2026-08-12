@@ -8,8 +8,8 @@ import java.util.Date;
 public class EmployeeLanguage {
 
 	// [DB 관리 항목]
-	private Long employeeLanguageId; // 어학능력 식별 번호 (PK)
-	private Long employeeId; // 사원 식별 번호 (FK)
+	private int employeeLanguageId; // 어학능력 식별 번호 (PK)
+	private int employeeId; // 사원 식별 번호 (FK)
 
 	// [어학능력 입력 항목]
 	private String langName; // 외국어명
@@ -24,19 +24,19 @@ public class EmployeeLanguage {
 	}
 
 	// Getter & Setter
-	public Long getEmployeeLanguageId() {
+	public int getEmployeeLanguageId() {
 		return employeeLanguageId;
 	}
 
-	public void setEmployeeLanguageId(Long employeeLanguageId) {
+	public void setEmployeeLanguageId(int employeeLanguageId) {
 		this.employeeLanguageId = employeeLanguageId;
 	}
 
-	public Long getEmployeeId() {
+	public int getEmployeeId() {
 		return employeeId;
 	}
 
-	public void setEmployeeId(Long employeeId) {
+	public void setEmployeeId(int employeeId) {
 		this.employeeId = employeeId;
 	}
 

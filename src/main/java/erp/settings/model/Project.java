@@ -1,22 +1,22 @@
 package erp.settings.model;
 
 /**
- * [기본환경설정] 일용직 현장/프로젝트 목록 Model DB 테이블: PROJECT
+ * [기본환경설정] 현장/프로젝트 목록 Model DB 테이블: PROJECT
  */
 public class Project {
 
-	private Long projectId;
+	private int projectId; // 현장/프로젝트 식별 번호 (PK)
 	private String projectName;
 
 	public Project() {
 	}
 
 	// Getter & Setter
-	public Long getProjectId() {
+	public int getProjectId() {
 		return projectId;
 	}
 
-	public void setProjectId(Long projectId) {
+	public void setProjectId(int projectId) {
 		this.projectId = projectId;
 	}
 

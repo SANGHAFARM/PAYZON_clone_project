@@ -5,30 +5,28 @@ package erp.settings.model;
  */
 public class PayItem {
 
-	private Long payItemId;
+	private int payItemId; // 지급항목 식별 번호 (PK)
 	private String payName;
-
 	private String taxType;
-	private String taxFreeCode; // 외래키 (TaxFreeItem 연결)
-	private Long taxFreeLimit;
-
 	private String calcMethod;
-	private Integer roundUnit; // 절사단위 (Wrapper)
-
 	private String payMethod;
-	private Long linkAttendId; // 근태항목 외래키 (null 허용, Wrapper 처리됨)
-	private Long bulkPayAmount; // 일괄지급액 (null 허용, Wrapper 처리됨)
 	private String useYn;
+
+	private String taxFreeCode; // 비과세 코드 외래키
+	private Long taxFreeLimit; // 비과세 한도
+	private Integer roundUnit; // 절사단위
+	private Integer linkAttendId; // 근태항목 외래키
+	private Long bulkPayAmount; // 일괄지급액
 
 	public PayItem() {
 	}
 
 	// Getter & Setter
-	public Long getPayItemId() {
+	public int getPayItemId() {
 		return payItemId;
 	}
 
-	public void setPayItemId(Long payItemId) {
+	public void setPayItemId(int payItemId) {
 		this.payItemId = payItemId;
 	}
 
@@ -88,11 +86,11 @@ public class PayItem {
 		this.payMethod = payMethod;
 	}
 
-	public Long getLinkAttendId() {
+	public Integer getLinkAttendId() {
 		return linkAttendId;
 	}
 
-	public void setLinkAttendId(Long linkAttendId) {
+	public void setLinkAttendId(Integer linkAttendId) {
 		this.linkAttendId = linkAttendId;
 	}
 
