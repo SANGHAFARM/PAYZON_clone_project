@@ -32,7 +32,7 @@ public class EmployeeDao {
 		PreparedStatement pstmt = null;
 		try {
 			String sql = "INSERT INTO EMPLOYEE ("
-					+ "EMP_ID, EMP_NO, EMP_TYPE, EMP_NAME_KR, EMP_NAME_EN, FOREIGN_YN, JOIN_DATE, DEPT_ID, POS_ID, "
+					+ "EMPLOYEE_ID, EMP_NO, EMP_TYPE, EMP_NAME_KR, EMP_NAME_EN, FOREIGN_YN, JOIN_DATE, DEPARTMENT_ID, JOB_POSITION_ID, "
 					+ "JUMIN_NO, ZIP_CODE, ADDRESS, TEL_NO, MOBILE_NO, EMAIL, SNS_ADDRESS, MEMO, PHOTO_PATH, "
 					+ "BASIC_PAY, INCOME_TYPE, INCOME_TAX_RATE, YOUTH_TAX_REDUCE_YN, YOUTH_TAX_RATE, NP_YN, HI_YN, "
 					+ "LTCI_YN, EI_YN, HI_REDUCE_RATE, LTCI_REDUCE_RATE, DURUNURI_SEPARATE_YN, DURUNURI_NP_RATE, DURUNURI_EI_RATE, "
@@ -51,15 +51,15 @@ public class EmployeeDao {
 			pstmt.setTimestamp(6, new Timestamp(emp.getJoinDate().getTime()));
 
 			// 외래키(부서, 직위)가 0으로 넘어올 경우 데이터베이스 무결성을 위해 NULL 처리
-			if (emp.getDeptId() == 0)
+			if (emp.getDepartmentId() == 0)
 				pstmt.setNull(7, Types.INTEGER);
 			else
-				pstmt.setInt(7, emp.getDeptId());
+				pstmt.setLong(7, emp.getDepartmentId());
 
-			if (emp.getPosId() == 0)
+			if (emp.getJobPositionId() == 0)
 				pstmt.setNull(8, Types.INTEGER);
 			else
-				pstmt.setInt(8, emp.getPosId());
+				pstmt.setLong(8, emp.getJobPositionId());
 
 			pstmt.setString(9, emp.getJuminNo());
 			pstmt.setString(10, emp.getZipCode());
@@ -129,12 +129,12 @@ public class EmployeeDao {
 	}
 
 	// 사원 정보 단건 조회
-	// 기본키(EMP_ID)를 기준으로 단일 사원 데이터 반환
+	// 기본키(EMPLOYEE_ID)를 기준으로 단일 사원 데이터 반환
 	public Employee selectById(Connection conn, int empId) throws SQLException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			String sql = "SELECT * FROM EMPLOYEE WHERE EMP_ID = ?";
+			String sql = "SELECT * FROM EMPLOYEE WHERE EMPLOYEE_ID = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, empId);
 			rs = pstmt.executeQuery();
@@ -155,7 +155,7 @@ public class EmployeeDao {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			String sql = "SELECT * FROM EMPLOYEE ORDER BY EMP_ID DESC";
+			String sql = "SELECT * FROM EMPLOYEE ORDER BY EMPLOYEE_ID DESC";
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 
@@ -176,13 +176,13 @@ public class EmployeeDao {
 		PreparedStatement pstmt = null;
 		try {
 			String sql = "UPDATE EMPLOYEE SET "
-					+ "EMP_NO = ?, EMP_TYPE = ?, EMP_NAME_KR = ?, EMP_NAME_EN = ?, FOREIGN_YN = ?, JOIN_DATE = ?, DEPT_ID = ?, POS_ID = ?, "
+					+ "EMP_NO = ?, EMP_TYPE = ?, EMP_NAME_KR = ?, EMP_NAME_EN = ?, FOREIGN_YN = ?, JOIN_DATE = ?, DEPARTMENT_ID = ?, JOB_POSITION_ID = ?, "
 					+ "JUMIN_NO = ?, ZIP_CODE = ?, ADDRESS = ?, TEL_NO = ?, MOBILE_NO = ?, EMAIL = ?, SNS_ADDRESS = ?, MEMO = ?, PHOTO_PATH = ?, "
 					+ "BASIC_PAY = ?, INCOME_TYPE = ?, INCOME_TAX_RATE = ?, YOUTH_TAX_REDUCE_YN = ?, YOUTH_TAX_RATE = ?, NP_YN = ?, HI_YN = ?, "
 					+ "LTCI_YN = ?, EI_YN = ?, HI_REDUCE_RATE = ?, LTCI_REDUCE_RATE = ?, DURUNURI_SEPARATE_YN = ?, DURUNURI_NP_RATE = ?, DURUNURI_EI_RATE = ?, "
 					+ "NP_MONTHLY_BASE = ?, HI_MONTHLY_BASE = ?, EI_MONTHLY_BASE = ?, BANK_NAME = ?, ACCOUNT_NO = ?, DISCHARGE_TYPE = ?, MIL_BRANCH = ?, "
 					+ "MIL_SERVICE_START = ?, MIL_SERVICE_END = ?, MIL_RANK = ?, MIL_SPECIALTY = ?, MIL_UNFINISHED_REASON = ?, STATUS = ?, RETIRE_TYPE = ?, "
-					+ "RETIRE_DATE = ?, RETIRE_REASON = ?, AFTER_RETIRE_CONTACT = ? " + "WHERE EMP_ID = ?";
+					+ "RETIRE_DATE = ?, RETIRE_REASON = ?, AFTER_RETIRE_CONTACT = ? " + "WHERE EMPLOYEE_ID = ?";
 
 			pstmt = conn.prepareStatement(sql);
 
@@ -193,15 +193,15 @@ public class EmployeeDao {
 			pstmt.setString(5, emp.getForeignYn());
 			pstmt.setTimestamp(6, new Timestamp(emp.getJoinDate().getTime()));
 
-			if (emp.getDeptId() == 0)
+			if (emp.getDepartmentId() == 0)
 				pstmt.setNull(7, Types.INTEGER);
 			else
-				pstmt.setInt(7, emp.getDeptId());
+				pstmt.setLong(7, emp.getDepartmentId());
 
-			if (emp.getPosId() == 0)
+			if (emp.getJobPositionId() == 0)
 				pstmt.setNull(8, Types.INTEGER);
 			else
-				pstmt.setInt(8, emp.getPosId());
+				pstmt.setLong(8, emp.getJobPositionId());
 
 			pstmt.setString(9, emp.getJuminNo());
 			pstmt.setString(10, emp.getZipCode());
@@ -262,8 +262,8 @@ public class EmployeeDao {
 			pstmt.setString(47, emp.getRetireReason());
 			pstmt.setString(48, emp.getAfterRetireContact());
 
-			// 49번째 파라미터는 조건문의 EMP_ID
-			pstmt.setInt(49, emp.getEmpId());
+			// 49번째 파라미터는 조건문의 EMPLOYEE_ID
+			pstmt.setLong(49, emp.getEmployeeId());
 
 			return pstmt.executeUpdate(); // 수정된 행의 개수 반환
 		} finally {
@@ -276,7 +276,7 @@ public class EmployeeDao {
 	public int delete(Connection conn, int empId) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
-			String sql = "DELETE FROM EMPLOYEE WHERE EMP_ID = ?";
+			String sql = "DELETE FROM EMPLOYEE WHERE EMPLOYEE_ID = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, empId);
 			return pstmt.executeUpdate(); // 삭제된 행의 개수 반환
@@ -289,7 +289,7 @@ public class EmployeeDao {
 	// 코드 중복 방지를 위한 공통 매핑 처리
 	private Employee makeEmployeeFromResultSet(ResultSet rs) throws SQLException {
 		Employee emp = new Employee();
-		emp.setEmpId(rs.getInt("EMP_ID"));
+		emp.setEmployeeId(rs.getLong("EMPLOYEE_ID"));
 		emp.setEmpNo(rs.getString("EMP_NO"));
 		emp.setEmpType(rs.getString("EMP_TYPE"));
 		emp.setEmpNameKr(rs.getString("EMP_NAME_KR"));
@@ -300,8 +300,8 @@ public class EmployeeDao {
 		if (joinTs != null)
 			emp.setJoinDate(new java.util.Date(joinTs.getTime()));
 
-		emp.setDeptId(rs.getInt("DEPT_ID"));
-		emp.setPosId(rs.getInt("POS_ID"));
+		emp.setDepartmentId(rs.getLong("DEPARTMENT_ID"));
+		emp.setJobPositionId(rs.getLong("JOB_POSITION_ID"));
 		emp.setJuminNo(rs.getString("JUMIN_NO"));
 		emp.setZipCode(rs.getString("ZIP_CODE"));
 		emp.setAddress(rs.getString("ADDRESS"));
