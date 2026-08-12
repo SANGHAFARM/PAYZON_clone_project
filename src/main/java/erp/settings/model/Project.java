@@ -1,27 +1,29 @@
 package erp.settings.model;
 
-// PROJECT: 현장/프로젝트 목록
+/**
+ * [기본환경설정] 일용직 현장/프로젝트 목록 Model DB 테이블: PROJECT
+ */
 public class Project {
-	
-	// 기본 생성자
+
+	private Long projectId;
+	private String projectName;
+
 	public Project() {
 	}
-	
-	private int projectId;
-	private String projectName;
-	
-	public int getProjectId() {
+
+	// Getter & Setter
+	public Long getProjectId() {
 		return projectId;
 	}
-	
-	public void setProjectId(int projectId) {
+
+	public void setProjectId(Long projectId) {
 		this.projectId = projectId;
 	}
-	
+
 	public String getProjectName() {
 		return projectName;
 	}
-	
+
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
 	}
