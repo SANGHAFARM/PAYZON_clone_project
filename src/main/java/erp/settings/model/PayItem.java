@@ -1,0 +1,114 @@
+package erp.settings.model;
+
+/**
+ * [기본환경설정] 급여 지급항목 설정 Model DB 테이블: PAY_ITEM
+ */
+public class PayItem {
+
+	private Long payItemId;
+	private String payName;
+
+	private String taxType;
+	private String taxFreeCode; // 외래키 (TaxFreeItem 연결)
+	private Long taxFreeLimit;
+
+	private String calcMethod;
+	private Integer roundUnit; // 절사단위 (Wrapper)
+
+	private String payMethod;
+	private Long linkAttendId; // 근태항목 외래키 (null 허용, Wrapper 처리됨)
+	private Long bulkPayAmount; // 일괄지급액 (null 허용, Wrapper 처리됨)
+	private String useYn;
+
+	public PayItem() {
+	}
+
+	// Getter & Setter
+	public Long getPayItemId() {
+		return payItemId;
+	}
+
+	public void setPayItemId(Long payItemId) {
+		this.payItemId = payItemId;
+	}
+
+	public String getPayName() {
+		return payName;
+	}
+
+	public void setPayName(String payName) {
+		this.payName = payName;
+	}
+
+	public String getTaxType() {
+		return taxType;
+	}
+
+	public void setTaxType(String taxType) {
+		this.taxType = taxType;
+	}
+
+	public String getTaxFreeCode() {
+		return taxFreeCode;
+	}
+
+	public void setTaxFreeCode(String taxFreeCode) {
+		this.taxFreeCode = taxFreeCode;
+	}
+
+	public Long getTaxFreeLimit() {
+		return taxFreeLimit;
+	}
+
+	public void setTaxFreeLimit(Long taxFreeLimit) {
+		this.taxFreeLimit = taxFreeLimit;
+	}
+
+	public String getCalcMethod() {
+		return calcMethod;
+	}
+
+	public void setCalcMethod(String calcMethod) {
+		this.calcMethod = calcMethod;
+	}
+
+	public Integer getRoundUnit() {
+		return roundUnit;
+	}
+
+	public void setRoundUnit(Integer roundUnit) {
+		this.roundUnit = roundUnit;
+	}
+
+	public String getPayMethod() {
+		return payMethod;
+	}
+
+	public void setPayMethod(String payMethod) {
+		this.payMethod = payMethod;
+	}
+
+	public Long getLinkAttendId() {
+		return linkAttendId;
+	}
+
+	public void setLinkAttendId(Long linkAttendId) {
+		this.linkAttendId = linkAttendId;
+	}
+
+	public Long getBulkPayAmount() {
+		return bulkPayAmount;
+	}
+
+	public void setBulkPayAmount(Long bulkPayAmount) {
+		this.bulkPayAmount = bulkPayAmount;
+	}
+
+	public String getUseYn() {
+		return useYn;
+	}
+
+	public void setUseYn(String useYn) {
+		this.useYn = useYn;
+	}
+}

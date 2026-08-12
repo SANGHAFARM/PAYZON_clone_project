@@ -2,45 +2,59 @@ package erp.settings.model;
 
 import java.util.Date;
 
-// COMPANY: 회사 기본정보 및 급여 지급 설정
-public class Company{
-    private int companyId;
-    private String cmpnName;
-    private String ceoTitle;
-    private String ceoName;
-    private String bizRegNo;
-    private String corpRegNo;
-    private Date foundationDate;
-    private String homepageUrl;
-    private String zipCode;
-    private String address;
-    private String telNo;
-    private String faxNo;
-    private String bizType;
-    private String bizItem;
-    private String managerName;
-    private String managerDeptName;
-    private String managerPosName;
-    private String managerTelNo;
+/**
+ * [기본환경설정] 회사 기본 및 담당자, 급여/이체 정보 Model DB 테이블: COMPANY
+ */
+public class Company {
+
+	private Long companyId;
+
+	private String cmpnName;
+	private String ceoTitle;
+	private String ceoName;
+	private String bizRegNo;
+	private String corpRegNo;
+	private Date foundationDate;
+	private String homepageUrl;
+
+	private String zipCode;
+	private String address;
+	private String telNo;
+	private String faxNo;
+
+	private String bizType;
+	private String bizItem;
+
+	private String managerName;
+	private String managerDeptName;
+	private String managerPosName;
+	private String managerTelNo;
 	private String managerMobileNo;
-    private String managerEmail;
-    private String payCalcStartScope;
-    private String payCalcStartDay;
-    private String payCalcEndScope;
-    private String payCalcEndDay;
-    private String payDateScope;
-    private String payDateDay;
-    private String payBankName;
-    private String payAccountNo;
-    private String payAccountHolder;
-    private String logoImgPath;
-    private String stampImgPath;
-    
-    public int getCompanyId() {
+	private String managerEmail;
+
+	private String payCalcStartScope;
+	private String payCalcStartDay;
+	private String payCalcEndScope;
+	private String payCalcEndDay;
+	private String payDateScope;
+	private String payDateDay;
+
+	private String payBankName;
+	private String payAccountNo;
+	private String payAccountHolder;
+
+	private String logoImgPath;
+	private String stampImgPath;
+
+	public Company() {
+	}
+
+	// Getter & Setter
+	public Long getCompanyId() {
 		return companyId;
 	}
 
-	public void setCompanyId(int companyId) {
+	public void setCompanyId(Long companyId) {
 		this.companyId = companyId;
 	}
 
@@ -283,7 +297,4 @@ public class Company{
 	public void setStampImgPath(String stampImgPath) {
 		this.stampImgPath = stampImgPath;
 	}
-
-    // 기본 생성자
-    public Company() {}
 }

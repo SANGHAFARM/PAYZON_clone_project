@@ -1,28 +1,30 @@
 package erp.settings.model;
 
-// DEPARTMENT: 부서 설정
+/**
+ * [기본환경설정] 부서 설정 Model DB 테이블: DEPARTMENT
+ */
 public class Department {
-	
-	// 기본 생성자
+
+	private Long departmentId;
+	private String departmentName;
+
 	public Department() {
 	}
-	
-	private int deptId;
-	private String deptName;
-	
-	public int getDeptId() {
-		return deptId;
+
+	// Getter & Setter
+	public Long getDepartmentId() {
+		return departmentId;
 	}
 
-	public void setDeptId(int deptId) {
-		this.deptId = deptId;
+	public void setDepartmentId(Long departmentId) {
+		this.departmentId = departmentId;
 	}
 
-	public String getDeptName() {
-		return deptName;
+	public String getDepartmentName() {
+		return departmentName;
 	}
 
-	public void setDeptName(String deptName) {
-		this.deptName = deptName;
+	public void setDepartmentName(String departmentName) {
+		this.departmentName = departmentName;
 	}
 }
