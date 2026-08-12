@@ -13,31 +13,31 @@ import erp.employees.model.CertificateIssuance;
 import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
 // 제증명서 발급 내역 데이터베이스 접근(DAO) 클래스
-public class CertIssueDao {
+public class CertificateIssuanceDao {
 
     // 싱글톤 인스턴스 생성
-    private static CertIssueDao certIssueDao = new CertIssueDao();
+    private static CertificateIssuanceDao certificateIssuanceDao = new CertificateIssuanceDao();
 
     // 싱글톤 접근 메서드
-    public static CertIssueDao getInstance() {
-        return certIssueDao;
+    public static CertificateIssuanceDao getInstance() {
+        return certificateIssuanceDao;
     }
 
     // 외부에서 객체 생성을 못 하도록 생성자를 private으로 제한
-    private CertIssueDao() {}
+    private CertificateIssuanceDao() {}
 
     // 제증명서 발급 내역 등록
     // 시퀀스를 사용하여 기본키 발급 및 증명서 발급 정보 저장
     public void insert(Connection conn, CertificateIssuance cert) throws SQLException {
         PreparedStatement pstmt = null;
         try {
-            String sql = "INSERT INTO CERT_ISSUE ("
-                       + "CERT_ISSUE_ID, EMP_ID, CERT_DOC_NO, CERT_TYPE, PURPOSE, CERT_MEMO, "
+            String sql = "INSERT INTO CERTIFICATE_ISSUANCE ("
+                       + "CERTIFICATE_ISSUANCE_ID, EMPLOYEE_ID, CERT_DOC_NO, CERT_TYPE, PURPOSE, CERT_MEMO, "
                        + "ISSUE_DATE, ISSUE_DEPT_ID, SHOW_CEO_YN, HIDE_JUMIN_YN, SHOW_LOGO_YN, SHOW_STAMP_YN) "
                        + "VALUES (SEQ_CERT_ISSUE_ID.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, cert.getEmpId());
+            pstmt.setLong(1, cert.getEmployeeId());
             pstmt.setString(2, cert.getCertDocNo());
             pstmt.setString(3, cert.getCertType());
             pstmt.setString(4, cert.getPurpose());
@@ -48,7 +48,7 @@ public class CertIssueDao {
             if (cert.getIssueDeptId() == null) {
                 pstmt.setNull(7, Types.INTEGER);
             } else {
-                pstmt.setInt(7, cert.getIssueDeptId());
+                pstmt.setLong(7, cert.getIssueDeptId());
             }
             
             pstmt.setString(8, cert.getShowCeoYn());
@@ -63,14 +63,14 @@ public class CertIssueDao {
     }
 
     // 제증명서 발급 내역 단건 조회
-    // 기본키(CERT_ISSUE_ID)를 기준으로 1건의 데이터 조회
+    // 기본키(CERTIFICATE_ISSUANCE_ID)를 기준으로 1건의 데이터 조회
     public CertificateIssuance selectById(Connection conn, int certIssueId) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            String sql = "SELECT CERT_ISSUE_ID, EMP_ID, CERT_DOC_NO, CERT_TYPE, PURPOSE, CERT_MEMO, "
+            String sql = "SELECT CERTIFICATE_ISSUANCE_ID, EMPLOYEE_ID, CERT_DOC_NO, CERT_TYPE, PURPOSE, CERT_MEMO, "
                        + "ISSUE_DATE, ISSUE_DEPT_ID, SHOW_CEO_YN, HIDE_JUMIN_YN, SHOW_LOGO_YN, SHOW_STAMP_YN "
-                       + "FROM CERT_ISSUE WHERE CERT_ISSUE_ID = ?";
+                       + "FROM CERTIFICATE_ISSUANCE WHERE CERTIFICATE_ISSUANCE_ID = ?";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, certIssueId);
@@ -87,14 +87,14 @@ public class CertIssueDao {
     }
 
     // 특정 사원의 제증명서 발급 내역 목록 조회
-    // 사원번호(EMP_ID)를 기준으로 연관된 증명서 발급 내역 전체 반환 (최근 발급순 정렬)
+    // 사원번호(EMPLOYEE_ID)를 기준으로 연관된 증명서 발급 내역 전체 반환 (최근 발급순 정렬)
     public List<CertificateIssuance> selectByEmpId(Connection conn, int empId) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            String sql = "SELECT CERT_ISSUE_ID, EMP_ID, CERT_DOC_NO, CERT_TYPE, PURPOSE, CERT_MEMO, "
+            String sql = "SELECT CERTIFICATE_ISSUANCE_ID, EMPLOYEE_ID, CERT_DOC_NO, CERT_TYPE, PURPOSE, CERT_MEMO, "
                        + "ISSUE_DATE, ISSUE_DEPT_ID, SHOW_CEO_YN, HIDE_JUMIN_YN, SHOW_LOGO_YN, SHOW_STAMP_YN "
-                       + "FROM CERT_ISSUE WHERE EMP_ID = ? ORDER BY CERT_ISSUE_ID DESC";
+                       + "FROM CERTIFICATE_ISSUANCE WHERE EMPLOYEE_ID = ? ORDER BY CERTIFICATE_ISSUANCE_ID DESC";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, empId);
@@ -116,14 +116,14 @@ public class CertIssueDao {
     public int update(Connection conn, CertificateIssuance cert) throws SQLException {
         PreparedStatement pstmt = null;
         try {
-            String sql = "UPDATE CERT_ISSUE SET "
-                       + "EMP_ID = ?, CERT_DOC_NO = ?, CERT_TYPE = ?, PURPOSE = ?, CERT_MEMO = ?, "
+            String sql = "UPDATE CERTIFICATE_ISSUANCE SET "
+                       + "EMPLOYEE_ID = ?, CERT_DOC_NO = ?, CERT_TYPE = ?, PURPOSE = ?, CERT_MEMO = ?, "
                        + "ISSUE_DATE = ?, ISSUE_DEPT_ID = ?, SHOW_CEO_YN = ?, HIDE_JUMIN_YN = ?, "
                        + "SHOW_LOGO_YN = ?, SHOW_STAMP_YN = ? "
-                       + "WHERE CERT_ISSUE_ID = ?";
+                       + "WHERE CERTIFICATE_ISSUANCE_ID = ?";
             
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, cert.getEmpId());
+            pstmt.setLong(1, cert.getEmployeeId());
             pstmt.setString(2, cert.getCertDocNo());
             pstmt.setString(3, cert.getCertType());
             pstmt.setString(4, cert.getPurpose());
@@ -134,14 +134,14 @@ public class CertIssueDao {
             if (cert.getIssueDeptId() == null) {
                 pstmt.setNull(7, Types.INTEGER);
             } else {
-                pstmt.setInt(7, cert.getIssueDeptId());
+                pstmt.setLong(7, cert.getIssueDeptId());
             }
             
             pstmt.setString(8, cert.getShowCeoYn());
             pstmt.setString(9, cert.getHideJuminYn());
             pstmt.setString(10, cert.getShowLogoYn());
             pstmt.setString(11, cert.getShowStampYn());
-            pstmt.setInt(12, cert.getCertIssueId());
+            pstmt.setLong(12, cert.getCertificateIssuanceId());
             
             return pstmt.executeUpdate(); // 수정된 행의 개수 반환
         } finally {
@@ -154,7 +154,7 @@ public class CertIssueDao {
     public int delete(Connection conn, int certIssueId) throws SQLException {
         PreparedStatement pstmt = null;
         try {
-            String sql = "DELETE FROM CERT_ISSUE WHERE CERT_ISSUE_ID = ?";
+            String sql = "DELETE FROM CERTIFICATE_ISSUANCE WHERE CERTIFICATE_ISSUANCE_ID = ?";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, certIssueId);
@@ -169,8 +169,8 @@ public class CertIssueDao {
     // 코드 중복 방지를 위한 공통 매핑 처리
     private CertificateIssuance makeCertIssueFromResultSet(ResultSet rs) throws SQLException {
         CertificateIssuance cert = new CertificateIssuance();
-        cert.setCertIssueId(rs.getInt("CERT_ISSUE_ID"));
-        cert.setEmpId(rs.getInt("EMP_ID"));
+        cert.setCertificateIssuanceId(rs.getLong("CERTIFICATE_ISSUANCE_ID"));
+        cert.setEmployeeId(rs.getLong("EMPLOYEE_ID"));
         cert.setCertDocNo(rs.getString("CERT_DOC_NO"));
         cert.setCertType(rs.getString("CERT_TYPE"));
         cert.setPurpose(rs.getString("PURPOSE"));
@@ -182,7 +182,7 @@ public class CertIssueDao {
         }
         
         // 데이터베이스의 숫자 컬럼이 null일 경우 자바의 0으로 자동 변환되는 현상 방지
-        int issueDeptId = rs.getInt("ISSUE_DEPT_ID");
+        long issueDeptId = rs.getLong("ISSUE_DEPT_ID");
         if (!rs.wasNull()) {
             cert.setIssueDeptId(issueDeptId);
         }

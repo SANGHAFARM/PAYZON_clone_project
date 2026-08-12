@@ -13,30 +13,30 @@ import erp.employees.model.EmployeeInsuranceHistory;
 import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
 // 4대보험 자격정보 데이터베이스 접근(DAO) 클래스
-public class EmpInsuranceHistoryDao {
+public class EmployeeInsuranceHistoryDao {
 
     // 싱글톤 인스턴스 생성
-    private static EmpInsuranceHistoryDao empInsuranceHistoryDao = new EmpInsuranceHistoryDao();
+    private static EmployeeInsuranceHistoryDao employeeInsuranceHistoryDao = new EmployeeInsuranceHistoryDao();
 
     // 싱글톤 접근 메서드
-    public static EmpInsuranceHistoryDao getInstance() {
-        return empInsuranceHistoryDao;
+    public static EmployeeInsuranceHistoryDao getInstance() {
+        return employeeInsuranceHistoryDao;
     }
 
     // 외부에서 객체 생성을 못 하도록 생성자를 private으로 제한
-    private EmpInsuranceHistoryDao() {}
+    private EmployeeInsuranceHistoryDao() {}
 
     // 4대보험 자격정보 등록
     // 시퀀스를 사용하여 기본키 발급 및 자격정보 데이터 저장
     public void insert(Connection conn, EmployeeInsuranceHistory history) throws SQLException {
         PreparedStatement pstmt = null;
         try {
-            String sql = "INSERT INTO EMP_INSURANCE_HISTORY "
-                       + "(INS_HIST_ID, EMP_ID, INSURANCE_TYPE, SYMBOL_NO, ACQUIRE_DATE, LOSS_DATE) "
+            String sql = "INSERT INTO EMPLOYEE_INSURANCE_HISTORY "
+                       + "(EMPLOYEE_INSURANCE_HISTORY_ID, EMPLOYEE_ID, INSURANCE_TYPE, SYMBOL_NO, ACQUIRE_DATE, LOSS_DATE) "
                        + "VALUES (SEQ_EMP_INS_HIST_ID.NEXTVAL, ?, ?, ?, ?, ?)";
             
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, history.getEmpId());
+            pstmt.setLong(1, history.getEmployeeId());
             pstmt.setString(2, history.getInsuranceType());
             pstmt.setString(3, history.getSymbolNo());
             
@@ -60,13 +60,13 @@ public class EmpInsuranceHistoryDao {
     }
 
     // 4대보험 자격정보 단건 조회
-    // 기본키(INS_HIST_ID)를 기준으로 1건의 데이터 반환
+    // 기본키(EMPLOYEE_INSURANCE_HISTORY_ID)를 기준으로 1건의 데이터 반환
     public EmployeeInsuranceHistory selectById(Connection conn, int insHistId) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            String sql = "SELECT INS_HIST_ID, EMP_ID, INSURANCE_TYPE, SYMBOL_NO, ACQUIRE_DATE, LOSS_DATE "
-                       + "FROM EMP_INSURANCE_HISTORY WHERE INS_HIST_ID = ?";
+            String sql = "SELECT EMPLOYEE_INSURANCE_HISTORY_ID, EMPLOYEE_ID, INSURANCE_TYPE, SYMBOL_NO, ACQUIRE_DATE, LOSS_DATE "
+                       + "FROM EMPLOYEE_INSURANCE_HISTORY WHERE EMPLOYEE_INSURANCE_HISTORY_ID = ?";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, insHistId);
@@ -83,13 +83,13 @@ public class EmpInsuranceHistoryDao {
     }
 
     // 특정 사원의 4대보험 자격정보 목록 조회
-    // 사원번호(EMP_ID)를 기준으로 연관된 자격정보 전체 반환 (최근 취득일 기준 내림차순 정렬)
+    // 사원번호(EMPLOYEE_ID)를 기준으로 연관된 자격정보 전체 반환 (최근 취득일 기준 내림차순 정렬)
     public List<EmployeeInsuranceHistory> selectByEmpId(Connection conn, int empId) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            String sql = "SELECT INS_HIST_ID, EMP_ID, INSURANCE_TYPE, SYMBOL_NO, ACQUIRE_DATE, LOSS_DATE "
-                       + "FROM EMP_INSURANCE_HISTORY WHERE EMP_ID = ? ORDER BY ACQUIRE_DATE DESC NULLS LAST, INS_HIST_ID DESC";
+            String sql = "SELECT EMPLOYEE_INSURANCE_HISTORY_ID, EMPLOYEE_ID, INSURANCE_TYPE, SYMBOL_NO, ACQUIRE_DATE, LOSS_DATE "
+                       + "FROM EMPLOYEE_INSURANCE_HISTORY WHERE EMPLOYEE_ID = ? ORDER BY ACQUIRE_DATE DESC NULLS LAST, EMPLOYEE_INSURANCE_HISTORY_ID DESC";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, empId);
@@ -111,12 +111,12 @@ public class EmpInsuranceHistoryDao {
     public int update(Connection conn, EmployeeInsuranceHistory history) throws SQLException {
         PreparedStatement pstmt = null;
         try {
-            String sql = "UPDATE EMP_INSURANCE_HISTORY SET "
-                       + "EMP_ID = ?, INSURANCE_TYPE = ?, SYMBOL_NO = ?, ACQUIRE_DATE = ?, LOSS_DATE = ? "
-                       + "WHERE INS_HIST_ID = ?";
+            String sql = "UPDATE EMPLOYEE_INSURANCE_HISTORY SET "
+                       + "EMPLOYEE_ID = ?, INSURANCE_TYPE = ?, SYMBOL_NO = ?, ACQUIRE_DATE = ?, LOSS_DATE = ? "
+                       + "WHERE EMPLOYEE_INSURANCE_HISTORY_ID = ?";
             
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, history.getEmpId());
+            pstmt.setLong(1, history.getEmployeeId());
             pstmt.setString(2, history.getInsuranceType());
             pstmt.setString(3, history.getSymbolNo());
             
@@ -133,7 +133,7 @@ public class EmpInsuranceHistoryDao {
                 pstmt.setTimestamp(5, new Timestamp(history.getLossDate().getTime()));
             }
             
-            pstmt.setInt(6, history.getInsHistId());
+            pstmt.setLong(6, history.getEmployeeInsuranceHistoryId());
             
             return pstmt.executeUpdate(); // 수정된 행의 개수 반환
         } finally {
@@ -146,7 +146,7 @@ public class EmpInsuranceHistoryDao {
     public int delete(Connection conn, int insHistId) throws SQLException {
         PreparedStatement pstmt = null;
         try {
-            String sql = "DELETE FROM EMP_INSURANCE_HISTORY WHERE INS_HIST_ID = ?";
+            String sql = "DELETE FROM EMPLOYEE_INSURANCE_HISTORY WHERE EMPLOYEE_INSURANCE_HISTORY_ID = ?";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, insHistId);
@@ -161,8 +161,8 @@ public class EmpInsuranceHistoryDao {
     // 코드 중복 방지를 위한 공통 매핑 처리
     private EmployeeInsuranceHistory makeEmpInsuranceHistoryFromResultSet(ResultSet rs) throws SQLException {
         EmployeeInsuranceHistory history = new EmployeeInsuranceHistory();
-        history.setInsHistId(rs.getInt("INS_HIST_ID"));
-        history.setEmpId(rs.getInt("EMP_ID"));
+        history.setEmployeeInsuranceHistoryId(rs.getLong("EMPLOYEE_INSURANCE_HISTORY_ID"));
+        history.setEmployeeId(rs.getLong("EMPLOYEE_ID"));
         history.setInsuranceType(rs.getString("INSURANCE_TYPE"));
         history.setSymbolNo(rs.getString("SYMBOL_NO"));
         

@@ -13,30 +13,30 @@ import erp.employees.model.EmployeeLanguage;
 import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
 // 어학 내역 데이터베이스 접근(DAO) 클래스
-public class EmpLanguageDao {
+public class EmployeeLanguageDao {
 
     // 싱글톤 인스턴스 생성
-    private static EmpLanguageDao empLanguageDao = new EmpLanguageDao();
+    private static EmployeeLanguageDao employeeLanguageDao = new EmployeeLanguageDao();
 
     // 싱글톤 접근 메서드
-    public static EmpLanguageDao getInstance() {
-        return empLanguageDao;
+    public static EmployeeLanguageDao getInstance() {
+        return employeeLanguageDao;
     }
 
     // 외부에서 객체 생성을 못 하도록 생성자를 private으로 제한
-    private EmpLanguageDao() {}
+    private EmployeeLanguageDao() {}
 
     // 어학 내역 등록
     // 시퀀스를 사용하여 기본키 발급 및 어학 성적 데이터 저장
     public void insert(Connection conn, EmployeeLanguage language) throws SQLException {
         PreparedStatement pstmt = null;
         try {
-            String sql = "INSERT INTO EMP_LANGUAGE "
-                       + "(LANG_ID, EMP_ID, LANG_NAME, TEST_NAME, SCORE, ACQ_DATE, READING_LEVEL, WRITING_LEVEL, SPEAKING_LEVEL) "
+            String sql = "INSERT INTO EMPLOYEE_LANGUAGE "
+                       + "(EMPLOYEE_LANGUAGE_ID, EMPLOYEE_ID, LANG_NAME, TEST_NAME, SCORE, ACQ_DATE, READING_LEVEL, WRITING_LEVEL, SPEAKING_LEVEL) "
                        + "VALUES (SEQ_EMP_LANG_ID.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?)";
             
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, language.getEmpId());
+            pstmt.setLong(1, language.getEmployeeId());
             pstmt.setString(2, language.getLangName());
             pstmt.setString(3, language.getTestName());
             pstmt.setString(4, language.getScore());
@@ -59,13 +59,13 @@ public class EmpLanguageDao {
     }
 
     // 어학 내역 단건 조회
-    // 기본키(LANG_ID)를 기준으로 1건의 데이터 반환
+    // 기본키(EMPLOYEE_LANGUAGE_ID)를 기준으로 1건의 데이터 반환
     public EmployeeLanguage selectById(Connection conn, int langId) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            String sql = "SELECT LANG_ID, EMP_ID, LANG_NAME, TEST_NAME, SCORE, ACQ_DATE, READING_LEVEL, WRITING_LEVEL, SPEAKING_LEVEL "
-                       + "FROM EMP_LANGUAGE WHERE LANG_ID = ?";
+            String sql = "SELECT EMPLOYEE_LANGUAGE_ID, EMPLOYEE_ID, LANG_NAME, TEST_NAME, SCORE, ACQ_DATE, READING_LEVEL, WRITING_LEVEL, SPEAKING_LEVEL "
+                       + "FROM EMPLOYEE_LANGUAGE WHERE EMPLOYEE_LANGUAGE_ID = ?";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, langId);
@@ -82,13 +82,13 @@ public class EmpLanguageDao {
     }
 
     // 특정 사원의 어학 내역 목록 조회
-    // 사원번호(EMP_ID)를 기준으로 연관된 어학 내역 전체 반환 (최근 취득일 기준 내림차순 정렬)
+    // 사원번호(EMPLOYEE_ID)를 기준으로 연관된 어학 내역 전체 반환 (최근 취득일 기준 내림차순 정렬)
     public List<EmployeeLanguage> selectByEmpId(Connection conn, int empId) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            String sql = "SELECT LANG_ID, EMP_ID, LANG_NAME, TEST_NAME, SCORE, ACQ_DATE, READING_LEVEL, WRITING_LEVEL, SPEAKING_LEVEL "
-                       + "FROM EMP_LANGUAGE WHERE EMP_ID = ? ORDER BY ACQ_DATE DESC NULLS LAST, LANG_ID DESC";
+            String sql = "SELECT EMPLOYEE_LANGUAGE_ID, EMPLOYEE_ID, LANG_NAME, TEST_NAME, SCORE, ACQ_DATE, READING_LEVEL, WRITING_LEVEL, SPEAKING_LEVEL "
+                       + "FROM EMPLOYEE_LANGUAGE WHERE EMPLOYEE_ID = ? ORDER BY ACQ_DATE DESC NULLS LAST, EMPLOYEE_LANGUAGE_ID DESC";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, empId);
@@ -110,12 +110,12 @@ public class EmpLanguageDao {
     public int update(Connection conn, EmployeeLanguage language) throws SQLException {
         PreparedStatement pstmt = null;
         try {
-            String sql = "UPDATE EMP_LANGUAGE SET "
-                       + "EMP_ID = ?, LANG_NAME = ?, TEST_NAME = ?, SCORE = ?, ACQ_DATE = ?, READING_LEVEL = ?, WRITING_LEVEL = ?, SPEAKING_LEVEL = ? "
-                       + "WHERE LANG_ID = ?";
+            String sql = "UPDATE EMPLOYEE_LANGUAGE SET "
+                       + "EMPLOYEE_ID = ?, LANG_NAME = ?, TEST_NAME = ?, SCORE = ?, ACQ_DATE = ?, READING_LEVEL = ?, WRITING_LEVEL = ?, SPEAKING_LEVEL = ? "
+                       + "WHERE EMPLOYEE_LANGUAGE_ID = ?";
             
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, language.getEmpId());
+            pstmt.setLong(1, language.getEmployeeId());
             pstmt.setString(2, language.getLangName());
             pstmt.setString(3, language.getTestName());
             pstmt.setString(4, language.getScore());
@@ -130,7 +130,7 @@ public class EmpLanguageDao {
             pstmt.setString(6, language.getReadingLevel());
             pstmt.setString(7, language.getWritingLevel());
             pstmt.setString(8, language.getSpeakingLevel());
-            pstmt.setInt(9, language.getLangId());
+            pstmt.setLong(9, language.getEmployeeLanguageId());
             
             return pstmt.executeUpdate(); // 수정된 행의 개수 반환
         } finally {
@@ -143,7 +143,7 @@ public class EmpLanguageDao {
     public int delete(Connection conn, int langId) throws SQLException {
         PreparedStatement pstmt = null;
         try {
-            String sql = "DELETE FROM EMP_LANGUAGE WHERE LANG_ID = ?";
+            String sql = "DELETE FROM EMPLOYEE_LANGUAGE WHERE EMPLOYEE_LANGUAGE_ID = ?";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, langId);
@@ -158,8 +158,8 @@ public class EmpLanguageDao {
     // 코드 중복 방지를 위한 공통 매핑 처리
     private EmployeeLanguage makeEmpLanguageFromResultSet(ResultSet rs) throws SQLException {
         EmployeeLanguage language = new EmployeeLanguage();
-        language.setLangId(rs.getInt("LANG_ID"));
-        language.setEmpId(rs.getInt("EMP_ID"));
+        language.setEmployeeLanguageId(rs.getLong("EMPLOYEE_LANGUAGE_ID"));
+        language.setEmployeeId(rs.getLong("EMPLOYEE_ID"));
         language.setLangName(rs.getString("LANG_NAME"));
         language.setTestName(rs.getString("TEST_NAME"));
         language.setScore(rs.getString("SCORE"));

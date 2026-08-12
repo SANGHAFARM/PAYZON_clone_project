@@ -11,31 +11,31 @@ import erp.employees.model.EmployeeDependent;
 import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
 // 부양가족 정보 데이터베이스 접근(DAO) 클래스
-public class EmpDependentDao {
+public class EmployeeDependentDao {
 
     // 싱글톤 인스턴스 생성
-    private static EmpDependentDao empDependentDao = new EmpDependentDao();
+    private static EmployeeDependentDao employeeDependentDao = new EmployeeDependentDao();
 
     // 싱글톤 접근 메서드
-    public static EmpDependentDao getInstance() {
-        return empDependentDao;
+    public static EmployeeDependentDao getInstance() {
+        return employeeDependentDao;
     }
 
     // 외부에서 객체 생성을 못 하도록 생성자를 private으로 제한
-    private EmpDependentDao() {}
+    private EmployeeDependentDao() {}
 
     // 부양가족 정보 등록
     // 시퀀스를 사용하여 기본키 발급 및 부양가족 데이터 저장
     public void insert(Connection conn, EmployeeDependent dependent) throws SQLException {
         PreparedStatement pstmt = null;
         try {
-            String sql = "INSERT INTO EMP_DEPENDENT "
-                       + "(DEP_ID, EMP_ID, RELATION, DEP_NAME, NATIONAL_TYPE, JUMIN_NO, "
+            String sql = "INSERT INTO EMPLOYEE_DEPENDENT "
+                       + "(EMPLOYEE_DEPENDENT_ID, EMPLOYEE_ID, RELATION, DEP_NAME, NATIONAL_TYPE, JUMIN_NO, "
                        + "DISABLED_YN, BASIC_DEDUCT_YN, HEALTH_INS_YN, COHABIT_YN, INCOME_TAX_YN, CHILD_UNDER20_YN) "
                        + "VALUES (SEQ_EMP_DEP_ID.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, dependent.getEmpId());
+            pstmt.setLong(1, dependent.getEmployeeId());
             pstmt.setString(2, dependent.getRelation());
             pstmt.setString(3, dependent.getDepName());
             pstmt.setString(4, dependent.getNationalType());
@@ -54,14 +54,14 @@ public class EmpDependentDao {
     }
 
     // 부양가족 정보 단건 조회
-    // 기본키(DEP_ID)를 기준으로 단일 부양가족 데이터 반환
+    // 기본키(EMPLOYEE_DEPENDENT_ID)를 기준으로 단일 부양가족 데이터 반환
     public EmployeeDependent selectById(Connection conn, int depId) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            String sql = "SELECT DEP_ID, EMP_ID, RELATION, DEP_NAME, NATIONAL_TYPE, JUMIN_NO, "
+            String sql = "SELECT EMPLOYEE_DEPENDENT_ID, EMPLOYEE_ID, RELATION, DEP_NAME, NATIONAL_TYPE, JUMIN_NO, "
                        + "DISABLED_YN, BASIC_DEDUCT_YN, HEALTH_INS_YN, COHABIT_YN, INCOME_TAX_YN, CHILD_UNDER20_YN "
-                       + "FROM EMP_DEPENDENT WHERE DEP_ID = ?";
+                       + "FROM EMPLOYEE_DEPENDENT WHERE EMPLOYEE_DEPENDENT_ID = ?";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, depId);
@@ -78,14 +78,14 @@ public class EmpDependentDao {
     }
 
     // 특정 사원의 부양가족 목록 조회
-    // 사원번호(EMP_ID)를 기준으로 연관된 부양가족 전체 목록 반환 (등록순 정렬)
+    // 사원번호(EMPLOYEE_ID)를 기준으로 연관된 부양가족 전체 목록 반환 (등록순 정렬)
     public List<EmployeeDependent> selectByEmpId(Connection conn, int empId) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            String sql = "SELECT DEP_ID, EMP_ID, RELATION, DEP_NAME, NATIONAL_TYPE, JUMIN_NO, "
+            String sql = "SELECT EMPLOYEE_DEPENDENT_ID, EMPLOYEE_ID, RELATION, DEP_NAME, NATIONAL_TYPE, JUMIN_NO, "
                        + "DISABLED_YN, BASIC_DEDUCT_YN, HEALTH_INS_YN, COHABIT_YN, INCOME_TAX_YN, CHILD_UNDER20_YN "
-                       + "FROM EMP_DEPENDENT WHERE EMP_ID = ? ORDER BY DEP_ID ASC";
+                       + "FROM EMPLOYEE_DEPENDENT WHERE EMPLOYEE_ID = ? ORDER BY EMPLOYEE_DEPENDENT_ID ASC";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, empId);
@@ -107,14 +107,14 @@ public class EmpDependentDao {
     public int update(Connection conn, EmployeeDependent dependent) throws SQLException {
         PreparedStatement pstmt = null;
         try {
-            String sql = "UPDATE EMP_DEPENDENT SET "
-                       + "EMP_ID = ?, RELATION = ?, DEP_NAME = ?, NATIONAL_TYPE = ?, JUMIN_NO = ?, "
+            String sql = "UPDATE EMPLOYEE_DEPENDENT SET "
+                       + "EMPLOYEE_ID = ?, RELATION = ?, DEP_NAME = ?, NATIONAL_TYPE = ?, JUMIN_NO = ?, "
                        + "DISABLED_YN = ?, BASIC_DEDUCT_YN = ?, HEALTH_INS_YN = ?, COHABIT_YN = ?, "
                        + "INCOME_TAX_YN = ?, CHILD_UNDER20_YN = ? "
-                       + "WHERE DEP_ID = ?";
+                       + "WHERE EMPLOYEE_DEPENDENT_ID = ?";
             
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, dependent.getEmpId());
+            pstmt.setLong(1, dependent.getEmployeeId());
             pstmt.setString(2, dependent.getRelation());
             pstmt.setString(3, dependent.getDepName());
             pstmt.setString(4, dependent.getNationalType());
@@ -125,7 +125,7 @@ public class EmpDependentDao {
             pstmt.setString(9, dependent.getCohabitYn());
             pstmt.setString(10, dependent.getIncomeTaxYn());
             pstmt.setString(11, dependent.getChildUnder20Yn());
-            pstmt.setInt(12, dependent.getDepId());
+            pstmt.setLong(12, dependent.getEmployeeDependentId());
             
             return pstmt.executeUpdate(); // 수정된 행의 개수 반환
         } finally {
@@ -138,7 +138,7 @@ public class EmpDependentDao {
     public int delete(Connection conn, int depId) throws SQLException {
         PreparedStatement pstmt = null;
         try {
-            String sql = "DELETE FROM EMP_DEPENDENT WHERE DEP_ID = ?";
+            String sql = "DELETE FROM EMPLOYEE_DEPENDENT WHERE EMPLOYEE_DEPENDENT_ID = ?";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, depId);
@@ -153,8 +153,8 @@ public class EmpDependentDao {
     // 코드 중복 방지를 위한 공통 매핑 처리
     private EmployeeDependent makeEmpDependentFromResultSet(ResultSet rs) throws SQLException {
         EmployeeDependent dependent = new EmployeeDependent();
-        dependent.setDepId(rs.getInt("DEP_ID"));
-        dependent.setEmpId(rs.getInt("EMP_ID"));
+        dependent.setEmployeeDependentId(rs.getLong("EMPLOYEE_DEPENDENT_ID"));
+        dependent.setEmployeeId(rs.getLong("EMPLOYEE_ID"));
         dependent.setRelation(rs.getString("RELATION"));
         dependent.setDepName(rs.getString("DEP_NAME"));
         dependent.setNationalType(rs.getString("NATIONAL_TYPE"));

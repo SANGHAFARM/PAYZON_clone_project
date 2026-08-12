@@ -13,30 +13,30 @@ import erp.employees.model.EmployeeRewardDiscipline;
 import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
 // 상벌 내역 데이터베이스 접근(DAO) 클래스
-public class EmpRewardPunishDao {
+public class EmployeeRewardDisciplineDao {
 
     // 싱글톤 인스턴스 생성
-    private static EmpRewardPunishDao empRewardPunishDao = new EmpRewardPunishDao();
+    private static EmployeeRewardDisciplineDao employeeRewardDisciplineDao = new EmployeeRewardDisciplineDao();
 
     // 싱글톤 접근 메서드
-    public static EmpRewardPunishDao getInstance() {
-        return empRewardPunishDao;
+    public static EmployeeRewardDisciplineDao getInstance() {
+        return employeeRewardDisciplineDao;
     }
 
     // 외부에서 객체 생성을 못 하도록 생성자를 private으로 제한
-    private EmpRewardPunishDao() {}
+    private EmployeeRewardDisciplineDao() {}
 
     // 상벌 내역 등록 (INSERT)
     // 시퀀스를 사용하여 기본키 발급 및 데이터 저장
     public void insert(Connection conn, EmployeeRewardDiscipline rp) throws SQLException {
         PreparedStatement pstmt = null;
         try {
-            String sql = "INSERT INTO EMP_REWARD_PUNISH "
-                       + "(RP_ID, EMP_ID, RP_TYPE, RP_NAME, RP_AUTHORITY, RP_DATE, RP_CONTENT, NOTE) "
+            String sql = "INSERT INTO EMPLOYEE_REWARD_DISCIPLINE "
+                       + "(EMPLOYEE_REWARD_DISCIPLINE_ID, EMPLOYEE_ID, RP_TYPE, RP_NAME, RP_AUTHORITY, RP_DATE, RP_CONTENT, NOTE) "
                        + "VALUES (SEQ_EMP_RP_ID.NEXTVAL, ?, ?, ?, ?, ?, ?, ?)";
             
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, rp.getEmpId());
+            pstmt.setLong(1, rp.getEmployeeId());
             pstmt.setString(2, rp.getRpType());
             pstmt.setString(3, rp.getRpName());
             pstmt.setString(4, rp.getRpAuthority());
@@ -58,13 +58,13 @@ public class EmpRewardPunishDao {
     }
 
     // 상벌 내역 단건 조회 (SELECT BY ID)
-    // 기본키(RP_ID)를 기준으로 1건의 데이터 조회
+    // 기본키(EMPLOYEE_REWARD_DISCIPLINE_ID)를 기준으로 1건의 데이터 조회
     public EmployeeRewardDiscipline selectById(Connection conn, int rpId) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            String sql = "SELECT RP_ID, EMP_ID, RP_TYPE, RP_NAME, RP_AUTHORITY, RP_DATE, RP_CONTENT, NOTE "
-                       + "FROM EMP_REWARD_PUNISH WHERE RP_ID = ?";
+            String sql = "SELECT EMPLOYEE_REWARD_DISCIPLINE_ID, EMPLOYEE_ID, RP_TYPE, RP_NAME, RP_AUTHORITY, RP_DATE, RP_CONTENT, NOTE "
+                       + "FROM EMPLOYEE_REWARD_DISCIPLINE WHERE EMPLOYEE_REWARD_DISCIPLINE_ID = ?";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, rpId);
@@ -81,13 +81,13 @@ public class EmpRewardPunishDao {
     }
 
     // 특정 사원의 상벌 내역 목록 조회
-    // 사원번호(EMP_ID)를 기준으로 연관된 상벌 내역 전체 반환 (최신순 정렬)
+    // 사원번호(EMPLOYEE_ID)를 기준으로 연관된 상벌 내역 전체 반환 (최신순 정렬)
     public List<EmployeeRewardDiscipline> selectByEmpId(Connection conn, int empId) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            String sql = "SELECT RP_ID, EMP_ID, RP_TYPE, RP_NAME, RP_AUTHORITY, RP_DATE, RP_CONTENT, NOTE "
-                       + "FROM EMP_REWARD_PUNISH WHERE EMP_ID = ? ORDER BY RP_DATE DESC, RP_ID DESC";
+            String sql = "SELECT EMPLOYEE_REWARD_DISCIPLINE_ID, EMPLOYEE_ID, RP_TYPE, RP_NAME, RP_AUTHORITY, RP_DATE, RP_CONTENT, NOTE "
+                       + "FROM EMPLOYEE_REWARD_DISCIPLINE WHERE EMPLOYEE_ID = ? ORDER BY RP_DATE DESC, EMPLOYEE_REWARD_DISCIPLINE_ID DESC";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, empId);
@@ -109,12 +109,12 @@ public class EmpRewardPunishDao {
     public int update(Connection conn, EmployeeRewardDiscipline rp) throws SQLException {
         PreparedStatement pstmt = null;
         try {
-            String sql = "UPDATE EMP_REWARD_PUNISH SET "
-                       + "EMP_ID = ?, RP_TYPE = ?, RP_NAME = ?, RP_AUTHORITY = ?, RP_DATE = ?, RP_CONTENT = ?, NOTE = ? "
-                       + "WHERE RP_ID = ?";
+            String sql = "UPDATE EMPLOYEE_REWARD_DISCIPLINE SET "
+                       + "EMPLOYEE_ID = ?, RP_TYPE = ?, RP_NAME = ?, RP_AUTHORITY = ?, RP_DATE = ?, RP_CONTENT = ?, NOTE = ? "
+                       + "WHERE EMPLOYEE_REWARD_DISCIPLINE_ID = ?";
             
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, rp.getEmpId());
+            pstmt.setLong(1, rp.getEmployeeId());
             pstmt.setString(2, rp.getRpType());
             pstmt.setString(3, rp.getRpName());
             pstmt.setString(4, rp.getRpAuthority());
@@ -128,7 +128,7 @@ public class EmpRewardPunishDao {
             
             pstmt.setString(6, rp.getRpContent());
             pstmt.setString(7, rp.getNote());
-            pstmt.setInt(8, rp.getRpId());
+            pstmt.setLong(8, rp.getEmployeeRewardDisciplineId());
             
             return pstmt.executeUpdate(); // 수정된 행의 개수 반환
         } finally {
@@ -141,7 +141,7 @@ public class EmpRewardPunishDao {
     public int delete(Connection conn, int rpId) throws SQLException {
         PreparedStatement pstmt = null;
         try {
-            String sql = "DELETE FROM EMP_REWARD_PUNISH WHERE RP_ID = ?";
+            String sql = "DELETE FROM EMPLOYEE_REWARD_DISCIPLINE WHERE EMPLOYEE_REWARD_DISCIPLINE_ID = ?";
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, rpId);
@@ -156,8 +156,8 @@ public class EmpRewardPunishDao {
     // 코드 중복 방지를 위한 공통 매핑 처리
     private EmployeeRewardDiscipline makeEmpRewardPunishFromResultSet(ResultSet rs) throws SQLException {
         EmployeeRewardDiscipline rp = new EmployeeRewardDiscipline();
-        rp.setRpId(rs.getInt("RP_ID"));
-        rp.setEmpId(rs.getInt("EMP_ID"));
+        rp.setEmployeeRewardDisciplineId(rs.getLong("EMPLOYEE_REWARD_DISCIPLINE_ID"));
+        rp.setEmployeeId(rs.getLong("EMPLOYEE_ID"));
         rp.setRpType(rs.getString("RP_TYPE"));
         rp.setRpName(rs.getString("RP_NAME"));
         rp.setRpAuthority(rs.getString("RP_AUTHORITY"));

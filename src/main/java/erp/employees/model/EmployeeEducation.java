@@ -1,10 +1,10 @@
 package erp.employees.model;
 
-// EMP_EDUCATION: 학력
+// EMPLOYEE_EDUCATION: 학력
 public class EmployeeEducation {
 
-	private int eduId;
-	private int empId;
+	private int employeeEducationId;
+	private int employeeId;
 	private String eduType;
 	private String admissionYm;
 	private String gradYm;
@@ -16,20 +16,20 @@ public class EmployeeEducation {
 	public EmployeeEducation() {
 	}
 
-	public int getEduId() {
-		return eduId;
+	public int getEmployeeEducationId() {
+		return employeeEducationId;
 	}
 
-	public void setEduId(int eduId) {
-		this.eduId = eduId;
+	public void setEmployeeEducationId(int employeeEducationId) {
+		this.employeeEducationId = employeeEducationId;
 	}
 
-	public int getEmpId() {
-		return empId;
+	public int getEmployeeId() {
+		return employeeId;
 	}
 
-	public void setEmpId(int empId) {
-		this.empId = empId;
+	public void setEmployeeId(int employeeId) {
+		this.employeeId = employeeId;
 	}
 
 	public String getEduType() {

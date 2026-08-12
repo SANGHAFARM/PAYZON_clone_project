@@ -12,26 +12,26 @@ import erp.retirement.model.RetirementCalculation;
 import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
 // 퇴직급여 계산 내역 데이터베이스 접근(DAO) 클래스
-public class RetireCalcMstDao {
+public class RetirementCalculationDao {
 	
 	// 싱글톤 인스턴스 생성
-	private static RetireCalcMstDao retireCalcMstDao = new RetireCalcMstDao();
+	private static RetirementCalculationDao retirementCalculationDao = new RetirementCalculationDao();
 	
 	// 싱글톤 접근 메서드
-	public static RetireCalcMstDao getInstance() {
-		return retireCalcMstDao;
+	public static RetirementCalculationDao getInstance() {
+		return retirementCalculationDao;
 	}
 	
 	// 외부에서 객체 생성을 못 하도록 생성자를 private으로 제한
-	private RetireCalcMstDao() {}
+	private RetirementCalculationDao() {}
 
 	// 퇴직급여 계산 내역 등록 (INSERT)
 	// 시퀀스를 사용하여 PK 발급 및 데이터 저장
 	public void insert(Connection conn, RetirementCalculation mst) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
-			String sql = "INSERT INTO RETIRE_CALC_MST ("
-					+ "RETIRE_CALC_MST_ID, EMP_ID, CALC_TYPE, CALC_START_DATE, RETIRE_DATE, "
+			String sql = "INSERT INTO RETIREMENT_CALCULATION ("
+					+ "RETIREMENT_CALCULATION_ID, EMPLOYEE_ID, CALC_TYPE, CALC_START_DATE, RETIRE_DATE, "
 					+ "SERVICE_YEARS, SERVICE_DAYS, EXCLUDE_DAYS, COMPENSATION_AMT, DISMISSAL_AMT, "
 					+ "TAX_FREE_RETIRE_AMT, PREPAID_TAX_AMT, TAX_CREDIT_AMT, THREE_MONTH_TOTAL, AVG_MONTH_WAGE, "
 					+ "AVG_DAY_WAGE, ORDINARY_DAY_WAGE, RETIRE_INCOME, CALCULATED_TAX_AMT, INCOME_TAX, "
@@ -40,7 +40,7 @@ public class RetireCalcMstDao {
 					+ "VALUES (SEQ_RETIRE_CALC_MST_ID.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, mst.getEmpId());
+			pstmt.setLong(1, mst.getEmployeeId());
 			pstmt.setString(2, mst.getCalcType());
 			pstmt.setTimestamp(3, new Timestamp(mst.getCalcStartDate().getTime()));
 			pstmt.setTimestamp(4, new Timestamp(mst.getRetireDate().getTime()));
@@ -77,12 +77,12 @@ public class RetireCalcMstDao {
 	}
 
 	// 퇴직급여 계산 내역 단건 조회 (SELECT BY ID)
-	// 기본키(RETIRE_CALC_MST_ID)를 기준으로 1건의 데이터 조회
+	// 기본키(RETIREMENT_CALCULATION_ID)를 기준으로 1건의 데이터 조회
 	public RetirementCalculation selectById(Connection conn, int retireCalcMstId) throws SQLException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			String sql = "SELECT * FROM RETIRE_CALC_MST WHERE RETIRE_CALC_MST_ID = ?";
+			String sql = "SELECT * FROM RETIREMENT_CALCULATION WHERE RETIREMENT_CALCULATION_ID = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, retireCalcMstId);
 			rs = pstmt.executeQuery();
@@ -104,8 +104,8 @@ public class RetireCalcMstDao {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			String sql = "SELECT * FROM RETIRE_CALC_MST "
-					+ "WHERE EMP_ID = ? AND CALC_TYPE = ? AND CALC_START_DATE = ? AND RETIRE_DATE = ?";
+			String sql = "SELECT * FROM RETIREMENT_CALCULATION "
+					+ "WHERE EMPLOYEE_ID = ? AND CALC_TYPE = ? AND CALC_START_DATE = ? AND RETIRE_DATE = ?";
 
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, empId);
@@ -125,12 +125,12 @@ public class RetireCalcMstDao {
 	}
 
 	// 사원별 퇴직급여 계산 내역 전체 조회
-	// 특정 사원(EMP_ID)의 모든 퇴직급여 계산 내역을 최신순으로 정렬하여 조회
+	// 특정 사원(EMPLOYEE_ID)의 모든 퇴직급여 계산 내역을 최신순으로 정렬하여 조회
 	public List<RetirementCalculation> selectByEmpId(Connection conn, int empId) throws SQLException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			String sql = "SELECT * FROM RETIRE_CALC_MST WHERE EMP_ID = ? ORDER BY RETIRE_CALC_MST_ID DESC";
+			String sql = "SELECT * FROM RETIREMENT_CALCULATION WHERE EMPLOYEE_ID = ? ORDER BY RETIREMENT_CALCULATION_ID DESC";
 
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, empId);
@@ -152,17 +152,17 @@ public class RetireCalcMstDao {
 	public int update(Connection conn, RetirementCalculation mst) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
-			String sql = "UPDATE RETIRE_CALC_MST SET "
-					+ "EMP_ID = ?, CALC_TYPE = ?, CALC_START_DATE = ?, RETIRE_DATE = ?, "
+			String sql = "UPDATE RETIREMENT_CALCULATION SET "
+					+ "EMPLOYEE_ID = ?, CALC_TYPE = ?, CALC_START_DATE = ?, RETIRE_DATE = ?, "
 					+ "SERVICE_YEARS = ?, SERVICE_DAYS = ?, EXCLUDE_DAYS = ?, COMPENSATION_AMT = ?, DISMISSAL_AMT = ?, "
 					+ "TAX_FREE_RETIRE_AMT = ?, PREPAID_TAX_AMT = ?, TAX_CREDIT_AMT = ?, THREE_MONTH_TOTAL = ?, AVG_MONTH_WAGE = ?, "
 					+ "AVG_DAY_WAGE = ?, ORDINARY_DAY_WAGE = ?, RETIRE_INCOME = ?, CALCULATED_TAX_AMT = ?, INCOME_TAX = ?, "
 					+ "LOCAL_INCOME_TAX = ?, DEFERRED_INCOME_TAX = ?, DEFERRED_LOCAL_TAX = ?, SPECIAL_RURAL_TAX = ?, OTHER_DEDUCT_AMT = ?, "
 					+ "TAXABLE_RETIRE_AMT = ?, WITHHOLDING_TAX_AMT = ?, ACTUAL_PAY_AMT = ?, PAY_METHOD = ?, PAY_DATE = ? "
-					+ "WHERE RETIRE_CALC_MST_ID = ?";
+					+ "WHERE RETIREMENT_CALCULATION_ID = ?";
 
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, mst.getEmpId());
+			pstmt.setLong(1, mst.getEmployeeId());
 			pstmt.setString(2, mst.getCalcType());
 			pstmt.setTimestamp(3, new Timestamp(mst.getCalcStartDate().getTime()));
 			pstmt.setTimestamp(4, new Timestamp(mst.getRetireDate().getTime()));
@@ -191,7 +191,7 @@ public class RetireCalcMstDao {
 			pstmt.setLong(27, mst.getActualPayAmt());
 			pstmt.setString(28, mst.getPayMethod());
 			pstmt.setTimestamp(29, new Timestamp(mst.getPayDate().getTime()));
-			pstmt.setInt(30, mst.getRetireCalcMstId());
+			pstmt.setLong(30, mst.getRetirementCalculationId());
 
 			return pstmt.executeUpdate(); // 수정된 행의 개수 반환
 		} finally {
@@ -204,7 +204,7 @@ public class RetireCalcMstDao {
 	public int delete(Connection conn, int retireCalcMstId) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
-			String sql = "DELETE FROM RETIRE_CALC_MST WHERE RETIRE_CALC_MST_ID = ?";
+			String sql = "DELETE FROM RETIREMENT_CALCULATION WHERE RETIREMENT_CALCULATION_ID = ?";
 
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, retireCalcMstId);
@@ -219,8 +219,8 @@ public class RetireCalcMstDao {
 	// 코드 중복 방지를 위한 공통 매핑 객체 반환
 	private RetirementCalculation makeRetireCalcMstFromResultSet(ResultSet rs) throws SQLException {
 		RetirementCalculation mst = new RetirementCalculation();
-		mst.setRetireCalcMstId(rs.getInt("RETIRE_CALC_MST_ID"));
-		mst.setEmpId(rs.getInt("EMP_ID"));
+		mst.setRetirementCalculationId(rs.getLong("RETIREMENT_CALCULATION_ID"));
+		mst.setEmployeeId(rs.getLong("EMPLOYEE_ID"));
 		mst.setCalcType(rs.getString("CALC_TYPE"));
 		mst.setCalcStartDate(new java.util.Date(rs.getTimestamp("CALC_START_DATE").getTime()));
 		mst.setRetireDate(new java.util.Date(rs.getTimestamp("RETIRE_DATE").getTime()));
