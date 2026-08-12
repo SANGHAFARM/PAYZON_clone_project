@@ -1,4 +1,4 @@
-package erp.attend.model;
+package erp.attend.dto;
 
 /*
  * 근태관리>휴가조회에서 검색결과를 담을 클래스 

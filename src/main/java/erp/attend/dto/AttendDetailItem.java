@@ -1,4 +1,4 @@
-package erp.attend.model;
+package erp.attend.dto;
 
 import java.util.Date;
 
