@@ -7,10 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import erp.attendance.model.EmpLeave;
-import erp.attendance.model.EmpLeaveStatusItem;
-import erp.attendance.model.LeaveStatusCondition;
-
 /*import erp.attend.model.EmpLeave;*/
 /*import erp.attend.model.EmpLeaveStatusItem;*/
 /*import erp.attend.model.LeaveStatusCondition;*/

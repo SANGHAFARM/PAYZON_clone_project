@@ -1,9 +1,4 @@
-<<<<<<<< HEAD:src/main/java/erp/attendance/model/EmpLeaveStatusItem.java
-package erp.attendance.model;
-========
-package erp.attend.dto;
->>>>>>>> main:src/main/java/erp/attend/dto/EmpLeaveStatusItem.java
-
+package erp.attendance.dto;
 /*
  * 근태관리>휴가조회에서 검색결과를 담을 클래스 
 */

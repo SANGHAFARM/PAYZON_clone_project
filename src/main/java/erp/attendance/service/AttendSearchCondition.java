@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:src/main/java/erp/attendance/model/AttendSearchCondition.java
-package erp.attendance.model;
-========
-package erp.attend.request;
->>>>>>>> main:src/main/java/erp/attend/request/AttendSearchCondition.java
+package erp.attendance.service;
 
 import java.util.Date;
 

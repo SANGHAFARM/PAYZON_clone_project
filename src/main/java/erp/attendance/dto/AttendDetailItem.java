@@ -1,9 +1,4 @@
-<<<<<<<< HEAD:src/main/java/erp/attendance/model/AttendDetailItem.java
-package erp.attendance.model;
-========
-package erp.attend.dto;
->>>>>>>> main:src/main/java/erp/attend/dto/AttendDetailItem.java
-
+package erp.attendance.dto;
 import java.util.Date;
 
 /*

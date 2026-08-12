@@ -1,9 +1,4 @@
-<<<<<<<< HEAD:src/main/java/erp/attendance/model/LeaveStatusCondition.java
-package erp.attendance.model;
-========
-package erp.attend.request;
->>>>>>>> main:src/main/java/erp/attend/request/LeaveStatusCondition.java
-
+package erp.attendance.service;
 /*
  * 근태관리>휴가조회에서 검색조건을 담을 클래스
 */

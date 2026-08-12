@@ -12,14 +12,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import erp.attendance.dao.AttendItemDao;
 import erp.attendance.dao.EmpAttendRecordDao;
-import erp.attendance.model.AttendItem;
-import erp.attendance.model.EmpAttendRecord;
 import erp.attendance.service.AttendRecordRequest;
 import erp.attendance.service.InsertEmpAttendRecordService;
 import erp.employees.dao.EmployeeListItemDao;
-import erp.employees.model.EmployeeListItem;
+
 
 // import erp.attend.dao.AttendItemDao;
 // import erp.attend.dao.EmpAttendRecordDao;

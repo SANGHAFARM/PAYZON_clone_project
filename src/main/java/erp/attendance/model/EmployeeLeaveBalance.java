@@ -1,4 +1,4 @@
-package erp.attend.model;
+package erp.attendance.model;
 
 public class EmployeeLeaveBalance {
 	int employeeLeaveBalanceId;
