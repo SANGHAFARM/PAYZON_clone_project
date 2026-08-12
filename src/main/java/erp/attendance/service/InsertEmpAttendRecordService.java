@@ -3,10 +3,8 @@ package erp.attendance.service;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import erp.attendance.dao.AttendItemDao;
 import erp.attendance.dao.EmpAttendRecordDao;
-import erp.attendance.model.AttendItem;
-import erp.attendance.model.EmpAttendRecord;
+
 
 // import erp.attend.dao.AttendItemDao;
 // import erp.attend.dao.EmpAttendRecordDao;

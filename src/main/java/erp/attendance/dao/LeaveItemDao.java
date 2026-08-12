@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import erp.attendance.model.LeaveItem;
 
 /*import erp.attend.model.LeaveItem;*/
 import jdbc.JdbcUtil;
