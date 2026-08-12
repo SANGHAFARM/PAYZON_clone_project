@@ -7,8 +7,9 @@ import java.util.Date;
  */
 public class Company {
 
-	private Long companyId;
+	private int companyId; // 식별자 PK
 
+	// [기본 정보]
 	private String cmpnName;
 	private String ceoTitle;
 	private String ceoName;
@@ -17,14 +18,17 @@ public class Company {
 	private Date foundationDate;
 	private String homepageUrl;
 
+	// [주소 및 연락처]
 	private String zipCode;
 	private String address;
 	private String telNo;
 	private String faxNo;
 
+	// [업태/종목]
 	private String bizType;
 	private String bizItem;
 
+	// [담당자 정보]
 	private String managerName;
 	private String managerDeptName;
 	private String managerPosName;
@@ -32,6 +36,7 @@ public class Company {
 	private String managerMobileNo;
 	private String managerEmail;
 
+	// [급여 지급 설정]
 	private String payCalcStartScope;
 	private String payCalcStartDay;
 	private String payCalcEndScope;
@@ -43,6 +48,7 @@ public class Company {
 	private String payAccountNo;
 	private String payAccountHolder;
 
+	// [이미지 경로]
 	private String logoImgPath;
 	private String stampImgPath;
 
@@ -50,11 +56,11 @@ public class Company {
 	}
 
 	// Getter & Setter
-	public Long getCompanyId() {
+	public int getCompanyId() {
 		return companyId;
 	}
 
-	public void setCompanyId(Long companyId) {
+	public void setCompanyId(int companyId) {
 		this.companyId = companyId;
 	}
 

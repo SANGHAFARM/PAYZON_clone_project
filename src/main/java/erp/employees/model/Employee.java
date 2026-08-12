@@ -7,7 +7,8 @@ import java.util.Date;
  */
 public class Employee {
 
-	private Long employeeId; // PK
+	// [DB 관리 항목]
+	private int employeeId; // 사원 식별 번호 (PK)
 
 	// [사원 기본정보]
 	private String empNo;
@@ -16,8 +17,8 @@ public class Employee {
 	private String empNameEn;
 	private String foreignYn;
 	private Date joinDate;
-	private Long departmentId; // 부서 외래키 (Wrapper)
-	private Long jobPositionId; // 직위 외래키 (Wrapper)
+	private Integer departmentId; // 부서 외래키
+	private Integer jobPositionId; // 직위 외래키
 	private String juminNo;
 
 	// [연락처 및 주소]
@@ -31,29 +32,29 @@ public class Employee {
 	private String photoPath;
 
 	// [급여 및 소득세 설정]
-	private Long basicPay;
+	private long basicPay; // 기본급
 	private String incomeType;
-	private Integer incomeTaxRate; // 세액 비율 (Wrapper)
+	private int incomeTaxRate; // 소득세율
 	private String youthTaxReduceYn;
-	private Integer youthTaxRate;
+	private Integer youthTaxRate; // 청년소득세 감면율
 
 	// [4대보험 설정]
 	private String npYn;
 	private String hiYn;
 	private String ltciYn;
 	private String eiYn;
-	private Integer hiReduceRate;
-	private Integer ltciReduceRate;
+	private Integer hiReduceRate; // 건강보험 감면율
+	private Integer ltciReduceRate; // 장기요양보험 감면율
 
 	// [두루누리 사회보험 지원]
 	private String durunuriSeparateYn;
-	private Integer durunuriNpRate;
-	private Integer durunuriEiRate;
+	private Integer durunuriNpRate; // 두루누리 국민연금 지원율
+	private Integer durunuriEiRate; // 두루누리 고용보험 지원율
 
 	// [보험료 계산 기준 금액]
-	private Long npMonthlyBase;
-	private Long hiMonthlyBase;
-	private Long eiMonthlyBase;
+	private Long npMonthlyBase; // 국민연금 보수월액
+	private Long hiMonthlyBase; // 건강보험 보수월액
+	private Long eiMonthlyBase; // 고용보험 보수월액
 
 	// [급여계좌]
 	private String bankName;
@@ -83,12 +84,12 @@ public class Employee {
 		return "퇴직".equals(this.status);
 	}
 
-	// Getter & Setter (요약형)
-	public Long getEmployeeId() {
+	// Getter & Setter
+	public int getEmployeeId() {
 		return employeeId;
 	}
 
-	public void setEmployeeId(Long employeeId) {
+	public void setEmployeeId(int employeeId) {
 		this.employeeId = employeeId;
 	}
 
@@ -140,19 +141,19 @@ public class Employee {
 		this.joinDate = joinDate;
 	}
 
-	public Long getDepartmentId() {
+	public Integer getDepartmentId() {
 		return departmentId;
 	}
 
-	public void setDepartmentId(Long departmentId) {
+	public void setDepartmentId(Integer departmentId) {
 		this.departmentId = departmentId;
 	}
 
-	public Long getJobPositionId() {
+	public Integer getJobPositionId() {
 		return jobPositionId;
 	}
 
-	public void setJobPositionId(Long jobPositionId) {
+	public void setJobPositionId(Integer jobPositionId) {
 		this.jobPositionId = jobPositionId;
 	}
 
@@ -228,11 +229,11 @@ public class Employee {
 		this.photoPath = photoPath;
 	}
 
-	public Long getBasicPay() {
+	public long getBasicPay() {
 		return basicPay;
 	}
 
-	public void setBasicPay(Long basicPay) {
+	public void setBasicPay(long basicPay) {
 		this.basicPay = basicPay;
 	}
 
@@ -244,11 +245,11 @@ public class Employee {
 		this.incomeType = incomeType;
 	}
 
-	public Integer getIncomeTaxRate() {
+	public int getIncomeTaxRate() {
 		return incomeTaxRate;
 	}
 
-	public void setIncomeTaxRate(Integer incomeTaxRate) {
+	public void setIncomeTaxRate(int incomeTaxRate) {
 		this.incomeTaxRate = incomeTaxRate;
 	}
 

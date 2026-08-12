@@ -5,18 +5,18 @@ package erp.settings.model;
  */
 public class Department {
 
-	private Long departmentId;
+	private int departmentId; // 부서 식별 번호 (PK)
 	private String departmentName;
 
 	public Department() {
 	}
 
 	// Getter & Setter
-	public Long getDepartmentId() {
+	public int getDepartmentId() {
 		return departmentId;
 	}
 
-	public void setDepartmentId(Long departmentId) {
+	public void setDepartmentId(int departmentId) {
 		this.departmentId = departmentId;
 	}
 

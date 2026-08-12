@@ -8,14 +8,14 @@ import java.util.Date;
 public class EmployeeGuarantor {
 
 	// [DB 관리 항목]
-	private Long employeeGuarantorId; // 보증인 식별 번호 (PK)
-	private Long employeeId; // 사원 식별 번호 (FK)
+	private int employeeGuarantorId; // 보증인 식별 번호 (PK)
+	private int employeeId; // 사원 식별 번호 (FK)
 
 	// [보증인 입력 항목]
 	private String guarantorName; // 보증인 성명
 	private String relation; // 관계
 	private String juminNo; // 주민등록번호
-	private Long guaranteeAmt; // 보증금액 (Wrapper)
+	private Long guaranteeAmt; // 보증금액
 	private Date guaranteeDate; // 보증일자(시작일)
 	private Date expireDate; // 만료일자
 	private String telNo; // 전화번호
@@ -24,19 +24,19 @@ public class EmployeeGuarantor {
 	}
 
 	// Getter & Setter
-	public Long getEmployeeGuarantorId() {
+	public int getEmployeeGuarantorId() {
 		return employeeGuarantorId;
 	}
 
-	public void setEmployeeGuarantorId(Long employeeGuarantorId) {
+	public void setEmployeeGuarantorId(int employeeGuarantorId) {
 		this.employeeGuarantorId = employeeGuarantorId;
 	}
 
-	public Long getEmployeeId() {
+	public int getEmployeeId() {
 		return employeeId;
 	}
 
-	public void setEmployeeId(Long employeeId) {
+	public void setEmployeeId(int employeeId) {
 		this.employeeId = employeeId;
 	}
 

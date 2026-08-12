@@ -5,18 +5,18 @@ package erp.settings.model;
  */
 public class JobPosition {
 
-	private Long jobPositionId;
+	private int jobPositionId; // 직위 식별 번호 (PK)
 	private String jobPositionName;
 
 	public JobPosition() {
 	}
 
 	// Getter & Setter
-	public Long getJobPositionId() {
+	public int getJobPositionId() {
 		return jobPositionId;
 	}
 
-	public void setJobPositionId(Long jobPositionId) {
+	public void setJobPositionId(int jobPositionId) {
 		this.jobPositionId = jobPositionId;
 	}
 

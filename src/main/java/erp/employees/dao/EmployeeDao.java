@@ -24,7 +24,8 @@ public class EmployeeDao {
 	}
 
 	// 외부에서 객체 생성을 못 하도록 생성자를 private으로 제한
-	private EmployeeDao() {}
+	private EmployeeDao() {
+	}
 
 	// 사원 정보 등록 (INSERT)
 	// 시퀀스를 활용하여 PK 발급 및 사원의 전체 정보 저장
@@ -39,7 +40,7 @@ public class EmployeeDao {
 					+ "NP_MONTHLY_BASE, HI_MONTHLY_BASE, EI_MONTHLY_BASE, BANK_NAME, ACCOUNT_NO, DISCHARGE_TYPE, MIL_BRANCH, "
 					+ "MIL_SERVICE_START, MIL_SERVICE_END, MIL_RANK, MIL_SPECIALTY, MIL_UNFINISHED_REASON, STATUS, RETIRE_TYPE, "
 					+ "RETIRE_DATE, RETIRE_REASON, AFTER_RETIRE_CONTACT) "
-					+ "VALUES (SEQ_EMP_ID.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+					+ "VALUES (EMPLOYEE_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 			pstmt = conn.prepareStatement(sql);
 
@@ -50,16 +51,8 @@ public class EmployeeDao {
 			pstmt.setString(5, emp.getForeignYn());
 			pstmt.setTimestamp(6, new Timestamp(emp.getJoinDate().getTime()));
 
-			// 외래키(부서, 직위)가 0으로 넘어올 경우 데이터베이스 무결성을 위해 NULL 처리
-			if (emp.getDepartmentId() == 0)
-				pstmt.setNull(7, Types.INTEGER);
-			else
-				pstmt.setLong(7, emp.getDepartmentId());
-
-			if (emp.getJobPositionId() == 0)
-				pstmt.setNull(8, Types.INTEGER);
-			else
-				pstmt.setLong(8, emp.getJobPositionId());
+			pstmt.setObject(7, emp.getDepartmentId(), Types.NUMERIC);
+			pstmt.setObject(8, emp.getJobPositionId(), Types.NUMERIC);
 
 			pstmt.setString(9, emp.getJuminNo());
 			pstmt.setString(10, emp.getZipCode());
@@ -75,28 +68,27 @@ public class EmployeeDao {
 			pstmt.setString(19, emp.getIncomeType());
 			pstmt.setInt(20, emp.getIncomeTaxRate());
 			pstmt.setString(21, emp.getYouthTaxReduceYn());
-			pstmt.setInt(22, emp.getYouthTaxRate());
+			pstmt.setObject(22, emp.getYouthTaxRate(), Types.NUMERIC);
 
 			pstmt.setString(23, emp.getNpYn());
 			pstmt.setString(24, emp.getHiYn());
 			pstmt.setString(25, emp.getLtciYn());
 			pstmt.setString(26, emp.getEiYn());
-			pstmt.setInt(27, emp.getHiReduceRate());
-			pstmt.setInt(28, emp.getLtciReduceRate());
+			pstmt.setObject(27, emp.getHiReduceRate(), Types.NUMERIC);
+			pstmt.setObject(28, emp.getLtciReduceRate(), Types.NUMERIC);
 			pstmt.setString(29, emp.getDurunuriSeparateYn());
-			pstmt.setInt(30, emp.getDurunuriNpRate());
-			pstmt.setInt(31, emp.getDurunuriEiRate());
+			pstmt.setObject(30, emp.getDurunuriNpRate(), Types.NUMERIC);
+			pstmt.setObject(31, emp.getDurunuriEiRate(), Types.NUMERIC);
 
-			pstmt.setLong(32, emp.getNpMonthlyBase());
-			pstmt.setLong(33, emp.getHiMonthlyBase());
-			pstmt.setLong(34, emp.getEiMonthlyBase());
+			pstmt.setObject(32, emp.getNpMonthlyBase(), Types.NUMERIC);
+			pstmt.setObject(33, emp.getHiMonthlyBase(), Types.NUMERIC);
+			pstmt.setObject(34, emp.getEiMonthlyBase(), Types.NUMERIC);
 			pstmt.setString(35, emp.getBankName());
 			pstmt.setString(36, emp.getAccountNo());
 
 			pstmt.setString(37, emp.getDischargeType());
 			pstmt.setString(38, emp.getMilBranch());
 
-			// 병역 복무기간 등 선택적 날짜 필드의 NULL 방어 로직
 			if (emp.getMilServiceStart() == null)
 				pstmt.setNull(39, Types.DATE);
 			else
@@ -113,7 +105,6 @@ public class EmployeeDao {
 			pstmt.setString(44, emp.getStatus());
 			pstmt.setString(45, emp.getRetireType());
 
-			// 재직 상태일 때 퇴직일이 없는 경우를 위한 NULL 방어 로직
 			if (emp.getRetireDate() == null)
 				pstmt.setNull(46, Types.DATE);
 			else
@@ -193,15 +184,8 @@ public class EmployeeDao {
 			pstmt.setString(5, emp.getForeignYn());
 			pstmt.setTimestamp(6, new Timestamp(emp.getJoinDate().getTime()));
 
-			if (emp.getDepartmentId() == 0)
-				pstmt.setNull(7, Types.INTEGER);
-			else
-				pstmt.setLong(7, emp.getDepartmentId());
-
-			if (emp.getJobPositionId() == 0)
-				pstmt.setNull(8, Types.INTEGER);
-			else
-				pstmt.setLong(8, emp.getJobPositionId());
+			pstmt.setObject(7, emp.getDepartmentId(), Types.NUMERIC);
+			pstmt.setObject(8, emp.getJobPositionId(), Types.NUMERIC);
 
 			pstmt.setString(9, emp.getJuminNo());
 			pstmt.setString(10, emp.getZipCode());
@@ -217,21 +201,21 @@ public class EmployeeDao {
 			pstmt.setString(19, emp.getIncomeType());
 			pstmt.setInt(20, emp.getIncomeTaxRate());
 			pstmt.setString(21, emp.getYouthTaxReduceYn());
-			pstmt.setInt(22, emp.getYouthTaxRate());
+			pstmt.setObject(22, emp.getYouthTaxRate(), Types.NUMERIC);
 
 			pstmt.setString(23, emp.getNpYn());
 			pstmt.setString(24, emp.getHiYn());
 			pstmt.setString(25, emp.getLtciYn());
 			pstmt.setString(26, emp.getEiYn());
-			pstmt.setInt(27, emp.getHiReduceRate());
-			pstmt.setInt(28, emp.getLtciReduceRate());
+			pstmt.setObject(27, emp.getHiReduceRate(), Types.NUMERIC);
+			pstmt.setObject(28, emp.getLtciReduceRate(), Types.NUMERIC);
 			pstmt.setString(29, emp.getDurunuriSeparateYn());
-			pstmt.setInt(30, emp.getDurunuriNpRate());
-			pstmt.setInt(31, emp.getDurunuriEiRate());
+			pstmt.setObject(30, emp.getDurunuriNpRate(), Types.NUMERIC);
+			pstmt.setObject(31, emp.getDurunuriEiRate(), Types.NUMERIC);
 
-			pstmt.setLong(32, emp.getNpMonthlyBase());
-			pstmt.setLong(33, emp.getHiMonthlyBase());
-			pstmt.setLong(34, emp.getEiMonthlyBase());
+			pstmt.setObject(32, emp.getNpMonthlyBase(), Types.NUMERIC);
+			pstmt.setObject(33, emp.getHiMonthlyBase(), Types.NUMERIC);
+			pstmt.setObject(34, emp.getEiMonthlyBase(), Types.NUMERIC);
 			pstmt.setString(35, emp.getBankName());
 			pstmt.setString(36, emp.getAccountNo());
 
@@ -262,10 +246,9 @@ public class EmployeeDao {
 			pstmt.setString(47, emp.getRetireReason());
 			pstmt.setString(48, emp.getAfterRetireContact());
 
-			// 49번째 파라미터는 조건문의 EMPLOYEE_ID
-			pstmt.setLong(49, emp.getEmployeeId());
+			pstmt.setInt(49, emp.getEmployeeId());
 
-			return pstmt.executeUpdate(); // 수정된 행의 개수 반환
+			return pstmt.executeUpdate();
 		} finally {
 			JdbcUtil.close(pstmt);
 		}
@@ -279,17 +262,17 @@ public class EmployeeDao {
 			String sql = "DELETE FROM EMPLOYEE WHERE EMPLOYEE_ID = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, empId);
-			return pstmt.executeUpdate(); // 삭제된 행의 개수 반환
+			return pstmt.executeUpdate();
 		} finally {
 			JdbcUtil.close(pstmt);
 		}
 	}
 
 	// ResultSet 데이터를 Employee 객체로 변환
-	// 코드 중복 방지를 위한 공통 매핑 처리
 	private Employee makeEmployeeFromResultSet(ResultSet rs) throws SQLException {
 		Employee emp = new Employee();
-		emp.setEmployeeId(rs.getLong("EMPLOYEE_ID"));
+
+		emp.setEmployeeId(rs.getInt("EMPLOYEE_ID"));
 		emp.setEmpNo(rs.getString("EMP_NO"));
 		emp.setEmpType(rs.getString("EMP_TYPE"));
 		emp.setEmpNameKr(rs.getString("EMP_NAME_KR"));
@@ -300,8 +283,12 @@ public class EmployeeDao {
 		if (joinTs != null)
 			emp.setJoinDate(new java.util.Date(joinTs.getTime()));
 
-		emp.setDepartmentId(rs.getLong("DEPARTMENT_ID"));
-		emp.setJobPositionId(rs.getLong("JOB_POSITION_ID"));
+		int deptId = rs.getInt("DEPARTMENT_ID");
+		emp.setDepartmentId(rs.wasNull() ? null : deptId);
+
+		int posId = rs.getInt("JOB_POSITION_ID");
+		emp.setJobPositionId(rs.wasNull() ? null : posId);
+
 		emp.setJuminNo(rs.getString("JUMIN_NO"));
 		emp.setZipCode(rs.getString("ZIP_CODE"));
 		emp.setAddress(rs.getString("ADDRESS"));
@@ -316,21 +303,38 @@ public class EmployeeDao {
 		emp.setIncomeType(rs.getString("INCOME_TYPE"));
 		emp.setIncomeTaxRate(rs.getInt("INCOME_TAX_RATE"));
 		emp.setYouthTaxReduceYn(rs.getString("YOUTH_TAX_REDUCE_YN"));
-		emp.setYouthTaxRate(rs.getInt("YOUTH_TAX_RATE"));
+
+		int youthTax = rs.getInt("YOUTH_TAX_RATE");
+		emp.setYouthTaxRate(rs.wasNull() ? null : youthTax);
 
 		emp.setNpYn(rs.getString("NP_YN"));
 		emp.setHiYn(rs.getString("HI_YN"));
 		emp.setLtciYn(rs.getString("LTCI_YN"));
 		emp.setEiYn(rs.getString("EI_YN"));
-		emp.setHiReduceRate(rs.getInt("HI_REDUCE_RATE"));
-		emp.setLtciReduceRate(rs.getInt("LTCI_REDUCE_RATE"));
-		emp.setDurunuriSeparateYn(rs.getString("DURUNURI_SEPARATE_YN"));
-		emp.setDurunuriNpRate(rs.getInt("DURUNURI_NP_RATE"));
-		emp.setDurunuriEiRate(rs.getInt("DURUNURI_EI_RATE"));
 
-		emp.setNpMonthlyBase(rs.getLong("NP_MONTHLY_BASE"));
-		emp.setHiMonthlyBase(rs.getLong("HI_MONTHLY_BASE"));
-		emp.setEiMonthlyBase(rs.getLong("EI_MONTHLY_BASE"));
+		int hiReduce = rs.getInt("HI_REDUCE_RATE");
+		emp.setHiReduceRate(rs.wasNull() ? null : hiReduce);
+
+		int ltciReduce = rs.getInt("LTCI_REDUCE_RATE");
+		emp.setLtciReduceRate(rs.wasNull() ? null : ltciReduce);
+
+		emp.setDurunuriSeparateYn(rs.getString("DURUNURI_SEPARATE_YN"));
+
+		int durunuriNp = rs.getInt("DURUNURI_NP_RATE");
+		emp.setDurunuriNpRate(rs.wasNull() ? null : durunuriNp);
+
+		int durunuriEi = rs.getInt("DURUNURI_EI_RATE");
+		emp.setDurunuriEiRate(rs.wasNull() ? null : durunuriEi);
+
+		long npBase = rs.getLong("NP_MONTHLY_BASE");
+		emp.setNpMonthlyBase(rs.wasNull() ? null : npBase);
+
+		long hiBase = rs.getLong("HI_MONTHLY_BASE");
+		emp.setHiMonthlyBase(rs.wasNull() ? null : hiBase);
+
+		long eiBase = rs.getLong("EI_MONTHLY_BASE");
+		emp.setEiMonthlyBase(rs.wasNull() ? null : eiBase);
+
 		emp.setBankName(rs.getString("BANK_NAME"));
 		emp.setAccountNo(rs.getString("ACCOUNT_NO"));
 

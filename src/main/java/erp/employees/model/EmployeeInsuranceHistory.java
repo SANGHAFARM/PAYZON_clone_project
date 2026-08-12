@@ -8,11 +8,11 @@ import java.util.Date;
 public class EmployeeInsuranceHistory {
 
 	// [DB 관리 항목]
-	private Long employeeInsuranceHistoryId; // 4대보험 자격정보 식별 번호 (PK)
-	private Long employeeId; // 사원 식별 번호 (FK)
+	private int employeeInsuranceHistoryId; // 4대보험 자격정보 식별 번호 (PK)
+	private int employeeId; // 사원 식별 번호 (FK)
 
 	// [4대보험 취득·상실 이력]
-	private String insuranceType; // 구분 (국민연금·건강보험·고용보험·산재보험)
+	private String insuranceType; // 구분 (국민연금 등)
 	private String symbolNo; // 기호번호
 	private Date acquireDate; // 취득일
 	private Date lossDate; // 상실일
@@ -21,19 +21,19 @@ public class EmployeeInsuranceHistory {
 	}
 
 	// Getter & Setter
-	public Long getEmployeeInsuranceHistoryId() {
+	public int getEmployeeInsuranceHistoryId() {
 		return employeeInsuranceHistoryId;
 	}
 
-	public void setEmployeeInsuranceHistoryId(Long employeeInsuranceHistoryId) {
+	public void setEmployeeInsuranceHistoryId(int employeeInsuranceHistoryId) {
 		this.employeeInsuranceHistoryId = employeeInsuranceHistoryId;
 	}
 
-	public Long getEmployeeId() {
+	public int getEmployeeId() {
 		return employeeId;
 	}
 
-	public void setEmployeeId(Long employeeId) {
+	public void setEmployeeId(int employeeId) {
 		this.employeeId = employeeId;
 	}
 

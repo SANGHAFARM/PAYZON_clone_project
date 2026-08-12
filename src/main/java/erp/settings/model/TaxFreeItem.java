@@ -5,11 +5,13 @@ package erp.settings.model;
  */
 public class TaxFreeItem {
 
+	private String taxFreeCode; // 비과세 코드 (PK)
 	private String legalClause;
-	private String taxFreeCode; // PK
 	private String reportField;
 	private String taxFreeName;
-	private Long defaultLimit; // 한도금액 (Wrapper)
+
+	private Long defaultLimit; // 한도금액
+
 	private String payStatementYn;
 	private String incomeCategory;
 
@@ -17,20 +19,20 @@ public class TaxFreeItem {
 	}
 
 	// Getter & Setter
-	public String getLegalClause() {
-		return legalClause;
-	}
-
-	public void setLegalClause(String legalClause) {
-		this.legalClause = legalClause;
-	}
-
 	public String getTaxFreeCode() {
 		return taxFreeCode;
 	}
 
 	public void setTaxFreeCode(String taxFreeCode) {
 		this.taxFreeCode = taxFreeCode;
+	}
+
+	public String getLegalClause() {
+		return legalClause;
+	}
+
+	public void setLegalClause(String legalClause) {
+		this.legalClause = legalClause;
 	}
 
 	public String getReportField() {

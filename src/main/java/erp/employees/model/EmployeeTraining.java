@@ -8,8 +8,8 @@ import java.util.Date;
 public class EmployeeTraining {
 
 	// [DB 관리 항목]
-	private Long employeeTrainingId; // 교육/훈련 이력 식별 번호 (PK)
-	private Long employeeId; // 사원 식별 번호 (FK)
+	private int employeeTrainingId; // 교육/훈련 이력 식별 번호 (PK)
+	private int employeeId; // 사원 식별 번호 (FK)
 
 	// [교육·훈련 입력 항목]
 	private String trainType; // 교육구분
@@ -17,26 +17,26 @@ public class EmployeeTraining {
 	private Date startDate; // 교육기간(시작)
 	private Date endDate; // 교육기간(종료)
 	private String trainInstitute; // 교육기관
-	private Long trainCost; // 교육비 (Wrapper)
-	private Long refundCost; // 환급교육비 (Wrapper)
+	private Long trainCost; // 교육비
+	private Long refundCost; // 환급교육비
 
 	public EmployeeTraining() {
 	}
 
 	// Getter & Setter
-	public Long getEmployeeTrainingId() {
+	public int getEmployeeTrainingId() {
 		return employeeTrainingId;
 	}
 
-	public void setEmployeeTrainingId(Long employeeTrainingId) {
+	public void setEmployeeTrainingId(int employeeTrainingId) {
 		this.employeeTrainingId = employeeTrainingId;
 	}
 
-	public Long getEmployeeId() {
+	public int getEmployeeId() {
 		return employeeId;
 	}
 
-	public void setEmployeeId(Long employeeId) {
+	public void setEmployeeId(int employeeId) {
 		this.employeeId = employeeId;
 	}
 

@@ -8,7 +8,7 @@ import java.util.Date;
 public class PayrollRun {
 
 	// [DB 관리 항목]
-	private Long payrollRunId; // 급여계산 회차 식별 번호 (PK)
+	private int payrollRunId; // 급여계산 회차 식별 번호 (PK)
 
 	// [귀속연월과 급여차수]
 	private String payYear; // 귀속연월 (연도, YYYY)
@@ -27,11 +27,11 @@ public class PayrollRun {
 	}
 
 	// Getter & Setter
-	public Long getPayrollRunId() {
+	public int getPayrollRunId() {
 		return payrollRunId;
 	}
 
-	public void setPayrollRunId(Long payrollRunId) {
+	public void setPayrollRunId(int payrollRunId) {
 		this.payrollRunId = payrollRunId;
 	}
 

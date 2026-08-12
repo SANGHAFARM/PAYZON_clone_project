@@ -8,16 +8,16 @@ import java.util.Date;
 public class CertificateIssuance {
 
 	// [DB 관리 항목]
-	private Long certificateIssuanceId; // 증명서 발급내역 식별 번호 (PK)
-	private Long employeeId; // 발급 대상 사원 식별 번호 (FK)
+	private int certificateIssuanceId; // 증명서 발급내역 식별 번호 (PK)
+	private int employeeId; // 발급 대상 사원 식별 번호 (FK)
 
 	// [증명서 발급정보]
 	private String certDocNo; // 문서번호
-	private String certType; // 증명서 종류 (재직경력서, 경력증명서, 퇴직증명서)
+	private String certType; // 증명서 종류 (재직경력서 등)
 	private String purpose; // 발급용도
 	private String certMemo; // 증명문구
 	private Date issueDate; // 발급일
-	private Long issueDeptId; // 발급부서 식별 번호 (FK, Wrapper)
+	private Integer issueDeptId; // 발급부서 식별 번호 (FK)
 
 	// [증명서 출력설정]
 	private String showCeoYn; // 대표자 표기 여부
@@ -29,19 +29,19 @@ public class CertificateIssuance {
 	}
 
 	// Getter & Setter
-	public Long getCertificateIssuanceId() {
+	public int getCertificateIssuanceId() {
 		return certificateIssuanceId;
 	}
 
-	public void setCertificateIssuanceId(Long certificateIssuanceId) {
+	public void setCertificateIssuanceId(int certificateIssuanceId) {
 		this.certificateIssuanceId = certificateIssuanceId;
 	}
 
-	public Long getEmployeeId() {
+	public int getEmployeeId() {
 		return employeeId;
 	}
 
-	public void setEmployeeId(Long employeeId) {
+	public void setEmployeeId(int employeeId) {
 		this.employeeId = employeeId;
 	}
 
@@ -85,11 +85,11 @@ public class CertificateIssuance {
 		this.issueDate = issueDate;
 	}
 
-	public Long getIssueDeptId() {
+	public Integer getIssueDeptId() {
 		return issueDeptId;
 	}
 
-	public void setIssueDeptId(Long issueDeptId) {
+	public void setIssueDeptId(Integer issueDeptId) {
 		this.issueDeptId = issueDeptId;
 	}
 

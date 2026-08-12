@@ -6,35 +6,35 @@ package erp.payroll.model;
 public class PayrollEmployee {
 
 	// [DB 관리 항목]
-	private Long payrollEmployeeId; // 사원별 급여결과 식별 번호 (PK)
-	private Long payrollRunId; // 급여회차 마스터 식별 번호 (FK)
-	private Long employeeId; // 대상 사원 식별 번호 (FK)
+	private int payrollEmployeeId; // 사원별 급여결과 식별 번호 (PK)
+	private int payrollRunId; // 급여회차 마스터 식별 번호 (FK)
+	private int employeeId; // 대상 사원 식별 번호 (FK)
 
 	public PayrollEmployee() {
 	}
 
 	// Getter & Setter
-	public Long getPayrollEmployeeId() {
+	public int getPayrollEmployeeId() {
 		return payrollEmployeeId;
 	}
 
-	public void setPayrollEmployeeId(Long payrollEmployeeId) {
+	public void setPayrollEmployeeId(int payrollEmployeeId) {
 		this.payrollEmployeeId = payrollEmployeeId;
 	}
 
-	public Long getPayrollRunId() {
+	public int getPayrollRunId() {
 		return payrollRunId;
 	}
 
-	public void setPayrollRunId(Long payrollRunId) {
+	public void setPayrollRunId(int payrollRunId) {
 		this.payrollRunId = payrollRunId;
 	}
 
-	public Long getEmployeeId() {
+	public int getEmployeeId() {
 		return employeeId;
 	}
 
-	public void setEmployeeId(Long employeeId) {
+	public void setEmployeeId(int employeeId) {
 		this.employeeId = employeeId;
 	}
 }

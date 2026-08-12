@@ -5,22 +5,23 @@ package erp.settings.model;
  */
 public class DeductItem {
 
-	private Long deductItemId;
+	private int deductItemId; // 공제항목 식별 번호 (PK)
 	private String deductName;
 	private String calcMethod;
+	private String useYn;
+
 	private Integer roundUnit; // 절사단위
 	private String note;
-	private String useYn;
 
 	public DeductItem() {
 	}
 
 	// Getter & Setter
-	public Long getDeductItemId() {
+	public int getDeductItemId() {
 		return deductItemId;
 	}
 
-	public void setDeductItemId(Long deductItemId) {
+	public void setDeductItemId(int deductItemId) {
 		this.deductItemId = deductItemId;
 	}
 
