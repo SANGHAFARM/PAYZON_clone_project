@@ -4,55 +4,46 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class AttendRecordRequest {
+public class InsertEmployeeAttendanceRequest {
 	private List<Integer> empIds;
-	private int attendItemId;
 	private Date inputDate;
+	private int attendanceItemId;
 	private Date startDate;
 	private Date endDate;
 	private double attendValue;
-
 	private long payAmount;
 	private String note;
-	
-	public AttendRecordRequest(List<Integer> empIds, int attendItemId, Date inputDate, Date startDate, Date endDate,
-			double attendValue, long payAmount, String note) {
+	public InsertEmployeeAttendanceRequest() {
+	}
+	public InsertEmployeeAttendanceRequest(List<Integer> empIds, Date inputDate, int attendanceItemId, Date startDate,
+			Date endDate, double attendValue, long payAmount, String note) {
 		super();
 		this.empIds = empIds;
-		this.attendItemId = attendItemId;
 		this.inputDate = inputDate;
+		this.attendanceItemId = attendanceItemId;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.attendValue = attendValue;
 		this.payAmount = payAmount;
 		this.note = note;
 	}
-	
-	
 	public List<Integer> getEmpIds() {
 		return empIds;
 	}
-
-
 	public void setEmpIds(List<Integer> empIds) {
 		this.empIds = empIds;
-	}
-
-
-	public AttendRecordRequest() {
-	}
-
-	public int getAttendItemId() {
-		return attendItemId;
-	}
-	public void setAttendItemId(int attendItemId) {
-		this.attendItemId = attendItemId;
 	}
 	public Date getInputDate() {
 		return inputDate;
 	}
 	public void setInputDate(Date inputDate) {
 		this.inputDate = inputDate;
+	}
+	public int getAttendanceItemId() {
+		return attendanceItemId;
+	}
+	public void setAttendanceItemId(int attendanceItemId) {
+		this.attendanceItemId = attendanceItemId;
 	}
 	public Date getStartDate() {
 		return startDate;
@@ -84,29 +75,7 @@ public class AttendRecordRequest {
 	public void setNote(String note) {
 		this.note = note;
 	}
-	public void validate(Map<String, Boolean> errors) {
-		if (empIds.isEmpty() || empIds==null) {
-			errors.put("empId", Boolean.TRUE);
-		}
-		if (attendItemId<=0) {
-			errors.put("attendItemId", Boolean.TRUE);
-		}
-		if (inputDate==null) {
-			errors.put("inputDate", Boolean.TRUE);
-		}
-		if (startDate==null) {
-			errors.put("startDate", Boolean.TRUE);
-		}
-		if (endDate==null) {
-			errors.put("endDate", Boolean.TRUE);
-		}
-		if (startDate !=null && endDate != null && endDate.before(startDate)) {
-			errors.put("endDate", Boolean.TRUE);
-		}
-		if (attendValue<=0) {
-			errors.put("attendValue", Boolean.TRUE);
-		}
-	}
+	
 	
 	
 	

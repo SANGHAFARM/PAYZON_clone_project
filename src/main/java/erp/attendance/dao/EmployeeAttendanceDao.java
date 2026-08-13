@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,26 +31,34 @@ public class EmployeeAttendanceDao {
 	/*
 	 * 근태기록 입력
 	 */
-	public int insert(Connection conn, EmployeeAttendance empAt) throws SQLException { 
-		String sql = "INSERT INTO EMP_ATTEND_RECORD VALUES (SEQ_EMP_ATTEND_REC_ID.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
-	  try(PreparedStatement pstmt = conn.prepareStatement(sql)){
-		  
-	  }
-		  
-	  }
+	public int insert(Connection conn, EmployeeAttendance empAt) throws SQLException {
+		String sql = "INSERT INTO EMP_ATTEND_RECORD VALUES (SEQ_EMP_ATTEND_REC_ID.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, empAt.getEmployeeId());
+			pstmt.setInt(2, empAt.getAttendanceItemId());
+			setIntOrNull(pstmt, 3, empAt.getLeaveItemId());
+			pstmt.setTimestamp(4, new Timestamp(empAt.getInputDate().getTime()));
+			pstmt.setTimestamp(5, new Timestamp(empAt.getStartDate().getTime()));
+			pstmt.setTimestamp(6, new Timestamp(empAt.getEndDate().getTime()));
+			pstmt.setDouble(7, empAt.getAttendValue());
+			pstmt.setLong(8, empAt.getPayAmount());
+			pstmt.setString(9, empAt.getNote());
+			return pstmt.executeUpdate();
+		}
+	}
 
 	/*
 	 * EmpAttendRecord테이블에 있는 기록을 근태기록ID로 조회하는 메서드
 	 * EmpAttendRecordテーブルにある記録を勤怠記録IDで照会するメソッド
 	 */
 
-	public EmployeeAttendance selectById(Connection conn, long no) throws SQLException {
+	public EmployeeAttendance selectById(Connection conn, int no) throws SQLException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql = "SELECT * FROM EMPLOYEE_ATTENDANCE WHERE EMPLOYEE_ATTENDANCE_ID=?";
 		try {
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setLong(1, no);
+			pstmt.setInt(1, no);
 			rs = pstmt.executeQuery();
 			EmployeeAttendance empAt = null;
 			if (rs.next()) {
@@ -66,13 +76,13 @@ public class EmployeeAttendanceDao {
 	 * 무시되고 해당년도 전체를 조회함 EmpAttendRecordテーブルにある記録を社員IDと年度と月で照会するメソッド
 	 */
 
-	public List<EmployeeAttendance> selectByEmpIdAndYearAndMonth(Connection conn, Long empId, int year, Integer month)
+	public List<EmployeeAttendance> selectByEmpIdAndYearAndMonth(Connection conn, int empId, int year, Integer month)
 			throws SQLException {
 		String sql = "SELECT * FROM EMPLOYEE_ATTENDANCE " + "WHERE EMP_ID=? " + "AND TO_CHAR(START_DATE, 'YYYY')=? "
 				+ "AND (? IS NULL OR TO_CHAR(START_DATE, 'MM')=?)";
 		List<EmployeeAttendance> list = new ArrayList<>();
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setLong(1, empId);
+			pstmt.setInt(1, empId);
 			pstmt.setString(2, String.valueOf(year));
 			if (month != null) {
 				pstmt.setString(3, String.format("%02d", month));
@@ -95,12 +105,12 @@ public class EmployeeAttendanceDao {
 	 * EmpAttendRocrdで社員IDと休暇項目IDで使った休暇の合計を照会するメソッド
 	 */
 
-	public double selectUsedDaysByEmpIdAndLeaveItemId(Connection conn, Long empId, Long leaveItemId)
+	public double selectUsedDaysByEmpIdAndLeaveItemId(Connection conn, int empId, Integer leaveItemId)
 			throws SQLException {
 		String sql = "SELECT NVL(SUM(ATTEND_VALUE),0) AS USED_DAYS FROM EMPLOYEE_ATTENDANCE WHERE EMPLOYEE_ID=? AND LEAVE_ITEM_ID=?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setLong(1, empId);
-			pstmt.setLong(2, leaveItemId);
+			pstmt.setInt(1, empId);
+			pstmt.setInt(2, leaveItemId);
 			try (ResultSet rs = pstmt.executeQuery()) {
 				if (rs.next()) {
 					return rs.getDouble("USED_DAYS");
@@ -192,21 +202,20 @@ public class EmployeeAttendanceDao {
 	 * EmpAttendRecord테이블에 있는 기록을 수정하는 메서드 EmpAttendRecordテーブルにある記録を修正するメソッド
 	 */
 
-	// 수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요
+	// 근태기록 수정
 	public int update(Connection conn, EmployeeAttendance empAt) throws SQLException {
 		String sql = "UPDATE EMPLOYEE_ATTENDANCE SET ATTENDANCE_ITEM_ID=?, LEAVE_ITEM_ID=?, INPUT_DATE=?, START_DATE=?, END_DATE=?, ATTEND_VALUE=?, PAY_AMOUNT=?, NOTE=? WHERE EMPLOYEE_ATTENDANCE_ID=?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setLong(1, empAt.getAttendanceItemId());
-			pstmt.setLong(2, empAt.getLeaveItemId());
-			pstmt.setDate(3, dateToSQLDate(empAt.getInputDate()));
-			pstmt.setDate(4, dateToSQLDate(empAt.getStartDate()));
-			pstmt.setDate(5, dateToSQLDate(empAt.getEndDate()));
+			pstmt.setInt(1, empAt.getAttendanceItemId());
+			pstmt.setInt(2, empAt.getLeaveItemId());
+			pstmt.setTimestamp(3, dateToTimestamp(empAt.getInputDate()));
+			pstmt.setTimestamp(4, dateToTimestamp(empAt.getStartDate()));
+			pstmt.setTimestamp(5, dateToTimestamp(empAt.getEndDate()));
 			pstmt.setDouble(6, empAt.getAttendValue());
 			pstmt.setLong(7, empAt.getPayAmount());
 			pstmt.setString(8, empAt.getNote());
-			pstmt.setLong(9, empAt.getEmployeeAttendanceId());
+			pstmt.setInt(9, empAt.getEmployeeAttendanceId());
 			return pstmt.executeUpdate();
-
 		}
 	}
 
@@ -217,7 +226,7 @@ public class EmployeeAttendanceDao {
 	public int delete(Connection conn, int no) throws SQLException {
 		String sql = "DELETE FROM EMPLOYEE_ATTENDANCE WHERE EMPLOYEE_ATTENDANCE_ID=?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setLong(1, no);
+			pstmt.setInt(1, no);
 			return pstmt.executeUpdate();
 		}
 	}
@@ -227,22 +236,20 @@ public class EmployeeAttendanceDao {
 	 * java.util.Dateタイプをjava.sql.Dateタイプに変換するメソッド
 	 */
 
-	private java.sql.Date dateToSQLDate(java.util.Date date) {
-		return (date != null) ? new java.sql.Date(date.getTime()) : null;
+	private Timestamp dateToTimestamp(java.util.Date date) {
+		return new Timestamp(date.getTime());
 	}
 
 	/*
 	 * ResultSet으로 EmpAttendRecord객체를 만들어 반환하는 메서드
 	 * ResultSetでEmpAttendRecordオブジェクトを作って返すメソッド
 	 */
-
 	private EmployeeAttendance convertEmployeeAttendance(ResultSet rs) throws SQLException {
 		EmployeeAttendance empAt = new EmployeeAttendance();
-		empAt.setEmployeeAttendanceId(rs.getLong("EMPLOYEE_ATTENDANCE_ID"));
-		empAt.setEmployeeId(rs.getLong("EMPLOYEE_ID"));
-		empAt.setAttendanceItemId(rs.getLong("ATTENDANCE_ITEM_ID"));
-
-		empAt.setLeaveItemId(rs.getLong("LEAVE_ITEM_ID"));
+		empAt.setEmployeeAttendanceId(rs.getInt("EMPLOYEE_ATTENDANCE_ID"));
+		empAt.setEmployeeId(rs.getInt("EMPLOYEE_ID"));
+		empAt.setAttendanceItemId(rs.getInt("ATTENDANCE_ITEM_ID"));
+		empAt.setLeaveItemId((Integer)rs.getObject("LEAVE_ITEM_ID"));
 		empAt.setInputDate(rs.getDate("INPUT_DATE"));
 		empAt.setStartDate(rs.getDate("START_DATE"));
 		empAt.setEndDate(rs.getDate("END_DATE"));
@@ -275,11 +282,10 @@ public class EmployeeAttendanceDao {
 	/*
 	 * 값이 null인지 구분하고, null일 시, SQLNULL을 입력하는 메서드
 	 */
-
 	private void setIntOrNull(PreparedStatement pstmt, int idx1, int idx2, Integer value) throws SQLException {
 		if (value != null) {
-			pstmt.setLong(idx1, value);
-			pstmt.setLong(idx2, value);
+			pstmt.setInt(idx1, value);
+			pstmt.setInt(idx2, value);
 		} else {
 			pstmt.setNull(idx1, java.sql.Types.NUMERIC);
 			pstmt.setNull(idx2, java.sql.Types.NUMERIC);
@@ -288,7 +294,7 @@ public class EmployeeAttendanceDao {
 
 	private void setIntOrNull(PreparedStatement pstmt, int idx, Integer value) throws SQLException {
 		if (value != null) {
-			pstmt.setLong(idx, value);
+			pstmt.setInt(idx, value);
 		} else {
 			pstmt.setNull(idx, java.sql.Types.NUMERIC);
 		}

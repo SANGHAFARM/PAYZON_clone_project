@@ -69,6 +69,19 @@ public class AttendanceItemDao {
 		}
 	}
 
+	public AttendanceItem selectById(Connection conn, int id) throws SQLException {
+		String sql = "SELECT * FROM ATTENDANCE_ITEM WHERE ATTENDANCE_ITEM_ID = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, id);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return makeItemFromResultSet(rs);
+				}
+			}
+		}
+		return null;
+	}
+
 	// ResultSet 데이터를 AttendanceItem 객체로 변환
 	private AttendanceItem makeItemFromResultSet(ResultSet rs) throws SQLException {
 		AttendanceItem item = new AttendanceItem();
