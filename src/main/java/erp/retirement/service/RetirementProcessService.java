@@ -1,0 +1,67 @@
+package erp.retirement.service;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import erp.employees.dao.EmployeeDao;
+import erp.employees.dto.EmployeeListItem;
+import erp.employees.model.Employee;
+import erp.employees.service.EmployeeSearchCondition;
+import erp.retirement.dto.RetirementTypeItem;
+import jdbc.JdbcUtil;
+import jdbc.connection.ConnectionProvider;
+
+// 퇴직대상 사원 조회와 퇴직처리·취소 트랜잭션을 담당하는 Service
+public class RetirementProcessService {
+	private final EmployeeDao employeeDao = EmployeeDao.getInstance();
+
+	public List<EmployeeListItem> getEmployees(EmployeeSearchCondition condition) {
+		try (Connection conn = ConnectionProvider.getConnection()) {
+			return employeeDao.selectListByCondition(conn, condition);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void retire(int employeeId, String retirementType, Date retirementDate, String reason, String afterContact) {
+		Connection conn = null;
+		try {
+			conn = ConnectionProvider.getConnection();
+			conn.setAutoCommit(false);
+			Employee employee = employeeDao.selectById(conn, employeeId);
+			if (employee == null) throw new IllegalArgumentException("존재하지 않는 사원입니다.");
+			if (retirementType == null || retirementType.trim().isEmpty()) throw new IllegalArgumentException("퇴직구분을 선택하세요.");
+			if (retirementDate == null) throw new IllegalArgumentException("퇴직일자를 입력하세요.");
+			if (employee.getJoinDate() != null && retirementDate.before(employee.getJoinDate()))
+				throw new IllegalArgumentException("퇴직일자는 입사일보다 빠를 수 없습니다.");
+			employeeDao.updateRetirement(conn, employeeId, retirementType, retirementDate, reason, afterContact);
+			conn.commit();
+		} catch (SQLException | RuntimeException e) {
+			JdbcUtil.rollback(conn);
+			throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
+		} finally { JdbcUtil.close(conn); }
+	}
+
+	public void cancel(int employeeId) {
+		Connection conn = null;
+		try {
+			conn = ConnectionProvider.getConnection();
+			conn.setAutoCommit(false);
+			if (employeeDao.cancelRetirement(conn, employeeId) == 0) throw new IllegalArgumentException("퇴직처리된 사원이 아닙니다.");
+			conn.commit();
+		} catch (SQLException | RuntimeException e) {
+			JdbcUtil.rollback(conn);
+			throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
+		} finally { JdbcUtil.close(conn); }
+	}
+
+	public List<RetirementTypeItem> getRetirementTypes() {
+		return Arrays.asList(new RetirementTypeItem("자진퇴사", "자진퇴사"),
+				new RetirementTypeItem("권고사직", "권고사직"), new RetirementTypeItem("계약만료", "계약만료"),
+				new RetirementTypeItem("정년퇴직", "정년퇴직"), new RetirementTypeItem("해고", "해고"),
+				new RetirementTypeItem("기타", "기타"));
+	}
+}

@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import erp.employees.model.CertificateIssuance;
+import erp.employees.dto.CertificateRegisterItem;
+import erp.employees.service.CertificateRegisterCondition;
 import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
 // 제증명서 발급 내역 데이터베이스 접근(DAO) 클래스
@@ -106,6 +108,93 @@ public class CertificateIssuanceDao {
 			JdbcUtil.close(rs);
 			JdbcUtil.close(pstmt);
 		}
+	}
+
+	// CERTIFICATE_ISSUANCE를 중심으로 사원, 부서, 직위를 JOIN한 발급대장 행 수 조회
+	public int countByCondition(Connection conn, CertificateRegisterCondition condition) throws SQLException {
+		StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM CERTIFICATE_ISSUANCE C ");
+		sql.append("JOIN EMPLOYEE E ON C.EMPLOYEE_ID = E.EMPLOYEE_ID ");
+		sql.append("LEFT JOIN DEPARTMENT D ON E.DEPARTMENT_ID = D.DEPARTMENT_ID ");
+		sql.append("LEFT JOIN JOB_POSITION J ON E.JOB_POSITION_ID = J.JOB_POSITION_ID WHERE 1=1 ");
+		List<Object> params = new ArrayList<>();
+		appendRegisterConditions(sql, params, condition);
+		try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+			setRegisterParameters(pstmt, params);
+			try (ResultSet rs = pstmt.executeQuery()) { return rs.next() ? rs.getInt(1) : 0; }
+		}
+	}
+
+	// 발급대장 화면에 필요한 증명서, 사원, 부서, 직위 정보를 페이지 단위로 조회
+	public List<CertificateRegisterItem> selectRegisterByCondition(Connection conn, CertificateRegisterCondition condition)
+			throws SQLException {
+		StringBuilder inner = new StringBuilder();
+		inner.append("SELECT C.CERTIFICATE_ISSUANCE_ID, C.CERT_DOC_NO, C.CERT_TYPE, C.PURPOSE, ");
+		inner.append("E.EMP_TYPE, E.EMP_NAME_KR, D.DEPARTMENT_NAME, J.JOB_POSITION_NAME, ");
+		inner.append("TO_CHAR(C.ISSUE_DATE, 'YYYY-MM-DD') ISSUE_DATE FROM CERTIFICATE_ISSUANCE C ");
+		inner.append("JOIN EMPLOYEE E ON C.EMPLOYEE_ID = E.EMPLOYEE_ID ");
+		inner.append("LEFT JOIN DEPARTMENT D ON E.DEPARTMENT_ID = D.DEPARTMENT_ID ");
+		inner.append("LEFT JOIN JOB_POSITION J ON E.JOB_POSITION_ID = J.JOB_POSITION_ID WHERE 1=1 ");
+		List<Object> params = new ArrayList<>();
+		appendRegisterConditions(inner, params, condition);
+		inner.append("ORDER BY C.ISSUE_DATE DESC, C.CERTIFICATE_ISSUANCE_ID DESC");
+		String sql = "SELECT * FROM (SELECT REGISTER_DATA.*, ROWNUM RN FROM (" + inner
+				+ ") REGISTER_DATA WHERE ROWNUM <= ?) WHERE RN >= ?";
+		params.add(condition.getPage() * condition.getPageSize());
+		params.add((condition.getPage() - 1) * condition.getPageSize() + 1);
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			setRegisterParameters(pstmt, params);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				List<CertificateRegisterItem> result = new ArrayList<>();
+				while (rs.next()) result.add(makeRegisterItem(rs));
+				return result;
+			}
+		}
+	}
+
+	public int deleteAll(Connection conn) throws SQLException {
+		try (PreparedStatement pstmt = conn.prepareStatement("DELETE FROM CERTIFICATE_ISSUANCE")) {
+			return pstmt.executeUpdate();
+		}
+	}
+
+	private void appendRegisterConditions(StringBuilder sql, List<Object> params, CertificateRegisterCondition condition) {
+		String databaseType = toDatabaseCertificateType(condition.getCertificateType());
+		if (databaseType != null) { sql.append("AND C.CERT_TYPE = ? "); params.add(databaseType); }
+		if (!condition.getIssueDateFrom().isEmpty()) { sql.append("AND C.ISSUE_DATE >= TO_DATE(?, 'YYYY-MM-DD') "); params.add(condition.getIssueDateFrom()); }
+		if (!condition.getIssueDateTo().isEmpty()) { sql.append("AND C.ISSUE_DATE < TO_DATE(?, 'YYYY-MM-DD') + 1 "); params.add(condition.getIssueDateTo()); }
+		if (!condition.getKeyword().isEmpty()) {
+			String keyword = "%" + condition.getKeyword() + "%";
+			sql.append("AND (C.CERT_DOC_NO LIKE ? OR C.PURPOSE LIKE ? OR E.EMP_NAME_KR LIKE ? OR D.DEPARTMENT_NAME LIKE ?) ");
+			params.add(keyword); params.add(keyword); params.add(keyword); params.add(keyword);
+		}
+	}
+
+	private String toDatabaseCertificateType(String type) {
+		if ("WORKING".equals(type)) return "재직경력서";
+		if ("CAREER".equals(type)) return "경력증명서";
+		if ("RETIREMENT".equals(type)) return "퇴직증명서";
+		return null;
+	}
+
+	private void setRegisterParameters(PreparedStatement pstmt, List<Object> params) throws SQLException {
+		for (int i = 0; i < params.size(); i++) pstmt.setObject(i + 1, params.get(i));
+	}
+
+	private CertificateRegisterItem makeRegisterItem(ResultSet rs) throws SQLException {
+		CertificateRegisterItem item = new CertificateRegisterItem();
+		item.setCertificateId(rs.getInt("CERTIFICATE_ISSUANCE_ID"));
+		item.setCertificateNo(rs.getString("CERT_DOC_NO"));
+		String typeName = rs.getString("CERT_TYPE");
+		item.setCertificateTypeName("재직경력서".equals(typeName) ? "재직증명서" : typeName);
+		item.setCertificateType("재직경력서".equals(typeName) ? "WORKING" : "경력증명서".equals(typeName) ? "CAREER" : "RETIREMENT");
+		item.setCertificateUse(rs.getString("PURPOSE"));
+		item.setEmploymentType(rs.getString("EMP_TYPE"));
+		item.setEmployeeName(rs.getString("EMP_NAME_KR"));
+		item.setDepartmentName(rs.getString("DEPARTMENT_NAME"));
+		item.setPositionName(rs.getString("JOB_POSITION_NAME"));
+		item.setIssueDate(rs.getString("ISSUE_DATE"));
+		return item;
 	}
 
 	// 제증명서 발급 내역 수정

@@ -19,15 +19,17 @@
             <h1>사원 퇴직처리</h1>
         </div>
     </header>
+	<c:if test="${not empty message}"><p class="form-message" role="status"><c:out value="${message}" /></p></c:if>
 
+	<%-- EMPLOYEE 중심 JOIN 결과와 퇴직정산 존재 여부를 함께 표시한다. --%>
     <section class="retirement-card">
         <form class="retirement-toolbar" method="get"
               action="${pageContext.request.contextPath}/retirement/process.do">
             <select name="searchTarget" aria-label="검색 항목">
-                <option value="name">성명</option>
-                <option value="employeeNo">사원번호</option>
-                <option value="department">부서</option>
-                <option value="all">전체</option>
+				<option value="name" ${param.searchTarget eq 'name' ? 'selected' : ''}>성명</option>
+				<option value="employeeNo" ${param.searchTarget eq 'employeeNo' ? 'selected' : ''}>사원번호</option>
+				<option value="department" ${param.searchTarget eq 'department' ? 'selected' : ''}>부서</option>
+				<option value="all" ${param.searchTarget eq 'all' ? 'selected' : ''}>전체</option>
             </select>
             <input type="search" name="keyword" value="${param.keyword}"
                    placeholder="검색어 입력" aria-label="검색어">
@@ -36,8 +38,8 @@
 
             <select class="status-filter" name="status" aria-label="재직 상태">
                 <option value="">상태별</option>
-                <option value="ACTIVE">재직</option>
-                <option value="RETIRED">퇴직</option>
+				<option value="ACTIVE" ${param.status eq 'ACTIVE' ? 'selected' : ''}>재직</option>
+				<option value="RETIRED" ${param.status eq 'RETIRED' ? 'selected' : ''}>퇴직</option>
             </select>
             <button type="submit" class="search-button">조회</button>
         </form>
@@ -73,12 +75,13 @@
                         <td><a href="#retirement-${employee.employeeId}">${employee.retirementSettlement ? '○' : '×'}</a></td>
                     </tr>
                 </c:forEach>
-
+				<c:if test="${empty employees}"><tr><td colspan="11" class="empty-row">검색된 사원이 없습니다.</td></tr></c:if>
                 </tbody>
             </table>
         </div>
     </section>
 
+	<%-- CSS :target 모달에서 퇴직정보를 입력하거나 기존 퇴직처리를 취소한다. --%>
     <c:forEach var="employee" items="${employees}">
         <section id="retirement-${employee.employeeId}" class="retirement-modal-overlay">
             <div class="retirement-modal" role="dialog" aria-modal="true" aria-labelledby="title-${employee.employeeId}">

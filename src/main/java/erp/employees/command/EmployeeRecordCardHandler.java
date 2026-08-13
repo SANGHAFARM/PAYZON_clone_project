@@ -1,0 +1,56 @@
+package erp.employees.command;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import erp.employees.service.EmployeeRecordCardService;
+import erp.employees.service.EmployeeRecordCardService.EmployeeRecordCardData;
+import erp.employees.service.EmployeeSearchCondition;
+import mvc.command.CommandHandler;
+
+// 인사기록카드의 사원 검색 및 선택된 사원의 상세 이력을 처리하는 Handler
+public class EmployeeRecordCardHandler implements CommandHandler {
+	private static final String VIEW = "/WEB-INF/view/employees/employees-record-card.jsp";
+	private final EmployeeRecordCardService recordCardService = new EmployeeRecordCardService();
+
+	@Override
+	public String process(HttpServletRequest req, HttpServletResponse res) {
+		// 사원 선택창에서 사용할 부서, 직위, 검색어 조건을 구성한다.
+		EmployeeSearchCondition condition = new EmployeeSearchCondition();
+		condition.setSearchTarget("ALL");
+		condition.setKeyword(trim(req.getParameter("keyword")));
+		condition.setEmploymentType("");
+		condition.setStatus("");
+		condition.setPage(1);
+		condition.setPageSize(100);
+		condition.setDepartmentId(parseInteger(req.getParameter("departmentId")));
+		condition.setPositionId(parseInteger(req.getParameter("positionId")));
+
+		// Service에서 기록카드 한 화면에 필요한 모든 이력을 조회한다.
+		EmployeeRecordCardData data = recordCardService.getRecordCard(parseInteger(req.getParameter("employeeId")), condition);
+		// JSP의 각 표에서 바로 사용할 수 있도록 항목별 request 속성으로 저장한다.
+		req.setAttribute("selectedEmployee", data.getEmployee());
+		req.setAttribute("employees", data.getEmployees());
+		req.setAttribute("departments", data.getDepartments());
+		req.setAttribute("positions", data.getPositions());
+		req.setAttribute("company", data.getCompany());
+		req.setAttribute("families", data.getFamilies());
+		req.setAttribute("insurances", data.getInsurances());
+		req.setAttribute("educations", data.getEducations());
+		req.setAttribute("careers", data.getCareers());
+		req.setAttribute("licenses", data.getLicenses());
+		req.setAttribute("languages", data.getLanguages());
+		req.setAttribute("trainings", data.getTrainings());
+		req.setAttribute("awards", data.getAwards());
+		req.setAttribute("appointments", data.getAppointments());
+		req.setAttribute("retirementCalculations", data.getRetirementCalculations());
+		return VIEW;
+	}
+
+	private Integer parseInteger(String value) {
+		// 선택값이 없거나 숫자가 아니면 조건을 적용하지 않는다.
+		try { return value == null || value.trim().isEmpty() ? null : Integer.valueOf(value); }
+		catch (NumberFormatException e) { return null; }
+	}
+	private String trim(String value) { return value == null ? "" : value.trim(); }
+}

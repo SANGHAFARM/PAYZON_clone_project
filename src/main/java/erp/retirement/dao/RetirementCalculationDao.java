@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import erp.retirement.model.RetirementCalculation;
+import erp.retirement.dto.RetirementBenefitListItem;
 import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
 // 퇴직급여 계산내역 데이터베이스 접근(DAO) 클래스
@@ -92,6 +93,38 @@ public class RetirementCalculationDao {
 			JdbcUtil.close(pstmt);
 		}
 	}
+
+	// 상세 테이블 FK로 사용할 퇴직급여 계산 PK를 먼저 발급한다.
+	public int nextId(Connection conn) throws SQLException {
+		try (PreparedStatement pstmt = conn.prepareStatement("SELECT RETIREMENT_CALCULATION_SEQ.NEXTVAL FROM DUAL");
+				ResultSet rs = pstmt.executeQuery()) { rs.next(); return rs.getInt(1); }
+	}
+
+	// 미리 발급한 PK를 사용하여 마스터 계산내역을 저장한다.
+	public void insertWithId(Connection conn, RetirementCalculation calc) throws SQLException {
+		String sql = "INSERT INTO RETIREMENT_CALCULATION VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		try (PreparedStatement p = conn.prepareStatement(sql)) {
+			p.setInt(1, calc.getRetirementCalculationId()); p.setInt(2, calc.getEmployeeId()); p.setString(3, calc.getCalcType());
+			p.setTimestamp(4,new Timestamp(calc.getCalcStartDate().getTime())); p.setTimestamp(5,new Timestamp(calc.getRetireDate().getTime()));
+			p.setInt(6,calc.getServiceYears());p.setInt(7,calc.getServiceDays());p.setInt(8,calc.getExcludeDays());
+			p.setLong(9,calc.getCompensationAmt());p.setLong(10,calc.getDismissalAmt());p.setLong(11,calc.getTaxFreeRetireAmt());
+			p.setLong(12,calc.getPrepaidTaxAmt());p.setLong(13,calc.getTaxCreditAmt());p.setLong(14,calc.getThreeMonthTotal());
+			p.setLong(15,calc.getAvgMonthWage());p.setLong(16,calc.getAvgDayWage());p.setLong(17,calc.getOrdinaryDayWage());
+			p.setLong(18,calc.getRetireIncome());p.setLong(19,calc.getCalculatedTaxAmt());p.setLong(20,calc.getIncomeTax());
+			p.setLong(21,calc.getLocalIncomeTax());p.setLong(22,calc.getDeferredIncomeTax());p.setLong(23,calc.getDeferredLocalTax());
+			p.setLong(24,calc.getSpecialRuralTax());p.setLong(25,calc.getOtherDeductAmt());p.setLong(26,calc.getTaxableRetireAmt());
+			p.setLong(27,calc.getWithholdingTaxAmt());p.setLong(28,calc.getActualPayAmt());p.setString(29,calc.getPayMethod());
+			p.setTimestamp(30,new Timestamp(calc.getPayDate().getTime())); p.executeUpdate();
+		}
+	}
+
+	// 지급년도별 퇴직급여 목록을 사원, 부서, 직위와 JOIN하여 조회한다.
+	public List<RetirementBenefitListItem> selectBenefitList(Connection conn, int paymentYear) throws SQLException {
+		String sql="SELECT R.RETIREMENT_CALCULATION_ID,R.EMPLOYEE_ID,TO_CHAR(R.PAY_DATE,'YYYY-MM-DD') PAY_DATE,R.CALC_TYPE,E.EMP_NAME_KR,J.JOB_POSITION_NAME,D.DEPARTMENT_NAME,TO_CHAR(R.CALC_START_DATE,'YYYY-MM-DD') START_DATE,TO_CHAR(R.RETIRE_DATE,'YYYY-MM-DD') END_DATE,R.SERVICE_DAYS,R.ACTUAL_PAY_AMT,R.PAY_METHOD FROM RETIREMENT_CALCULATION R JOIN EMPLOYEE E ON R.EMPLOYEE_ID=E.EMPLOYEE_ID LEFT JOIN DEPARTMENT D ON E.DEPARTMENT_ID=D.DEPARTMENT_ID LEFT JOIN JOB_POSITION J ON E.JOB_POSITION_ID=J.JOB_POSITION_ID WHERE EXTRACT(YEAR FROM R.PAY_DATE)=? ORDER BY R.PAY_DATE DESC,R.RETIREMENT_CALCULATION_ID DESC";
+		try(PreparedStatement p=conn.prepareStatement(sql)){p.setInt(1,paymentYear);try(ResultSet rs=p.executeQuery()){List<RetirementBenefitListItem> list=new ArrayList<>();while(rs.next()){RetirementBenefitListItem i=new RetirementBenefitListItem();i.setCalculationId(rs.getInt(1));i.setEmployeeId(rs.getInt(2));i.setPaymentDate(rs.getString(3));i.setSettlementType(rs.getString(4));i.setEmployeeName(rs.getString(5));i.setPositionName(rs.getString(6));i.setDepartmentName(rs.getString(7));i.setCalculationStartDate(rs.getString(8));i.setCalculationEndDate(rs.getString(9));i.setServiceDays(rs.getInt(10));i.setNetPayment(rs.getLong(11));i.setPaymentMethod(rs.getString(12));list.add(i);}return list;}}
+	}
+
+	public int deleteAll(Connection conn) throws SQLException { try(PreparedStatement p=conn.prepareStatement("DELETE FROM RETIREMENT_CALCULATION")){return p.executeUpdate();} }
 
 	// 퇴직급여 계산내역 단건 조회
 	// 기본키(RETIREMENT_CALCULATION_ID)를 기준으로 1건의 데이터 반환
