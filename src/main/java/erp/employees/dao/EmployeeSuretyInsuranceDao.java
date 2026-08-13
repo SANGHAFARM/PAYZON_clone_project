@@ -153,6 +153,19 @@ public class EmployeeSuretyInsuranceDao {
 			JdbcUtil.close(pstmt);
 		}
 	}
+	
+	// 사원번호(EMPLOYEE_ID)를 기준으로 해당 사원의 보증보험 전체 삭제
+	public void deleteByEmpId(Connection conn, int empId) throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			String sql = "DELETE FROM EMPLOYEE_SURETY_INSURANCE WHERE EMPLOYEE_ID = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, empId);
+			pstmt.executeUpdate();
+		} finally {
+			JdbcUtil.close(pstmt);
+		}
+	}
 
 	// ResultSet 데이터를 EmployeeSuretyInsurance 객체로 변환
 	private EmployeeSuretyInsurance makeInsuranceFromResultSet(ResultSet rs) throws SQLException {
