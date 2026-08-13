@@ -7,36 +7,42 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import erp.attendance.model.EmployeeLeaveBalance;
+
 /*import erp.attend.model.EmpLeave;*/
 /*import erp.attend.model.EmpLeaveStatusItem;*/
 /*import erp.attend.model.LeaveStatusCondition;*/
 
-public class EmpLeaveDao {
+public class EmployeeLeaveBalanceDao {
+
+	private static EmployeeLeaveBalanceDao employeeLeaveBalanceDao = new EmployeeLeaveBalanceDao();
+
+	public static EmployeeLeaveBalanceDao getInstance() {
+		return employeeLeaveBalanceDao;
+	}
+
+	private EmployeeLeaveBalanceDao() {
+
+	}
+
+	// 사원 1명의 휴가정보를 조회하는 메서드
+
+	public EmployeeLeaveBalance selectByEmpIdAndLeaveItemId(Connection conn, int employeeId, int leaveItemId) throws SQLException {
+		String sql = "SELECT * FROM EMPLOYEE_LEAVE_BALANCE WHERE EMPLOYEE_ID = ? AND LEAVE_ITEM_ID = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, employeeId);
+			pstmt.setInt(2, leaveItemId);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return convertEmpLeave(rs);
+				}
+			}
+		}
+		return null;
+	}
+
+	// 휴가조회(전체목록) 화면용 - 필터에 맞는 여러 사원의, 특정 휴가항목 전체/사용/잔여 조회
 	/*
-	 * private static EmpLeaveDao empLeaveDao = new EmpLeaveDao();
-	 * 
-	 * public static EmpLeaveDao getInstance() { return empLeaveDao; }
-	 * 
-	 * private EmpLeaveDao() {
-	 * 
-	 * }
-	 * 
-	 * 
-	 * 사원 1명의 휴가정보를 조회하는 메서드
-	 * 
-	 * 
-	 * public EmpLeave selectByEmpIdAndLeaveItemId(Connection conn, int empId, int
-	 * leaveItemId) throws SQLException { String sql =
-	 * "SELECT * FROM EMP_LEAVE WHERE EMP_ID = ? AND LEAVE_ITEM_ID = ?"; try
-	 * (PreparedStatement pstmt = conn.prepareStatement(sql)) { pstmt.setInt(1,
-	 * empId); pstmt.setInt(2, leaveItemId); try (ResultSet rs =
-	 * pstmt.executeQuery()) { if (rs.next()) { return convertEmpLeave(rs); } } }
-	 * return null; }
-	 * 
-	 * 
-	 * 
-	 * 휴가조회(전체목록) 화면용 - 필터에 맞는 여러 사원의, 특정 휴가항목 전체/사용/잔여 조회
-	 * 
 	 * public List<EmpLeaveStatusItem> selectLeaveStatusList(Connection conn,
 	 * LeaveStatusCondition cond) throws SQLException { String sql =
 	 * "SELECT e.EMP_ID, e.EMP_TYPE, e.EMP_NO, e.EMP_NAME_KR, d.DEPT_NAME, p.POS_NAME, "
@@ -66,16 +72,18 @@ public class EmpLeaveDao {
 	 * 
 	 * try (ResultSet rs = pstmt.executeQuery()) { while (rs.next()) {
 	 * list.add(convertEmpLeaveStatusItem(rs)); } } } return list; }
-	 * 
-	 * 
-	 * private EmpLeave convertEmpLeave(ResultSet rs) throws SQLException { EmpLeave
-	 * empLeave = new EmpLeave(); empLeave.setEmpLeaveId(rs.getInt("EMP_LEAVE_ID"));
-	 * empLeave.setEmpId(rs.getInt("EMP_ID"));
-	 * empLeave.setLeaveItemId(rs.getInt("LEAVE_ITEM_ID"));
-	 * empLeave.setTotalDays(rs.getDouble("TOTAL_DAYS")); return empLeave; }
-	 * 
-	 * 
-	 * 
+	 */
+
+	private EmployeeLeaveBalance convertEmpLeave(ResultSet rs) throws SQLException {
+		EmployeeLeaveBalance employeeLeaveBalance = new EmployeeLeaveBalance();
+		employeeLeaveBalance.setEmployeeLeaveBalanceId(rs.getInt("EMPLOYEE_LEAVE_BALANCE_ID"));
+		employeeLeaveBalance.setEmployeeId(rs.getInt("EMPLOYEE_ID"));
+		employeeLeaveBalance.setLeaveItemId(rs.getInt("LEAVE_ITEM_ID"));
+		employeeLeaveBalance.setTotalDays(rs.getDouble("TOTAL_DAYS"));
+		return employeeLeaveBalance;
+	}
+
+	/*
 	 * private EmpLeaveStatusItem convertEmpLeaveStatusItem(ResultSet rs) throws
 	 * SQLException { EmpLeaveStatusItem item = new EmpLeaveStatusItem();
 	 * item.setEmpId(rs.getInt("EMP_ID"));
@@ -88,11 +96,16 @@ public class EmpLeaveDao {
 	 * rs.getDouble("TOTAL_DAYS"); double used = rs.getDouble("USED_DAYS");
 	 * item.setTotalDays(total); item.setUsedDays(used); item.setRemainDays(total -
 	 * used); return item; }
-	 * 
-	 * private void setIntOrNull(PreparedStatement pstmt, int idx1, int idx2,
-	 * Integer value) throws SQLException { if (value != null) { pstmt.setInt(idx1,
-	 * value); pstmt.setInt(idx2, value); } else { pstmt.setNull(idx1,
-	 * java.sql.Types.NUMERIC); pstmt.setNull(idx2, java.sql.Types.NUMERIC); } }
 	 */
+
+	private void setIntOrNull(PreparedStatement pstmt, int idx1, int idx2, Integer value) throws SQLException {
+		if (value != null) {
+			pstmt.setInt(idx1, value);
+			pstmt.setInt(idx2, value);
+		} else {
+			pstmt.setNull(idx1, java.sql.Types.NUMERIC);
+			pstmt.setNull(idx2, java.sql.Types.NUMERIC);
+		}
+	}
 
 }

@@ -1,24 +1,20 @@
-package erp.attendance.model;
+package erp.attendance.service;
 
 import java.util.Date;
 
-public class DailyWorkRecord {
-	private int dailyWorkRecordId;
-	private int employeeId;
+public class DailyWorkInsertRequest {
 	private Date workDate;
-	private Integer projectId;
+	private int projectId;
 	private long dailyPay;
 	private double payRate;
 	private long incomeTax;
 	private long localIncomeTax;
 	private long actualPay;
-	public DailyWorkRecord() {
+	public DailyWorkInsertRequest() {
 	}
-	public DailyWorkRecord(int dailyWorkRecordId, int employeeId, Date workDate, Integer projectId, long dailyPay,
-			double payRate, long incomeTax, long localIncomeTax, long actualPay) {
+	public DailyWorkInsertRequest(Date workDate, int projectId, long dailyPay, double payRate, long incomeTax,
+			long localIncomeTax, long actualPay) {
 		super();
-		this.dailyWorkRecordId = dailyWorkRecordId;
-		this.employeeId = employeeId;
 		this.workDate = workDate;
 		this.projectId = projectId;
 		this.dailyPay = dailyPay;
@@ -27,28 +23,16 @@ public class DailyWorkRecord {
 		this.localIncomeTax = localIncomeTax;
 		this.actualPay = actualPay;
 	}
-	public int getDailyWorkRecordId() {
-		return dailyWorkRecordId;
-	}
-	public void setDailyWorkRecordId(int dailyWorkRecordId) {
-		this.dailyWorkRecordId = dailyWorkRecordId;
-	}
-	public int getEmployeeId() {
-		return employeeId;
-	}
-	public void setEmployeeId(int employeeId) {
-		this.employeeId = employeeId;
-	}
 	public Date getWorkDate() {
 		return workDate;
 	}
 	public void setWorkDate(Date workDate) {
 		this.workDate = workDate;
 	}
-	public Integer getProjectId() {
+	public int getProjectId() {
 		return projectId;
 	}
-	public void setProjectId(Integer projectId) {
+	public void setProjectId(int projectId) {
 		this.projectId = projectId;
 	}
 	public long getDailyPay() {
