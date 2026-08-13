@@ -20,7 +20,7 @@
 			<%-- 부서, 직위, 이름 조건으로 사원 선택 목록을 서버에서 다시 조회한다. --%>
 			<form class="employee-search" action="${pageContext.request.contextPath}/personnel/employee-card.do#employee-select-modal" method="get">
 				<select name="departmentId"><option value="">전체 부서</option><c:forEach var="department" items="${departments}"><option value="${department.departmentId}" ${param.departmentId eq department.departmentId ? 'selected' : ''}><c:out value="${department.departmentName}" /></option></c:forEach></select>
-				<select name="positionId"><option value="">전체 직위</option><c:forEach var="position" items="${positions}"><option value="${position.positionId}" ${param.positionId eq position.positionId ? 'selected' : ''}><c:out value="${position.positionName}" /></option></c:forEach></select>
+				<select name="positionId"><option value="">전체 직위</option><c:forEach var="position" items="${positions}"><option value="${position.jobPositionId}" ${param.positionId eq position.jobPositionId ? 'selected' : ''}><c:out value="${position.jobPositionName}" /></option></c:forEach></select>
 				<input name="keyword" value="<c:out value='${param.keyword}' />" placeholder="검색어 입력">
 				<button class="search-button" type="submit">검색</button>
 				<a class="all-view" href="${pageContext.request.contextPath}/personnel/employee-card.do">전체보기</a>
