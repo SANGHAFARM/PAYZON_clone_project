@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -13,13 +14,15 @@
 <%@ include file="/WEB-INF/view/common/header.jspf" %>
 <main class="retirement-benefit-page page-content">
     <header class="page-heading"><div><p>퇴직관리</p><h1>퇴직급여 입력/관리</h1></div></header>
+	<c:if test="${not empty message}"><p class="form-message" role="status"><c:out value="${message}" /></p></c:if>
 
+	<%-- 지급년도별 퇴직급여 계산내역 JOIN 목록 --%>
     <section class="benefit-card benefit-list-card">
         <div class="benefit-toolbar">
             <form method="get" action="${pageContext.request.contextPath}/retirement/benefit.do">
                 <label for="paymentYear">지급년도</label>
                 <select id="paymentYear" name="paymentYear">
-                    <c:forEach var="year" items="${paymentYears}"><option value="${year}">${year}년</option></c:forEach>
+					<c:forEach var="year" items="${paymentYears}"><option value="${year}" ${year eq selectedYear ? 'selected' : ''}>${year}년</option></c:forEach>
                 </select>
                 <button type="submit" class="search-button">조회</button>
             </form>
@@ -35,10 +38,10 @@
             <tbody>
             <c:forEach var="item" items="${retirementBenefits}">
                 <c:url var="employeeBenefitUrl" value="/retirement/benefit.do">
-                    <c:param name="employeeId" value="${item.employeeId}"></c:param>
+					<c:param name="calculationId" value="${item.calculationId}"></c:param>
                     <c:param name="paymentYear" value="${selectedYear}"></c:param>
                 </c:url>
-                <tr class="benefit-list-row ${param.employeeId eq item.employeeId ? 'is-selected' : ''}">
+				<tr class="benefit-list-row ${param.calculationId eq item.calculationId ? 'is-selected' : ''}">
                     <td><a href="${employeeBenefitUrl}">${item.paymentDate}</a></td>
                     <td><a href="${employeeBenefitUrl}">${item.settlementType}</a></td>
                     <td><a href="${employeeBenefitUrl}">${item.employeeName}</a></td>
@@ -54,15 +57,16 @@
             </tbody>
         </table>
         <div class="list-actions"><button type="submit" form="deleteForm" class="button button-muted">선택삭제</button><button type="submit" form="deleteAllForm" class="button button-muted">전체삭제</button></div>
-        <form id="deleteForm" method="post" action="${pageContext.request.contextPath}/retirement/benefit/delete.do"></form>
+		<form id="deleteForm" method="post" action="${pageContext.request.contextPath}/retirement/benefit/delete.do"><input type="hidden" name="calculationId" value="${retirementBenefit.calculationId}"></form>
         <form id="deleteAllForm" method="post" action="${pageContext.request.contextPath}/retirement/benefit/delete-all.do"></form>
     </section>
 
     <form class="benefit-form" method="post" action="${pageContext.request.contextPath}/retirement/benefit/save.do">
+		<input type="hidden" name="calculationId" value="${retirementBenefit.calculationId}">
         <input type="hidden" name="employeeId" value="${retirementBenefit.employeeId}">
 
         <section class="retirement-calc-bar">
-            <label><span>구분</span><select name="settlementType"><option value="">선택</option><option value="RETIREMENT">퇴직정산</option><option value="INTERIM">중간정산</option></select></label>
+			<label><span>구분</span><select name="settlementType"><option value="">선택</option><option value="RETIREMENT" ${retirementBenefit.settlementType eq 'RETIREMENT' ? 'selected' : ''}>퇴직정산</option><option value="INTERIM" ${retirementBenefit.settlementType eq 'INTERIM' ? 'selected' : ''}>중간정산</option></select></label>
             <label><span>입사일</span><input type="date" name="startDate" value="${retirementBenefit.startDate}"></label>
             <label><span>퇴직일</span><input type="date" name="endDate" value="${retirementBenefit.endDate}"></label>
             <div class="calc-value"><span>근속년수</span><b>${retirementBenefit.serviceYears}</b><em>년</em></div>
@@ -75,7 +79,7 @@
                 <div class="original-section-title"><h2>급여내역</h2><span>사유발생일 이전 최근 3개월 지급합계 금액</span><button type="submit" formaction="${pageContext.request.contextPath}/retirement/benefit/load-pay.do" class="small-button">급여내역 불러오기</button></div>
                 <table class="original-table salary-history-table">
                     <thead><tr><th>산정기간</th><th>산정일수</th><th>급여총액</th></tr></thead>
-                    <tbody><c:forEach begin="0" end="3"><tr><td><div class="date-range"><input type="date" name="salaryStartDate"><i>~</i><input type="date" name="salaryEndDate"></div></td><td><input type="number" name="salaryDays" value="0" readonly aria-readonly="true"></td><td><input type="text" name="salaryTotal"></td></tr></c:forEach></tbody>
+					<tbody><c:forEach begin="0" end="3" var="row"><c:set var="salary" value="${retirementBenefit.salaryEntries[row]}"/><tr><td><div class="date-range"><input type="date" name="salaryStartDate" value="<fmt:formatDate value='${salary.periodStartDate}' pattern='yyyy-MM-dd'/>"><i>~</i><input type="date" name="salaryEndDate" value="<fmt:formatDate value='${salary.periodEndDate}' pattern='yyyy-MM-dd'/>"></div></td><td><input type="number" name="salaryDays" value="${empty salary.calcDays ? 0 : salary.calcDays}" readonly aria-readonly="true"></td><td><input type="text" name="salaryTotal" value="${salary.amount}"></td></tr></c:forEach></tbody>
                     <tfoot><tr><th>총 합계</th><td>${retirementBenefit.salaryDaysTotal}</td><td>${retirementBenefit.salaryTotal}</td></tr></tfoot>
                 </table>
                 <p class="warning-note">단, 중간일자 계산일 경우 해당월의 지급합계 금액에서 일수로 나눈 값을 기본으로 표시</p>
@@ -86,7 +90,7 @@
                 <div class="original-section-title"><h2>기타 과세소득</h2><span>사유 발생일 이전 1년간의 금액 입력</span></div>
                 <table class="original-table other-income-table">
                     <thead><tr><th>지급년월</th><th>지급항목</th><th>금액</th><th>3개월분</th></tr></thead>
-                    <tbody><c:forEach begin="0" end="4"><tr><td><input type="month" name="otherIncomeMonth"></td><td><input type="text" name="otherIncomeItem"></td><td><input type="text" name="otherIncomeAmount"></td><td><input type="text" name="threeMonthAmount" readonly value="0"></td></tr></c:forEach></tbody>
+					<tbody><c:forEach begin="0" end="4" var="row"><c:set var="income" value="${retirementBenefit.otherIncomeEntries[row]}"/><tr><td><input type="month" name="otherIncomeMonth" value="${income.payYmInput}"></td><td><input type="text" name="otherIncomeItem" value="${income.itemName}"></td><td><input type="text" name="otherIncomeAmount" value="${income.amount}"></td><td><input type="text" name="threeMonthAmount" readonly value="${empty income ? 0 : income.threeMonthAmount}"></td></tr></c:forEach></tbody>
                 </table>
                 <table class="original-table three-field-table"><thead><tr><th>비과세 퇴직급여</th><th>기납부(또는 기과세이연) 세액</th><th>세액공제</th></tr></thead><tbody><tr><td><input type="text" name="taxFreeRetirement"></td><td><input type="text" name="prepaidTax"></td><td><input type="text" name="taxCredit"></td></tr></tbody></table>
             </section>
@@ -94,7 +98,7 @@
 
         <section class="original-block deferred-block">
             <div class="original-section-title"><h2>과세이연계좌</h2><span>해당 사항이 없는 경우 입력하지 않습니다.</span></div>
-            <table class="original-table deferred-table"><thead><tr><th>퇴직연금사업자명</th><th>사업자등록번호</th><th>계좌번호</th><th>입금(이체)일</th><th>계좌입금금액</th></tr></thead><tbody><c:forEach begin="0" end="1"><tr><td><input type="text" name="pensionProvider"></td><td><input type="text" name="pensionBusinessNo"></td><td><input type="text" name="pensionAccount"></td><td><input type="date" name="pensionDate"></td><td><input type="text" name="pensionAmount"></td></tr></c:forEach></tbody></table>
+			<table class="original-table deferred-table"><thead><tr><th>퇴직연금사업자명</th><th>사업자등록번호</th><th>계좌번호</th><th>입금(이체)일</th><th>계좌입금금액</th></tr></thead><tbody><c:forEach begin="0" end="1" var="row"><c:set var="deferral" value="${retirementBenefit.taxDeferrals[row]}"/><tr><td><input type="text" name="pensionProvider" value="${deferral.bizName}"></td><td><input type="text" name="pensionBusinessNo" value="${deferral.bizRegNo}"></td><td><input type="text" name="pensionAccount" value="${deferral.accountNo}"></td><td><input type="date" name="pensionDate" value="<fmt:formatDate value='${deferral.depositDate}' pattern='yyyy-MM-dd'/>"></td><td><input type="text" name="pensionAmount" value="${deferral.depositAmt}"></td></tr></c:forEach></tbody></table>
             <p class="warning-note">연금계좌에 입금하여 퇴직소득세를 징수하지 않는 경우에 작성합니다.</p>
         </section>
 
@@ -111,12 +115,13 @@
         <div class="bottom-actions"><button type="submit" class="button button-primary">저장</button><button type="reset" class="button button-muted">취소</button></div>
     </form>
 
+	<%-- CSS :target 방식으로 신규 퇴직급여 대상 사원을 검색·선택한다. --%>
     <section id="employee-select-modal" class="employee-select-overlay">
         <div class="employee-select-modal" role="dialog" aria-modal="true" aria-labelledby="employee-select-title">
             <header><h2 id="employee-select-title">퇴직급여지급 사원선택</h2><a href="#" class="modal-close" aria-label="닫기">×</a></header>
-            <form method="get" action="${pageContext.request.contextPath}/retirement/benefit/employee-search.do"><div class="employee-modal-search"><input type="search" name="employeeKeyword" placeholder="사원검색"><button type="submit" class="search-button">검색</button><a href="#employee-select-modal" class="all-view">전체보기</a><select name="departmentId"><option value="">부서별</option><c:forEach var="department" items="${departments}"><option value="${department.id}">${department.name}</option></c:forEach></select></div></form>
+			<form method="get" action="${pageContext.request.contextPath}/retirement/benefit/employee-search.do#employee-select-modal"><div class="employee-modal-search"><input type="search" name="employeeKeyword" value="${param.employeeKeyword}" placeholder="사원검색"><button type="submit" class="search-button">검색</button><a href="${pageContext.request.contextPath}/retirement/benefit.do#employee-select-modal" class="all-view">전체보기</a><select name="departmentId"><option value="">부서별</option><c:forEach var="department" items="${departments}"><option value="${department.departmentId}" ${param.departmentId eq department.departmentId ? 'selected' : ''}>${department.departmentName}</option></c:forEach></select></div></form>
             <form method="post" action="${pageContext.request.contextPath}/retirement/benefit/new.do">
-                <div class="employee-select-table-wrap"><table class="data-table employee-select-table"><colgroup><col class="select-col"><col><col><col><col><col><col></colgroup><thead><tr><th>선택</th><th>구분</th><th>사원번호</th><th>성명</th><th>부서</th><th>직위</th><th>상태</th></tr></thead><tbody><c:forEach var="employee" items="${selectableEmployees}"><tr><td><input type="radio" name="employeeId" value="${employee.employeeId}"></td><td>${employee.employmentTypeName}</td><td>${employee.employeeNo}</td><td>${employee.name}</td><td>${employee.departmentName}</td><td>${employee.positionName}</td><td>${employee.statusName}</td></tr></c:forEach><c:if test="${empty selectableEmployees}"><tr><td colspan="7" class="empty-row">선택할 사원이 없습니다.</td></tr></c:if></tbody></table></div>
+				<div class="employee-select-table-wrap"><table class="data-table employee-select-table"><colgroup><col class="select-col"><col><col><col><col><col><col></colgroup><thead><tr><th>선택</th><th>구분</th><th>사원번호</th><th>성명</th><th>부서</th><th>직위</th><th>상태</th></tr></thead><tbody><c:forEach var="employee" items="${selectableEmployees}"><tr><td><input type="radio" name="employeeId" value="${employee.employeeId}" required></td><td>${employee.employmentType}</td><td>${employee.employeeNo}</td><td>${employee.name}</td><td>${employee.departmentName}</td><td>${employee.positionName}</td><td>${employee.statusName}</td></tr></c:forEach><c:if test="${empty selectableEmployees}"><tr><td colspan="7" class="empty-row">선택할 사원이 없습니다.</td></tr></c:if></tbody></table></div>
                 <div class="employee-select-actions"><button type="submit" class="button button-primary">사원선택</button><a href="#" class="button button-muted">선택취소</a></div>
             </form>
         </div>
