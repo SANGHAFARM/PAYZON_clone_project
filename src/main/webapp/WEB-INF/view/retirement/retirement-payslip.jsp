@@ -30,8 +30,8 @@
                     <thead><tr><th>구분</th><th>성명</th><th>실지급액</th></tr></thead>
                     <tbody>
                     <c:forEach var="item" items="${retirementPayslips}">
-                        <c:url var="payslipUrl" value="/retirement/payslip.do"><c:param name="employeeId" value="${item.employeeId}"/><c:param name="paymentYear" value="${selectedYear}"/></c:url>
-                        <tr class="${param.employeeId eq item.employeeId ? 'is-selected' : ''}">
+						<c:url var="payslipUrl" value="/retirement/payslip.do"><c:param name="calculationId" value="${item.calculationId}"/><c:param name="paymentYear" value="${selectedYear}"/></c:url>
+						<tr class="${param.calculationId eq item.calculationId ? 'is-selected' : ''}">
                             <td><a href="${payslipUrl}">${item.settlementType}</a></td><td><a href="${payslipUrl}">${item.employeeName}</a></td>
                             <td><a href="${payslipUrl}">${item.netPayment}</a></td>
                         </tr>
@@ -45,7 +45,7 @@
         <section class="payslip-workspace">
             <article class="retirement-document">
                 <header class="payslip-document-title">
-                    <div class="company-logo"><c:choose><c:when test="${not empty company.logoUrl}"><img src="${company.logoUrl}" alt="회사 로고"></c:when><c:otherwise><span>회사 로고</span></c:otherwise></c:choose></div>
+					<div class="company-logo"><c:choose><c:when test="${not empty company.logoImgPath}"><img src="${company.logoImgPath}" alt="회사 로고"></c:when><c:otherwise><span>회사 로고</span></c:otherwise></c:choose></div>
                     <h2>퇴 직 급 여 명 세 서</h2>
                 </header>
 
@@ -91,8 +91,8 @@
 
                 <footer class="payslip-document-footer">
                     <p>위 금액을 해당자의 퇴직금 정산액으로 정히 영수함.</p>
-                    <div class="document-date"><input name="issueYear" value="${issueDate.year}" maxlength="4">년 <input name="issueMonth" value="${issueDate.month}" maxlength="2">월 <input name="issueDay" value="${issueDate.day}" maxlength="2">일</div>
-                    <div class="company-signature"><label><input type="checkbox" name="showCeo" value="Y" checked> 대표자 표기</label><div><strong>${company.companyName}</strong><span>대표이사 ${company.ceoName}</span></div><div class="stamp-box"><c:choose><c:when test="${not empty company.stampUrl}"><img src="${company.stampUrl}" alt="회사 도장"></c:when><c:otherwise><span>회사 도장을<br>넣어주세요</span></c:otherwise></c:choose></div></div>
+					<div class="document-date"><input name="issueYear" value="${issueYear}" maxlength="4">년 <input name="issueMonth" value="${issueMonth}" maxlength="2">월 <input name="issueDay" value="${issueDay}" maxlength="2">일</div>
+					<div class="company-signature"><label><input type="checkbox" name="showCeo" value="Y" checked> 대표자 표기</label><div><strong>${company.cmpnName}</strong><span>${company.ceoTitle} ${company.ceoName}</span></div><div class="stamp-box"><c:choose><c:when test="${not empty company.stampImgPath}"><img src="${company.stampImgPath}" alt="회사 도장"></c:when><c:otherwise><span>회사 도장을<br>넣어주세요</span></c:otherwise></c:choose></div></div>
                     <table class="signature-table"><tbody><tr><td><div class="signature-party"><strong>근로자</strong><span>${selectedPayslip.employeeName}</span><em>인</em></div></td><td><div class="signature-party"><strong>사용자</strong><span>${company.ceoName}</span><em>인</em></div></td></tr></tbody></table>
                 </footer>
             </article>

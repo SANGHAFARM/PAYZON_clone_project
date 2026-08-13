@@ -9,7 +9,10 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import erp.employees.dto.EmployeeListItem;
+import erp.employees.dto.EmployeeSummary;
 import erp.employees.model.Employee;
+import erp.employees.service.EmployeeSearchCondition;
 import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
 // 사원 기본정보 데이터베이스 접근(DAO) 클래스
@@ -158,6 +161,160 @@ public class EmployeeDao {
 		} finally {
 			JdbcUtil.close(rs);
 			JdbcUtil.close(pstmt);
+		}
+	}
+
+	// 사원현황 검색조건에 맞는 전체 행 수 조회 (페이징 계산용)
+	public int countByCondition(Connection conn, EmployeeSearchCondition condition) throws SQLException {
+		StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM EMPLOYEE E ");
+		sql.append("LEFT JOIN DEPARTMENT D ON E.DEPARTMENT_ID = D.DEPARTMENT_ID ");
+		sql.append("LEFT JOIN JOB_POSITION J ON E.JOB_POSITION_ID = J.JOB_POSITION_ID WHERE 1=1 ");
+		List<Object> params = new ArrayList<>();
+		appendConditions(sql, params, condition);
+		try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+			setParameters(pstmt, params);
+			try (ResultSet rs = pstmt.executeQuery()) { return rs.next() ? rs.getInt(1) : 0; }
+		}
+	}
+
+	// EMPLOYEE를 중심으로 부서와 직위를 JOIN하여 화면용 사원 목록 조회
+	public List<EmployeeListItem> selectListByCondition(Connection conn, EmployeeSearchCondition condition)
+			throws SQLException {
+		StringBuilder inner = new StringBuilder();
+		inner.append("SELECT E.EMPLOYEE_ID, E.EMP_TYPE, TO_CHAR(E.JOIN_DATE, 'YYYY-MM-DD') JOIN_DATE, ");
+		inner.append("E.EMP_NO, E.EMP_NAME_KR, E.EMP_NAME_EN, D.DEPARTMENT_NAME, J.JOB_POSITION_NAME, ");
+		inner.append("E.JUMIN_NO, E.FOREIGN_YN, E.ADDRESS, E.TEL_NO, E.MOBILE_NO, E.EMAIL, E.SNS_ADDRESS, ");
+		inner.append("TO_CHAR(E.RETIRE_DATE, 'YYYY-MM-DD') RETIRE_DATE, E.RETIRE_TYPE, E.RETIRE_REASON, E.AFTER_RETIRE_CONTACT, E.STATUS, E.BANK_NAME, E.ACCOUNT_NO, ");
+		inner.append("CASE WHEN EXISTS (SELECT 1 FROM RETIREMENT_CALCULATION RC WHERE RC.EMPLOYEE_ID = E.EMPLOYEE_ID AND RC.CALC_TYPE = '중간정산') THEN 'Y' ELSE 'N' END INTERIM_SETTLEMENT, ");
+		inner.append("CASE WHEN EXISTS (SELECT 1 FROM RETIREMENT_CALCULATION RC WHERE RC.EMPLOYEE_ID = E.EMPLOYEE_ID AND RC.CALC_TYPE = '퇴직정산') THEN 'Y' ELSE 'N' END RETIREMENT_SETTLEMENT ");
+		inner.append("FROM EMPLOYEE E LEFT JOIN DEPARTMENT D ON E.DEPARTMENT_ID = D.DEPARTMENT_ID ");
+		inner.append("LEFT JOIN JOB_POSITION J ON E.JOB_POSITION_ID = J.JOB_POSITION_ID WHERE 1=1 ");
+		List<Object> params = new ArrayList<>();
+		appendConditions(inner, params, condition);
+		inner.append("ORDER BY E.EMPLOYEE_ID DESC");
+
+		String sql = "SELECT * FROM (SELECT LIST_DATA.*, ROWNUM RN FROM (" + inner
+				+ ") LIST_DATA WHERE ROWNUM <= ?) WHERE RN >= ?";
+		int startRow = (condition.getPage() - 1) * condition.getPageSize() + 1;
+		params.add(condition.getPage() * condition.getPageSize());
+		params.add(startRow);
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			setParameters(pstmt, params);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				List<EmployeeListItem> result = new ArrayList<>();
+				while (rs.next()) result.add(makeEmployeeListItem(rs));
+				return result;
+			}
+		}
+	}
+
+	// 전체 사원을 상태 및 고용형태별로 집계하여 상단 현황 카드에 표시
+	public EmployeeSummary selectSummary(Connection conn) throws SQLException {
+		String sql = "SELECT COUNT(*) TOTAL_COUNT, "
+				+ "SUM(CASE WHEN STATUS = '재직' THEN 1 ELSE 0 END) WORKING_COUNT, "
+				+ "SUM(CASE WHEN STATUS = '퇴직' THEN 1 ELSE 0 END) RETIRED_COUNT, "
+				+ "SUM(CASE WHEN EMP_TYPE = '정규직' THEN 1 ELSE 0 END) REGULAR_COUNT, "
+				+ "SUM(CASE WHEN EMP_TYPE = '계약직' THEN 1 ELSE 0 END) CONTRACT_COUNT, "
+				+ "SUM(CASE WHEN EMP_TYPE = '임시직' THEN 1 ELSE 0 END) TEMPORARY_COUNT, "
+				+ "SUM(CASE WHEN EMP_TYPE = '파견직' THEN 1 ELSE 0 END) DISPATCHED_COUNT, "
+				+ "SUM(CASE WHEN EMP_TYPE = '위촉직' THEN 1 ELSE 0 END) COMMISSIONED_COUNT, "
+				+ "SUM(CASE WHEN EMP_TYPE = '일용직' THEN 1 ELSE 0 END) DAILY_COUNT FROM EMPLOYEE";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
+			EmployeeSummary summary = new EmployeeSummary();
+			if (rs.next()) {
+				summary.setTotalCount(rs.getInt("TOTAL_COUNT"));
+				summary.setWorkingCount(rs.getInt("WORKING_COUNT"));
+				summary.setRetiredCount(rs.getInt("RETIRED_COUNT"));
+				summary.setRegularCount(rs.getInt("REGULAR_COUNT"));
+				summary.setContractCount(rs.getInt("CONTRACT_COUNT"));
+				summary.setTemporaryCount(rs.getInt("TEMPORARY_COUNT"));
+				summary.setDispatchedCount(rs.getInt("DISPATCHED_COUNT"));
+				summary.setCommissionedCount(rs.getInt("COMMISSIONED_COUNT"));
+				summary.setDailyCount(rs.getInt("DAILY_COUNT"));
+			}
+			return summary;
+		}
+	}
+
+	private void appendConditions(StringBuilder sql, List<Object> params, EmployeeSearchCondition condition) {
+		// 목록과 COUNT 쿼리에 동일한 WHERE 조건을 적용하기 위한 공통 메서드
+		if (condition.getDepartmentId() != null) { sql.append("AND E.DEPARTMENT_ID = ? "); params.add(condition.getDepartmentId()); }
+		if (condition.getPositionId() != null) { sql.append("AND E.JOB_POSITION_ID = ? "); params.add(condition.getPositionId()); }
+		if (!condition.getEmploymentType().isEmpty()) {
+			sql.append("AND E.EMP_TYPE = ? "); params.add(condition.getEmploymentType());
+		}
+		if ("WORK".equals(condition.getStatus())) { sql.append("AND E.STATUS = '재직' "); }
+		else if ("RETIRED".equals(condition.getStatus())) { sql.append("AND E.STATUS = '퇴직' "); }
+
+		if (!condition.getKeyword().isEmpty()) {
+			String keyword = "%" + condition.getKeyword() + "%";
+			if ("NAME".equals(condition.getSearchTarget())) { sql.append("AND E.EMP_NAME_KR LIKE ? "); params.add(keyword); }
+			else if ("DEPARTMENT".equals(condition.getSearchTarget())) { sql.append("AND D.DEPARTMENT_NAME LIKE ? "); params.add(keyword); }
+			else if ("POSITION".equals(condition.getSearchTarget())) { sql.append("AND J.JOB_POSITION_NAME LIKE ? "); params.add(keyword); }
+			else if ("EMPLOYEE_NO".equals(condition.getSearchTarget())) { sql.append("AND E.EMP_NO LIKE ? "); params.add(keyword); }
+			else {
+				sql.append("AND (E.EMP_NAME_KR LIKE ? OR D.DEPARTMENT_NAME LIKE ? OR J.JOB_POSITION_NAME LIKE ? OR E.EMP_NO LIKE ?) ");
+				params.add(keyword); params.add(keyword); params.add(keyword); params.add(keyword);
+			}
+		}
+	}
+
+	private void setParameters(PreparedStatement pstmt, List<Object> params) throws SQLException {
+		for (int i = 0; i < params.size(); i++) pstmt.setObject(i + 1, params.get(i));
+	}
+
+	private EmployeeListItem makeEmployeeListItem(ResultSet rs) throws SQLException {
+		// JOIN 조회 결과를 JSP 전용 DTO로 변환한다.
+		EmployeeListItem item = new EmployeeListItem();
+		item.setEmployeeId(rs.getInt("EMPLOYEE_ID"));
+		item.setEmploymentType(rs.getString("EMP_TYPE"));
+		item.setJoinDate(rs.getString("JOIN_DATE"));
+		item.setEmployeeNo(rs.getString("EMP_NO"));
+		item.setName(rs.getString("EMP_NAME_KR"));
+		item.setEnglishName(rs.getString("EMP_NAME_EN"));
+		item.setDepartmentName(rs.getString("DEPARTMENT_NAME"));
+		item.setPositionName(rs.getString("JOB_POSITION_NAME"));
+		item.setMaskedResidentNo(rs.getString("JUMIN_NO"));
+		item.setNationalityType("Y".equals(rs.getString("FOREIGN_YN")) ? "외국인" : "내국인");
+		item.setAddress(rs.getString("ADDRESS"));
+		item.setPhone(rs.getString("TEL_NO"));
+		item.setMobile(rs.getString("MOBILE_NO"));
+		item.setEmail(rs.getString("EMAIL"));
+		item.setSns(rs.getString("SNS_ADDRESS"));
+		item.setRetirementDate(rs.getString("RETIRE_DATE"));
+		item.setRetirementType(rs.getString("RETIRE_TYPE"));
+		item.setRetirementReason(rs.getString("RETIRE_REASON"));
+		item.setAfterContact(rs.getString("AFTER_RETIRE_CONTACT"));
+		item.setInterimSettlement("Y".equals(rs.getString("INTERIM_SETTLEMENT")));
+		item.setRetirementSettlement("Y".equals(rs.getString("RETIREMENT_SETTLEMENT")));
+		item.setStatus(rs.getString("STATUS"));
+		String bank = rs.getString("BANK_NAME");
+		String account = rs.getString("ACCOUNT_NO");
+		item.setBankAccount((bank == null ? "" : bank) + (account == null || account.isEmpty() ? "" : " " + account));
+		return item;
+	}
+
+	// 사원 퇴직처리 시 상태와 퇴직 관련 컬럼만 갱신한다.
+	public int updateRetirement(Connection conn, int employeeId, String retireType, java.util.Date retireDate,
+			String retireReason, String afterContact) throws SQLException {
+		String sql = "UPDATE EMPLOYEE SET STATUS = '퇴직', RETIRE_TYPE = ?, RETIRE_DATE = ?, RETIRE_REASON = ?, AFTER_RETIRE_CONTACT = ? WHERE EMPLOYEE_ID = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, retireType);
+			pstmt.setTimestamp(2, new Timestamp(retireDate.getTime()));
+			pstmt.setString(3, retireReason);
+			pstmt.setString(4, afterContact);
+			pstmt.setInt(5, employeeId);
+			return pstmt.executeUpdate();
+		}
+	}
+
+	// 퇴직처리를 취소하면 재직 상태로 복원하고 퇴직정보를 초기화한다.
+	public int cancelRetirement(Connection conn, int employeeId) throws SQLException {
+		String sql = "UPDATE EMPLOYEE SET STATUS = '재직', RETIRE_TYPE = NULL, RETIRE_DATE = NULL, RETIRE_REASON = NULL, AFTER_RETIRE_CONTACT = NULL WHERE EMPLOYEE_ID = ? AND STATUS = '퇴직'";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, employeeId);
+			return pstmt.executeUpdate();
 		}
 	}
 

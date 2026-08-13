@@ -92,6 +92,11 @@ public class RetirementIncomeEntry {
 		return payYm;
 	}
 
+	// HTML month 입력값 형식(YYYY-MM)으로 변환하여 JSP에 제공한다.
+	public String getPayYmInput() {
+		return payYm != null && payYm.length() == 6 ? payYm.substring(0, 4) + "-" + payYm.substring(4) : payYm;
+	}
+
 	public void setPayYm(String payYm) {
 		this.payYm = payYm;
 	}

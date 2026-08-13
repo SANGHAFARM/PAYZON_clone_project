@@ -21,26 +21,27 @@
 			<p class="form-message"><c:out value="${message}" /></p>
 		</c:if>
 
+		<%-- CERTIFICATE_ISSUANCE 중심 JOIN 결과의 검색 및 발급내역 목록 --%>
 		<section class="register-card">
 			<form class="register-search" action="${pageContext.request.contextPath}/personnel/certificate-register.do" method="get">
 				<label>
 					<span class="sr-only">증명서 구분</span>
 					<select name="certificateType">
 						<option value="">전체</option>
-						<option value="WORKING" ${param.certificateType eq 'WORKING' ? 'selected' : ''}>재직증명서</option>
-						<option value="CAREER" ${param.certificateType eq 'CAREER' ? 'selected' : ''}>경력증명서</option>
-						<option value="RETIREMENT" ${param.certificateType eq 'RETIREMENT' ? 'selected' : ''}>퇴직증명서</option>
+						<option value="WORKING" ${condition.certificateType eq 'WORKING' ? 'selected' : ''}>재직증명서</option>
+						<option value="CAREER" ${condition.certificateType eq 'CAREER' ? 'selected' : ''}>경력증명서</option>
+						<option value="RETIREMENT" ${condition.certificateType eq 'RETIREMENT' ? 'selected' : ''}>퇴직증명서</option>
 					</select>
 				</label>
 				<label class="date-range">
 					<span class="sr-only">발급일</span>
-					<input type="date" name="issueDateFrom" value="${param.issueDateFrom}">
+					<input type="date" name="issueDateFrom" value="${condition.issueDateFrom}">
 					<i>~</i>
-					<input type="date" name="issueDateTo" value="${param.issueDateTo}">
+					<input type="date" name="issueDateTo" value="${condition.issueDateTo}">
 				</label>
 				<label class="keyword-field">
 					<span class="sr-only">검색어</span>
-					<input type="search" name="keyword" value="${param.keyword}" placeholder="검색어 입력">
+					<input type="search" name="keyword" value="<c:out value='${condition.keyword}' />" placeholder="검색어 입력">
 				</label>
 				<button type="submit" class="search-button">검색</button>
 				<a class="all-button" href="${pageContext.request.contextPath}/personnel/certificate-register.do">전체보기</a>
@@ -82,11 +83,11 @@
 				</div>
 
 				<nav class="pagination" aria-label="페이지 이동">
-					<c:if test="${pageInfo.hasPrevious}"><a href="?page=${pageInfo.previousPage}">이전</a></c:if>
+					<c:if test="${pageInfo.hasPrevious}"><c:url var="previousUrl" value="/personnel/certificate-register.do"><c:param name="page" value="${pageInfo.previousPage}"/><c:param name="certificateType" value="${condition.certificateType}"/><c:param name="issueDateFrom" value="${condition.issueDateFrom}"/><c:param name="issueDateTo" value="${condition.issueDateTo}"/><c:param name="keyword" value="${condition.keyword}"/></c:url><a href="${previousUrl}">이전</a></c:if>
 					<c:forEach var="pageNo" begin="${pageInfo.startPage}" end="${pageInfo.endPage}">
-						<a class="${pageNo eq pageInfo.currentPage ? 'is-current' : ''}" href="?page=${pageNo}"><c:out value="${pageNo}" /></a>
+						<c:url var="pageUrl" value="/personnel/certificate-register.do"><c:param name="page" value="${pageNo}"/><c:param name="certificateType" value="${condition.certificateType}"/><c:param name="issueDateFrom" value="${condition.issueDateFrom}"/><c:param name="issueDateTo" value="${condition.issueDateTo}"/><c:param name="keyword" value="${condition.keyword}"/></c:url><a class="${pageNo eq pageInfo.currentPage ? 'is-current' : ''}" href="${pageUrl}"><c:out value="${pageNo}" /></a>
 					</c:forEach>
-					<c:if test="${pageInfo.hasNext}"><a href="?page=${pageInfo.nextPage}">다음</a></c:if>
+					<c:if test="${pageInfo.hasNext}"><c:url var="nextUrl" value="/personnel/certificate-register.do"><c:param name="page" value="${pageInfo.nextPage}"/><c:param name="certificateType" value="${condition.certificateType}"/><c:param name="issueDateFrom" value="${condition.issueDateFrom}"/><c:param name="issueDateTo" value="${condition.issueDateTo}"/><c:param name="keyword" value="${condition.keyword}"/></c:url><a href="${nextUrl}">다음</a></c:if>
 				</nav>
 
 				<div class="delete-actions">
