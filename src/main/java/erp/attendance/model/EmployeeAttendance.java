@@ -3,20 +3,20 @@ package erp.attendance.model;
 import java.util.Date;
 
 public class EmployeeAttendance {
-	private Long employeeAttendanceId;
-	private Long employeeId;
-	private Long attendanceItemId;
-	private Long leaveItemId;
+	private int employeeAttendanceId;
+	private int employeeId;
+	private int attendanceItemId;
+	private Integer leaveItemId;
 	private Date inputDate;
 	private Date startDate;
 	private Date endDate;
-	private Double attendValue;
-	private Long payAmount;
+	private double attendValue;
+	private long payAmount;
 	private String note;
 	public EmployeeAttendance() {
 	}
-	public EmployeeAttendance(Long employeeAttendanceId, Long employeeId, Long attendanceItemId, Long leaveItemId,
-			Date inputDate, Date startDate, Date endDate, Double attendValue, Long payAmount, String note) {
+	public EmployeeAttendance(int employeeAttendanceId, int employeeId, int attendanceItemId, Integer leaveItemId,
+			Date inputDate, Date startDate, Date endDate, double attendValue, long payAmount, String note) {
 		super();
 		this.employeeAttendanceId = employeeAttendanceId;
 		this.employeeId = employeeId;
@@ -29,28 +29,28 @@ public class EmployeeAttendance {
 		this.payAmount = payAmount;
 		this.note = note;
 	}
-	public Long getEmployeeAttendanceId() {
+	public int getEmployeeAttendanceId() {
 		return employeeAttendanceId;
 	}
-	public void setEmployeeAttendanceId(Long employeeAttendanceId) {
+	public void setEmployeeAttendanceId(int employeeAttendanceId) {
 		this.employeeAttendanceId = employeeAttendanceId;
 	}
-	public Long getEmployeeId() {
+	public int getEmployeeId() {
 		return employeeId;
 	}
-	public void setEmployeeId(Long employeeId) {
+	public void setEmployeeId(int employeeId) {
 		this.employeeId = employeeId;
 	}
-	public Long getAttendanceItemId() {
+	public int getAttendanceItemId() {
 		return attendanceItemId;
 	}
-	public void setAttendanceItemId(Long attendanceItemId) {
+	public void setAttendanceItemId(int attendanceItemId) {
 		this.attendanceItemId = attendanceItemId;
 	}
-	public Long getLeaveItemId() {
+	public Integer getLeaveItemId() {
 		return leaveItemId;
 	}
-	public void setLeaveItemId(Long leaveItemId) {
+	public void setLeaveItemId(Integer leaveItemId) {
 		this.leaveItemId = leaveItemId;
 	}
 	public Date getInputDate() {
@@ -71,16 +71,16 @@ public class EmployeeAttendance {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-	public Double getAttendValue() {
+	public double getAttendValue() {
 		return attendValue;
 	}
-	public void setAttendValue(Double attendValue) {
+	public void setAttendValue(double attendValue) {
 		this.attendValue = attendValue;
 	}
-	public Long getPayAmount() {
+	public long getPayAmount() {
 		return payAmount;
 	}
-	public void setPayAmount(Long payAmount) {
+	public void setPayAmount(long payAmount) {
 		this.payAmount = payAmount;
 	}
 	public String getNote() {

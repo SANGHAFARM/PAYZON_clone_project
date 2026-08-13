@@ -14,35 +14,28 @@ import erp.attend.model.AttendSearchCondition;*/
 import jdbc.JdbcUtil;
 
 //전체적으로 수정필요
-public class EmpAttendRecordDao {
+public class EmployeeAttendanceDao {
 
-	private static EmpAttendRecordDao empAttendRecordDao = new EmpAttendRecordDao();
+	private static EmployeeAttendanceDao employeeAttendanceDao = new EmployeeAttendanceDao();
 
-	public static EmpAttendRecordDao getInstance() {
-		return empAttendRecordDao;
+	public static EmployeeAttendanceDao getInstance() {
+		return employeeAttendanceDao;
 	}
 
-	private EmpAttendRecordDao() {
-	}
+	private EmployeeAttendanceDao() {
+
+	};
 
 	/*
-	 * EmpAttendRecord테이블에 기록을 입력하는 메서드 EmpAttendRecordテーブルに記録を入力するメソッド
+	 * 근태기록 입력
 	 */
-
-	/*
-	 * public int insert(Connection conn, EmployeeAttendance empAt) throws
-	 * SQLException { String sql =
-	 * "INSERT INTO EMP_ATTEND_RECORD VALUES (SEQ_EMP_ATTEND_REC_ID.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-	 * ; try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-	 * pstmt.setLong(1, empAt.getEmployeeId()); pstmt.setInt(1, ear.getEmpId());
-	 * pstmt.setInt(2, ear.getAttendItemId()); setIntOrNull(pstmt, 3,
-	 * ear.getLeaveItemId()); // ← 수정 pstmt.setDate(4,
-	 * dateToSQLDate(ear.getInputDate())); pstmt.setDate(5,
-	 * dateToSQLDate(ear.getStartDate())); pstmt.setDate(6,
-	 * dateToSQLDate(ear.getEndDate())); pstmt.setDouble(7, ear.getAttendValue());
-	 * pstmt.setLong(8, ear.getPayAmount()); pstmt.setString(9, ear.getNote());
-	 * return pstmt.executeUpdate(); } }
-	 */
+	public int insert(Connection conn, EmployeeAttendance empAt) throws SQLException { 
+		String sql = "INSERT INTO EMP_ATTEND_RECORD VALUES (SEQ_EMP_ATTEND_REC_ID.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
+	  try(PreparedStatement pstmt = conn.prepareStatement(sql)){
+		  
+	  }
+		  
+	  }
 
 	/*
 	 * EmpAttendRecord테이블에 있는 기록을 근태기록ID로 조회하는 메서드
@@ -199,7 +192,7 @@ public class EmpAttendRecordDao {
 	 * EmpAttendRecord테이블에 있는 기록을 수정하는 메서드 EmpAttendRecordテーブルにある記録を修正するメソッド
 	 */
 
-	//수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요
+	// 수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요수정필요
 	public int update(Connection conn, EmployeeAttendance empAt) throws SQLException {
 		String sql = "UPDATE EMPLOYEE_ATTENDANCE SET ATTENDANCE_ITEM_ID=?, LEAVE_ITEM_ID=?, INPUT_DATE=?, START_DATE=?, END_DATE=?, ATTEND_VALUE=?, PAY_AMOUNT=?, NOTE=? WHERE EMPLOYEE_ATTENDANCE_ID=?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
