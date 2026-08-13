@@ -146,6 +146,19 @@ public class EmployeeLanguageDao {
 		}
 	}
 
+	// 사원번호(EMPLOYEE_ID)를 기준으로 해당 사원의 어학 내역 전체 삭제
+	public void deleteByEmpId(Connection conn, int empId) throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			String sql = "DELETE FROM EMPLOYEE_LANGUAGE WHERE EMPLOYEE_ID = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, empId);
+			pstmt.executeUpdate();
+		} finally {
+			JdbcUtil.close(pstmt);
+		}
+	}
+
 	// ResultSet 데이터를 EmployeeLanguage 객체로 변환
 	private EmployeeLanguage makeLanguageFromResultSet(ResultSet rs) throws SQLException {
 		EmployeeLanguage language = new EmployeeLanguage();

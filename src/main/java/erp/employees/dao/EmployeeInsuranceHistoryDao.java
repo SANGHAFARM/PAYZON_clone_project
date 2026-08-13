@@ -85,20 +85,45 @@ public class EmployeeInsuranceHistoryDao {
 	public List<EmployeeInsuranceHistory> selectByEmpId(Connection conn, int empId) throws SQLException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
+		List<EmployeeInsuranceHistory> list = new ArrayList<>();
+
 		try {
-			String sql = "SELECT EMPLOYEE_INSURANCE_HISTORY_ID, EMPLOYEE_ID, INSURANCE_TYPE, SYMBOL_NO, ACQUIRE_DATE, LOSS_DATE "
-					+ "FROM EMPLOYEE_INSURANCE_HISTORY WHERE EMPLOYEE_ID = ? ORDER BY ACQUIRE_DATE DESC NULLS LAST, EMPLOYEE_INSURANCE_HISTORY_ID DESC";
+			// EMPLOYEE_ID 기준으로 조회하며, 입력된 순서(PK 오름차순)대로 정렬하여 가져옵니다.
+			String sql = "SELECT * FROM EMPLOYEE_INSURANCE_HISTORY WHERE EMPLOYEE_ID = ? ORDER BY EMPLOYEE_INSURANCE_HISTORY_ID ASC";
 
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, empId);
 			rs = pstmt.executeQuery();
 
-			List<EmployeeInsuranceHistory> result = new ArrayList<>();
+			// 조회된 결과 행(Row)이 있을 때까지 반복하며 DTO에 담습니다.
 			while (rs.next()) {
-				result.add(makeHistoryFromResultSet(rs));
+				EmployeeInsuranceHistory ins = new EmployeeInsuranceHistory();
+
+				// EMPLOYEE_INSURANCE_HISTORY_ID (PK)
+				ins.setEmployeeInsuranceHistoryId(rs.getInt("EMPLOYEE_INSURANCE_HISTORY_ID"));
+
+				// EMPLOYEE_ID (FK)
+				ins.setEmployeeId(rs.getInt("EMPLOYEE_ID"));
+
+				// INSURANCE_TYPE (구분 - 국민연금/건강보험 등)
+				ins.setInsuranceType(rs.getString("INSURANCE_TYPE"));
+
+				// SYMBOL_NO (기호번호)
+				ins.setSymbolNo(rs.getString("SYMBOL_NO"));
+
+				// ACQUIRE_DATE (취득일 - DATE 타입)
+				ins.setAcquireDate(rs.getDate("ACQUIRE_DATE"));
+
+				// LOSS_DATE (상실일 - DATE 타입)
+				ins.setLossDate(rs.getDate("LOSS_DATE"));
+
+				// 매핑이 완료된 DTO를 리스트에 추가
+				list.add(ins);
 			}
-			return result;
+			return list;
+
 		} finally {
+			// PreparedStatement와 ResultSet 자원을 안전하게 반환합니다.
 			JdbcUtil.close(rs);
 			JdbcUtil.close(pstmt);
 		}
@@ -145,6 +170,19 @@ public class EmployeeInsuranceHistoryDao {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, historyId);
 			return pstmt.executeUpdate();
+		} finally {
+			JdbcUtil.close(pstmt);
+		}
+	}
+
+	// 사원번호(EMPLOYEE_ID)를 기준으로 해당 사원의 4대보험 이력 전체 삭제
+	public void deleteByEmpId(Connection conn, int empId) throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			String sql = "DELETE FROM EMPLOYEE_INSURANCE_HISTORY WHERE EMPLOYEE_ID = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, empId);
+			pstmt.executeUpdate();
 		} finally {
 			JdbcUtil.close(pstmt);
 		}
