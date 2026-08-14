@@ -9,6 +9,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import erp.employees.dto.DayWorkerDto;
 import erp.employees.dto.EmployeeListItem;
 import erp.employees.dto.EmployeeSummary;
 import erp.employees.model.Employee;
@@ -206,6 +207,42 @@ public class EmployeeDao {
 				while (rs.next()) result.add(makeEmployeeListItem(rs));
 				return result;
 			}
+		}
+	}
+	
+	//일용직 사원 정보 전용 조회 메서드
+	public List<DayWorkerDto> selectDayWorkerListByKeywordAndStatus(Connection conn, String keyword, String status) throws SQLException{
+		String sql="SELECT E.EMPLOYEE_ID, E.EMP_TYPE, E.EMP_NO, E.EMP_NAME_KR, "
+				+ "D.DEPARTMENT_NAME FROM EMPLOYEE E "
+				+ "LEFT JOIN DEPARTMENT D ON E.DEPARTMENT_ID = D.DEPARTMENT_ID "
+				+ "WHERE E.EMP_TYPE = '일용직' "
+				+ "AND (? IS NULL OR ? = '' OR (E.EMP_NO LIKE '%' || ? || '%' OR E.EMP_NAME_KR LIKE '%' || ? || '%' OR D.DEPARTMENT_NAME LIKE '%' || ? || '%')) "
+				+ "AND (? IS NULL OR ? = '' OR E.STATUS = ?)";
+		try(PreparedStatement pstmt = conn.prepareStatement(sql)){
+			//keyword 세팅
+			pstmt.setString(1, keyword);
+			pstmt.setString(2, keyword);
+			pstmt.setString(3, keyword);
+			pstmt.setString(4, keyword);
+			pstmt.setString(5, keyword);
+			
+			//재직 상태 세팅
+			pstmt.setString(6, status);
+			pstmt.setString(7, status);
+			pstmt.setString(8, status);
+			List<DayWorkerDto> list = new ArrayList<>();
+			try(ResultSet rs = pstmt.executeQuery()){
+				while (rs.next()) {
+					DayWorkerDto dto = new DayWorkerDto();
+					dto.setEmployeeId(rs.getInt("EMPLOYEE_ID"));
+					dto.setEmpType(rs.getString("EMP_TYPE"));
+					dto.setEmpNo(rs.getString("EMP_NO"));
+					dto.setEmpNameKr(rs.getString("EMP_NAME_KR"));
+					dto.setDepartmentName(rs.getString("DEPARTMENT_NAME"));
+					list.add(dto);
+				}
+			}
+			return list;
 		}
 	}
 
