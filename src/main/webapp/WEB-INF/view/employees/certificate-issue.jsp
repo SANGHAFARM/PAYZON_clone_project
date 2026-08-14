@@ -18,8 +18,8 @@
 
 			<div class="certificate-layout">
 				<aside class="employee-panel">
-					<form class="employee-search" action="${pageContext.request.contextPath}/personnel/certificate.do" method="get"><input name="keyword" value="${param.keyword}" placeholder="검색어 입력"><button type="submit">검색</button><a href="${pageContext.request.contextPath}/personnel/certificate.do">전체보기</a></form>
-					<div class="employee-list"><table><thead><tr><th>구분</th><th>성명</th><th>부서</th><th>직위</th><th>상태</th></tr></thead><tbody><c:forEach var="employee" items="${employees}"><tr class="${employee.employeeId eq selectedEmployee.employeeId ? 'is-selected' : ''}"><td><c:out value="${employee.employmentType}" /></td><td><a href="${pageContext.request.contextPath}/personnel/certificate.do?employeeId=${employee.employeeId}"><c:out value="${employee.name}" /></a></td><td><c:out value="${employee.departmentName}" /></td><td><c:out value="${employee.positionName}" /></td><td><span class="status status--${employee.status eq 'WORK' ? 'work' : 'retired'}">${employee.status eq 'WORK' ? '재직' : '퇴직'}</span></td></tr></c:forEach><c:if test="${empty employees}"><tr><td colspan="5" class="empty-row">검색된 사원이 없습니다.</td></tr></c:if></tbody></table></div>
+					<form class="employee-search" action="${pageContext.request.contextPath}/employees/certificate.do" method="get"><input name="keyword" value="${param.keyword}" placeholder="검색어 입력"><button type="submit">검색</button><a href="${pageContext.request.contextPath}/employees/certificate.do">전체보기</a></form>
+					<div class="employee-list"><table><thead><tr><th>구분</th><th>성명</th><th>부서</th><th>직위</th><th>상태</th></tr></thead><tbody><c:forEach var="employee" items="${employees}"><tr class="${employee.employeeId eq selectedEmployee.employeeId ? 'is-selected' : ''}"><td><c:out value="${employee.employmentType}" /></td><td><a href="${pageContext.request.contextPath}/employees/certificate.do?employeeId=${employee.employeeId}"><c:out value="${employee.name}" /></a></td><td><c:out value="${employee.departmentName}" /></td><td><c:out value="${employee.positionName}" /></td><td><span class="status status--${employee.status eq 'WORK' ? 'work' : 'retired'}">${employee.status eq 'WORK' ? '재직' : '퇴직'}</span></td></tr></c:forEach><c:if test="${empty employees}"><tr><td colspan="5" class="empty-row">검색된 사원이 없습니다.</td></tr></c:if></tbody></table></div>
 				</aside>
 
 				<section class="certificate-workspace">
@@ -28,7 +28,7 @@
 					<input class="certificate-switch" type="radio" name="certificateType" value="RETIREMENT" id="certificate-retirement" form="certificate-issue-form">
 					<div class="certificate-tabs"><label for="certificate-working">재직증명서</label><label for="certificate-career">경력증명서</label><label for="certificate-retirement">퇴직증명서</label></div>
 
-					<form class="certificate-form" id="certificate-issue-form" action="${pageContext.request.contextPath}/personnel/certificate-issue.do" method="post">
+					<form class="certificate-form" id="certificate-issue-form" action="${pageContext.request.contextPath}/employees/certificate-issue.do" method="post">
 						<input type="hidden" name="employeeId" value="${selectedEmployee.employeeId}">
 						<div class="certificate-document certificate-document--working">
 							<input type="hidden" name="certificateTypeWorking" value="WORKING">

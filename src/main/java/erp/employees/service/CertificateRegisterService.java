@@ -27,6 +27,9 @@ public class CertificateRegisterService {
 	}
 
 	public int delete(String deleteMode, String[] certificateIds) {
+		if (!"ALL".equals(deleteMode) && !"SELECTED".equals(deleteMode)) {
+			throw new IllegalArgumentException("올바르지 않은 삭제 요청입니다.");
+		}
 		Connection conn = null;
 		try {
 			conn = ConnectionProvider.getConnection();
@@ -35,7 +38,9 @@ public class CertificateRegisterService {
 			if ("ALL".equals(deleteMode)) {
 				deletedCount = certificateDao.deleteAll(conn);
 			} else if (certificateIds != null) {
-				for (String id : certificateIds) deletedCount += certificateDao.delete(conn, Integer.parseInt(id));
+				for (String id : certificateIds) {
+					deletedCount += certificateDao.delete(conn, Integer.parseInt(id));
+				}
 			}
 			conn.commit();
 			return deletedCount;

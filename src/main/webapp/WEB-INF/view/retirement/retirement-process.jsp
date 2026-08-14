@@ -101,7 +101,7 @@
                             </c:when>
                             <c:otherwise>
                                 <label><span>퇴직구분</span><select name="retirementType"><option value="">선택</option><c:forEach var="type" items="${retirementTypes}"><option value="${type.code}">${type.name}</option></c:forEach></select></label>
-                                <label><span>퇴직일자</span><input type="date" name="retirementDate" value="${employee.retirementDate}"></label>
+								<label><span>퇴직일자</span><input type="date" name="retirementDate" value="${empty employee.retirementDate ? currentDate : employee.retirementDate}"></label>
                             </c:otherwise>
                         </c:choose>
                         <label><span>퇴직사유</span><input type="text" name="retirementReason" value="${employee.retirementReason}"></label>

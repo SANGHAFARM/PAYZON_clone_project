@@ -29,13 +29,13 @@
 				<span>사원등록</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
-			href="${pageContext.request.contextPath}/example.do?menu=employee-status">
+			href="${pageContext.request.contextPath}/employees/employees.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/employee-status.png">
 				<span>사원현황</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
-			href="${pageContext.request.contextPath}/example.do?menu=certificate">
+			href="${pageContext.request.contextPath}/employees/certificate.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/certificate.png">
 				<span>제증명서 발급</span>
@@ -53,31 +53,31 @@
 				<span>휴가조회</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
-			href="${pageContext.request.contextPath}/example.do?menu=payroll">
+			href="${pageContext.request.contextPath}/payroll/management.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/payroll.png">
 				<span>급여입력/관리</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
-			href="${pageContext.request.contextPath}/example.do?menu=payroll-daily">
+			href="${pageContext.request.contextPath}/payroll/day-worker-management.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/daily-payroll.png">
 				<span>급여입력(일용직)</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
-			href="${pageContext.request.contextPath}/example.do?menu=payroll-ledger">
+			href="${pageContext.request.contextPath}/payroll/register.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/payroll-ledger.png">
 				<span>급여대장</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
-			href="${pageContext.request.contextPath}/example.do?menu=payslip">
+			href="${pageContext.request.contextPath}/payroll/payslip.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/payslip.png">
 				<span>급여명세서</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
-			href="${pageContext.request.contextPath}/example.do?menu=employee-payroll">
+			href="${pageContext.request.contextPath}/payroll/employee-history.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/employee-payroll.png">
 				<span>사원별 급여내역</span>
@@ -105,18 +105,18 @@
 							설정</a></li>
 				</ul></li>
 			<li class="main-nav__item"><a class="main-nav__trigger"
-				href="${pageContext.request.contextPath}/example.do?menu=hr">인사관리</a>
+				href="${pageContext.request.contextPath}/employees/employees.do">인사관리</a>
 				<ul class="dropdown-menu">
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=employee-management">사원현황/관리</a></li>
+						href="${pageContext.request.contextPath}/employees/employees.do">사원현황/관리</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=hr-card">인사기록
+						href="${pageContext.request.contextPath}/employees/employee-card.do">인사기록
 							카드</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=certificate-issue">제증명서
+						href="${pageContext.request.contextPath}/employees/certificate.do">제증명서
 							발급</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=certificate-ledger">제증명서
+						href="${pageContext.request.contextPath}/employees/certificate-register.do">제증명서
 							발급대장</a></li>
 				</ul></li>
 			<li class="main-nav__item"><a class="main-nav__trigger"
@@ -136,24 +136,24 @@
 							근무 조회</a></li>
 				</ul></li>
 			<li class="main-nav__item"><a class="main-nav__trigger"
-				href="${pageContext.request.contextPath}/example.do?menu=payroll">급여관리</a>
+				href="${pageContext.request.contextPath}/payroll/management.do">급여관리</a>
 				<ul class="dropdown-menu">
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=payroll-management">급여입력/관리</a></li>
+						href="${pageContext.request.contextPath}/payroll/management.do">급여입력/관리</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=daily-payroll">급여입력/관리(일용직)</a></li>
+						href="${pageContext.request.contextPath}/payroll/day-worker-management.do">급여입력/관리(일용직)</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=payroll-ledger">급여대장</a></li>
+						href="${pageContext.request.contextPath}/payroll/register.do">급여대장</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=payslip">급여명세서</a></li>
+						href="${pageContext.request.contextPath}/payroll/payslip.do">급여명세서</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=employee-payroll">사원별
+						href="${pageContext.request.contextPath}/payroll/employee-history.do">사원별
 							급여내역</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=item-ledger">항목별
+						href="${pageContext.request.contextPath}/payroll/item-ledger.do">항목별
 							대장</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=deduction">4대보험
+						href="${pageContext.request.contextPath}/payroll/four-insurance.do">4대보험
 							공제내역</a></li>
 				</ul></li>
 			<li class="main-nav__item"><a class="main-nav__trigger"
@@ -176,16 +176,16 @@
 							구성 통계</a></li>
 				</ul></li>
 			<li class="main-nav__item"><a class="main-nav__trigger"
-				href="${pageContext.request.contextPath}/example.do?menu=retirement">퇴직관리</a>
+				href="${pageContext.request.contextPath}/retirement/process.do">퇴직관리</a>
 				<ul class="dropdown-menu">
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=retirement-process">사원
+						href="${pageContext.request.contextPath}/retirement/process.do">사원
 							퇴직처리</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=retirement-pay">퇴직급여
+						href="${pageContext.request.contextPath}/retirement/benefit.do">퇴직급여
 							입력/관리</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=retirement-payslip">퇴직급여명세서</a></li>
+						href="${pageContext.request.contextPath}/retirement/payslip.do">퇴직급여명세서</a></li>
 				</ul></li>
 		</ul>
 	</nav>

@@ -1,5 +1,10 @@
 package erp.employees.command;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -8,27 +13,85 @@ import erp.employees.service.EmployeeListService.EmployeeListResult;
 import erp.employees.service.EmployeeSearchCondition;
 import mvc.command.CommandHandler;
 
-// 사원현황/관리 화면의 검색 조건을 받고 조회 결과를 JSP로 전달하는 Handler
+// 사원현황/관리 화면의 조회와 목록 설정 요청을 처리하는 Handler
 public class EmployeeListHandler implements CommandHandler {
+
 	private static final String VIEW = "/WEB-INF/view/employees/employees-list.jsp";
-	private final EmployeeListService employeeListService = new EmployeeListService();
+	private EmployeeListService employeeListService = new EmployeeListService();
 
 	@Override
-	public String process(HttpServletRequest req, HttpServletResponse res) {
-		// 요청 파라미터를 검색조건으로 변환한 뒤 목록, 집계, 페이징 정보를 조회한다.
+	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		String uri = req.getRequestURI();
+		if (uri.endsWith("/employee-action.do") && req.getMethod().equalsIgnoreCase("POST")) {
+			return processEmployeeAction(req, res);
+		} else if (uri.endsWith("/employee-columns.do") && req.getMethod().equalsIgnoreCase("POST")) {
+			return processColumnSetting(req, res);
+		} else if (!req.getMethod().equalsIgnoreCase("GET")) {
+			res.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+			return null;
+		}
+		return processList(req);
+	}
+
+	private String processList(HttpServletRequest req) {
 		EmployeeSearchCondition condition = createCondition(req);
 		EmployeeListResult result = employeeListService.getEmployeeList(condition);
-
 		req.setAttribute("employees", result.getEmployees());
 		req.setAttribute("employeeSummary", result.getSummary());
 		req.setAttribute("pageInfo", result.getPageInfo());
 		req.setAttribute("employmentTypes", employeeListService.getEmploymentTypes());
 		req.setAttribute("condition", condition);
+		req.setAttribute("visibleColumns", getVisibleColumns(req));
+
+		Object message = req.getSession().getAttribute("employeeListMessage");
+		if (message != null) {
+			req.setAttribute("message", message);
+			req.getSession().removeAttribute("employeeListMessage");
+		}
 		return VIEW;
 	}
 
+	private String processEmployeeAction(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		String[] selectedIds = req.getParameterValues("employeeIds");
+		if (selectedIds == null || selectedIds.length == 0) {
+			req.getSession().setAttribute("employeeListMessage", "삭제할 사원을 선택해주세요.");
+		} else {
+			try {
+				List<Integer> employeeIds = new ArrayList<>();
+				for (String selectedId : selectedIds) {
+					employeeIds.add(Integer.valueOf(selectedId));
+				}
+				int deletedCount = employeeListService.deleteEmployees(employeeIds);
+				req.getSession().setAttribute("employeeListMessage",
+						deletedCount + "명의 사원정보를 삭제했습니다.");
+			} catch (RuntimeException e) {
+				req.getSession().setAttribute("employeeListMessage", e.getMessage());
+			}
+		}
+		res.sendRedirect(req.getContextPath() + "/employees/employees.do");
+		return null;
+	}
+
+	private String processColumnSetting(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		String[] columns = req.getParameterValues("columns");
+		req.getSession().setAttribute("employeeVisibleColumns",
+				columns == null ? new ArrayList<String>() : Arrays.asList(columns));
+		req.getSession().setAttribute("employeeListMessage", "표시항목 설정을 저장했습니다.");
+		res.sendRedirect(req.getContextPath() + "/employees/employees.do");
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<String> getVisibleColumns(HttpServletRequest req) {
+		List<String> columns = (List<String>) req.getSession().getAttribute("employeeVisibleColumns");
+		if (columns == null) {
+			columns = Arrays.asList("employmentType", "joinDate", "employeeNo", "name", "department",
+					"position", "residentNo", "mobile", "email", "retirementDate", "status");
+		}
+		return columns;
+	}
+
 	private EmployeeSearchCondition createCondition(HttpServletRequest req) {
-		// 최초 접속 시 참고 홈페이지와 동일하게 재직 사원 30명을 기본 조회한다.
 		EmployeeSearchCondition condition = new EmployeeSearchCondition();
 		condition.setSearchTarget(valueOrDefault(req.getParameter("searchTarget"), "ALL"));
 		condition.setKeyword(trim(req.getParameter("keyword")));
@@ -45,10 +108,16 @@ public class EmployeeListHandler implements CommandHandler {
 		return trimmed.isEmpty() ? defaultValue : trimmed;
 	}
 
-	private String trim(String value) { return value == null ? "" : value.trim(); }
+	private String trim(String value) {
+		return value == null ? "" : value.trim();
+	}
+
 	private int parsePositiveInt(String value, int defaultValue) {
-		// 잘못된 숫자 파라미터가 들어와도 화면이 중단되지 않도록 기본값을 사용한다.
-		try { int parsed = Integer.parseInt(value); return parsed > 0 ? parsed : defaultValue; }
-		catch (Exception e) { return defaultValue; }
+		try {
+			int parsed = Integer.parseInt(value);
+			return parsed > 0 ? parsed : defaultValue;
+		} catch (Exception e) {
+			return defaultValue;
+		}
 	}
 }

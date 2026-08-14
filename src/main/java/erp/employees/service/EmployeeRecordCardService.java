@@ -31,6 +31,9 @@ public class EmployeeRecordCardService {
 			// 사원 선택값이 없으면 검색 결과의 첫 번째 사원을 기본 표시한다.
 			List<EmployeeListItem> employees = employeeDao.selectListByCondition(conn, condition);
 			Integer selectedId = employeeId;
+			if (selectedId == null && !employees.isEmpty()) {
+				selectedId = employees.get(0).getEmployeeId();
+			}
 
 			// 사원 선택에 공통으로 필요한 부서, 직위, 회사 정보를 먼저 저장한다.
 			EmployeeRecordCardData data = new EmployeeRecordCardData();
@@ -38,11 +41,15 @@ public class EmployeeRecordCardService {
 			data.departments = DepartmentDao.getInstance().selectAll(conn);
 			data.positions = JobPositionDao.getInstance().selectAll(conn);
 			data.company = CompanyDao.getInstance().selectById(conn, 1);
-			if (selectedId == null) return data;
+			if (selectedId == null) {
+				return data;
+			}
 
 			// EMPLOYEE를 기준으로 가족, 보험, 학력 등 각 상세 DAO의 목록을 조회한다.
 			data.employee = employeeDao.selectById(conn, selectedId);
-			if (data.employee == null) return data;
+			if (data.employee == null) {
+				return data;
+			}
 			data.families = EmployeeDependentDao.getInstance().selectByEmpId(conn, selectedId);
 			data.insurances = EmployeeInsuranceHistoryDao.getInstance().selectByEmpId(conn, selectedId);
 			data.educations = EmployeeEducationDao.getInstance().selectByEmpId(conn, selectedId);
