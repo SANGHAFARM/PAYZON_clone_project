@@ -17,10 +17,10 @@
 	<main class="page-content payment-register-page">
 		<header class="page-heading"><div><p>급여관리</p><h1>급여대장 상세</h1></div></header>
 		<section class="register-card detail-card">
-			<form class="detail-topbar" method="get" action="${pageContext.request.contextPath}/payroll/payment-register/detail">
+			<form class="detail-topbar" method="get" action="${pageContext.request.contextPath}/payroll/register/detail.do">
 				<input type="hidden" name="registerId" value="${register.registerId}">
 				<dl class="register-information"><div><dt>귀속연월</dt><dd>${empty register.paymentYearMonth ? '-' : register.paymentYearMonth}</dd></div><div><dt>급여차수</dt><dd>${empty register.paymentRoundName ? '-' : register.paymentRoundName}</dd></div><div><dt>정산기간</dt><dd><c:choose><c:when test="${not empty register.calculationStart and not empty register.calculationEnd}">${register.calculationStart} ~ ${register.calculationEnd}</c:when><c:otherwise>-</c:otherwise></c:choose></dd></div><div><dt>지급일</dt><dd>${empty register.paymentDate ? '-' : register.paymentDate}</dd></div></dl>
-				<div class="detail-filter"><select name="employmentType"><option value="">전체 구분</option><c:forEach var="type" items="${employmentTypes}"><option value="${type.code}">${type.name}</option></c:forEach></select><select name="departmentId"><option value="">전체 부서</option><c:forEach var="department" items="${departments}"><option value="${department.departmentId}">${department.departmentName}</option></c:forEach></select><select name="incomeType"><option value="">전체 소득</option><option value="WORK">근로소득자</option><option value="BUSINESS">사업소득자</option><option value="DAILY">일용근로자</option></select><button type="submit" class="button button-primary">조회</button></div>
+				<div class="detail-filter"><select name="employmentType"><option value="">전체 구분</option><c:forEach var="type" items="${employmentTypes}"><option value="${type.code}" <c:if test="${type.code eq selectedEmploymentType}">selected</c:if>>${type.name}</option></c:forEach></select><select name="departmentId"><option value="">전체 부서</option><c:forEach var="department" items="${departments}"><option value="${department.departmentId}" <c:if test="${department.departmentId eq selectedDepartmentId}">selected</c:if>>${department.departmentName}</option></c:forEach></select><select name="incomeType"><option value="">전체 소득</option><option value="WORK" <c:if test="${selectedIncomeType eq 'WORK'}">selected</c:if>>근로소득자</option><option value="BUSINESS" <c:if test="${selectedIncomeType eq 'BUSINESS'}">selected</c:if>>사업소득자</option><option value="DAILY" <c:if test="${selectedIncomeType eq 'DAILY'}">selected</c:if>>일용근로자</option></select><button type="submit" class="button button-primary">조회</button></div>
 			</form>
 
 			<div class="detail-table-wrap">
@@ -36,7 +36,7 @@
 					<c:if test="${not empty registerEmployees}"><tfoot><tr><th colspan="4">합계</th><c:forEach var="item" items="${paymentItems}"><td>${registerTotals.paymentAmounts[item.itemId]}</td></c:forEach><td class="give">${registerTotals.totalPayment}</td><c:forEach var="item" items="${deductionItems}"><td>${registerTotals.deductionAmounts[item.itemId]}</td></c:forEach><td class="deduction">${registerTotals.totalDeduction}</td><td class="net">${registerTotals.netPayment}</td></tr></tfoot></c:if>
 				</table>
 			</div>
-			<div class="detail-actions"><a class="button button-outline" href="${pageContext.request.contextPath}/payroll/payment-register?year=${register.paymentYear}">급여대장 목록</a></div>
+			<div class="detail-actions"><a class="button button-outline" href="${pageContext.request.contextPath}/payroll/register.do?year=${register.paymentYear}">급여대장 목록</a></div>
 		</section>
 	</main>
 	<%@ include file="/WEB-INF/view/common/footer.jspf" %>

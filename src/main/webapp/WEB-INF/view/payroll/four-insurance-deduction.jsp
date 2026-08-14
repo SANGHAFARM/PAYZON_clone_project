@@ -15,7 +15,7 @@
 	<main class="page-content four-insurance-page">
 		<header class="page-heading"><div><p>급여관리</p><h1>4대보험 공제내역</h1></div></header>
 		<section class="insurance-card">
-			<form class="insurance-search" method="get" action="${pageContext.request.contextPath}/payroll/four-insurance-deduction">
+			<form class="insurance-search" method="get" action="${pageContext.request.contextPath}/payroll/four-insurance.do">
 				<div class="search-field year-field"><label for="paymentYear">귀속연도</label><select id="paymentYear" name="year"><option value="">선택</option><c:forEach var="year" items="${paymentYears}"><option value="${year}" <c:if test="${year eq selectedYear}">selected</c:if>>${year}년</option></c:forEach></select></div>
 				<div class="search-field month-field"><label for="paymentMonth">귀속월</label><select id="paymentMonth" name="month"><option value="">선택</option><c:forEach var="month" begin="1" end="12"><option value="${month}" <c:if test="${month eq selectedMonth}">selected</c:if>>${month}월</option></c:forEach></select></div>
 				<div class="search-field round-field"><label for="paymentRound">급여차수</label><select id="paymentRound" name="round"><option value="">차수 선택</option><c:forEach var="round" begin="1" end="10"><option value="${round}" <c:if test="${round eq selectedRound}">selected</c:if>>급여-${round}차</option></c:forEach></select></div>
@@ -40,7 +40,7 @@
 					<c:if test="${not empty insuranceDeductions}"><tfoot><tr><th colspan="4">합계</th><td class="amount">${insuranceTotals.pensionEmployer}</td><td class="amount">${insuranceTotals.pensionEmployee}</td><td class="amount subtotal">${insuranceTotals.pensionTotal}</td><td class="amount">${insuranceTotals.healthEmployer}</td><td class="amount">${insuranceTotals.healthEmployee}</td><td class="amount subtotal">${insuranceTotals.healthTotal}</td><td class="amount">${insuranceTotals.careEmployer}</td><td class="amount">${insuranceTotals.careEmployee}</td><td class="amount subtotal">${insuranceTotals.careTotal}</td><td class="amount">${insuranceTotals.employmentEmployer}</td><td class="amount">${insuranceTotals.employmentEmployee}</td><td class="amount subtotal">${insuranceTotals.employmentTotal}</td><td class="amount total-value">${insuranceTotals.totalEmployer}</td><td class="amount total-value">${insuranceTotals.totalEmployee}</td><td class="amount grand-value">${insuranceTotals.grandTotal}</td></tr></tfoot></c:if>
 				</table>
 			</div>
-			<div class="insurance-actions"><a class="button button-outline" href="${pageContext.request.contextPath}/payroll/payment-register">급여대장 목록</a></div>
+			<div class="insurance-actions"><a class="button button-outline" href="${pageContext.request.contextPath}/payroll/register.do">급여대장 목록</a></div>
 		</section>
 	</main>
 	<%@ include file="/WEB-INF/view/common/footer.jspf" %>

@@ -37,7 +37,7 @@
 
 		<form class="period-panel"
 			method="get"
-			action="${pageContext.request.contextPath}/payroll/day-worker-payment-management">
+			action="${pageContext.request.contextPath}/payroll/day-worker-management.do">
 
 			<div class="period-field">
 				<label for="paymentYear">귀속연도</label>
@@ -125,7 +125,13 @@
 
 				<form id="employeeForm"
 					method="post"
-					action="${pageContext.request.contextPath}/payroll/day-worker-payment-management/employees/delete">
+					action="${pageContext.request.contextPath}/payroll/day-worker/employees/delete.do">
+					<input type="hidden" name="paymentYear" value="${selectedYear}">
+					<input type="hidden" name="paymentMonth" value="${selectedMonth}">
+					<input type="hidden" name="paymentRound" value="${selectedRound}">
+					<input type="hidden" name="calculationStart" value="${calculationStart}">
+					<input type="hidden" name="calculationEnd" value="${calculationEnd}">
+					<input type="hidden" name="paymentDate" value="${paymentDate}">
 
 					<div class="table-wrap employee-table-wrap">
 						<table class="data-table employee-table">
@@ -196,11 +202,17 @@
 
 			<div class="payment-area">
 				<form method="post"
-					action="${pageContext.request.contextPath}/payroll/day-worker-payment-management/save">
+					action="${pageContext.request.contextPath}/payroll/day-worker/save.do">
 
 					<input type="hidden"
 						name="employeeId"
 						value="${selectedEmployee.employeeId}">
+					<input type="hidden" name="paymentYear" value="${selectedYear}">
+					<input type="hidden" name="paymentMonth" value="${selectedMonth}">
+					<input type="hidden" name="paymentRound" value="${selectedRound}">
+					<input type="hidden" name="calculationStart" value="${calculationStart}">
+					<input type="hidden" name="calculationEnd" value="${calculationEnd}">
+					<input type="hidden" name="paymentDate" value="${paymentDate}">
 
 					<div class="day-payment-panels">
 						<section class="amount-panel work-detail-panel">
@@ -401,7 +413,13 @@
 			</header>
 
 			<form method="get"
-				action="${pageContext.request.contextPath}/payroll/day-worker-payment-management">
+				action="${pageContext.request.contextPath}/payroll/day-worker-management.do">
+				<input type="hidden" name="paymentYear" value="${selectedYear}">
+				<input type="hidden" name="paymentMonth" value="${selectedMonth}">
+				<input type="hidden" name="paymentRound" value="${selectedRound}">
+				<input type="hidden" name="calculationStart" value="${calculationStart}">
+				<input type="hidden" name="calculationEnd" value="${calculationEnd}">
+				<input type="hidden" name="paymentDate" value="${paymentDate}">
 
 				<div class="employee-search-row">
 					<input type="search"
@@ -430,7 +448,13 @@
 			</form>
 
 			<form method="post"
-				action="${pageContext.request.contextPath}/payroll/day-worker-payment-management/employees/add">
+				action="${pageContext.request.contextPath}/payroll/day-worker/employees/add.do">
+				<input type="hidden" name="paymentYear" value="${selectedYear}">
+				<input type="hidden" name="paymentMonth" value="${selectedMonth}">
+				<input type="hidden" name="paymentRound" value="${selectedRound}">
+				<input type="hidden" name="calculationStart" value="${calculationStart}">
+				<input type="hidden" name="calculationEnd" value="${calculationEnd}">
+				<input type="hidden" name="paymentDate" value="${paymentDate}">
 
 				<div class="modal-body">
 					<table class="data-table">
@@ -482,7 +506,7 @@
 
 				<nav class="modal-pagination">
 					<c:if test="${employeePage gt 1}">
-						<a href="?employeePage=${employeePage - 1}#employee-add">
+						<a href="?paymentYear=${selectedYear}&amp;paymentMonth=${selectedMonth}&amp;paymentRound=${selectedRound}&amp;employeePage=${employeePage - 1}#employee-add">
 							‹ 이전
 						</a>
 					</c:if>
@@ -490,7 +514,7 @@
 					<span>${employeePage}</span>
 
 					<c:if test="${employeePage lt employeeTotalPages}">
-						<a href="?employeePage=${employeePage + 1}#employee-add">
+						<a href="?paymentYear=${selectedYear}&amp;paymentMonth=${selectedMonth}&amp;paymentRound=${selectedRound}&amp;employeePage=${employeePage + 1}#employee-add">
 							다음 ›
 						</a>
 					</c:if>
