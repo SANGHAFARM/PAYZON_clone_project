@@ -18,8 +18,12 @@ public class RetirementProcessHandler implements CommandHandler {
 
 	@Override
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		if (req.getMethod().equalsIgnoreCase("GET")) return processList(req);
-		if (req.getMethod().equalsIgnoreCase("POST")) return processSubmit(req, res);
+		if (req.getMethod().equalsIgnoreCase("GET")) {
+			return processList(req);
+		}
+		if (req.getMethod().equalsIgnoreCase("POST")) {
+			return processSubmit(req, res);
+		}
 		res.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 		return null;
 	}
@@ -29,8 +33,13 @@ public class RetirementProcessHandler implements CommandHandler {
 		req.setAttribute("employees", retirementService.getEmployees(condition));
 		req.setAttribute("retirementTypes", retirementService.getRetirementTypes());
 		req.setAttribute("condition", condition);
-		if ("retired".equals(req.getParameter("result"))) req.setAttribute("message", "퇴직처리를 완료했습니다.");
-		if ("cancelled".equals(req.getParameter("result"))) req.setAttribute("message", "퇴직처리를 취소했습니다.");
+		req.setAttribute("currentDate", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+		if ("retired".equals(req.getParameter("result"))) {
+			req.setAttribute("message", "퇴직처리를 완료했습니다.");
+		}
+		if ("cancelled".equals(req.getParameter("result"))) {
+			req.setAttribute("message", "퇴직처리를 취소했습니다.");
+		}
 		return VIEW;
 	}
 
@@ -74,11 +83,21 @@ public class RetirementProcessHandler implements CommandHandler {
 		res.sendRedirect(req.getContextPath() + "/retirement/process.do?result=" + result);
 	}
 	private Date parseDate(String value) {
-		try { return new SimpleDateFormat("yyyy-MM-dd").parse(value); }
-		catch (Exception e) { return null; }
+		try {
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			dateFormat.setLenient(false);
+			return dateFormat.parse(value);
+		}
+		catch (Exception e) {
+			return null;
+		}
 	}
 	private Integer parseInteger(String value) {
-		try { return Integer.valueOf(value); } catch (Exception e) { return null; }
+		try {
+			return Integer.valueOf(value);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	private String trim(String value) { return value == null ? "" : value.trim(); }
 }

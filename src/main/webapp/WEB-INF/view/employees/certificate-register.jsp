@@ -23,7 +23,7 @@
 
 		<%-- CERTIFICATE_ISSUANCE 중심 JOIN 결과의 검색 및 발급내역 목록 --%>
 		<section class="register-card">
-			<form class="register-search" action="${pageContext.request.contextPath}/personnel/certificate-register.do" method="get">
+			<form class="register-search" action="${pageContext.request.contextPath}/employees/certificate-register.do" method="get">
 				<label>
 					<span class="sr-only">증명서 구분</span>
 					<select name="certificateType">
@@ -44,11 +44,11 @@
 					<input type="search" name="keyword" value="<c:out value='${condition.keyword}' />" placeholder="검색어 입력">
 				</label>
 				<button type="submit" class="search-button">검색</button>
-				<a class="all-button" href="${pageContext.request.contextPath}/personnel/certificate-register.do">전체보기</a>
+				<a class="all-button" href="${pageContext.request.contextPath}/employees/certificate-register.do">전체보기</a>
 				<p class="result-count">총 발급건수 <strong><c:out value="${totalCount}" default="0" /></strong>건</p>
 			</form>
 
-			<form action="${pageContext.request.contextPath}/personnel/certificate-register-delete.do" method="post">
+			<form action="${pageContext.request.contextPath}/employees/certificate-register-delete.do" method="post">
 				<div class="register-table-wrap">
 					<table class="register-table">
 						<colgroup>
@@ -83,11 +83,11 @@
 				</div>
 
 				<nav class="pagination" aria-label="페이지 이동">
-					<c:if test="${pageInfo.hasPrevious}"><c:url var="previousUrl" value="/personnel/certificate-register.do"><c:param name="page" value="${pageInfo.previousPage}"/><c:param name="certificateType" value="${condition.certificateType}"/><c:param name="issueDateFrom" value="${condition.issueDateFrom}"/><c:param name="issueDateTo" value="${condition.issueDateTo}"/><c:param name="keyword" value="${condition.keyword}"/></c:url><a href="${previousUrl}">이전</a></c:if>
+					<c:if test="${pageInfo.hasPrevious}"><c:url var="previousUrl" value="/employees/certificate-register.do"><c:param name="page" value="${pageInfo.previousPage}"/><c:param name="certificateType" value="${condition.certificateType}"/><c:param name="issueDateFrom" value="${condition.issueDateFrom}"/><c:param name="issueDateTo" value="${condition.issueDateTo}"/><c:param name="keyword" value="${condition.keyword}"/></c:url><a href="${previousUrl}">이전</a></c:if>
 					<c:forEach var="pageNo" begin="${pageInfo.startPage}" end="${pageInfo.endPage}">
-						<c:url var="pageUrl" value="/personnel/certificate-register.do"><c:param name="page" value="${pageNo}"/><c:param name="certificateType" value="${condition.certificateType}"/><c:param name="issueDateFrom" value="${condition.issueDateFrom}"/><c:param name="issueDateTo" value="${condition.issueDateTo}"/><c:param name="keyword" value="${condition.keyword}"/></c:url><a class="${pageNo eq pageInfo.currentPage ? 'is-current' : ''}" href="${pageUrl}"><c:out value="${pageNo}" /></a>
+						<c:url var="pageUrl" value="/employees/certificate-register.do"><c:param name="page" value="${pageNo}"/><c:param name="certificateType" value="${condition.certificateType}"/><c:param name="issueDateFrom" value="${condition.issueDateFrom}"/><c:param name="issueDateTo" value="${condition.issueDateTo}"/><c:param name="keyword" value="${condition.keyword}"/></c:url><a class="${pageNo eq pageInfo.currentPage ? 'is-current' : ''}" href="${pageUrl}"><c:out value="${pageNo}" /></a>
 					</c:forEach>
-					<c:if test="${pageInfo.hasNext}"><c:url var="nextUrl" value="/personnel/certificate-register.do"><c:param name="page" value="${pageInfo.nextPage}"/><c:param name="certificateType" value="${condition.certificateType}"/><c:param name="issueDateFrom" value="${condition.issueDateFrom}"/><c:param name="issueDateTo" value="${condition.issueDateTo}"/><c:param name="keyword" value="${condition.keyword}"/></c:url><a href="${nextUrl}">다음</a></c:if>
+					<c:if test="${pageInfo.hasNext}"><c:url var="nextUrl" value="/employees/certificate-register.do"><c:param name="page" value="${pageInfo.nextPage}"/><c:param name="certificateType" value="${condition.certificateType}"/><c:param name="issueDateFrom" value="${condition.issueDateFrom}"/><c:param name="issueDateTo" value="${condition.issueDateTo}"/><c:param name="keyword" value="${condition.keyword}"/></c:url><a href="${nextUrl}">다음</a></c:if>
 				</nav>
 
 				<div class="delete-actions">

@@ -14,6 +14,7 @@ import erp.employees.dao.EmployeeDao;
 import erp.employees.dto.CertificateCareerItem;
 import erp.employees.dto.EmployeeListItem;
 import erp.employees.model.CertificateIssuance;
+import erp.employees.model.Employee;
 import erp.settings.dao.CompanyDao;
 import erp.settings.dao.DepartmentDao;
 import jdbc.JdbcUtil;
@@ -41,7 +42,9 @@ public class CertificateIssueService {
 			data.issueDate = new Date();
 
 			Integer selectedId = employeeId;
-			if (selectedId == null && !data.employees.isEmpty()) selectedId = data.employees.get(0).getEmployeeId();
+			if (selectedId == null && !data.employees.isEmpty()) {
+				selectedId = data.employees.get(0).getEmployeeId();
+			}
 			for (EmployeeListItem employee : data.employees) {
 				if (selectedId != null && employee.getEmployeeId() == selectedId) {
 					data.selectedEmployee = employee;
@@ -68,6 +71,25 @@ public class CertificateIssueService {
 			throw new RuntimeException(e);
 		} finally {
 			JdbcUtil.close(conn);
+		}
+	}
+
+	// 재직상태에 맞는 증명서만 발급할 수 있는지 확인한다.
+	public String validateIssue(int employeeId, String certificateType) {
+		try (Connection conn = ConnectionProvider.getConnection()) {
+			Employee employee = employeeDao.selectById(conn, employeeId);
+			if (employee == null) {
+				return "선택한 사원정보가 없습니다.";
+			}
+			if ("WORKING".equals(certificateType) && "퇴직".equals(employee.getStatus())) {
+				return "퇴직 사원은 재직증명서를 발급할 수 없습니다.";
+			}
+			if ("RETIREMENT".equals(certificateType) && !"퇴직".equals(employee.getStatus())) {
+				return "재직 사원은 퇴직증명서를 발급할 수 없습니다.";
+			}
+			return null;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
 	}
 

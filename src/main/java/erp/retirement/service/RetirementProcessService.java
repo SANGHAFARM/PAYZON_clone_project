@@ -3,8 +3,10 @@ package erp.retirement.service;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import erp.employees.dao.EmployeeDao;
 import erp.employees.dto.EmployeeListItem;
@@ -16,6 +18,9 @@ import jdbc.connection.ConnectionProvider;
 
 // 퇴직대상 사원 조회와 퇴직처리·취소 트랜잭션을 담당하는 Service
 public class RetirementProcessService {
+	private static final Set<String> RETIREMENT_TYPES = new HashSet<>(Arrays.asList(
+			"자진퇴사", "권고사직", "계약만료", "정년퇴직", "해고", "기타"));
+
 	private final EmployeeDao employeeDao = EmployeeDao.getInstance();
 
 	public List<EmployeeListItem> getEmployees(EmployeeSearchCondition condition) {
@@ -32,17 +37,29 @@ public class RetirementProcessService {
 			conn = ConnectionProvider.getConnection();
 			conn.setAutoCommit(false);
 			Employee employee = employeeDao.selectById(conn, employeeId);
-			if (employee == null) throw new IllegalArgumentException("존재하지 않는 사원입니다.");
-			if (retirementType == null || retirementType.trim().isEmpty()) throw new IllegalArgumentException("퇴직구분을 선택하세요.");
-			if (retirementDate == null) throw new IllegalArgumentException("퇴직일자를 입력하세요.");
-			if (employee.getJoinDate() != null && retirementDate.before(employee.getJoinDate()))
+			if (employee == null) {
+				throw new IllegalArgumentException("존재하지 않는 사원입니다.");
+			}
+			if ("퇴직".equals(employee.getStatus())) {
+				throw new IllegalArgumentException("이미 퇴직 처리된 사원입니다.");
+			}
+			if (!RETIREMENT_TYPES.contains(retirementType)) {
+				throw new IllegalArgumentException("올바른 퇴직구분을 선택하세요.");
+			}
+			if (retirementDate == null) {
+				throw new IllegalArgumentException("퇴직일자를 입력하세요.");
+			}
+			if (employee.getJoinDate() != null && retirementDate.before(employee.getJoinDate())) {
 				throw new IllegalArgumentException("퇴직일자는 입사일보다 빠를 수 없습니다.");
+			}
 			employeeDao.updateRetirement(conn, employeeId, retirementType, retirementDate, reason, afterContact);
 			conn.commit();
 		} catch (SQLException | RuntimeException e) {
 			JdbcUtil.rollback(conn);
 			throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
-		} finally { JdbcUtil.close(conn); }
+		} finally {
+			JdbcUtil.close(conn);
+		}
 	}
 
 	public void cancel(int employeeId) {
@@ -50,12 +67,16 @@ public class RetirementProcessService {
 		try {
 			conn = ConnectionProvider.getConnection();
 			conn.setAutoCommit(false);
-			if (employeeDao.cancelRetirement(conn, employeeId) == 0) throw new IllegalArgumentException("퇴직처리된 사원이 아닙니다.");
+			if (employeeDao.cancelRetirement(conn, employeeId) == 0) {
+				throw new IllegalArgumentException("퇴직처리된 사원이 아닙니다.");
+			}
 			conn.commit();
 		} catch (SQLException | RuntimeException e) {
 			JdbcUtil.rollback(conn);
 			throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
-		} finally { JdbcUtil.close(conn); }
+		} finally {
+			JdbcUtil.close(conn);
+		}
 	}
 
 	public List<RetirementTypeItem> getRetirementTypes() {

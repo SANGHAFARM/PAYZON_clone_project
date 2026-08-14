@@ -15,6 +15,11 @@ public class EmployeeRecordCardHandler implements CommandHandler {
 
 	@Override
 	public String process(HttpServletRequest req, HttpServletResponse res) {
+		if (!req.getMethod().equalsIgnoreCase("GET")) {
+			res.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+			return null;
+		}
+
 		// 사원 선택창에서 사용할 부서, 직위, 검색어 조건을 구성한다.
 		EmployeeSearchCondition condition = new EmployeeSearchCondition();
 		condition.setSearchTarget("ALL");
@@ -50,7 +55,9 @@ public class EmployeeRecordCardHandler implements CommandHandler {
 	private Integer parseInteger(String value) {
 		// 선택값이 없거나 숫자가 아니면 조건을 적용하지 않는다.
 		try { return value == null || value.trim().isEmpty() ? null : Integer.valueOf(value); }
-		catch (NumberFormatException e) { return null; }
+		catch (NumberFormatException e) {
+			return null;
+		}
 	}
 	private String trim(String value) { return value == null ? "" : value.trim(); }
 }

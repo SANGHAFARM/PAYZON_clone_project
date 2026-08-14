@@ -106,9 +106,12 @@ public class PayrollManagementService {
 		Connection conn = null;
 		try {
 			conn = ConnectionProvider.getConnection();
+			conn.setAutoCommit(false);
 			managementDao.managePayItem(conn, action, itemId, itemName, taxType, taxFreeCode, taxFreeLimit,
 					calculationMethod, roundUnit, payMethod, bulkAmount);
+			conn.commit();
 		} catch (SQLException e) {
+			JdbcUtil.rollback(conn);
 			throw new RuntimeException(e);
 		} finally {
 			JdbcUtil.close(conn);
@@ -120,8 +123,11 @@ public class PayrollManagementService {
 		Connection conn = null;
 		try {
 			conn = ConnectionProvider.getConnection();
+			conn.setAutoCommit(false);
 			managementDao.manageDeductItem(conn, action, itemId, itemName, calculationMethod, roundUnit, note);
+			conn.commit();
 		} catch (SQLException e) {
+			JdbcUtil.rollback(conn);
 			throw new RuntimeException(e);
 		} finally {
 			JdbcUtil.close(conn);

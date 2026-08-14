@@ -1,6 +1,8 @@
 package erp.employees.command;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,8 +19,12 @@ public class CertificateRegisterHandler implements CommandHandler {
 
 	@Override
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		if (req.getMethod().equalsIgnoreCase("GET")) return processList(req);
-		if (req.getMethod().equalsIgnoreCase("POST")) return processDelete(req, res);
+		if (req.getMethod().equalsIgnoreCase("GET")) {
+			return processList(req);
+		}
+		if (req.getMethod().equalsIgnoreCase("POST")) {
+			return processDelete(req, res);
+		}
 		res.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 		return null;
 	}
@@ -30,24 +36,45 @@ public class CertificateRegisterHandler implements CommandHandler {
 		req.setAttribute("totalCount", result.getTotalCount());
 		req.setAttribute("pageInfo", result.getPageInfo());
 		req.setAttribute("condition", condition);
-		if ("deleted".equals(req.getParameter("result"))) req.setAttribute("message", "선택한 발급내역을 삭제했습니다.");
-		if ("allDeleted".equals(req.getParameter("result"))) req.setAttribute("message", "전체 발급내역을 삭제했습니다.");
+		if ("deleted".equals(req.getParameter("result"))) {
+			req.setAttribute("message", "선택한 발급내역을 삭제했습니다.");
+		}
+		if ("allDeleted".equals(req.getParameter("result"))) {
+			req.setAttribute("message", "전체 발급내역을 삭제했습니다.");
+		}
+		if ("notSelected".equals(req.getParameter("result"))) {
+			req.setAttribute("message", "삭제할 발급내역을 선택해주세요.");
+		}
 		return VIEW;
 	}
 
 	private String processDelete(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		String mode = req.getParameter("deleteMode");
-		registerService.delete(mode, req.getParameterValues("certificateIds"));
-		String result = "ALL".equals(mode) ? "allDeleted" : "deleted";
-		res.sendRedirect(req.getContextPath() + "/personnel/certificate-register.do?result=" + result);
+		String[] certificateIds = req.getParameterValues("certificateIds");
+		String result;
+		if (!"ALL".equals(mode) && (certificateIds == null || certificateIds.length == 0)) {
+			result = "notSelected";
+		} else {
+			registerService.delete(mode, certificateIds);
+			result = "ALL".equals(mode) ? "allDeleted" : "deleted";
+		}
+		res.sendRedirect(req.getContextPath() + "/employees/certificate-register.do?result=" + result);
 		return null;
 	}
 
 	private CertificateRegisterCondition createCondition(HttpServletRequest req) {
 		CertificateRegisterCondition condition = new CertificateRegisterCondition();
 		condition.setCertificateType(trim(req.getParameter("certificateType")));
-		condition.setIssueDateFrom(trim(req.getParameter("issueDateFrom")));
-		condition.setIssueDateTo(trim(req.getParameter("issueDateTo")));
+		String issueDateFrom = validDate(req.getParameter("issueDateFrom"));
+		String issueDateTo = validDate(req.getParameter("issueDateTo"));
+		if (!issueDateFrom.isEmpty() && !issueDateTo.isEmpty()
+				&& LocalDate.parse(issueDateFrom).isAfter(LocalDate.parse(issueDateTo))) {
+			String temporaryDate = issueDateFrom;
+			issueDateFrom = issueDateTo;
+			issueDateTo = temporaryDate;
+		}
+		condition.setIssueDateFrom(issueDateFrom);
+		condition.setIssueDateTo(issueDateTo);
 		condition.setKeyword(trim(req.getParameter("keyword")));
 		condition.setPage(parsePositiveInt(req.getParameter("page"), 1));
 		condition.setPageSize(10);
@@ -55,8 +82,21 @@ public class CertificateRegisterHandler implements CommandHandler {
 	}
 
 	private String trim(String value) { return value == null ? "" : value.trim(); }
+	private String validDate(String value) {
+		String date = trim(value);
+		if (date.isEmpty()) {
+			return "";
+		}
+		try {
+			return LocalDate.parse(date).toString();
+		} catch (DateTimeParseException e) {
+			return "";
+		}
+	}
 	private int parsePositiveInt(String value, int defaultValue) {
 		try { int parsed = Integer.parseInt(value); return parsed > 0 ? parsed : defaultValue; }
-		catch (Exception e) { return defaultValue; }
+		catch (Exception e) {
+			return defaultValue;
+		}
 	}
 }
