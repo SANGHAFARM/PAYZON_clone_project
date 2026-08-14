@@ -16,7 +16,7 @@
 		<header class="page-heading"><div><p>급여관리</p><h1>급여대장</h1></div></header>
 
 		<section class="register-card">
-			<form class="register-search" method="get" action="${pageContext.request.contextPath}/payroll/payment-register">
+			<form class="register-search" method="get" action="${pageContext.request.contextPath}/payroll/register.do">
 				<label for="registerYear">귀속연도</label>
 				<select id="registerYear" name="year">
 					<option value="">선택</option>
@@ -34,11 +34,11 @@
 						<c:when test="${not empty paymentRegisters}">
 							<c:forEach var="register" items="${paymentRegisters}">
 								<tr>
-									<td><a href="${pageContext.request.contextPath}/payroll/payment-register/detail?registerId=${register.registerId}">${register.paymentYearMonth}</a></td>
-									<td><a href="${pageContext.request.contextPath}/payroll/payment-register/detail?registerId=${register.registerId}">${register.paymentRoundName}</a></td>
+									<td><a href="${pageContext.request.contextPath}/payroll/register/detail.do?registerId=${register.registerId}">${register.paymentYearMonth}</a></td>
+									<td><a href="${pageContext.request.contextPath}/payroll/register/detail.do?registerId=${register.registerId}">${register.paymentRoundName}</a></td>
 									<td>${register.calculationStart} ~ ${register.calculationEnd}</td><td>${register.paymentDate}</td><td>${register.employeeCount}</td>
 									<td class="amount give">${register.totalPayment}</td><td class="amount deduction">${register.totalDeduction}</td><td class="amount">${register.netPayment}</td>
-									<td><form method="post" action="${pageContext.request.contextPath}/payroll/payment-register/delete"><input type="hidden" name="registerId" value="${register.registerId}"><button type="submit" class="table-button">삭제</button></form></td>
+									<td><form method="post" action="${pageContext.request.contextPath}/payroll/register/delete.do"><input type="hidden" name="registerId" value="${register.registerId}"><input type="hidden" name="year" value="${selectedYear}"><button type="submit" class="table-button">삭제</button></form></td>
 								</tr>
 							</c:forEach>
 						</c:when>

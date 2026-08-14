@@ -21,7 +21,7 @@
 			</div>
 		</header>
 
-		<form class="period-toolbar" method="get" action="${pageContext.request.contextPath}/payroll/payment-payslip">
+		<form class="period-toolbar" method="get" action="${pageContext.request.contextPath}/payroll/payslip.do">
 			<div class="period-information">
 				<div><strong>정산기간</strong><span><c:choose><c:when test="${not empty calculationStart and not empty calculationEnd}">${calculationStart} ~ ${calculationEnd}</c:when><c:otherwise>-</c:otherwise></c:choose></span></div>
 				<div><strong>급여지급일</strong><span>${empty paymentDate ? '-' : paymentDate}</span></div>
@@ -36,12 +36,12 @@
 
 		<section class="payslip-workspace">
 			<aside class="employee-panel">
-				<form class="employee-search" method="get" action="${pageContext.request.contextPath}/payroll/payment-payslip">
+				<form class="employee-search" method="get" action="${pageContext.request.contextPath}/payroll/payslip.do">
 					<input type="hidden" name="paymentYear" value="${selectedYear}"><input type="hidden" name="paymentMonth" value="${selectedMonth}"><input type="hidden" name="paymentRound" value="${selectedRound}">
-					<input type="search" name="keyword" value="${param.keyword}" placeholder="검색어 입력"><button type="submit" class="button button-primary">검색</button><a class="button button-outline" href="${pageContext.request.contextPath}/payroll/payment-payslip">전체보기</a>
+					<input type="search" name="keyword" value="${param.keyword}" placeholder="검색어 입력"><button type="submit" class="button button-primary">검색</button><a class="button button-outline" href="${pageContext.request.contextPath}/payroll/payslip.do?paymentYear=${selectedYear}&amp;paymentMonth=${selectedMonth}&amp;paymentRound=${selectedRound}">전체보기</a>
 				</form>
 				<div class="employee-table-wrap"><table class="employee-table"><thead><tr><th>구분</th><th>성명</th><th>실지급액</th></tr></thead><tbody>
-				<c:choose><c:when test="${not empty payslipEmployees}"><c:forEach var="employee" items="${payslipEmployees}"><tr class="${employee.employeeId eq selectedEmployee.employeeId ? 'selected-row' : ''}"><td>${employee.employmentTypeName}</td><td><a href="?employeeId=${employee.employeeId}">${employee.employeeName}</a></td><td class="amount">${employee.netPayment}</td></tr></c:forEach></c:when><c:otherwise>
+				<c:choose><c:when test="${not empty payslipEmployees}"><c:forEach var="employee" items="${payslipEmployees}"><tr class="${employee.employeeId eq selectedEmployee.employeeId ? 'selected-row' : ''}"><td>${employee.employmentTypeName}</td><td><a href="?paymentYear=${selectedYear}&amp;paymentMonth=${selectedMonth}&amp;paymentRound=${selectedRound}&amp;keyword=${param.keyword}&amp;employeeId=${employee.employeeId}">${employee.employeeName}</a></td><td class="amount">${employee.netPayment}</td></tr></c:forEach></c:when><c:otherwise>
 					<tr><td colspan="3" class="empty-row">조회된 급여명세서 대상 사원이 없습니다.</td></tr>
 				</c:otherwise></c:choose>
 				</tbody></table></div>
