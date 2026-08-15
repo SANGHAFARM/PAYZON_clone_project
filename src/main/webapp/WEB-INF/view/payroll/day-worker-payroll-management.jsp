@@ -21,7 +21,7 @@
 	<link rel="stylesheet"
 		href="${pageContext.request.contextPath}/css/payroll/payroll-management.css">
 	<link rel="stylesheet"
-		href="${pageContext.request.contextPath}/css/payroll/day-worker-payroll-management.css?v=20260815-2">
+		href="${pageContext.request.contextPath}/css/payroll/day-worker-payroll-management.css?v=20260815-4">
 </head>
 
 <body>
@@ -181,7 +181,7 @@
 												</td>
 
 												<td>${employee.departmentName}</td>
-												<td class="amount">${employee.netPayment}</td>
+												<td class="amount employee-net-payment">${employee.netPayment}</td>
 											</tr>
 										</c:forEach>
 									</c:when>

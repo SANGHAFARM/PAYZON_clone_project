@@ -283,17 +283,16 @@ public class PayrollManagementService {
 	}
 
 	private PayrollManagementEmployee selectEmployee(List<PayrollManagementEmployee> employees, Integer employeeId) {
-		if (employees.isEmpty()) {
+		// 최초 진입 시 첫 사원을 자동 선택하지 않는다.
+		if (employees.isEmpty() || employeeId == null) {
 			return null;
 		}
-		if (employeeId != null) {
-			for (PayrollManagementEmployee employee : employees) {
-				if (employee.getEmployeeId() == employeeId) {
-					return employee;
-				}
+		for (PayrollManagementEmployee employee : employees) {
+			if (employee.getEmployeeId() == employeeId) {
+				return employee;
 			}
 		}
-		return employees.get(0);
+		return null;
 	}
 
 	private PayrollTotals calculateTotals(List<PayrollManagementItem> payItems,

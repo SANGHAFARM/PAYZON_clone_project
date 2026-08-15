@@ -28,12 +28,9 @@ public class EmployeeRecordCardService {
 
 	public EmployeeRecordCardData getRecordCard(Integer employeeId, EmployeeSearchCondition condition) {
 		try (Connection conn = ConnectionProvider.getConnection()) {
-			// 사원 선택값이 없으면 검색 결과의 첫 번째 사원을 기본 표시한다.
+			// 사원 목록은 선택창에 표시하고, 기록카드는 사원을 직접 선택한 후에만 조회한다.
 			List<EmployeeListItem> employees = employeeDao.selectListByCondition(conn, condition);
 			Integer selectedId = employeeId;
-			if (selectedId == null && !employees.isEmpty()) {
-				selectedId = employees.get(0).getEmployeeId();
-			}
 
 			// 사원 선택에 공통으로 필요한 부서, 직위, 회사 정보를 먼저 저장한다.
 			EmployeeRecordCardData data = new EmployeeRecordCardData();
