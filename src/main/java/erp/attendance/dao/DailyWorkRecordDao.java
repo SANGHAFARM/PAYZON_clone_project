@@ -153,18 +153,17 @@ public class DailyWorkRecordDao {
 	
 	//일용직 근무 기록 수정 메서드
 	public int update(Connection conn, DailyWorkRecord dwr) throws SQLException {
-	    String sql = "UPDATE DAILY_WORK_RECORD SET EMPLOYEE_ID=?, WORK_DATE=?, PROJECT_ID=?, DAILY_PAY=?, PAY_RATE=?, "
+	    String sql = "UPDATE DAILY_WORK_RECORD SET WORK_DATE=?, PROJECT_ID=?, DAILY_PAY=?, PAY_RATE=?, "
 	               + "INCOME_TAX=?, LOCAL_INCOME_TAX=?, ACTUAL_PAY=? WHERE DAILY_WORK_RECORD_ID=?";
 	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-	        pstmt.setInt(1, dwr.getEmployeeId());
-	        pstmt.setTimestamp(2, dateToTimestamp(dwr.getWorkDate()));
-	        setIntOrNull(pstmt, 3, dwr.getProjectId());
-	        pstmt.setLong(4, dwr.getDailyPay());
-	        pstmt.setDouble(5, dwr.getPayRate());
-	        pstmt.setLong(6, dwr.getIncomeTax());
-	        pstmt.setLong(7, dwr.getLocalIncomeTax());
-	        pstmt.setLong(8, dwr.getActualPay());
-	        pstmt.setInt(9, dwr.getDailyWorkRecordId());
+	        pstmt.setTimestamp(1, dateToTimestamp(dwr.getWorkDate()));
+	        setIntOrNull(pstmt, 2, dwr.getProjectId());
+	        pstmt.setLong(3, dwr.getDailyPay());
+	        pstmt.setDouble(4, dwr.getPayRate());
+	        pstmt.setLong(5, dwr.getIncomeTax());
+	        pstmt.setLong(6, dwr.getLocalIncomeTax());
+	        pstmt.setLong(7, dwr.getActualPay());
+	        pstmt.setInt(8, dwr.getDailyWorkRecordId());
 	        return pstmt.executeUpdate();
 	    }
 	}

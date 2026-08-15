@@ -10,12 +10,11 @@ import erp.settings.model.Project;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
-public class DailyWorkInsertService {
-
+public class DailyWorkUpdateService {
 	private DailyWorkRecordDao dailyWorkRecordDao = DailyWorkRecordDao.getInstance();
 	private ProjectDao projectDao = ProjectDao.getInstance();
-			
-	public Integer insert(DailyWorkInsertRequest req) {
+	
+	public Integer update(DailyWorkUpdateRequest req) {
 		Connection conn = null;
 		try {
 			conn = ConnectionProvider.getConnection();
@@ -26,19 +25,13 @@ public class DailyWorkInsertService {
 			if (project == null) {
 				throw new RuntimeException("invalid projectId: " + req.getProjectId());
 			}
-			
-			int successCount = 0;
-			//반복문을 돌며 각 사원의 기록 입력
-			for(Integer empId : req.getEmployeeIds()) {
-				DailyWorkRecord record = toDailyWorkRecord(req, empId);
-				int result = dailyWorkRecordDao.insert(conn, record);
-				if (result==0) {
-					throw new RuntimeException("fail to insert record for empId: " + empId);
-				}
-				successCount++;
+			DailyWorkRecord record = toDailyWorkRecord(req);
+			int result = dailyWorkRecordDao.update(conn, record);
+			if (result==0) {
+				throw new RuntimeException("fail to update record for dailyWorkRecordId: " + record.getDailyWorkRecordId());
 			}
 			conn.commit();
-			return successCount;
+			return result;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			JdbcUtil.rollback(conn);
@@ -51,9 +44,9 @@ public class DailyWorkInsertService {
 		}
 	}
 	
-	private DailyWorkRecord toDailyWorkRecord(DailyWorkInsertRequest req, Integer empId) {
+	private DailyWorkRecord toDailyWorkRecord(DailyWorkUpdateRequest req) {
 		DailyWorkRecord record = new DailyWorkRecord();
-		record.setEmployeeId(empId);
+		record.setDailyWorkRecordId(req.getDailyWorkRecordId());
 		record.setWorkDate(req.getWorkDate());
 		record.setProjectId(req.getProjectId());
 		record.setDailyPay(req.getDailyPay());
@@ -64,5 +57,5 @@ public class DailyWorkInsertService {
 		return record;
 	}
 	
-
+	
 }
