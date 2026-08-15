@@ -99,4 +99,64 @@ public class AttendanceItemDao {
 
 		return item;
 	}
+	
+	// 기존에 등록된 근태항목 정보 수정 처리
+	public void update(Connection conn, AttendanceItem item) throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			// 근태항목 정보 갱신을 위한 UPDATE 쿼리문 작성
+			String sql = "UPDATE ATTENDANCE_ITEM "
+					+ "SET ATTEND_NAME = ?, UNIT_TYPE = ?, ATTENDANCE_GROUP_ID = ?, "
+					+ "DEDUCT_LEAVE_ID = ?, WORK_HOUR_TYPE = ?, USE_YN = ? "
+					+ "WHERE ATTENDANCE_ITEM_ID = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, item.getAttendName());
+			pstmt.setString(2, item.getUnitType());
+			pstmt.setInt(3, item.getAttendanceGroupId());
+			
+			// 외래키인 휴가공제 식별 번호가 0보다 크면 정수 할당, 아니면 DB에 NULL 세팅
+			if (item.getDeductLeaveId() > 0) {
+				pstmt.setInt(4, item.getDeductLeaveId());
+			} else {
+				pstmt.setNull(4, java.sql.Types.NUMERIC);
+			}
+			
+			// 근로시간연계 속성이 존재하면 문자열 할당, 아니면 DB에 NULL 세팅
+			if (item.getWorkHourType() != null && !item.getWorkHourType().trim().isEmpty()) {
+				pstmt.setString(5, item.getWorkHourType());
+			} else {
+				pstmt.setNull(5, java.sql.Types.VARCHAR);
+			}
+			
+			pstmt.setString(6, item.getUseYn());
+			pstmt.setInt(7, item.getAttendanceItemId()); // 식별 가능한 기본키 매핑
+			
+			// 쿼리 실행 수행
+			pstmt.executeUpdate();
+			
+		} finally {
+			// 자원 누수 방지를 위한 객체 반환 처리
+			JdbcUtil.close(pstmt);
+		}
+	}
+
+	// 기본키를 기준으로 특정 근태항목 데이터 완전 삭제 처리
+	public void delete(Connection conn, int attendItemId) throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			// 기본키 기반 레코드 삭제 쿼리문 작성
+			String sql = "DELETE FROM ATTENDANCE_ITEM WHERE ATTENDANCE_ITEM_ID = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, attendItemId);
+			
+			// 쿼리 실행 수행
+			pstmt.executeUpdate();
+			
+		} finally {
+			// 자원 누수 방지를 위한 객체 반환 처리
+			JdbcUtil.close(pstmt);
+		}
+	}
 }
