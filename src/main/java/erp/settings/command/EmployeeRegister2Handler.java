@@ -1,4 +1,4 @@
-package erp.employees.command;
+package erp.settings.command;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

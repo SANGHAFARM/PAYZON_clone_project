@@ -1,8 +1,6 @@
 package erp.settings.model;
 
-/**
- * [기본환경설정] 휴가/근태 설정 - 근태항목 설정 Model DB 테이블: ATTENDANCE_ITEM
- */
+// [기본환경설정] 휴가/근태 설정 - 근태항목 설정 Model DB 테이블: ATTENDANCE_ITEM
 public class AttendanceItem {
 
 	private int attendanceItemId; // 근태항목 식별 번호 (PK)
