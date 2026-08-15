@@ -13,8 +13,14 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import erp.attendance.dao.DailyWorkRecordDao;
+import erp.attendance.dto.DailyWorkRecordDto;
+import erp.attendance.service.DailyWorkDeleteService;
 import erp.attendance.service.DailyWorkInsertRequest;
 import erp.attendance.service.DailyWorkInsertService;
+import erp.attendance.service.DailyWorkRecordRequest;
+import erp.attendance.service.DailyWorkUpdateRequest;
+import erp.attendance.service.DailyWorkUpdateService;
 import erp.attendance.service.ListDailyWorkRecordService;
 import erp.employees.dao.EmployeeDao;
 import erp.employees.dto.DayWorkerDto;
@@ -30,7 +36,8 @@ public class DayWorkerManagementHandler implements CommandHandler {
 
 	ListDailyWorkRecordService listService = new ListDailyWorkRecordService();
 	DailyWorkInsertService insertService = new DailyWorkInsertService();
-	
+	DailyWorkUpdateService updateService = new DailyWorkUpdateService();
+
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		if (req.getMethod().equalsIgnoreCase("GET")) {
 			return processForm(req, res);
@@ -43,6 +50,39 @@ public class DayWorkerManagementHandler implements CommandHandler {
 	}
 
 	private String processForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
+
+		// 사원별 근무기록 기능인지 확인
+		String employeeId = req.getParameter("employeeId");
+		if (employeeId != null) {
+
+			String editId = req.getParameter("editId");
+			if (editId != null) {
+				req.setAttribute("editId", editId);
+				req.setAttribute("workDate", req.getParameter("workDate"));
+				req.setAttribute("projectId", req.getParameter("projectId"));
+				req.setAttribute("dailyPay", req.getParameter("dailyPay"));
+				req.setAttribute("payRate", req.getParameter("payRate"));
+				req.setAttribute("incomeTax", req.getParameter("incomeTax"));
+				req.setAttribute("localIncomeTax", req.getParameter("localIncomeTax"));
+				req.setAttribute("actualPay", req.getParameter("actualPay"));
+			}
+			req.setAttribute("employeeId", employeeId);
+			DailyWorkRecordDao dailyWorkRecordDao = DailyWorkRecordDao.getInstance();
+			DailyWorkRecordRequest request = new DailyWorkRecordRequest();
+			String yearParam = req.getParameter("year");
+			String monthParam = req.getParameter("month");
+			int year = (yearParam != null && !yearParam.isEmpty()) ? Integer.parseInt(yearParam)
+					: LocalDate.now().getYear();
+			int month = (monthParam != null && !monthParam.isEmpty()) ? Integer.parseInt(monthParam)
+					: LocalDate.now().getMonthValue();
+			request.setEmployeeId(Integer.parseInt(employeeId));
+			request.setYear(year);
+			request.setMonth(month);
+			try (Connection conn = ConnectionProvider.getConnection()) {
+				List<DailyWorkRecordDto> workRecords = dailyWorkRecordDao.selectByRequest(conn, request);
+				req.setAttribute("workRecords", workRecords);
+			}
+		}
 		String status = req.getParameter("status");
 		if (status == null) {
 			status = "재직";
@@ -69,21 +109,70 @@ public class DayWorkerManagementHandler implements CommandHandler {
 
 	}
 
-	private String processSubmit(HttpServletRequest req, HttpServletResponse res) {
+	private String processSubmit(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		String deleteId = req.getParameter("deleteId");
+		if (deleteId != null) {
+			DailyWorkDeleteService dailyWorkDeleteService = new DailyWorkDeleteService();
+			int no = Integer.parseInt(deleteId);
+			dailyWorkDeleteService.delete(no);
+			// 삭제 후 파라미터를유지한 채 원래 페이지로 리다이렉트 (모달 앵커 포함)
+			String empId = req.getParameter("employeeId");
+			String year = req.getParameter("year");
+			String month = req.getParameter("month");
+
+			res.sendRedirect(req.getContextPath() + "/attendance/day-worker-management.do?employeeId=" + empId
+					+ "&year=" + year + "&month=" + month + "#work-history-" + empId);
+			return null; // 리다이렉트를 직접 처리했으므로 뷰 경로는 null 리턴
+		}
+		String editId = req.getParameter("editId");
 		Map<String, Boolean> errors = new HashMap<>();
 		req.setAttribute("errors", errors);
-		DailyWorkInsertRequest request = createDailyWorkInsertRequest(req, errors);
-		request.validate(errors);
-		if (!errors.isEmpty()) {
-			return FORM_VIEW; //<-수정해야 할지도
+		if (editId != null) {
+			DailyWorkUpdateRequest request = createDailyWorkUpdateRequest(req, errors);
+			request.validate(errors);
+			if (!errors.isEmpty()) {
+				return processForm(req, res); // <-수정해야 할지도
+			}
+			updateService.update(request);
+		} else {
+			DailyWorkInsertRequest request = createDailyWorkInsertRequest(req, errors);
+			request.validate(errors);
+			if (!errors.isEmpty()) {
+				return processForm(req, res); // <-수정해야 할지도
+			}
+			insertService.insert(request);
 		}
-		
-		insertService.insert(request);
-		
-		return SUCCESS_VIEW;
+		return processForm(req, res);
 	}
 
-	private DailyWorkInsertRequest createDailyWorkInsertRequest(HttpServletRequest req, Map<String, Boolean> errors){
+	private DailyWorkUpdateRequest createDailyWorkUpdateRequest(HttpServletRequest req, Map<String, Boolean> errors) {
+		DailyWorkUpdateRequest request = new DailyWorkUpdateRequest();
+		request.setDailyWorkRecordId(Integer.parseInt(req.getParameter("editId")));
+		String date = req.getParameter("workDate");
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		Date workDate = null;
+		try {
+			workDate = formatter.parse(date);
+		} catch (ParseException e) {
+			errors.put("ParseException", Boolean.TRUE);
+		}
+
+		request.setWorkDate(workDate);
+		request.setProjectId(Integer.parseInt(req.getParameter("projectId")));
+		request.setDailyPay(Long.parseLong(req.getParameter("dailyPay")));
+		request.setPayRate(Double.parseDouble(req.getParameter("payRate")));
+
+		String incomeTax = req.getParameter("incomeTax").replaceAll(",", "");
+		String localIncomTax = req.getParameter("localIncomeTax").replaceAll(",", "");
+		String actualPay = req.getParameter("actualPay").replaceAll(",", "");
+		request.setIncomeTax(Long.parseLong(incomeTax));
+		request.setLocalIncomeTax(Long.parseLong(localIncomTax));
+		request.setActualPay(Long.parseLong(actualPay));
+
+		return request;
+	}
+
+	private DailyWorkInsertRequest createDailyWorkInsertRequest(HttpServletRequest req, Map<String, Boolean> errors) {
 		DailyWorkInsertRequest request = new DailyWorkInsertRequest();
 		// 사원id 목록을 문자열 배열로 받기
 		String[] employeeIdsStr = req.getParameterValues("employeeIds");
@@ -95,24 +184,28 @@ public class DayWorkerManagementHandler implements CommandHandler {
 				employeeIds.add(Integer.parseInt(idStr));
 			}
 		}
+		String date = req.getParameter("workDate");
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		Date workDate = null;
 		try {
-			formatter.parse(req.getParameter("workDate"));
+			workDate = formatter.parse(date);
 		} catch (ParseException e) {
 			errors.put("ParseException", Boolean.TRUE);
 		}
-
 
 		request.setEmployeeIds(employeeIds);
 		request.setWorkDate(workDate);
 		request.setProjectId(Integer.parseInt(req.getParameter("projectId")));
 		request.setDailyPay(Long.parseLong(req.getParameter("dailyPay")));
 		request.setPayRate(Double.parseDouble(req.getParameter("payRate")));
-		request.setIncomeTax(Long.parseLong(req.getParameter("incomeTax")));
-		request.setLocalIncomeTax(Long.parseLong(req.getParameter("localIncomeTax")));
-		request.setActualPay(Long.parseLong(req.getParameter("actualPay")));
-		
+
+		String incomeTax = req.getParameter("incomeTax").replaceAll(",", "");
+		String localIncomTax = req.getParameter("localIncomeTax").replaceAll(",", "");
+		String actualPay = req.getParameter("actualPay").replaceAll(",", "");
+		request.setIncomeTax(Long.parseLong(incomeTax));
+		request.setLocalIncomeTax(Long.parseLong(localIncomTax));
+		request.setActualPay(Long.parseLong(actualPay));
+
 		return request;
 	}
 

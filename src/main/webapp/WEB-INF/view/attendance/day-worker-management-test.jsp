@@ -63,8 +63,9 @@
 				</form>
 			</div>
 
-			<!-- //여기부터 사원 정보 및 입력 폼 -->
-
+			<!-- =========================================================== -->
+			<!--                          사원 목록                              -->
+			<!-- =========================================================== -->
 			<div class="worker-layout">
 				<div class="employee-list-wrap">
 					<table class="data-table employee-table">
@@ -84,13 +85,14 @@
 								<tr>
 									<td class="check-cell"><input type="checkbox"
 										name="employeeIds" value="${dayworker.employeeId}"
-										aria-label="${dayworker.empNameKr} 선택"></td>
+										aria-label="${dayworker.empNameKr} 선택"
+										${not empty editId ? 'disabled' : '' }></td>
 									<td><c:out value="${dayworker.empType}" /></td>
 									<td><c:out value="${dayworker.empNo}" /></td>
 									<td><c:out value="${dayworker.empNameKr}" /></td>
 									<td><c:out value="${dayworker.departmentName}" /></td>
 									<td><a class="button button-small"
-										href="#work-history-${employee.employeeId}">관리</a></td>
+										href="${pageContext.request.contextPath}/attendance/day-worker-management.do?employeeId=${dayworker.employeeId}#work-history-${dayworker.employeeId}">관리</a></td>
 								</tr>
 							</c:forEach>
 							<c:if test="${empty dayWorkers}">
@@ -102,52 +104,87 @@
 					</table>
 				</div>
 
-				<!-- 일용직 근무 기록 입력 폼 -->
-				<form class="record-form" method="post"
-					action="${pageContext.request.contextPath}/diligence/day-worker-management/save">
+				<!-- =========================================================== -->
+				<!--                         일용직 근무 입력 폼                        -->
+				<!-- =========================================================== -->
+				<form id="recordForm" class="record-form" method="post"
+					action="${pageContext.request.contextPath}/attendance/day-worker-management.do">
+
+					<c:if test="${not empty editId}">
+						<input type="hidden" name="editId" value="${editId}">
+					</c:if>
 
 					<div id="hiddenEmployeeInputs"></div>
 
 					<h2>일용직 근무기록 입력</h2>
 					<div class="form-fields">
-						<label><span>근무일자</span><input type="date" name="workDate"
-							required value="${today }"></label> <label><span>현장/프로젝트</span><span
-							class="project-control"><select name="projectCode"><option
+						<label><span>근무일자</span> <input type="date"
+							name="workDate" required
+							value="${empty editId ? today : workDate}"></label> <label><span>현장/프로젝트</span><span
+							class="project-control"><select name="projectId"><option
 										value="">선택하세요.</option>
 									<c:forEach var="project" items="${projects}">
-										<option value="${project.projectId}"><c:out
+										<option value="${project.projectId}"
+											${projectId eq project.projectId ? 'selected' : ''}><c:out
 												value="${project.projectName}" /></option>
 									</c:forEach></select><a class="button button-project" href="#project-manager">목록관리</a></span>
 						</label> <label> <span>일당</span> <span class="amount-control">
 								<input type="number" id="dailyPay" name="dailyPay" min="0"
-								placeholder="일당을 입력해주세요"> <em>원</em>
+								value="${dailyPay}" placeholder="일당을 입력해주세요"> <em>원</em>
 						</span></label> <label> <span>지급율</span> <input type="number"
-							id="payRate" name="payRate" min="0" step="0.1" value="1.0"></label>
-
-						<label class="calculated"> <span>소득세</span> <span
+							id="payRate" name="payRate" min="0" step="0.1"
+							value="${empty editId ? 1.0 : payRate}"></label> <label
+							class="calculated"> <span>소득세</span> <span
 							class="amount-control"> <input type="text" id="incomeTax"
-								name="incomeTax" value="${calculatedIncomeTax}"
+								name="incomeTax"
+								value="${empty editId ? calculatedIncomeTax : incomeTax}"
 								placeholder="자동 계산됩니다" readonly> <em>원</em></span></label> <label
 							class="calculated"> <span>지방소득세</span> <span
 							class="amount-control"> <input type="text"
 								id="localIncomeTax" name="localIncomeTax"
-								value="${calculatedLocalIncomeTax}" placeholder="자동 계산됩니다"
-								readonly> <em>원</em></span></label> <label class="calculated">
-							<span>실지급액</span><span class="amount-control"> <input
-								type="text" id="actualPay" name="actualPay"
-								value="${calculatedActualPay}" placeholder="자동 계산됩니다" readonly><em>원</em></span>
-						</label>
+								value="${empty editId ? calculatedLocalIncomeTax : localIncomeTax}"
+								placeholder="자동 계산됩니다" readonly> <em>원</em></span></label> <label
+							class="calculated"><span>실지급액</span><span
+							class="amount-control"> <input type="text" id="actualPay"
+								name="actualPay"
+								value="${empty editId ? calculatedActualPay : actualPay}"
+								placeholder="자동 계산됩니다" readonly><em>원</em></span> </label>
 					</div>
 					<div class="form-actions">
-						<button type="submit" class="button button-primary action-button">저장</button>
-						<button type="reset"
-							class="button button-muted action-button clear-button">내용지우기</button>
+
+						<c:choose>
+							<c:when test="${empty editId}">
+								<button type="submit" id="saveBtn"
+									class="button button-primary action-button">저장</button>
+							</c:when>
+							<c:otherwise>
+								<button type="submit" class="button button-primary action-button">수정</button>
+							</c:otherwise>
+						</c:choose>
+
+
+						<!-- 수정 모드일 시 수정취소 버튼 활성화 -->
+						<c:choose>
+							<c:when test="${empty editId}">
+								<button type="reset"
+									class="button button-muted action-button clear-button">내용지우기</button>
+							</c:when>
+							<c:otherwise>
+								<a
+									href="${pageContext.request.contextPath}/attendance/day-worker-management.do"
+									class="button button-muted action-button">수정취소</a>
+							</c:otherwise>
+						</c:choose>
 					</div>
 				</form>
 			</div>
 		</section>
 	</main>
-	<%-- 
+
+
+	<!-- =========================================================== -->
+	<!--                         사원별 근무 기록                          -->
+	<!-- =========================================================== -->
 	<c:forEach var="employee" items="${dayWorkers}">
 		<div id="work-history-${employee.employeeId}" class="modal-overlay">
 			<section class="modal work-history-modal" role="dialog"
@@ -164,15 +201,25 @@
 							<c:out value="${employee.empNo}" />
 							) 부서 :
 							<c:out value="${employee.departmentName}" />
-							직위 :
-							<c:out value="${employee.positionName}" />
+							<%-- 							직위 :
+							<c:out value="${employee.positionName}" /> --%>
 						</p>
 						<form method="get">
-							<select name="year" aria-label="연도"><option value="2026">2026년</option></select><select
-								name="month" aria-label="월"><c:forEach var="monthNo"
-									begin="1" end="12">
-									<option value="${monthNo}" ${monthNo eq 8 ? 'selected' : ''}>${monthNo}월</option>
-								</c:forEach></select>
+							<input type="hidden" name="employeeId"
+								value="${param.employeeId}"> <select name="year"
+								aria-label="연도">
+								<c:forEach var="y" begin="2015" end="2026">
+									<option value="${y}"
+										${y eq (empty param.year ? 2026 : param.year) ? 'selected' : ''}>${y}년</option>
+								</c:forEach>
+							</select> <select name="month" aria-label="월">
+								<c:forEach var="monthNo" begin="1" end="12">
+									<option value="${monthNo}"
+										${monthNo eq (empty param.month ? 8 : param.month) ? 'selected' : ''}>${monthNo}월</option>
+								</c:forEach>
+							</select>
+
+							<button type="submit">조회</button>
 						</form>
 					</div>
 					<table class="data-table">
@@ -191,24 +238,33 @@
 							</tr>
 						</thead>
 						<tbody>
-							<c:forEach var="record" items="${employee.workRecords}">
+							<c:forEach var="record" items="${workRecords}" varStatus="status">
 								<tr>
-									<td><c:out value="${record.rowNumber}" /></td>
+									<td><c:out value="${status.count }" /></td>
 									<td><c:out value="${record.workDate}" /></td>
 									<td><c:out value="${record.projectName}" /></td>
 									<td><c:out value="${record.dailyPay}" /></td>
 									<td><c:out value="${record.payRate}" /></td>
-									<td><c:out value="${record.paymentAmount}" /></td>
+									<td><c:out value="${record.grossPay}" /></td>
 									<td><c:out value="${record.incomeTax}" /></td>
 									<td><c:out value="${record.localIncomeTax}" /></td>
 									<td><c:out value="${record.actualPay}" /></td>
 									<td><a class="mini-button"
-										href="?editId=${record.recordId}">수정</a><a
-										class="mini-button mini-delete"
-										href="?deleteId=${record.recordId}">삭제</a></td>
+										href="?editId=${record.dailyWorkRecordId}&employeeId=${param.employeeId}&workDate=${record.workDate}&projectId=${record.projectId }&dailyPay=${record.dailyPay }&payRate=${record.payRate }&incomeTax=${record.incomeTax }&localIncomeTax=${record.localIncomeTax }&actualPay=${record.actualPay }">수정</a>
+										<%-- <a class="mini-button mini-delete"	href="?deleteId=${record.dailyWorkRecordId}&employeeId=${param.employeeId}&year=${param.year}&month=${param.month}#work-history-${param.employeeId}">삭제</a> --%>
+										<form
+											action="${pageContext.request.contextPath}/attendance/day-worker-management.do"
+											method="post" style="display: inline;">
+											<input type="hidden" name="deleteId"
+												value="${record.dailyWorkRecordId}"> <input
+												type="hidden" name="employeeId" value="${param.employeeId}">
+											<input type="hidden" name="year" value="${param.year}">
+											<input type="hidden" name="month" value="${param.month}">
+											<button type="submit" class="mini-button mini-delete">삭제</button>
+										</form></td>
 								</tr>
 							</c:forEach>
-							<c:if test="${empty employee.workRecords}">
+							<c:if test="${empty workRecords}">
 								<tr>
 									<td colspan="10" class="empty-row">등록된 근무기록이 없습니다.</td>
 								</tr>
@@ -219,7 +275,7 @@
 			</section>
 		</div>
 	</c:forEach>
-	 --%>
+
 	<div id="project-manager" class="modal-overlay">
 		<section class="modal project-modal" role="dialog" aria-modal="true"
 			aria-labelledby="project-title">
@@ -280,7 +336,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         let localIncomeTax = Math.floor(incomeTax * 0.1 / 10) * 10;
-        let actualPay = totalPay - incomeTax - localIncomeTax;
+        let actualPay = Math.floor(totalPay - incomeTax - localIncomeTax);
 
         // 결과 입력창에 반영
         incomeTaxInput.value = incomeTax.toLocaleString();
@@ -298,13 +354,7 @@ document.addEventListener('DOMContentLoaded', function() {
     saveBtn.addEventListener('click', function() {
         // 1. 테이블에서 체크된 사원들 가져오기
         const checkedBoxes = document.querySelectorAll('input[name="employeeIds"]:checked');
-        
-        // 2. 선택된 사원이 없으면 경고
-        if (checkedBoxes.length === 0) {
-            alert('근무기록을 저장할 사원을 한 명 이상 선택해주세요.');
-            return;
-        }
-        
+
         // 3. 기존 hidden 인풋 초기화
         const container = document.getElementById('hiddenEmployeeInputs');
         container.innerHTML = '';
