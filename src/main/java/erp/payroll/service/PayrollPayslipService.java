@@ -66,17 +66,16 @@ public class PayrollPayslipService {
 	}
 
 	private PayrollPayslipEmployee selectEmployee(List<PayrollPayslipEmployee> employees, Integer employeeId) {
-		if (employees.isEmpty()) {
+		// 최초 진입 시 첫 사원의 급여명세서를 자동 표시하지 않는다.
+		if (employees.isEmpty() || employeeId == null) {
 			return null;
 		}
-		if (employeeId != null) {
-			for (PayrollPayslipEmployee employee : employees) {
-				if (employee.getEmployeeId() == employeeId) {
-					return employee;
-				}
+		for (PayrollPayslipEmployee employee : employees) {
+			if (employee.getEmployeeId() == employeeId) {
+				return employee;
 			}
 		}
-		return employees.get(0);
+		return null;
 	}
 
 	private void fillEmptyAmounts(PayrollPayslipEmployee employee, List<PayrollRegisterColumn> paymentItems,

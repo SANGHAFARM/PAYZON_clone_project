@@ -41,10 +41,8 @@ public class CertificateIssueService {
 			data.company = CompanyDao.getInstance().selectById(conn, 1);
 			data.issueDate = new Date();
 
+			// 증명서는 사원을 직접 선택한 후에만 발급 대상 정보를 조회한다.
 			Integer selectedId = employeeId;
-			if (selectedId == null && !data.employees.isEmpty()) {
-				selectedId = data.employees.get(0).getEmployeeId();
-			}
 			for (EmployeeListItem employee : data.employees) {
 				if (selectedId != null && employee.getEmployeeId() == selectedId) {
 					data.selectedEmployee = employee;
