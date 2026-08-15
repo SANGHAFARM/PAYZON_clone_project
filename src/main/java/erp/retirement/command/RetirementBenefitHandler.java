@@ -5,7 +5,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,7 +35,21 @@ public class RetirementBenefitHandler implements CommandHandler {
 			return showPage(req, null);
 		}
 		if (post && uri.endsWith("/new.do")) {
-			return showPage(req, service.prepareNew(requiredInt(req, "employeeId")));
+			try {
+				List<Integer> employeeIds = integerValues(req.getParameterValues("employeeIds"));
+				if (employeeIds.isEmpty()) {
+					throw new IllegalArgumentException("추가할 사원을 선택해주세요");
+				}
+				Integer activeEmployeeId = parseInt(req.getParameter("activeEmployeeId"));
+				if (activeEmployeeId == null || !employeeIds.contains(activeEmployeeId)) {
+					activeEmployeeId = employeeIds.get(0);
+				}
+				req.setAttribute("draftEmployeeIds", employeeIds);
+				return showPage(req, service.prepareNew(activeEmployeeId));
+			} catch (IllegalArgumentException e) {
+				req.setAttribute("message", e.getMessage());
+				return showPage(req, null);
+			}
 		}
 		if (post && uri.endsWith("/load-pay.do")) {
 			return processLoadPay(req);
@@ -45,13 +61,18 @@ public class RetirementBenefitHandler implements CommandHandler {
 			return processSave(req, res);
 		}
 		if (post && uri.endsWith("/delete-all.do")) {
-			service.delete(null, true);
-			redirect(req, res, "deleted", null);
+			service.delete(null, true, parseInt(req.getParameter("paymentYear")));
+			redirectList(req, res);
 			return null;
 		}
 		if (post && uri.endsWith("/delete.do")) {
-			service.delete(parseInt(req.getParameter("calculationId")), false);
-			redirect(req, res, "deleted", null);
+			Integer calculationId = parseInt(req.getParameter("calculationId"));
+			if (calculationId == null) {
+				res.sendRedirect(req.getContextPath() + "/retirement/benefit.do");
+				return null;
+			}
+			service.delete(calculationId, false, null);
+			redirectList(req, res);
 			return null;
 		}
 
@@ -100,19 +121,41 @@ public class RetirementBenefitHandler implements CommandHandler {
 	}
 
 	private String showPage(HttpServletRequest req, RetirementBenefitForm override) {
+		boolean employeeSearchRequest = req.getRequestURI().endsWith("/employee-search.do");
+		String employeeKeyword = req.getParameter("employeeKeyword");
+		// 사원 검색어는 공백을 제외하고 두 글자 이상 입력해야 한다.
+		if (employeeSearchRequest && "keyword".equals(req.getParameter("searchMode"))
+				&& (employeeKeyword == null || employeeKeyword.trim().length() < 2)) {
+			req.setAttribute("message", "검색어를 2자 이상 입력해주세요");
+			employeeKeyword = "";
+		}
 		Integer requestedYear = parseInt(req.getParameter("paymentYear"));
 		int year = requestedYear == null ? LocalDate.now().getYear() : requestedYear;
 		Integer calculationId = parseInt(req.getParameter("calculationId"));
 		BenefitPageData data = service.getPage(year, calculationId,
-				req.getParameter("employeeKeyword"), parseInt(req.getParameter("departmentId")));
+				employeeKeyword, parseInt(req.getParameter("departmentId")));
 
 		req.setAttribute("paymentYears", service.getPaymentYears());
 		req.setAttribute("selectedYear", year);
-		req.setAttribute("retirementBenefits", data.getBenefits());
+		boolean newRequest = req.getRequestURI().endsWith("/new.do");
+		boolean loadList = !newRequest && ("list".equals(req.getParameter("mode"))
+				|| calculationId != null || req.getParameter("result") != null
+				|| override != null);
+		req.setAttribute("retirementBenefits", loadList ? data.getBenefits() : java.util.Collections.emptyList());
 		req.setAttribute("selectableEmployees", data.getEmployees());
 		req.setAttribute("departments", data.getDepartments());
 		req.setAttribute("retirementBenefit", override == null ? data.getForm() : override);
-
+		@SuppressWarnings("unchecked")
+		List<Integer> draftEmployeeIds = (List<Integer>) req.getAttribute("draftEmployeeIds");
+		if (draftEmployeeIds != null) {
+			List<erp.employees.dto.EmployeeListItem> draftEmployees = new ArrayList<>();
+			for (erp.employees.dto.EmployeeListItem employee : data.getEmployees()) {
+				if (draftEmployeeIds.contains(employee.getEmployeeId())) {
+					draftEmployees.add(employee);
+				}
+			}
+			req.setAttribute("draftBenefitEmployees", draftEmployees);
+		}
 		if (req.getAttribute("message") == null && "saved".equals(req.getParameter("result"))) {
 			req.setAttribute("message", "퇴직급여 내역을 저장했습니다.");
 		}
@@ -230,12 +273,32 @@ public class RetirementBenefitHandler implements CommandHandler {
 		res.sendRedirect(req.getContextPath() + "/retirement/benefit.do" + query);
 	}
 
+	private void redirectList(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		Integer paymentYear = parseInt(req.getParameter("paymentYear"));
+		String query = paymentYear == null ? "" : "?mode=list&paymentYear=" + paymentYear;
+		res.sendRedirect(req.getContextPath() + "/retirement/benefit.do" + query);
+	}
+
 	private int requiredInt(HttpServletRequest req, String name) {
 		Integer value = parseInt(req.getParameter(name));
 		if (value == null) {
-			throw new IllegalArgumentException("사원을 선택하세요.");
+			throw new IllegalArgumentException("사원을 선택해주세요");
 		}
 		return value;
+	}
+
+	private List<Integer> integerValues(String[] values) {
+		List<Integer> result = new ArrayList<>();
+		if (values == null) {
+			return result;
+		}
+		for (String value : values) {
+			Integer number = parseInt(value);
+			if (number != null && !result.contains(number)) {
+				result.add(number);
+			}
+		}
+		return result;
 	}
 
 	private void validateCalculationDates(RetirementBenefitForm form) {

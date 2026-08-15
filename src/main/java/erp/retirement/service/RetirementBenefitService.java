@@ -113,6 +113,15 @@ public class RetirementBenefitService {
 			if (employee.getRetireDate() != null) {
 				form.setEndDate(dateFormat.format(employee.getRetireDate()));
 			}
+			// 선택한 사원의 재직기간을 신규 정산 화면에 바로 표시한다.
+			if (form.getStartDate() != null && form.getEndDate() != null) {
+				LocalDate startDate = LocalDate.parse(form.getStartDate());
+				LocalDate endDate = LocalDate.parse(form.getEndDate());
+				int serviceDays = (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
+				form.setServiceDays(Math.max(0, serviceDays));
+				form.setServiceYears(Math.max(0, serviceDays) / 365);
+			}
+			form.setExcludedDays(0);
 			return form;
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -254,13 +263,16 @@ public class RetirementBenefitService {
 		}
 	}
 
-	public void delete(Integer calculationId, boolean deleteAll) {
+	public void delete(Integer calculationId, boolean deleteAll, Integer paymentYear) {
 		Connection conn = null;
 		try {
 			conn = ConnectionProvider.getConnection();
 			conn.setAutoCommit(false);
 			if (deleteAll) {
-				calculationDao.deleteAll(conn);
+				if (paymentYear == null) {
+					throw new IllegalArgumentException("삭제할 지급년도를 선택해주세요");
+				}
+				calculationDao.deleteAllByPaymentYear(conn, paymentYear);
 			} else if (calculationId != null) {
 				calculationDao.delete(conn, calculationId);
 			}

@@ -220,23 +220,23 @@ public class PayrollManagementDao {
 
 	public void managePayItem(Connection conn, String action, Integer itemId, String itemName, String taxType,
 			String taxFreeCode, long taxFreeLimit, String calculationMethod, int roundUnit, String payMethod,
-			Long bulkAmount) throws SQLException {
+			Integer attendanceItemId, Long bulkAmount) throws SQLException {
 		if ("deleteAll".equals(action)) {
 			executeUpdate(conn, "UPDATE PAY_ITEM SET USE_YN = 'N'", new Object[0]);
 		} else if ("delete".equals(action)) {
 			executeUpdate(conn, "UPDATE PAY_ITEM SET USE_YN = 'N' WHERE PAY_ITEM_ID = ?", itemId);
 		} else if ("update".equals(action)) {
 			String sql = "UPDATE PAY_ITEM SET PAY_NAME = ?, TAX_TYPE = ?, TAX_FREE_CODE = ?, TAX_FREE_LIMIT = ?, "
-					+ "CALC_METHOD = ?, ROUND_UNIT = ?, PAY_METHOD = ?, BULK_PAY_AMOUNT = ?, USE_YN = 'Y' "
+					+ "CALC_METHOD = ?, ROUND_UNIT = ?, PAY_METHOD = ?, LINK_ATTEND_ID = ?, BULK_PAY_AMOUNT = ?, USE_YN = 'Y' "
 					+ "WHERE PAY_ITEM_ID = ?";
 			executeUpdate(conn, sql, itemName, taxType, taxFreeCode, taxFreeLimit, calculationMethod, roundUnit,
-					payMethod, bulkAmount, itemId);
+					payMethod, attendanceItemId, bulkAmount, itemId);
 		} else {
 			String sql = "INSERT INTO PAY_ITEM (PAY_ITEM_ID, PAY_NAME, TAX_TYPE, TAX_FREE_CODE, TAX_FREE_LIMIT, "
 					+ "CALC_METHOD, ROUND_UNIT, PAY_METHOD, LINK_ATTEND_ID, BULK_PAY_AMOUNT, USE_YN) "
-					+ "VALUES (PAY_ITEM_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, NULL, ?, 'Y')";
+					+ "VALUES (PAY_ITEM_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Y')";
 			executeUpdate(conn, sql, itemName, taxType, taxFreeCode, taxFreeLimit, calculationMethod, roundUnit,
-					payMethod, bulkAmount);
+					payMethod, attendanceItemId, bulkAmount);
 		}
 	}
 

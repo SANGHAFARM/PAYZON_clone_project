@@ -8,7 +8,7 @@
 	<title>급여대장</title>
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/common.css">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/payroll/payroll-register.css">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/payroll/payroll-register.css?v=20260815-1">
 </head>
 <body>
 	<%@ include file="/WEB-INF/view/common/header.jspf" %>
@@ -38,7 +38,7 @@
 									<td><a href="${pageContext.request.contextPath}/payroll/register/detail.do?registerId=${register.registerId}">${register.paymentRoundName}</a></td>
 									<td>${register.calculationStart} ~ ${register.calculationEnd}</td><td>${register.paymentDate}</td><td>${register.employeeCount}</td>
 									<td class="amount give">${register.totalPayment}</td><td class="amount deduction">${register.totalDeduction}</td><td class="amount">${register.netPayment}</td>
-									<td><form method="post" action="${pageContext.request.contextPath}/payroll/register/delete.do"><input type="hidden" name="registerId" value="${register.registerId}"><input type="hidden" name="year" value="${selectedYear}"><button type="submit" class="table-button">삭제</button></form></td>
+									<td><form method="post" action="${pageContext.request.contextPath}/payroll/register/delete.do"><input type="hidden" name="registerId" value="${register.registerId}"><input type="hidden" name="registerName" value="${register.paymentYearMonth} ${register.paymentRoundName}"><input type="hidden" name="year" value="${selectedYear}"><button type="submit" name="action" value="requestDelete" class="table-button">삭제</button></form></td>
 								</tr>
 							</c:forEach>
 						</c:when>
@@ -51,6 +51,28 @@
 			<c:if test="${page.totalPages gt 0}"><nav class="pagination" aria-label="페이지 이동"><c:if test="${page.number gt 0}"><a href="?year=${selectedYear}&amp;page=${page.number - 1}">이전</a></c:if><c:forEach var="index" begin="0" end="${page.totalPages - 1}"><a class="${index eq page.number ? 'active' : ''}" href="?year=${selectedYear}&amp;page=${index}">${index + 1}</a></c:forEach><c:if test="${page.number + 1 lt page.totalPages}"><a href="?year=${selectedYear}&amp;page=${page.number + 1}">다음</a></c:if></nav></c:if>
 		</section>
 	</main>
+
+	<c:if test="${deleteConfirmation}">
+		<div class="register-delete-alert" role="alertdialog" aria-modal="true"
+			aria-labelledby="register-delete-message">
+			<a class="register-delete-alert__backdrop"
+				href="${pageContext.request.contextPath}/payroll/register.do?year=${selectedYear}"
+				aria-label="삭제 취소"></a>
+			<form class="register-delete-alert__panel" method="post"
+				action="${pageContext.request.contextPath}/payroll/register/delete.do">
+				<p id="register-delete-message">
+					<strong><c:out value="${deleteRegisterName}" /></strong> 급여대장을 삭제하시겠습니까?
+				</p>
+				<p class="register-delete-alert__warning">삭제한 급여대장은 복구할 수 없습니다.</p>
+				<input type="hidden" name="registerId" value="${deleteRegisterId}">
+				<input type="hidden" name="year" value="${selectedYear}">
+				<div class="register-delete-alert__actions">
+					<button type="submit" name="action" value="confirmDelete">삭제</button>
+					<a href="${pageContext.request.contextPath}/payroll/register.do?year=${selectedYear}">취소</a>
+				</div>
+			</form>
+		</div>
+	</c:if>
 	<%@ include file="/WEB-INF/view/common/footer.jspf" %>
 </body>
 </html>

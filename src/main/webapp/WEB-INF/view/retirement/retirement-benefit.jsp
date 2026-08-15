@@ -7,19 +7,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>퇴직급여 입력/관리</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/retirement/retirement-benefit.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/retirement/retirement-benefit.css?v=20260815-4">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
 </head>
 <body>
 <%@ include file="/WEB-INF/view/common/header.jspf" %>
 <main class="retirement-benefit-page page-content">
     <header class="page-heading"><div><p>퇴직관리</p><h1>퇴직급여 입력/관리</h1></div></header>
-	<c:if test="${not empty message}"><p class="form-message" role="status"><c:out value="${message}" /></p></c:if>
 
 	<%-- 지급년도별 퇴직급여 계산내역 JOIN 목록 --%>
     <section class="benefit-card benefit-list-card">
         <div class="benefit-toolbar">
             <form method="get" action="${pageContext.request.contextPath}/retirement/benefit.do">
+                <input type="hidden" name="mode" value="list">
                 <label for="paymentYear">지급년도</label>
                 <select id="paymentYear" name="paymentYear">
 					<c:forEach var="year" items="${paymentYears}"><option value="${year}" ${year eq selectedYear ? 'selected' : ''}>${year}년</option></c:forEach>
@@ -36,10 +36,24 @@
             </colgroup>
             <thead><tr><th>지급일</th><th>구분</th><th>성명</th><th>직위</th><th>부서</th><th>산정기간</th><th>근속일수</th><th>실지급액</th><th>지급방법</th></tr></thead>
             <tbody>
+            <c:forEach var="draftEmployee" items="${draftBenefitEmployees}">
+                <tr class="benefit-list-row draft-benefit-row ${retirementBenefit.employeeId eq draftEmployee.employeeId ? 'is-selected' : ''}">
+                    <td><button type="submit" name="activeEmployeeId" value="${draftEmployee.employeeId}" form="draftEmployeeForm">-</button></td>
+                    <td><button type="submit" name="activeEmployeeId" value="${draftEmployee.employeeId}" form="draftEmployeeForm">-</button></td>
+                    <td><button type="submit" name="activeEmployeeId" value="${draftEmployee.employeeId}" form="draftEmployeeForm"><c:out value="${draftEmployee.name}" /></button></td>
+                    <td><button type="submit" name="activeEmployeeId" value="${draftEmployee.employeeId}" form="draftEmployeeForm"><c:out value="${draftEmployee.positionName}" /></button></td>
+                    <td><button type="submit" name="activeEmployeeId" value="${draftEmployee.employeeId}" form="draftEmployeeForm"><c:out value="${draftEmployee.departmentName}" /></button></td>
+                    <td><button type="submit" name="activeEmployeeId" value="${draftEmployee.employeeId}" form="draftEmployeeForm">-</button></td>
+                    <td><button type="submit" name="activeEmployeeId" value="${draftEmployee.employeeId}" form="draftEmployeeForm">-</button></td>
+                    <td class="amount"><button type="submit" name="activeEmployeeId" value="${draftEmployee.employeeId}" form="draftEmployeeForm">0원</button></td>
+                    <td><button type="submit" name="activeEmployeeId" value="${draftEmployee.employeeId}" form="draftEmployeeForm">-</button></td>
+                </tr>
+            </c:forEach>
             <c:forEach var="item" items="${retirementBenefits}">
                 <c:url var="employeeBenefitUrl" value="/retirement/benefit.do">
-					<c:param name="calculationId" value="${item.calculationId}"></c:param>
+		<c:param name="calculationId" value="${item.calculationId}"></c:param>
                     <c:param name="paymentYear" value="${selectedYear}"></c:param>
+                    <c:param name="mode" value="list"></c:param>
                 </c:url>
 				<tr class="benefit-list-row ${param.calculationId eq item.calculationId ? 'is-selected' : ''}">
                     <td><a href="${employeeBenefitUrl}">${item.paymentDate}</a></td>
@@ -53,17 +67,23 @@
                     <td><a href="${employeeBenefitUrl}">${item.paymentMethod}</a></td>
                 </tr>
             </c:forEach>
-            <c:if test="${empty retirementBenefits}"><tr><td colspan="9" class="empty-row">등록된 퇴직급여 내역이 없습니다.</td></tr></c:if>
+            <c:if test="${empty retirementBenefits and empty draftBenefitEmployees}"><tr><td colspan="9" class="empty-row">등록된 퇴직급여 내역이 없습니다.</td></tr></c:if>
             </tbody>
         </table>
+		<form id="draftEmployeeForm" method="post" action="${pageContext.request.contextPath}/retirement/benefit/new.do">
+			<input type="hidden" name="paymentYear" value="${selectedYear}">
+			<c:forEach var="draftEmployeeId" items="${draftEmployeeIds}"><input type="hidden" name="employeeIds" value="${draftEmployeeId}"></c:forEach>
+		</form>
         <div class="list-actions"><button type="submit" form="deleteForm" class="button button-muted">선택삭제</button><button type="submit" form="deleteAllForm" class="button button-muted">전체삭제</button></div>
-		<form id="deleteForm" method="post" action="${pageContext.request.contextPath}/retirement/benefit/delete.do"><input type="hidden" name="calculationId" value="${retirementBenefit.calculationId}"></form>
-        <form id="deleteAllForm" method="post" action="${pageContext.request.contextPath}/retirement/benefit/delete-all.do"></form>
+		<form id="deleteForm" method="post" action="${pageContext.request.contextPath}/retirement/benefit/delete.do"><input type="hidden" name="calculationId" value="${retirementBenefit.calculationId}"><input type="hidden" name="paymentYear" value="${selectedYear}"></form>
+		<form id="deleteAllForm" method="post" action="${pageContext.request.contextPath}/retirement/benefit/delete-all.do"><input type="hidden" name="paymentYear" value="${selectedYear}"></form>
     </section>
 
     <form class="benefit-form" method="post" action="${pageContext.request.contextPath}/retirement/benefit/save.do">
 		<input type="hidden" name="calculationId" value="${retirementBenefit.calculationId}">
         <input type="hidden" name="employeeId" value="${retirementBenefit.employeeId}">
+        <input type="hidden" name="paymentYear" value="${selectedYear}">
+        <input type="hidden" name="mode" value="list">
 
         <section class="retirement-calc-bar">
 			<label><span>구분</span><select name="settlementType"><option value="">선택</option><option value="RETIREMENT" ${retirementBenefit.settlementType eq 'RETIREMENT' ? 'selected' : ''}>퇴직정산</option><option value="INTERIM" ${retirementBenefit.settlementType eq 'INTERIM' ? 'selected' : ''}>중간정산</option></select></label>
@@ -92,7 +112,7 @@
                     <thead><tr><th>지급년월</th><th>지급항목</th><th>금액</th><th>3개월분</th></tr></thead>
 					<tbody><c:forEach begin="0" end="4" var="row"><c:set var="income" value="${retirementBenefit.otherIncomeEntries[row]}"/><tr><td><input type="month" name="otherIncomeMonth" value="${income.payYmInput}"></td><td><input type="text" name="otherIncomeItem" value="${income.itemName}"></td><td><input type="text" name="otherIncomeAmount" value="${income.amount}"></td><td><input type="text" name="threeMonthAmount" readonly value="${empty income ? 0 : income.threeMonthAmount}"></td></tr></c:forEach></tbody>
                 </table>
-                <table class="original-table three-field-table"><thead><tr><th>비과세 퇴직급여</th><th>기납부(또는 기과세이연) 세액</th><th>세액공제</th></tr></thead><tbody><tr><td><input type="text" name="taxFreeRetirement"></td><td><input type="text" name="prepaidTax"></td><td><input type="text" name="taxCredit"></td></tr></tbody></table>
+                <table class="original-table three-field-table"><thead><tr><th>비과세 퇴직급여</th><th>기납부(또는 기과세이연) 세액</th><th>세액공제</th></tr></thead><tbody><tr><td><input type="text" name="taxFreeRetirement" value="${retirementBenefit.taxFreeRetirement}"></td><td><input type="text" name="prepaidTax" value="${retirementBenefit.prepaidTax}"></td><td><input type="text" name="taxCredit" value="${retirementBenefit.taxCredit}"></td></tr></tbody></table>
             </section>
         </div>
 
@@ -112,20 +132,43 @@
         <section class="original-block payment-block">
             <table class="original-table payment-table"><thead><tr><th>과세대상 퇴직급여</th><th>차감원천징수세액</th><th>실수령액</th><th>지급방법</th><th>지급일</th></tr></thead><tbody><tr><td><strong>${retirementBenefit.taxablePayment}</strong> 원</td><td><strong>${retirementBenefit.withholdingTax}</strong> 원</td><td><strong>${retirementBenefit.netPayment}</strong> 원</td><td><input type="text" name="paymentMethod" value="${retirementBenefit.paymentMethod}"></td><td><input type="date" name="paymentDate" value="${retirementBenefit.paymentDate}"></td></tr></tbody></table>
         </section>
-        <div class="bottom-actions"><button type="submit" class="button button-primary">저장</button><button type="reset" class="button button-muted">취소</button></div>
+        <div class="bottom-actions"><button type="submit" class="button button-primary">저장</button><a href="${pageContext.request.contextPath}/retirement/benefit.do?paymentYear=${selectedYear}" class="button button-muted">내용지우기</a></div>
     </form>
 
 	<%-- CSS :target 방식으로 신규 퇴직급여 대상 사원을 검색·선택한다. --%>
     <section id="employee-select-modal" class="employee-select-overlay">
         <div class="employee-select-modal" role="dialog" aria-modal="true" aria-labelledby="employee-select-title">
             <header><h2 id="employee-select-title">퇴직급여지급 사원선택</h2><a href="#" class="modal-close" aria-label="닫기">×</a></header>
-			<form method="get" action="${pageContext.request.contextPath}/retirement/benefit/employee-search.do#employee-select-modal"><div class="employee-modal-search"><input type="search" name="employeeKeyword" value="${param.employeeKeyword}" placeholder="사원검색"><button type="submit" class="search-button">검색</button><a href="${pageContext.request.contextPath}/retirement/benefit.do#employee-select-modal" class="all-view">전체보기</a><select name="departmentId"><option value="">부서별</option><c:forEach var="department" items="${departments}"><option value="${department.departmentId}" ${param.departmentId eq department.departmentId ? 'selected' : ''}>${department.departmentName}</option></c:forEach></select></div></form>
+			<div class="employee-modal-search">
+				<form method="get" action="${pageContext.request.contextPath}/retirement/benefit/employee-search.do#employee-select-modal" class="employee-keyword-form">
+					<input type="hidden" name="searchMode" value="keyword">
+					<input type="search" name="employeeKeyword" value="${param.employeeKeyword}" placeholder="사원검색">
+					<button type="submit" class="search-button">검색</button>
+					<a href="${pageContext.request.contextPath}/retirement/benefit.do#employee-select-modal" class="all-view">전체보기</a>
+				</form>
+				<form method="get" action="${pageContext.request.contextPath}/retirement/benefit/employee-search.do#employee-select-modal" class="employee-department-form">
+					<input type="hidden" name="searchMode" value="department">
+					<select name="departmentId"><option value="">부서별</option><c:forEach var="department" items="${departments}"><option value="${department.departmentId}" ${param.departmentId eq department.departmentId ? 'selected' : ''}>${department.departmentName}</option></c:forEach></select>
+					<button type="submit" class="search-button apply-button">적용</button>
+				</form>
+			</div>
             <form method="post" action="${pageContext.request.contextPath}/retirement/benefit/new.do">
-				<div class="employee-select-table-wrap"><table class="data-table employee-select-table"><colgroup><col class="select-col"><col><col><col><col><col><col></colgroup><thead><tr><th>선택</th><th>구분</th><th>사원번호</th><th>성명</th><th>부서</th><th>직위</th><th>상태</th></tr></thead><tbody><c:forEach var="employee" items="${selectableEmployees}"><tr><td><input type="radio" name="employeeId" value="${employee.employeeId}" required></td><td>${employee.employmentType}</td><td>${employee.employeeNo}</td><td>${employee.name}</td><td>${employee.departmentName}</td><td>${employee.positionName}</td><td>${employee.statusName}</td></tr></c:forEach><c:if test="${empty selectableEmployees}"><tr><td colspan="7" class="empty-row">선택할 사원이 없습니다.</td></tr></c:if></tbody></table></div>
+				<input type="hidden" name="paymentYear" value="${selectedYear}">
+				<div class="employee-select-table-wrap"><table class="data-table employee-select-table"><colgroup><col class="select-col"><col><col><col><col><col><col></colgroup><thead><tr><th>선택</th><th>구분</th><th>사원번호</th><th>성명</th><th>부서</th><th>직위</th><th>상태</th></tr></thead><tbody><c:forEach var="employee" items="${selectableEmployees}"><tr><td><input type="checkbox" name="employeeIds" value="${employee.employeeId}"></td><td>${employee.employmentType}</td><td>${employee.employeeNo}</td><td>${employee.name}</td><td>${employee.departmentName}</td><td>${employee.positionName}</td><td>${employee.statusName}</td></tr></c:forEach><c:if test="${empty selectableEmployees}"><tr><td colspan="7" class="empty-row">선택할 사원이 없습니다.</td></tr></c:if></tbody></table></div>
                 <div class="employee-select-actions"><button type="submit" class="button button-primary">사원선택</button><a href="#" class="button button-muted">선택취소</a></div>
             </form>
         </div>
     </section>
+
+    <c:if test="${not empty message}">
+        <div class="benefit-alert" role="alertdialog" aria-modal="true" aria-labelledby="benefit-alert-message">
+            <a class="benefit-alert__backdrop" href="${pageContext.request.contextPath}/retirement/benefit.do?paymentYear=${selectedYear}" aria-label="안내 닫기"></a>
+            <div class="benefit-alert__panel">
+                <p id="benefit-alert-message"><c:out value="${message}" /></p>
+                <a class="benefit-alert__confirm" href="${pageContext.request.contextPath}/retirement/benefit.do?paymentYear=${selectedYear}">확인</a>
+            </div>
+        </div>
+    </c:if>
 </main>
 <%@ include file="/WEB-INF/view/common/footer.jspf" %>
 </body>

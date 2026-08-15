@@ -31,35 +31,56 @@ public class CertificateRegisterHandler implements CommandHandler {
 
 	private String processList(HttpServletRequest req) {
 		CertificateRegisterCondition condition = createCondition(req);
+		if ("search".equals(req.getParameter("mode")) && !hasSearchCondition(condition)) {
+			// 조건 검색은 증명서 종류, 발급일 또는 검색어 중 하나 이상을 입력해야 한다.
+			req.setAttribute("popupMessage", "검색 조건을 하나 이상 설정해주세요.");
+		}
 		CertificateRegisterResult result = registerService.getRegister(condition);
 		req.setAttribute("certificates", result.getCertificates());
 		req.setAttribute("totalCount", result.getTotalCount());
 		req.setAttribute("pageInfo", result.getPageInfo());
 		req.setAttribute("condition", condition);
 		if ("deleted".equals(req.getParameter("result"))) {
-			req.setAttribute("message", "선택한 발급내역을 삭제했습니다.");
+			req.setAttribute("popupMessage", "선택한 발급내역을 삭제했습니다.");
 		}
 		if ("allDeleted".equals(req.getParameter("result"))) {
-			req.setAttribute("message", "전체 발급내역을 삭제했습니다.");
+			req.setAttribute("popupMessage", "전체 발급내역을 삭제했습니다.");
 		}
 		if ("notSelected".equals(req.getParameter("result"))) {
-			req.setAttribute("message", "삭제할 발급내역을 선택해주세요.");
+			req.setAttribute("popupMessage", "삭제할 발급내역을 선택해주세요.");
 		}
 		return VIEW;
 	}
 
 	private String processDelete(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		String mode = req.getParameter("deleteMode");
+		String action = req.getParameter("deleteAction");
 		String[] certificateIds = req.getParameterValues("certificateIds");
-		String result;
-		if (!"ALL".equals(mode) && (certificateIds == null || certificateIds.length == 0)) {
-			result = "notSelected";
-		} else {
-			registerService.delete(mode, certificateIds);
-			result = "ALL".equals(mode) ? "allDeleted" : "deleted";
+		if ("requestSelected".equals(action) && (certificateIds == null || certificateIds.length == 0)) {
+			res.sendRedirect(req.getContextPath() + "/employees/certificate-register.do?result=notSelected");
+			return null;
 		}
-		res.sendRedirect(req.getContextPath() + "/employees/certificate-register.do?result=" + result);
+		if ("requestSelected".equals(action) || "requestAll".equals(action)) {
+			// 첫 번째 POST에서는 삭제하지 않고 확인창에 삭제 범위만 전달한다.
+			req.setAttribute("deleteConfirmation", true);
+			req.setAttribute("deleteMode", "requestAll".equals(action) ? "ALL" : "SELECTED");
+			req.setAttribute("deleteCertificateIds", certificateIds);
+			req.setAttribute("deleteCertificateCount", certificateIds == null ? 0 : certificateIds.length);
+			return processList(req);
+		}
+		if ("confirmSelected".equals(action) || "confirmAll".equals(action)) {
+			String deleteMode = "confirmAll".equals(action) ? "ALL" : "SELECTED";
+			registerService.delete(deleteMode, certificateIds);
+			String result = "ALL".equals(deleteMode) ? "allDeleted" : "deleted";
+			res.sendRedirect(req.getContextPath() + "/employees/certificate-register.do?result=" + result);
+			return null;
+		}
+		res.sendRedirect(req.getContextPath() + "/employees/certificate-register.do");
 		return null;
+	}
+
+	private boolean hasSearchCondition(CertificateRegisterCondition condition) {
+		return !condition.getCertificateType().isEmpty() || !condition.getIssueDateFrom().isEmpty()
+				|| !condition.getIssueDateTo().isEmpty() || !condition.getKeyword().isEmpty();
 	}
 
 	private CertificateRegisterCondition createCondition(HttpServletRequest req) {

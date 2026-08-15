@@ -6,7 +6,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>인사관리 &gt; 제증명서 발급대장</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/employees/certificate-register.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/employees/certificate-register.css?v=20260815-2">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
 </head>
 <body>
@@ -17,13 +17,10 @@
 			<div><p>인사관리</p><h1>제증명서 발급대장</h1></div>
 		</header>
 
-		<c:if test="${not empty message}">
-			<p class="form-message"><c:out value="${message}" /></p>
-		</c:if>
-
 		<%-- CERTIFICATE_ISSUANCE 중심 JOIN 결과의 검색 및 발급내역 목록 --%>
 		<section class="register-card">
 			<form class="register-search" action="${pageContext.request.contextPath}/employees/certificate-register.do" method="get">
+				<input type="hidden" name="mode" value="search">
 				<label>
 					<span class="sr-only">증명서 구분</span>
 					<select name="certificateType">
@@ -91,11 +88,15 @@
 				</nav>
 
 				<div class="delete-actions">
-					<button type="submit" name="deleteMode" value="SELECTED">선택삭제</button>
-					<button type="submit" name="deleteMode" value="ALL" class="danger">전체삭제</button>
+					<button type="submit" name="deleteAction" value="requestSelected">선택삭제</button>
+					<button type="submit" name="deleteAction" value="requestAll" class="danger">전체삭제</button>
 				</div>
 			</form>
 		</section>
+
+		<c:if test="${not empty popupMessage}"><div class="register-alert" role="alertdialog" aria-modal="true" aria-labelledby="register-alert-message"><a class="register-alert__backdrop" href="${pageContext.request.contextPath}/employees/certificate-register.do" aria-label="닫기"></a><div class="register-alert__panel"><p id="register-alert-message"><c:out value="${popupMessage}" /></p><a href="${pageContext.request.contextPath}/employees/certificate-register.do">확인</a></div></div></c:if>
+
+		<c:if test="${deleteConfirmation}"><div class="register-alert" role="alertdialog" aria-modal="true" aria-labelledby="delete-confirmation-message"><a class="register-alert__backdrop" href="${pageContext.request.contextPath}/employees/certificate-register.do" aria-label="삭제 취소"></a><form class="register-alert__panel" action="${pageContext.request.contextPath}/employees/certificate-register-delete.do" method="post"><c:choose><c:when test="${deleteMode eq 'ALL'}"><p id="delete-confirmation-message">전체 <strong><c:out value="${totalCount}" />건</strong>의 발급내역을 삭제하시겠습니까?</p><p class="register-alert__warning">삭제한 발급내역은 복구할 수 없습니다.</p><input type="hidden" name="deleteAction" value="confirmAll"></c:when><c:otherwise><p id="delete-confirmation-message">선택한 <strong><c:out value="${deleteCertificateCount}" />건</strong>의 발급내역을 삭제하시겠습니까?</p><p class="register-alert__warning">삭제한 발급내역은 복구할 수 없습니다.</p><input type="hidden" name="deleteAction" value="confirmSelected"><c:forEach var="certificateId" items="${deleteCertificateIds}"><input type="hidden" name="certificateIds" value="${certificateId}"></c:forEach></c:otherwise></c:choose><div class="register-alert__actions"><button type="submit">삭제</button><a href="${pageContext.request.contextPath}/employees/certificate-register.do">취소</a></div></form></div></c:if>
 	</main>
 
 	<%@ include file="/WEB-INF/view/common/footer.jspf" %>

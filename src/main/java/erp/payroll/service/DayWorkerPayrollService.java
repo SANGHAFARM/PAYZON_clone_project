@@ -100,6 +100,19 @@ public class DayWorkerPayrollService {
 		}
 	}
 
+	public boolean hasWorkPayments(PayrollRun requestRun, int employeeId) {
+		Connection conn = null;
+		try {
+			conn = ConnectionProvider.getConnection();
+			return !dayWorkerDao.selectWorkPayments(conn, employeeId, requestRun.getCalcStartDate(),
+					requestRun.getCalcEndDate()).isEmpty();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		} finally {
+			JdbcUtil.close(conn);
+		}
+	}
+
 	private PayrollRun getOrCreateRun(Connection conn, PayrollRun requestRun) throws SQLException {
 		PayrollRun run = managementDao.selectRun(conn, requestRun.getPayYear(), requestRun.getPayMonth(),
 				requestRun.getPaySeq(), "2");

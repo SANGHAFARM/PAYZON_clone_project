@@ -78,10 +78,21 @@ public class PayrollManagementHandler implements CommandHandler {
 	}
 
 	private String processSave(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		try {
+			return savePayroll(req, res);
+		} catch (RuntimeException e) {
+			// 저장 오류도 서버 오류 페이지로 넘기지 않고 급여 화면에서 안내한다.
+			req.setAttribute("payrollPopupMessage", makeFailureMessage(e));
+			return processForm(req, res);
+		}
+	}
+
+	private String savePayroll(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		PayrollRun run = makeRun(req);
 		int employeeId = intValue(req.getParameter("employeeId"), 0);
 		if (employeeId == 0) {
-			throw new IllegalArgumentException("급여를 저장할 사원을 선택하세요.");
+			req.setAttribute("payrollPopupMessage", "급여내역을 저장할 사원을 선택해주세요");
+			return processForm(req, res);
 		}
 		List<PayrollManagementItem> payItems = readItems(req, "give_");
 		List<PayrollManagementItem> deductItems = readItems(req, "deduction_");
@@ -100,6 +111,14 @@ public class PayrollManagementHandler implements CommandHandler {
 		return null;
 	}
 
+	private String makeFailureMessage(RuntimeException e) {
+		String message = e.getMessage();
+		if (message != null && message.contains("unique constraint")) {
+			return "이미 저장된 급여항목과 충돌했습니다. 화면을 다시 조회한 후 시도해주세요.";
+		}
+		return "요청을 처리하지 못했습니다. 사원 선택과 입력내역을 확인해주세요.";
+	}
+
 	private String processLoadPrevious(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		PayrollRun run = makeRun(req);
 		managementService.loadPrevious(run, intValue(req.getParameter("previousPaymentPeriod"), 0));
@@ -108,13 +127,34 @@ public class PayrollManagementHandler implements CommandHandler {
 	}
 
 	private String processGiveItem(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		String action = req.getParameter("action");
+		if ("requestDelete".equals(action) && integerValue(req.getParameter("giveItemId")) == null) {
+			req.setAttribute("payrollPopupMessage", "삭제할 지급항목을 선택해주세요.");
+			return processForm(req, res);
+		}
+		if ("requestDelete".equals(action) || "requestDeleteAll".equals(action)) {
+			req.setAttribute("itemDeleteConfirmation", "GIVE");
+			req.setAttribute("itemDeleteAll", "requestDeleteAll".equals(action));
+			req.setAttribute("deleteItemId", req.getParameter("giveItemId"));
+			return processForm(req, res);
+		}
+		if ("confirmDelete".equals(action)) action = "delete";
+		if ("confirmDeleteAll".equals(action)) action = "deleteAll";
 		String taxType = "FREE".equals(req.getParameter("taxType")) ? "비과세" : "전체과세";
 		String taxFreeCode = "비과세".equals(taxType) ? req.getParameter("taxFreeName") : null;
+		if ("비과세".equals(taxType) && value(taxFreeCode, "").isEmpty()) {
+			req.setAttribute("payrollPopupMessage", "비과세 항목을 선택해주세요.");
+			return processForm(req, res);
+		}
+		long taxFreeLimit = "비과세".equals(taxType) ? longValue(req.getParameter("taxFreeLimit")) : 0;
 		String attendanceLink = req.getParameter("attendanceLink");
-		String payMethod = "BATCH".equals(attendanceLink) ? "일괄지급" : null;
-		managementService.managePayItem(req.getParameter("action"), integerValue(req.getParameter("giveItemId")),
-				req.getParameter("itemName"), taxType, taxFreeCode, longValue(req.getParameter("taxFreeLimit")),
+		Integer attendanceItemId = "BATCH".equals(attendanceLink) ? null : integerValue(attendanceLink);
+		String payMethod = "BATCH".equals(attendanceLink) ? "일괄지급"
+				: attendanceItemId == null ? null : "근태연계";
+		managementService.managePayItem(action, integerValue(req.getParameter("giveItemId")),
+				req.getParameter("itemName"), taxType, taxFreeCode, taxFreeLimit,
 				req.getParameter("calculationMethod"), intValue(req.getParameter("roundingUnit"), 0), payMethod,
+				attendanceItemId,
 				"BATCH".equals(attendanceLink) ? longValue(req.getParameter("batchAmount")) : null);
 		PayrollRun run = makeRun(req);
 		redirect(req, res, run, req.getParameter("incomeType"));
@@ -122,7 +162,20 @@ public class PayrollManagementHandler implements CommandHandler {
 	}
 
 	private String processDeductionItem(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		managementService.manageDeductItem(req.getParameter("action"),
+		String action = req.getParameter("action");
+		if ("requestDelete".equals(action) && integerValue(req.getParameter("deductionItemId")) == null) {
+			req.setAttribute("payrollPopupMessage", "삭제할 공제항목을 선택해주세요.");
+			return processForm(req, res);
+		}
+		if ("requestDelete".equals(action) || "requestDeleteAll".equals(action)) {
+			req.setAttribute("itemDeleteConfirmation", "DEDUCTION");
+			req.setAttribute("itemDeleteAll", "requestDeleteAll".equals(action));
+			req.setAttribute("deleteItemId", req.getParameter("deductionItemId"));
+			return processForm(req, res);
+		}
+		if ("confirmDelete".equals(action)) action = "delete";
+		if ("confirmDeleteAll".equals(action)) action = "deleteAll";
+		managementService.manageDeductItem(action,
 				integerValue(req.getParameter("deductionItemId")), req.getParameter("itemName"),
 				req.getParameter("calculationMethod"), intValue(req.getParameter("roundingUnit"), 0),
 				req.getParameter("note"));
@@ -186,6 +239,8 @@ public class PayrollManagementHandler implements CommandHandler {
 		req.setAttribute("departments", page.getDepartments());
 		req.setAttribute("positions", page.getPositions());
 		req.setAttribute("previousPaymentPeriods", page.getPreviousPaymentPeriods());
+		req.setAttribute("taxFreeItems", page.getTaxFreeItems());
+		req.setAttribute("attendanceItems", page.getAttendanceItems());
 		req.setAttribute("employeePage", employeePage);
 		if (page.getRun() != null) {
 			req.setAttribute("calculationStart", page.getRun().getCalcStartDate());

@@ -4,6 +4,8 @@ import java.util.List;
 
 import erp.payroll.model.PayrollRun;
 import erp.settings.model.Department;
+import erp.settings.model.AttendanceItem;
+import erp.settings.model.TaxFreeItem;
 
 // 급여입력 화면에 필요한 조회 결과를 한 번에 전달하는 DTO
 public class PayrollManagementPage {
@@ -18,6 +20,8 @@ public class PayrollManagementPage {
 	private List<Department> departments;
 	private List<PayrollPositionOption> positions;
 	private List<PayrollPeriodOption> previousPaymentPeriods;
+	private List<TaxFreeItem> taxFreeItems;
+	private List<AttendanceItem> attendanceItems;
 
 	public PayrollRun getRun() {
 		return run;
@@ -97,5 +101,21 @@ public class PayrollManagementPage {
 
 	public void setPreviousPaymentPeriods(List<PayrollPeriodOption> previousPaymentPeriods) {
 		this.previousPaymentPeriods = previousPaymentPeriods;
+	}
+
+	public List<TaxFreeItem> getTaxFreeItems() {
+		return taxFreeItems;
+	}
+
+	public void setTaxFreeItems(List<TaxFreeItem> taxFreeItems) {
+		this.taxFreeItems = taxFreeItems;
+	}
+
+	public List<AttendanceItem> getAttendanceItems() {
+		return attendanceItems;
+	}
+
+	public void setAttendanceItems(List<AttendanceItem> attendanceItems) {
+		this.attendanceItems = attendanceItems;
 	}
 }

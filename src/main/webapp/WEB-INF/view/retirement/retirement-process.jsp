@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>사원 퇴직처리</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/retirement/retirement-process.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/retirement/retirement-process.css?v=20260815-3">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
 </head>
 <body>
@@ -23,8 +23,9 @@
 
 	<%-- EMPLOYEE 중심 JOIN 결과와 퇴직정산 존재 여부를 함께 표시한다. --%>
     <section class="retirement-card">
-        <form class="retirement-toolbar" method="get"
-              action="${pageContext.request.contextPath}/retirement/process.do">
+        <div class="retirement-toolbar">
+        <form class="retirement-keyword-search" method="get" action="${pageContext.request.contextPath}/retirement/process.do">
+            <input type="hidden" name="mode" value="search">
             <select name="searchTarget" aria-label="검색 항목">
 				<option value="name" ${param.searchTarget eq 'name' ? 'selected' : ''}>성명</option>
 				<option value="employeeNo" ${param.searchTarget eq 'employeeNo' ? 'selected' : ''}>사원번호</option>
@@ -35,7 +36,9 @@
                    placeholder="검색어 입력" aria-label="검색어">
             <button type="submit" class="search-button">검색</button>
             <a class="all-view" href="${pageContext.request.contextPath}/retirement/process.do">전체보기</a>
-
+        </form>
+        <form class="retirement-status-search" method="get" action="${pageContext.request.contextPath}/retirement/process.do">
+            <input type="hidden" name="mode" value="status">
             <select class="status-filter" name="status" aria-label="재직 상태">
                 <option value="">상태별</option>
 				<option value="ACTIVE" ${param.status eq 'ACTIVE' ? 'selected' : ''}>재직</option>
@@ -43,6 +46,7 @@
             </select>
             <button type="submit" class="search-button">조회</button>
         </form>
+        </div>
 
         <div class="retirement-table-wrap">
             <table class="retirement-table data-table">
@@ -79,6 +83,11 @@
                 </tbody>
             </table>
         </div>
+        <div class="pagination">
+            <c:if test="${pageInfo.hasPrevious}"><c:url var="previousUrl" value="/retirement/process.do"><c:param name="page" value="${pageInfo.previousPage}"/><c:choose><c:when test="${not empty condition.keyword}"><c:param name="mode" value="search"/><c:param name="searchTarget" value="${param.searchTarget}"/><c:param name="keyword" value="${condition.keyword}"/></c:when><c:when test="${not empty condition.status}"><c:param name="mode" value="status"/><c:param name="status" value="${condition.status eq 'WORK' ? 'ACTIVE' : 'RETIRED'}"/></c:when></c:choose></c:url><a href="${previousUrl}">이전</a></c:if>
+            <c:forEach var="pageNo" begin="${pageInfo.startPage}" end="${pageInfo.endPage}"><c:url var="pageUrl" value="/retirement/process.do"><c:param name="page" value="${pageNo}"/><c:choose><c:when test="${not empty condition.keyword}"><c:param name="mode" value="search"/><c:param name="searchTarget" value="${param.searchTarget}"/><c:param name="keyword" value="${condition.keyword}"/></c:when><c:when test="${not empty condition.status}"><c:param name="mode" value="status"/><c:param name="status" value="${condition.status eq 'WORK' ? 'ACTIVE' : 'RETIRED'}"/></c:when></c:choose></c:url><a class="${pageNo eq pageInfo.currentPage ? 'is-current' : ''}" href="${pageUrl}">${pageNo}</a></c:forEach>
+            <c:if test="${pageInfo.hasNext}"><c:url var="nextUrl" value="/retirement/process.do"><c:param name="page" value="${pageInfo.nextPage}"/><c:choose><c:when test="${not empty condition.keyword}"><c:param name="mode" value="search"/><c:param name="searchTarget" value="${param.searchTarget}"/><c:param name="keyword" value="${condition.keyword}"/></c:when><c:when test="${not empty condition.status}"><c:param name="mode" value="status"/><c:param name="status" value="${condition.status eq 'WORK' ? 'ACTIVE' : 'RETIRED'}"/></c:when></c:choose></c:url><a href="${nextUrl}">다음</a></c:if>
+        </div>
     </section>
 
 	<%-- CSS :target 모달에서 퇴직정보를 입력하거나 기존 퇴직처리를 취소한다. --%>
@@ -104,8 +113,8 @@
 								<label><span>퇴직일자</span><input type="date" name="retirementDate" value="${empty employee.retirementDate ? currentDate : employee.retirementDate}"></label>
                             </c:otherwise>
                         </c:choose>
-                        <label><span>퇴직사유</span><input type="text" name="retirementReason" value="${employee.retirementReason}"></label>
-                        <label><span>퇴직 후 연락처</span><input type="text" name="afterContact" value="${employee.afterContact}"></label>
+                        <label><span>퇴직사유</span><input type="text" name="retirementReason" value="${employee.retirementReason}" ${employee.status eq 'RETIRED' ? 'readonly' : ''}></label>
+                        <label><span>퇴직 후 연락처</span><input type="text" name="afterContact" value="${employee.afterContact}" ${employee.status eq 'RETIRED' ? 'readonly' : ''}></label>
                     </div>
                     <div class="retirement-modal__actions"><button type="submit" class="button button-primary">저장</button></div>
                 </form>
@@ -114,6 +123,16 @@
     </c:forEach>
 
 </main>
+
+<c:if test="${not empty retirementPopupMessage}">
+    <div class="retirement-alert" role="alertdialog" aria-modal="true" aria-labelledby="retirement-alert-message">
+        <a class="retirement-alert__backdrop" href="${pageContext.request.contextPath}/retirement/process.do" aria-label="안내 닫기"></a>
+        <div class="retirement-alert__panel">
+            <p id="retirement-alert-message"><c:out value="${retirementPopupMessage}" /></p>
+            <a href="${pageContext.request.contextPath}/retirement/process.do">확인</a>
+        </div>
+    </div>
+</c:if>
 
 <%@ include file="/WEB-INF/view/common/footer.jspf" %>
 </body>

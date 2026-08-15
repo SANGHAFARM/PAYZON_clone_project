@@ -82,10 +82,10 @@ public class CertificateIssueService {
 				return "선택한 사원정보가 없습니다.";
 			}
 			if ("WORKING".equals(certificateType) && "퇴직".equals(employee.getStatus())) {
-				return "퇴직 사원은 재직증명서를 발급할 수 없습니다.";
+				return "퇴직 사원은 재직증명서를 작성할 수 없습니다.";
 			}
 			if ("RETIREMENT".equals(certificateType) && !"퇴직".equals(employee.getStatus())) {
-				return "재직 사원은 퇴직증명서를 발급할 수 없습니다.";
+				return "재직 사원은 퇴직증명서를 작성할 수 없습니다.";
 			}
 			return null;
 		} catch (SQLException e) {

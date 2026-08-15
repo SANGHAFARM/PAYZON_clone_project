@@ -26,8 +26,14 @@ public class PayrollPayslipHandler implements CommandHandler {
 		String year = value(req.getParameter("paymentYear"), String.valueOf(LocalDate.now().getYear()));
 		String month = value(req.getParameter("paymentMonth"), String.valueOf(LocalDate.now().getMonthValue()));
 		String sequence = value(req.getParameter("paymentRound"), "1");
+		String keyword = trim(req.getParameter("keyword"));
+		if ("search".equals(req.getParameter("mode")) && keyword.length() < 2) {
+			// 검색 버튼은 두 글자 이상의 검색어가 있을 때만 조건 조회한다.
+			req.setAttribute("payslipPopupMessage", "검색어를 2자 이상 입력해주세요");
+			keyword = "";
+		}
 		PayrollPayslipPage page = payslipService.getPage(year, twoDigits(month), twoDigits(sequence),
-				integerValue(req.getParameter("employeeId")), req.getParameter("keyword"));
+				integerValue(req.getParameter("employeeId")), keyword);
 		req.setAttribute("paymentYears", makePaymentYears());
 		req.setAttribute("selectedYear", Integer.parseInt(year));
 		req.setAttribute("selectedMonth", Integer.parseInt(month));
@@ -66,5 +72,9 @@ public class PayrollPayslipHandler implements CommandHandler {
 
 	private String value(String value, String defaultValue) {
 		return value == null || value.trim().isEmpty() ? defaultValue : value;
+	}
+
+	private String trim(String value) {
+		return value == null ? "" : value.trim();
 	}
 }

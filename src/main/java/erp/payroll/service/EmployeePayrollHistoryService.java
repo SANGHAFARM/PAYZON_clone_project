@@ -26,7 +26,7 @@ public class EmployeePayrollHistoryService {
 	private DepartmentDao departmentDao = DepartmentDao.getInstance();
 
 	public EmployeePayrollHistoryPage getPage(Integer employeeId, String startMonth, String endMonth,
-			int pageNumber, String keyword, Integer departmentId, String status) {
+			int pageNumber, String keyword, Integer departmentId, String status, boolean loadHistories) {
 		Connection conn = null;
 		try {
 			conn = ConnectionProvider.getConnection();
@@ -34,7 +34,7 @@ public class EmployeePayrollHistoryService {
 					departmentId, status);
 			EmployeePayrollHistoryEmployee selectedEmployee = findSelectedEmployee(conn, employeeId, employees);
 			List<EmployeePayrollHistoryItem> allHistories = new ArrayList<>();
-			if (selectedEmployee != null) {
+			if (loadHistories && selectedEmployee != null) {
 				allHistories = combineHistories(historyDao.selectHistories(conn,
 						selectedEmployee.getEmployeeId(), startMonth, endMonth));
 			}
@@ -64,7 +64,7 @@ public class EmployeePayrollHistoryService {
 		if (employeeId != null) {
 			return historyDao.selectEmployee(conn, employeeId);
 		}
-		return employees.isEmpty() ? null : employees.get(0);
+		return null;
 	}
 
 	// 같은 지급월과 차수의 소득 유형별 결과를 한 줄로 합친다.

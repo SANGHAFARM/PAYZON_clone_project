@@ -30,9 +30,32 @@ public class CertificateIssueHandler implements CommandHandler {
 	}
 
 	private String processForm(HttpServletRequest req) {
-		CertificateIssueData data = certificateService.getIssueData(parseInteger(req.getParameter("employeeId")), req.getParameter("keyword"));
+		String keyword = trim(req.getParameter("keyword"));
+		if ("search".equals(req.getParameter("mode")) && keyword.length() < 2) {
+			// 검색 버튼 요청은 공백을 제외한 검색어가 두 글자 이상일 때만 조회한다.
+			req.setAttribute("popupMessage", "검색어를 2자 이상 입력해주세요.");
+			keyword = "";
+		}
+		CertificateIssueData data = certificateService.getIssueData(parseInteger(req.getParameter("employeeId")), keyword);
+		String requestedType = trim(req.getParameter("certificateType"));
+		String selectedType = normalizeCertificateType(requestedType);
+		if (data.getSelectedEmployee() != null) {
+			String defaultType = "RETIRED".equals(data.getSelectedEmployee().getStatus()) ? "RETIREMENT" : "WORKING";
+			if (requestedType.isEmpty()) {
+				selectedType = defaultType;
+			} else {
+				// 증명서 탭을 선택하는 순간 재직상태와 발급 가능 여부를 확인한다.
+				String validationMessage = certificateService.validateIssue(
+						data.getSelectedEmployee().getEmployeeId(), selectedType);
+				if (validationMessage != null) {
+					req.setAttribute("popupMessage", validationMessage);
+					selectedType = defaultType;
+				}
+			}
+		}
 		req.setAttribute("employees", data.getEmployees());
 		req.setAttribute("selectedEmployee", data.getSelectedEmployee());
+		req.setAttribute("selectedCertificateType", selectedType);
 		req.setAttribute("careers", data.getCareers());
 		req.setAttribute("departments", data.getDepartments());
 		req.setAttribute("company", data.getCompany());
@@ -41,26 +64,24 @@ public class CertificateIssueHandler implements CommandHandler {
 		req.setAttribute("issueMonth", new SimpleDateFormat("MM").format(data.getIssueDate()));
 		req.setAttribute("issueDay", new SimpleDateFormat("dd").format(data.getIssueDate()));
 		if ("issued".equals(req.getParameter("result"))) {
-			req.setAttribute("message", "증명서 발급내역을 저장했습니다.");
+			req.setAttribute("popupMessage", "증명서 발급내역을 저장했습니다.");
 		}
 		return VIEW;
 	}
 
 	private String processSubmit(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		Integer employeeId = parseInteger(req.getParameter("employeeId"));
-		String certificateType = trim(req.getParameter("certificateType"));
-		if (!"CAREER".equals(certificateType) && !"RETIREMENT".equals(certificateType)) {
-			certificateType = "WORKING";
-		}
+		String certificateType = normalizeCertificateType(req.getParameter("certificateType"));
 		String purpose = "DIRECT".equals(req.getParameter("certificateUse"))
 				? trim(req.getParameter("certificateUseDirect")) : trim(req.getParameter("certificateUse"));
-		if (employeeId == null || purpose.isEmpty()) {
-			req.setAttribute("message", "사원과 발급용도를 선택하세요.");
+		Integer issueDepartmentId = parseInteger(req.getParameter("issueDepartmentId"));
+		if (employeeId == null || purpose.isEmpty() || issueDepartmentId == null) {
+			req.setAttribute("popupMessage", "사원, 발급용도와 발급부서를 모두 선택해주세요.");
 			return processForm(req);
 		}
 		String validationMessage = certificateService.validateIssue(employeeId, certificateType);
 		if (validationMessage != null) {
-			req.setAttribute("message", validationMessage);
+			req.setAttribute("popupMessage", validationMessage);
 			return processForm(req);
 		}
 
@@ -70,14 +91,17 @@ public class CertificateIssueHandler implements CommandHandler {
 		certificate.setPurpose(purpose);
 		certificate.setCertMemo(trim(req.getParameter("certificateMemo")));
 		certificate.setIssueDate(parseIssueDate(req));
-		certificate.setIssueDeptId(parseInteger(req.getParameter("issueDepartmentId")));
-		certificate.setShowCeoYn(yn(req.getParameter("showCeo")));
-		certificate.setHideJuminYn(yn(req.getParameter("hideResidentNoWorking"), req.getParameter("hideResidentNoCareer"), req.getParameter("hideResidentNoRetirement")));
+		certificate.setIssueDeptId(issueDepartmentId);
+		// 화면 옵션을 제거했으므로 대표자는 항상 표시하고 주민번호는 항상 숨긴다.
+		certificate.setShowCeoYn("Y");
+		certificate.setHideJuminYn("Y");
 		certificate.setShowLogoYn("Y");
 		certificate.setShowStampYn("Y");
 		certificateService.issue(certificate);
 
-		res.sendRedirect(req.getContextPath() + "/employees/certificate.do?employeeId=" + employeeId + "&result=issued");
+		String keyword = java.net.URLEncoder.encode(trim(req.getParameter("keyword")), "UTF-8");
+		res.sendRedirect(req.getContextPath() + "/employees/certificate.do?employeeId=" + employeeId
+				+ "&result=issued&keyword=" + keyword);
 		return null;
 	}
 
@@ -91,6 +115,14 @@ public class CertificateIssueHandler implements CommandHandler {
 		return "재직경력서";
 	}
 
+	private String normalizeCertificateType(String type) {
+		String value = trim(type);
+		if ("CAREER".equals(value) || "RETIREMENT".equals(value)) {
+			return value;
+		}
+		return "WORKING";
+	}
+
 	private Date parseIssueDate(HttpServletRequest req) {
 		try {
 			String value = req.getParameter("issueYear") + "-" + req.getParameter("issueMonth") + "-" + req.getParameter("issueDay");
@@ -102,14 +134,6 @@ public class CertificateIssueHandler implements CommandHandler {
 		}
 	}
 
-	private String yn(String... values) {
-		for (String value : values) {
-			if ("Y".equals(value)) {
-				return "Y";
-			}
-		}
-		return "N";
-	}
 	private Integer parseInteger(String value) {
 		try { return value == null || value.trim().isEmpty() ? null : Integer.valueOf(value); }
 		catch (NumberFormatException e) {
