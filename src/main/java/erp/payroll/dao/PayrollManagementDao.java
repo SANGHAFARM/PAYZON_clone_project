@@ -10,9 +10,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import erp.payroll.dto.PayrollManagementEmployee;
+import erp.payroll.dto.PayrollManagementPage.PayrollManagementEmployee;
 import erp.payroll.dto.PayrollManagementItem;
-import erp.payroll.dto.PayrollPeriodOption;
+import erp.payroll.dto.PayrollManagementPage.PayrollPeriodOption;
 import erp.payroll.model.PayrollRun;
 import jdbc.JdbcUtil;
 

@@ -4,9 +4,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import erp.payroll.dao.FourInsuranceDao;
-import erp.payroll.dto.FourInsuranceDeduction;
+import erp.payroll.dto.FourInsurancePage.FourInsuranceDeduction;
 import erp.payroll.dto.FourInsurancePage;
-import erp.payroll.dto.FourInsuranceTotals;
+import erp.payroll.dto.FourInsurancePage.FourInsuranceTotals;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 

@@ -1,7 +1,9 @@
 package erp.payroll.dto;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 // 급여명세서 화면에 필요한 회차와 사원 정보를 전달하는 DTO
 public class PayrollPayslipPage {
@@ -77,5 +79,57 @@ public class PayrollPayslipPage {
 
 	public void setCompany(PayrollPayslipCompany company) {
 		this.company = company;
+	}
+
+	public static class PayrollPayslipCompany {
+		private String companyName;
+		private String representativeName;
+		private String logoUrl;
+		private String stampUrl;
+		public String getCompanyName() { return companyName; }
+		public void setCompanyName(String value) { companyName = value; }
+		public String getRepresentativeName() { return representativeName; }
+		public void setRepresentativeName(String value) { representativeName = value; }
+		public String getLogoUrl() { return logoUrl; }
+		public void setLogoUrl(String value) { logoUrl = value; }
+		public String getStampUrl() { return stampUrl; }
+		public void setStampUrl(String value) { stampUrl = value; }
+	}
+
+	// 급여명세서의 사원 기본정보와 지급·공제 내역
+	public static class PayrollPayslipEmployee {
+		private int employeeId;
+		private String employmentTypeName;
+		private String employeeName;
+		private String birthDate;
+		private String departmentName;
+		private String positionName;
+		private Date hireDate;
+		private Map<Integer, Long> paymentAmounts = new LinkedHashMap<>();
+		private Map<Integer, Long> deductionAmounts = new LinkedHashMap<>();
+		private Map<Integer, String> paymentCalculations = new LinkedHashMap<>();
+		private Map<Integer, String> deductionCalculations = new LinkedHashMap<>();
+		public int getEmployeeId() { return employeeId; }
+		public void setEmployeeId(int value) { employeeId = value; }
+		public String getEmploymentTypeName() { return employmentTypeName; }
+		public void setEmploymentTypeName(String value) { employmentTypeName = value; }
+		public String getEmployeeName() { return employeeName; }
+		public void setEmployeeName(String value) { employeeName = value; }
+		public String getBirthDate() { return birthDate; }
+		public void setBirthDate(String value) { birthDate = value; }
+		public String getDepartmentName() { return departmentName; }
+		public void setDepartmentName(String value) { departmentName = value; }
+		public String getPositionName() { return positionName; }
+		public void setPositionName(String value) { positionName = value; }
+		public Date getHireDate() { return hireDate; }
+		public void setHireDate(Date value) { hireDate = value; }
+		public Map<Integer, Long> getPaymentAmounts() { return paymentAmounts; }
+		public Map<Integer, Long> getDeductionAmounts() { return deductionAmounts; }
+		public Map<Integer, String> getPaymentCalculations() { return paymentCalculations; }
+		public Map<Integer, String> getDeductionCalculations() { return deductionCalculations; }
+		public long getTotalPayment() { return sum(paymentAmounts); }
+		public long getTotalDeduction() { return sum(deductionAmounts); }
+		public long getNetPayment() { return getTotalPayment() - getTotalDeduction(); }
+		private long sum(Map<Integer, Long> values) { long total = 0; for (Long value : values.values()) total += value == null ? 0 : value; return total; }
 	}
 }

@@ -8,8 +8,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import erp.payroll.dto.PayrollRegisterDetailPage;
-import erp.payroll.dto.PayrollRegisterListPage;
+import erp.payroll.dto.PayrollRegisterPage.PayrollRegisterDetailPage;
+import erp.payroll.dto.PayrollRegisterPage.PayrollRegisterListPage;
 import erp.payroll.service.PayrollRegisterService;
 import mvc.command.CommandHandler;
 

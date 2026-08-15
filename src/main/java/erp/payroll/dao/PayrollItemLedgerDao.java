@@ -9,8 +9,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import erp.payroll.dto.PayrollItemLedgerOption;
-import erp.payroll.dto.PayrollItemLedgerRow;
+import erp.payroll.dto.PayrollItemLedgerPage.PayrollItemLedgerOption;
+import erp.payroll.dto.PayrollItemLedgerPage.PayrollItemLedgerRow;
 
 // 지급·공제 항목별 사원 금액을 조회하는 DAO
 public class PayrollItemLedgerDao {

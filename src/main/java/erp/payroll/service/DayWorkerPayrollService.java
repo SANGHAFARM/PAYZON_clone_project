@@ -8,7 +8,7 @@ import java.util.List;
 
 import erp.payroll.dao.DayWorkerPayrollDao;
 import erp.payroll.dao.PayrollManagementDao;
-import erp.payroll.dto.DayWorkerEmployeePage;
+import erp.payroll.dto.DayWorkerPaymentPage.DayWorkerEmployeePage;
 import erp.payroll.dto.DayWorkerPaymentEmployee;
 import erp.payroll.dto.DayWorkerPaymentPage;
 import erp.payroll.dto.PayrollManagementItem;

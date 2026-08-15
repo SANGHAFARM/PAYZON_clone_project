@@ -21,7 +21,7 @@ public class DayWorkerPaymentEmployee {
 	private long localIncomeTax;
 	private long mutualAidFee;
 	private long totalPayment;
-	private List<DayWorkerPaymentWork> workPayments = new ArrayList<>();
+	private List<DayWorkerPaymentPage.DayWorkerPaymentWork> workPayments = new ArrayList<>();
 
 	public int getEmployeeId() {
 		return employeeId;
@@ -143,11 +143,11 @@ public class DayWorkerPaymentEmployee {
 		this.totalPayment = totalPayment;
 	}
 
-	public List<DayWorkerPaymentWork> getWorkPayments() {
+	public List<DayWorkerPaymentPage.DayWorkerPaymentWork> getWorkPayments() {
 		return workPayments;
 	}
 
-	public void setWorkPayments(List<DayWorkerPaymentWork> workPayments) {
+	public void setWorkPayments(List<DayWorkerPaymentPage.DayWorkerPaymentWork> workPayments) {
 		this.workPayments = workPayments;
 	}
 

@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import erp.payroll.dto.DayWorkerPaymentEmployee;
-import erp.payroll.dto.DayWorkerPaymentWork;
+import erp.payroll.dto.DayWorkerPaymentPage.DayWorkerPaymentWork;
 import erp.payroll.dto.PayrollManagementItem;
 import jdbc.JdbcUtil;
 

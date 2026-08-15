@@ -10,12 +10,12 @@ import java.util.Date;
 import java.util.List;
 
 import erp.payroll.dao.PayrollManagementDao;
-import erp.payroll.dto.PayrollEmployeePage;
-import erp.payroll.dto.PayrollManagementEmployee;
+import erp.payroll.dto.PayrollManagementPage.PayrollEmployeePage;
+import erp.payroll.dto.PayrollManagementPage.PayrollManagementEmployee;
 import erp.payroll.dto.PayrollManagementItem;
 import erp.payroll.dto.PayrollManagementPage;
-import erp.payroll.dto.PayrollPositionOption;
-import erp.payroll.dto.PayrollTotals;
+import erp.payroll.dto.PayrollManagementPage.PayrollPositionOption;
+import erp.payroll.dto.PayrollManagementPage.PayrollTotals;
 import erp.payroll.model.PayrollRun;
 import erp.settings.dao.DepartmentDao;
 import erp.settings.dao.AttendanceItemDao;
