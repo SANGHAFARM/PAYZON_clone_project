@@ -117,6 +117,19 @@ public class PayrollEmployeeDao {
         }
     }
 
+    // 사원 삭제 시 해당 사원에게 연결된 급여결과를 함께 삭제
+    public int deleteByEmployeeId(Connection conn, int employeeId) throws SQLException {
+        PreparedStatement pstmt = null;
+        try {
+            String sql = "DELETE FROM PAYROLL_EMPLOYEE WHERE EMPLOYEE_ID = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, employeeId);
+            return pstmt.executeUpdate();
+        } finally {
+            JdbcUtil.close(pstmt);
+        }
+    }
+
     // ResultSet 데이터를 PayrollEmployee 객체로 변환
     private PayrollEmployee makePayrollEmployeeFromResultSet(ResultSet rs) throws SQLException {
         PayrollEmployee pe = new PayrollEmployee();

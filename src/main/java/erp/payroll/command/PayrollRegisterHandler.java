@@ -64,8 +64,25 @@ public class PayrollRegisterHandler implements CommandHandler {
 	}
 
 	private String processDelete(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		registerService.delete(requiredInt(req.getParameter("registerId")));
 		String year = value(req.getParameter("year"), String.valueOf(LocalDate.now().getYear()));
+		Integer registerId = integerValue(req.getParameter("registerId"));
+		if (registerId == null) {
+			res.sendRedirect(req.getContextPath() + "/payroll/register.do?year=" + year);
+			return null;
+		}
+		if ("requestDelete".equals(req.getParameter("action"))) {
+			// 첫 번째 POST에서는 삭제하지 않고 확인 팝업만 표시한다.
+			req.setAttribute("deleteConfirmation", true);
+			req.setAttribute("deleteRegisterId", registerId);
+			req.setAttribute("deleteRegisterName", req.getParameter("registerName"));
+			return processList(req, res);
+		}
+		if (!"confirmDelete".equals(req.getParameter("action"))) {
+			res.sendRedirect(req.getContextPath() + "/payroll/register.do?year=" + year);
+			return null;
+		}
+
+		registerService.delete(registerId);
 		res.sendRedirect(req.getContextPath() + "/payroll/register.do?year=" + year);
 		return null;
 	}

@@ -11,7 +11,7 @@
 	<title>급여입력/관리</title>
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/common.css">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/payroll/payroll-management.css">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/payroll/payroll-management.css?v=20260815-2">
 </head>
 <body>
 	<%@ include file="/WEB-INF/view/common/header.jspf" %>
@@ -86,14 +86,15 @@
 							<thead><tr><th class="check-column">선택</th><th>구분</th><th>성명</th><th>부서</th><th>지급총액</th><th>공제총액</th><th>실지급액</th></tr></thead>
 							<tbody>
 								<c:forEach var="employee" items="${paymentEmployees}">
+									<c:url var="payrollEmployeeUrl" value="/payroll/management.do"><c:param name="paymentYear" value="${selectedYear}"/><c:param name="paymentMonth" value="${selectedMonth}"/><c:param name="paymentRound" value="${selectedRound}"/><c:param name="incomeType" value="${incomeMode}"/><c:param name="employeeId" value="${employee.employeeId}"/></c:url>
 									<tr class="<c:if test='${employee.employeeId eq selectedEmployee.employeeId}'>selected-row</c:if>">
 										<td><input type="checkbox" name="employeeIds" value="${employee.employeeId}" aria-label="${employee.name} 선택"></td>
-										<td><a href="?paymentYear=${selectedYear}&amp;paymentMonth=${selectedMonth}&amp;paymentRound=${selectedRound}&amp;incomeType=${incomeType}&amp;employeeId=${employee.employeeId}"><c:out value="${employee.employmentType}" /></a></td>
-										<td><a href="?paymentYear=${selectedYear}&amp;paymentMonth=${selectedMonth}&amp;paymentRound=${selectedRound}&amp;incomeType=${incomeType}&amp;employeeId=${employee.employeeId}"><c:out value="${employee.name}" /></a></td>
-										<td><c:out value="${employee.departmentName}" /></td>
-										<td class="amount give"><c:out value="${employee.grossPayment}" /></td>
-										<td class="amount deduction"><c:out value="${employee.totalDeduction}" /></td>
-										<td class="amount"><c:out value="${employee.netPayment}" /></td>
+										<td><a class="employee-row-link" href="${payrollEmployeeUrl}"><c:out value="${employee.employmentType}" /></a></td>
+										<td><a class="employee-row-link" href="${payrollEmployeeUrl}"><c:out value="${employee.name}" /></a></td>
+										<td><a class="employee-row-link" href="${payrollEmployeeUrl}"><c:out value="${employee.departmentName}" /></a></td>
+										<td class="amount give"><a class="employee-row-link" href="${payrollEmployeeUrl}"><c:out value="${employee.grossPayment}" /></a></td>
+										<td class="amount deduction"><a class="employee-row-link" href="${payrollEmployeeUrl}"><c:out value="${employee.totalDeduction}" /></a></td>
+										<td class="amount"><a class="employee-row-link" href="${payrollEmployeeUrl}"><c:out value="${employee.netPayment}" /></a></td>
 									</tr>
 								</c:forEach>
 								<c:if test="${empty paymentEmployees}">
@@ -211,17 +212,17 @@
 				<input type="hidden" name="incomeType" value="${incomeMode}">
 				<div class="item-modal-body">
 					<p class="item-guide">지급항목별로 수정하실 수 있습니다. 계산 수정은 급여항목 설정에서 진행하세요.</p>
-					<div class="item-select-line"><select name="giveItemId"><option value="">지급항목 선택</option><c:forEach var="item" items="${allGiveItems}"><option value="${item.itemCode}"><c:out value="${item.itemName}" /></option></c:forEach></select><button type="submit" name="action" value="deleteAll" class="text-delete">전체항목 삭제</button></div>
+					<div class="item-select-line"><select name="giveItemId"><option value="">지급항목 선택</option><c:forEach var="item" items="${allGiveItems}"><option value="${item.itemCode}"><c:out value="${item.itemName}" /></option></c:forEach></select><button type="submit" name="action" value="requestDeleteAll" class="text-delete">전체항목 삭제</button></div>
 					<label><span>지급항목</span><input type="text" name="itemName" placeholder="지급 항목을 입력해주세요."></label>
 					<div class="item-radio-line"><span>과세여부</span><label><input type="radio" name="taxType" value="TAX" checked> 전체과세</label><label><input type="radio" name="taxType" value="FREE"> 비과세</label></div>
-					<label><span>비과세명</span><input type="text" name="taxFreeName"></label>
-					<label><span>비과세 한도액</span><span class="unit-field"><input type="number" name="taxFreeLimit" value="0"><em>원</em></span></label>
+					<label class="tax-free-field"><span>비과세명</span><select name="taxFreeName"><option value="">비과세/감면코드 선택</option><c:forEach var="taxFreeItem" items="${taxFreeItems}"><option value="${taxFreeItem.taxFreeCode}"><c:out value="${taxFreeItem.taxFreeName}" /> (<c:out value="${taxFreeItem.taxFreeCode}" />)</option></c:forEach></select></label>
+					<label class="tax-free-field"><span>비과세 한도액</span><span class="unit-field"><input type="number" name="taxFreeLimit" value="0" min="0"><em>원</em></span></label>
 					<label><span>계산방법</span><input type="text" name="calculationMethod" placeholder="계산방법을 입력해주세요."></label>
 					<label><span>절사단위</span><select name="roundingUnit"><option value="">선택하세요.</option><option value="1">1원</option><option value="10">10원</option><option value="100">100원</option></select></label>
-					<label><span>근태연계/일괄지급</span><select name="attendanceLink"><option value="">선택하세요.</option><option value="ATTEND">근태연계</option><option value="BATCH">일괄지급</option></select></label>
-					<label><span>일괄지급액</span><span class="unit-field"><input type="number" name="batchAmount" value="0"><em>원</em></span></label>
+					<label><span>근태연계/일괄지급</span><select name="attendanceLink"><option value="">선택하세요.</option><c:forEach var="attendanceItem" items="${attendanceItems}"><c:if test="${attendanceItem.useYn eq 'Y'}"><option value="${attendanceItem.attendanceItemId}"><c:out value="${attendanceItem.attendName}" /></option></c:if></c:forEach><option value="BATCH">일괄지급</option></select></label>
+					<label class="batch-amount-field"><span>일괄지급액</span><span class="unit-field"><input type="number" name="batchAmount" value="0" min="0"><em>원</em></span></label>
 				</div>
-				<div class="modal-actions"><button class="button button-primary" name="action" value="insert">추가</button><button class="button button-neutral" name="action" value="update">수정</button><button class="button button-neutral" name="action" value="delete">삭제</button></div>
+				<div class="modal-actions"><button class="button button-primary" name="action" value="insert">추가</button><button class="button button-neutral" name="action" value="update">수정</button><button class="button button-neutral" name="action" value="requestDelete">삭제</button></div>
 			</form>
 		</section>
 	</div>
@@ -256,11 +257,14 @@
 				<input type="hidden" name="paymentMonth" value="${selectedMonth}">
 				<input type="hidden" name="paymentRound" value="${selectedRound}">
 				<input type="hidden" name="incomeType" value="${incomeMode}">
-				<div class="item-modal-body"><p class="item-guide">공제항목별로 수정하실 수 있습니다. 계산 변경은 급여항목 설정에서 진행하세요.</p><div class="item-select-line"><select name="deductionItemId"><option value="">공제항목 선택</option><c:forEach var="item" items="${allDeductionItems}"><option value="${item.itemCode}"><c:out value="${item.itemName}" /></option></c:forEach></select><button type="submit" name="action" value="deleteAll" class="text-delete">전체항목 삭제</button></div><label><span>공제항목</span><input type="text" name="itemName" placeholder="공제항목을 입력해주세요."></label><label><span>계산방법</span><input type="text" name="calculationMethod" placeholder="계산방법을 입력해주세요."></label><label><span>절사단위</span><select name="roundingUnit"><option value="">선택하세요.</option><option value="1">1원</option><option value="10">10원</option><option value="100">100원</option></select></label><label><span>비고</span><input type="text" name="note"></label></div>
-				<div class="modal-actions"><button class="button button-primary" name="action" value="insert">추가</button><button class="button button-neutral" name="action" value="update">수정</button><button class="button button-neutral" name="action" value="delete">삭제</button></div>
+				<div class="item-modal-body"><p class="item-guide">공제항목별로 수정하실 수 있습니다. 계산 변경은 급여항목 설정에서 진행하세요.</p><div class="item-select-line"><select name="deductionItemId"><option value="">공제항목 선택</option><c:forEach var="item" items="${allDeductionItems}"><option value="${item.itemCode}"><c:out value="${item.itemName}" /></option></c:forEach></select><button type="submit" name="action" value="requestDeleteAll" class="text-delete">전체항목 삭제</button></div><label><span>공제항목</span><input type="text" name="itemName" placeholder="공제항목을 입력해주세요."></label><label><span>계산방법</span><input type="text" name="calculationMethod" placeholder="계산방법을 입력해주세요."></label><label><span>절사단위</span><select name="roundingUnit"><option value="">선택하세요.</option><option value="1">1원</option><option value="10">10원</option><option value="100">100원</option></select></label><label><span>비고</span><input type="text" name="note"></label></div>
+				<div class="modal-actions"><button class="button button-primary" name="action" value="insert">추가</button><button class="button button-neutral" name="action" value="update">수정</button><button class="button button-neutral" name="action" value="requestDelete">삭제</button></div>
 			</form>
 		</section>
 	</div>
+
+	<c:if test="${not empty itemDeleteConfirmation}"><div class="item-delete-confirmation" role="alertdialog" aria-modal="true"><a class="item-delete-confirmation__backdrop" href="${pageContext.request.contextPath}/payroll/management.do?paymentYear=${selectedYear}&amp;paymentMonth=${selectedMonth}&amp;paymentRound=${selectedRound}&amp;incomeType=${incomeMode}" aria-label="삭제 취소"></a><form class="item-delete-confirmation__panel" method="post" action="${pageContext.request.contextPath}/payroll/management/${itemDeleteConfirmation eq 'GIVE' ? 'give-item' : 'deduction-item'}/save.do"><p><c:out value="${itemDeleteAll ? '전체 항목을 삭제하시겠습니까?' : '선택한 항목을 삭제하시겠습니까?'}" /></p><p class="warning">삭제한 항목은 복구할 수 없습니다.</p><input type="hidden" name="paymentYear" value="${selectedYear}"><input type="hidden" name="paymentMonth" value="${selectedMonth}"><input type="hidden" name="paymentRound" value="${selectedRound}"><input type="hidden" name="incomeType" value="${incomeMode}"><c:if test="${not itemDeleteAll}"><input type="hidden" name="${itemDeleteConfirmation eq 'GIVE' ? 'giveItemId' : 'deductionItemId'}" value="${deleteItemId}"></c:if><div><button type="submit" name="action" value="${itemDeleteAll ? 'confirmDeleteAll' : 'confirmDelete'}">삭제</button><a href="${pageContext.request.contextPath}/payroll/management.do?paymentYear=${selectedYear}&amp;paymentMonth=${selectedMonth}&amp;paymentRound=${selectedRound}&amp;incomeType=${incomeMode}">취소</a></div></form></div></c:if>
+	<c:if test="${not empty payrollPopupMessage}"><div class="item-delete-confirmation" role="alertdialog" aria-modal="true"><a class="item-delete-confirmation__backdrop" href="${pageContext.request.contextPath}/payroll/management.do?paymentYear=${selectedYear}&amp;paymentMonth=${selectedMonth}&amp;paymentRound=${selectedRound}&amp;incomeType=${incomeMode}" aria-label="닫기"></a><div class="item-delete-confirmation__panel"><p><c:out value="${payrollPopupMessage}" /></p><div><a class="popup-confirm" href="${pageContext.request.contextPath}/payroll/management.do?paymentYear=${selectedYear}&amp;paymentMonth=${selectedMonth}&amp;paymentRound=${selectedRound}&amp;incomeType=${incomeMode}">확인</a></div></div></div></c:if>
 
 	<%@ include file="/WEB-INF/view/common/footer.jspf" %>
 </body>

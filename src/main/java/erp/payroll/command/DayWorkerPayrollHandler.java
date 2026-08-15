@@ -43,32 +43,66 @@ public class DayWorkerPayrollHandler implements CommandHandler {
 		DayWorkerPaymentPage page = dayWorkerService.getPage(run, integerValue(req.getParameter("employeeId")),
 				req.getParameter("employeeKeyword"), integerValue(req.getParameter("departmentId")), employeePage);
 		setPageAttributes(req, page, run, employeePage);
+		Object flashMessage = req.getSession().getAttribute("dayWorkerPayrollMessage");
+		if (flashMessage != null) {
+			req.setAttribute("payrollPopupMessage", flashMessage);
+			req.getSession().removeAttribute("dayWorkerPayrollMessage");
+		}
 		return VIEW;
 	}
 
 	private String processAddEmployees(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		PayrollRun run = makeRun(req);
-		managementService.addEmployees(run, intValues(req.getParameterValues("employeeIds")));
+		PayrollRun run = makeSafeRun(req);
+		int[] employeeIds = intValues(req.getParameterValues("employeeIds"));
+		if (employeeIds.length == 0) {
+			return redirectWithMessage(req, res, run, "추가할 사원을 선택해주세요");
+		}
+		try {
+			managementService.addEmployees(run, employeeIds);
+		} catch (RuntimeException e) {
+			return redirectWithMessage(req, res, run, makeFailureMessage(e));
+		}
 		redirect(req, res, run, null);
 		return null;
 	}
 
 	private String processDeleteEmployees(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		PayrollRun run = makeRun(req);
+		PayrollRun run = makeSafeRun(req);
 		boolean deleteAll = "ALL".equals(req.getParameter("deleteType"));
-		managementService.deleteEmployees(run, intValues(req.getParameterValues("employeeIds")), deleteAll);
+		int[] employeeIds = intValues(req.getParameterValues("employeeIds"));
+		if (!deleteAll && employeeIds.length == 0) {
+			redirect(req, res, run, null);
+			return null;
+		}
+		try {
+			managementService.deleteEmployees(run, employeeIds, deleteAll);
+		} catch (RuntimeException e) {
+			return redirectWithMessage(req, res, run, makeFailureMessage(e));
+		}
 		redirect(req, res, run, null);
 		return null;
 	}
 
 	private String processSave(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		try {
+			return savePayroll(req, res);
+		} catch (RuntimeException e) {
+			// POST에서 JSP로 바로 포워드하지 않고 GET으로 돌아가 안내 팝업을 표시한다.
+			return redirectWithMessage(req, res, makeSafeRun(req), makeFailureMessage(e));
+		}
+	}
+
+	private String savePayroll(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		PayrollRun run = makeRun(req);
 		int employeeId = intValue(req.getParameter("employeeId"), 0);
+		String calculationType = req.getParameter("calculationType");
 		if (employeeId == 0) {
-			throw new IllegalArgumentException("급여를 저장할 일용직 사원을 선택하세요.");
+			return redirectWithMessage(req, res, run, makeSelectionMessage(calculationType));
+		}
+		if (!dayWorkerService.hasWorkPayments(run, employeeId)) {
+			return redirectWithMessage(req, res, run, "근무내역이 있는 사원을 선택해주세요", employeeId);
 		}
 		long[] amounts = readAmounts(req);
-		String calculationType = req.getParameter("calculationType");
 		if (calculationType != null) {
 			long[] calculated = dayWorkerService.calculate(run, employeeId, amounts[6]);
 			if ("INSURANCE".equals(calculationType)) {
@@ -83,6 +117,45 @@ public class DayWorkerPayrollHandler implements CommandHandler {
 		dayWorkerService.save(run, employeeId, amounts);
 		redirect(req, res, run, employeeId);
 		return null;
+	}
+
+	private String makeSelectionMessage(String calculationType) {
+		if ("INSURANCE".equals(calculationType)) {
+			return "4대보험을 계산할 사원을 선택해주세요";
+		}
+		if ("PERIOD_TAX".equals(calculationType)) {
+			return "기간단위 소득세를 계산할 사원을 선택해주세요";
+		}
+		return "급여내역을 저장할 사원을 선택해주세요";
+	}
+
+	private String makeFailureMessage(RuntimeException e) {
+		String message = e.getMessage();
+		if (message != null && message.contains("unique constraint")) {
+			return "화면을 다시 조회한 후 저장해주세요";
+		}
+		return "입력값과 급여 대상 내역을 확인해주세요";
+	}
+
+	private String redirectWithMessage(HttpServletRequest req, HttpServletResponse res, PayrollRun run,
+			String message) throws IOException {
+		return redirectWithMessage(req, res, run, message, null);
+	}
+
+	private String redirectWithMessage(HttpServletRequest req, HttpServletResponse res, PayrollRun run,
+			String message, Integer employeeId) throws IOException {
+		req.getSession().setAttribute("dayWorkerPayrollMessage", message);
+		redirect(req, res, run, employeeId);
+		return null;
+	}
+
+	private PayrollRun makeSafeRun(HttpServletRequest req) {
+		try {
+			return makeRun(req);
+		} catch (RuntimeException e) {
+			return managementService.makeRun(String.valueOf(LocalDate.now().getYear()),
+					String.valueOf(LocalDate.now().getMonthValue()), "1", "daily", null, null, null);
+		}
 	}
 
 	private void setPageAttributes(HttpServletRequest req, DayWorkerPaymentPage page, PayrollRun requestRun,
@@ -166,7 +239,7 @@ public class DayWorkerPayrollHandler implements CommandHandler {
 
 	private long longValue(String value) {
 		try {
-			return Long.parseLong(value == null ? "0" : value.replace(",", "").trim());
+			return Math.max(0, Long.parseLong(value == null ? "0" : value.replace(",", "").trim()));
 		} catch (NumberFormatException e) {
 			return 0;
 		}

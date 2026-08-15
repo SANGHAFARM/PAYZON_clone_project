@@ -10,6 +10,7 @@ import java.util.Set;
 
 import erp.employees.dao.EmployeeDao;
 import erp.employees.dto.EmployeeListItem;
+import erp.employees.dto.EmployeePageInfo;
 import erp.employees.model.Employee;
 import erp.employees.service.EmployeeSearchCondition;
 import erp.retirement.dto.RetirementTypeItem;
@@ -23,9 +24,13 @@ public class RetirementProcessService {
 
 	private final EmployeeDao employeeDao = EmployeeDao.getInstance();
 
-	public List<EmployeeListItem> getEmployees(EmployeeSearchCondition condition) {
+	public RetirementEmployeePage getEmployeePage(EmployeeSearchCondition condition) {
 		try (Connection conn = ConnectionProvider.getConnection()) {
-			return employeeDao.selectListByCondition(conn, condition);
+			int totalCount = employeeDao.countByCondition(conn, condition);
+			EmployeePageInfo pageInfo = new EmployeePageInfo(totalCount, condition.getPage(), condition.getPageSize());
+			condition.setPage(pageInfo.getCurrentPage());
+			List<EmployeeListItem> employees = employeeDao.selectListByCondition(conn, condition);
+			return new RetirementEmployeePage(employees, pageInfo);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -84,5 +89,18 @@ public class RetirementProcessService {
 				new RetirementTypeItem("권고사직", "권고사직"), new RetirementTypeItem("계약만료", "계약만료"),
 				new RetirementTypeItem("정년퇴직", "정년퇴직"), new RetirementTypeItem("해고", "해고"),
 				new RetirementTypeItem("기타", "기타"));
+	}
+
+	public static class RetirementEmployeePage {
+		private final List<EmployeeListItem> employees;
+		private final EmployeePageInfo pageInfo;
+
+		public RetirementEmployeePage(List<EmployeeListItem> employees, EmployeePageInfo pageInfo) {
+			this.employees = employees;
+			this.pageInfo = pageInfo;
+		}
+
+		public List<EmployeeListItem> getEmployees() { return employees; }
+		public EmployeePageInfo getPageInfo() { return pageInfo; }
 	}
 }

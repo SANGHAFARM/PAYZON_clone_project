@@ -18,7 +18,9 @@ import erp.payroll.dto.PayrollPositionOption;
 import erp.payroll.dto.PayrollTotals;
 import erp.payroll.model.PayrollRun;
 import erp.settings.dao.DepartmentDao;
+import erp.settings.dao.AttendanceItemDao;
 import erp.settings.dao.JobPositionDao;
+import erp.settings.dao.TaxFreeItemDao;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
@@ -30,6 +32,8 @@ public class PayrollManagementService {
 	private PayrollManagementDao managementDao = new PayrollManagementDao();
 	private DepartmentDao departmentDao = DepartmentDao.getInstance();
 	private JobPositionDao positionDao = JobPositionDao.getInstance();
+	private TaxFreeItemDao taxFreeItemDao = TaxFreeItemDao.getInstance();
+	private AttendanceItemDao attendanceItemDao = AttendanceItemDao.getInstance();
 
 	public PayrollManagementPage getPage(String year, String month, String sequence, String incomeType,
 			Integer employeeId, String keyword, int employeePage) {
@@ -65,6 +69,9 @@ public class PayrollManagementService {
 					position.getJobPositionId(), position.getJobPositionName())));
 			page.setPositions(positions);
 			page.setPreviousPaymentPeriods(managementDao.selectPreviousRuns(conn, incomeType));
+			// 기본환경설정에 등록된 비과세/감면 코드를 지급항목 팝업에 제공한다.
+			page.setTaxFreeItems(taxFreeItemDao.selectAll(conn));
+			page.setAttendanceItems(attendanceItemDao.selectAll(conn));
 
 			if (run == null) {
 				page.setAvailableEmployeePage(new PayrollEmployeePage(new ArrayList<>(), 1));
@@ -102,13 +109,16 @@ public class PayrollManagementService {
 	}
 
 	public void managePayItem(String action, Integer itemId, String itemName, String taxType, String taxFreeCode,
-			long taxFreeLimit, String calculationMethod, int roundUnit, String payMethod, Long bulkAmount) {
+			long taxFreeLimit, String calculationMethod, int roundUnit, String payMethod, Integer attendanceItemId,
+			Long bulkAmount) {
 		Connection conn = null;
 		try {
 			conn = ConnectionProvider.getConnection();
 			conn.setAutoCommit(false);
+			String calculation = defaultPayCalculation(calculationMethod, payMethod);
+			Long roundedBulkAmount = bulkAmount == null ? null : roundDown(bulkAmount, roundUnit);
 			managementDao.managePayItem(conn, action, itemId, itemName, taxType, taxFreeCode, taxFreeLimit,
-					calculationMethod, roundUnit, payMethod, bulkAmount);
+					calculation, roundUnit, payMethod, attendanceItemId, roundedBulkAmount);
 			conn.commit();
 		} catch (SQLException e) {
 			JdbcUtil.rollback(conn);
@@ -124,7 +134,8 @@ public class PayrollManagementService {
 		try {
 			conn = ConnectionProvider.getConnection();
 			conn.setAutoCommit(false);
-			managementDao.manageDeductItem(conn, action, itemId, itemName, calculationMethod, roundUnit, note);
+			managementDao.manageDeductItem(conn, action, itemId, itemName,
+					defaultDeductionCalculation(itemName, calculationMethod), roundUnit, note);
 			conn.commit();
 		} catch (SQLException e) {
 			JdbcUtil.rollback(conn);
@@ -132,6 +143,32 @@ public class PayrollManagementService {
 		} finally {
 			JdbcUtil.close(conn);
 		}
+	}
+
+	// 산식을 입력하지 않으면 지급방식에 맞는 기본 계산 설명을 저장한다.
+	private String defaultPayCalculation(String calculationMethod, String payMethod) {
+		if (calculationMethod != null && !calculationMethod.trim().isEmpty()) return calculationMethod.trim();
+		if ("일괄지급".equals(payMethod)) return "일괄지급액";
+		if ("근태연계".equals(payMethod)) return "근태수량 × 지급단가";
+		return "직접입력";
+	}
+
+	// 대표적인 법정 공제는 실무에서 사용하는 기본 산식을 안내값으로 저장한다.
+	private String defaultDeductionCalculation(String itemName, String calculationMethod) {
+		if (calculationMethod != null && !calculationMethod.trim().isEmpty()) return calculationMethod.trim();
+		String name = itemName == null ? "" : itemName;
+		if (name.contains("국민연금")) return "기준소득월액 × 4.5%";
+		if (name.contains("건강보험")) return "보수월액 × 3.545%";
+		if (name.contains("장기요양")) return "건강보험료 × 장기요양보험요율";
+		if (name.contains("고용보험")) return "보수월액 × 0.9%";
+		if (name.contains("지방소득세")) return "소득세 × 10%";
+		if (name.contains("소득세")) return "근로소득 간이세액표";
+		return "직접입력";
+	}
+
+	// 절사단위 미만 금액은 버림 처리하여 실제 지급 단위와 맞춘다.
+	private long roundDown(long amount, int roundUnit) {
+		return roundUnit > 1 ? amount / roundUnit * roundUnit : amount;
 	}
 
 	public void addEmployees(PayrollRun requestRun, int[] employeeIds) {
@@ -186,6 +223,8 @@ public class PayrollManagementService {
 				managementDao.insertPayrollEmployee(conn, run.getPayrollRunId(), employeeId);
 				payrollEmployeeId = managementDao.selectPayrollEmployeeId(conn, run.getPayrollRunId(), employeeId);
 			}
+			copyItemNames(deductItems, managementDao.selectDeductItems(conn, payrollEmployeeId));
+			applyDefaultDeductions(payItems, deductItems);
 			managementDao.replaceEntries(conn, payrollEmployeeId, payItems, deductItems);
 			conn.commit();
 		} catch (SQLException e) {
@@ -193,6 +232,43 @@ public class PayrollManagementService {
 			throw new RuntimeException(e);
 		} finally {
 			JdbcUtil.close(conn);
+		}
+	}
+
+	private void copyItemNames(List<PayrollManagementItem> requested, List<PayrollManagementItem> configured) {
+		for (PayrollManagementItem item : requested) {
+			for (PayrollManagementItem source : configured) {
+				if (item.getItemCode() == source.getItemCode()) {
+					item.setItemName(source.getItemName());
+					break;
+				}
+			}
+		}
+	}
+
+	// 사용자가 0원으로 둔 법정 공제만 간이 산식으로 계산한다. 직접 입력한 금액은 그대로 보존한다.
+	private void applyDefaultDeductions(List<PayrollManagementItem> payItems,
+			List<PayrollManagementItem> deductItems) {
+		long grossPay = 0;
+		for (PayrollManagementItem item : payItems) grossPay += item.getAmount();
+		long healthInsurance = Math.round(grossPay * 0.03545);
+		long incomeTax = Math.round(Math.max(0, grossPay - 1500000) * 0.06);
+		for (PayrollManagementItem item : deductItems) {
+			String name = item.getItemName() == null ? "" : item.getItemName();
+			if (name.contains("건강보험") && item.getAmount() != 0) healthInsurance = item.getAmount();
+			if (name.equals("소득세") && item.getAmount() != 0) incomeTax = item.getAmount();
+		}
+		for (PayrollManagementItem item : deductItems) {
+			if (item.getAmount() != 0) continue;
+			String name = item.getItemName() == null ? "" : item.getItemName();
+			long amount = 0;
+			if (name.contains("국민연금")) amount = Math.round(grossPay * 0.045);
+			else if (name.contains("건강보험")) amount = Math.round(grossPay * 0.03545);
+			else if (name.contains("장기요양")) amount = Math.round(healthInsurance * 0.1295);
+			else if (name.contains("고용보험")) amount = Math.round(grossPay * 0.009);
+			else if (name.equals("소득세")) amount = incomeTax;
+			else if (name.contains("지방소득세")) amount = Math.round(incomeTax * 0.1);
+			item.setAmount(roundDown(amount, 10));
 		}
 	}
 

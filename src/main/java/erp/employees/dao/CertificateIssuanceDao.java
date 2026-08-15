@@ -245,6 +245,19 @@ public class CertificateIssuanceDao {
 		}
 	}
 
+	// 사원 삭제 시 해당 사원의 제증명서 발급 내역을 함께 삭제
+	public int deleteByEmployeeId(Connection conn, int employeeId) throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			String sql = "DELETE FROM CERTIFICATE_ISSUANCE WHERE EMPLOYEE_ID = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, employeeId);
+			return pstmt.executeUpdate();
+		} finally {
+			JdbcUtil.close(pstmt);
+		}
+	}
+
 	// ResultSet 데이터를 CertificateIssuance 객체로 변환
 	// 코드 중복 방지를 위한 공통 매핑 처리
 	private CertificateIssuance makeCertIssueFromResultSet(ResultSet rs) throws SQLException {

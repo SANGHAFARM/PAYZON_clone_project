@@ -23,13 +23,25 @@ public class EmployeeRecordCardHandler implements CommandHandler {
 		// 사원 선택창에서 사용할 부서, 직위, 검색어 조건을 구성한다.
 		EmployeeSearchCondition condition = new EmployeeSearchCondition();
 		condition.setSearchTarget("ALL");
-		condition.setKeyword(trim(req.getParameter("keyword")));
+		String keyword = trim(req.getParameter("keyword"));
+		Integer departmentId = parseInteger(req.getParameter("departmentId"));
+		Integer positionId = parseInteger(req.getParameter("positionId"));
+		condition.setKeyword(keyword);
 		condition.setEmploymentType("");
 		condition.setStatus("");
 		condition.setPage(1);
-		condition.setPageSize(100);
-		condition.setDepartmentId(parseInteger(req.getParameter("departmentId")));
-		condition.setPositionId(parseInteger(req.getParameter("positionId")));
+		condition.setPageSize(10000);
+		condition.setDepartmentId(departmentId);
+		condition.setPositionId(positionId);
+
+		String mode = trim(req.getParameter("mode"));
+		boolean hasSearchCondition = departmentId != null || positionId != null || !keyword.isEmpty();
+		if ("search".equals(mode) && !hasSearchCondition) {
+			// 검색 조건이 없으면 결과창 대신 조건 입력 안내창을 표시한다.
+			req.setAttribute("searchConditionMessage", "검색 조건을 하나 이상 설정해주세요.");
+		} else if ("search".equals(mode) || "all".equals(mode)) {
+			req.setAttribute("showEmployeeModal", true);
+		}
 
 		// Service에서 기록카드 한 화면에 필요한 모든 이력을 조회한다.
 		EmployeeRecordCardData data = recordCardService.getRecordCard(parseInteger(req.getParameter("employeeId")), condition);

@@ -179,8 +179,11 @@ public class RetirementCalculationDao {
 		}
 	}
 
-	public int deleteAll(Connection conn) throws SQLException {
-		try (PreparedStatement pstmt = conn.prepareStatement("DELETE FROM RETIREMENT_CALCULATION")) {
+	// 화면에서 선택한 지급년도의 퇴직급여만 전체 삭제한다.
+	public int deleteAllByPaymentYear(Connection conn, int paymentYear) throws SQLException {
+		String sql = "DELETE FROM RETIREMENT_CALCULATION WHERE EXTRACT(YEAR FROM PAY_DATE) = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, paymentYear);
 			return pstmt.executeUpdate();
 		}
 	}
@@ -237,6 +240,19 @@ public class RetirementCalculationDao {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, calcId);
 			return pstmt.executeUpdate(); // 삭제된 행의 개수 반환
+		} finally {
+			JdbcUtil.close(pstmt);
+		}
+	}
+
+	// 사원 삭제 시 해당 사원의 퇴직급여 계산내역을 함께 삭제
+	public int deleteByEmployeeId(Connection conn, int employeeId) throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			String sql = "DELETE FROM RETIREMENT_CALCULATION WHERE EMPLOYEE_ID = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, employeeId);
+			return pstmt.executeUpdate();
 		} finally {
 			JdbcUtil.close(pstmt);
 		}

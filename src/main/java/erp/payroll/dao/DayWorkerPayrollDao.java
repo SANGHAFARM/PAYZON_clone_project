@@ -142,7 +142,9 @@ public class DayWorkerPayrollDao {
 	public long[] selectAutomaticDeductions(Connection conn, int employeeId, Date startDate, Date endDate)
 			throws SQLException {
 		String sql = "SELECT E.NP_YN, E.HI_YN, E.LTCI_YN, E.EI_YN, E.NP_MONTHLY_BASE, E.HI_MONTHLY_BASE, "
-				+ "E.EI_MONTHLY_BASE, NVL((SELECT SUM(W.INCOME_TAX) FROM DAILY_WORK_RECORD W "
+				+ "E.EI_MONTHLY_BASE, NVL((SELECT SUM(W.DAILY_PAY) FROM DAILY_WORK_RECORD W "
+				+ "WHERE W.EMPLOYEE_ID = E.EMPLOYEE_ID AND W.WORK_DATE BETWEEN ? AND ?), 0) GROSS_PAY, "
+				+ "NVL((SELECT SUM(W.INCOME_TAX) FROM DAILY_WORK_RECORD W "
 				+ "WHERE W.EMPLOYEE_ID = E.EMPLOYEE_ID AND W.WORK_DATE BETWEEN ? AND ?), 0) INCOME_TAX, "
 				+ "NVL((SELECT SUM(W.LOCAL_INCOME_TAX) FROM DAILY_WORK_RECORD W "
 				+ "WHERE W.EMPLOYEE_ID = E.EMPLOYEE_ID AND W.WORK_DATE BETWEEN ? AND ?), 0) LOCAL_INCOME_TAX "
@@ -152,23 +154,65 @@ public class DayWorkerPayrollDao {
 			pstmt.setDate(2, new java.sql.Date(endDate.getTime()));
 			pstmt.setDate(3, new java.sql.Date(startDate.getTime()));
 			pstmt.setDate(4, new java.sql.Date(endDate.getTime()));
-			pstmt.setInt(5, employeeId);
+			pstmt.setDate(5, new java.sql.Date(startDate.getTime()));
+			pstmt.setDate(6, new java.sql.Date(endDate.getTime()));
+			pstmt.setInt(7, employeeId);
 			try (ResultSet rs = pstmt.executeQuery()) {
 				if (!rs.next()) {
 					return new long[6];
 				}
+				long grossPay = rs.getLong("GROSS_PAY");
+				long pensionBase = positiveBase(rs.getLong("NP_MONTHLY_BASE"), grossPay);
+				long healthBase = positiveBase(rs.getLong("HI_MONTHLY_BASE"), grossPay);
+				long employmentBase = positiveBase(rs.getLong("EI_MONTHLY_BASE"), grossPay);
+
+				// 등록된 보수월액이 없으면 해당 기간의 실제 지급총액을 계산 기준으로 사용한다.
 				long nationalPension = "Y".equals(rs.getString("NP_YN"))
-						? Math.round(rs.getLong("NP_MONTHLY_BASE") * 0.045) : 0;
+						? roundDownTen(pensionBase * 0.045) : 0;
 				long healthInsurance = "Y".equals(rs.getString("HI_YN"))
-						? Math.round(rs.getLong("HI_MONTHLY_BASE") * 0.03545) : 0;
+						? roundDownTen(healthBase * 0.03545) : 0;
 				long longTermCare = "Y".equals(rs.getString("LTCI_YN"))
-						? Math.round(healthInsurance * 0.1295) : 0;
+						? roundDownTen(healthInsurance * 0.1295) : 0;
 				long employmentInsurance = "Y".equals(rs.getString("EI_YN"))
-						? Math.round(rs.getLong("EI_MONTHLY_BASE") * 0.009) : 0;
+						? roundDownTen(employmentBase * 0.009) : 0;
+
+				// 근무기록에 세액이 없으면 일용근로소득 공제액을 반영한 간이세액을 사용한다.
+				long incomeTax = rs.getLong("INCOME_TAX");
+				if (incomeTax == 0) {
+					incomeTax = selectEstimatedIncomeTax(conn, employeeId, startDate, endDate);
+				}
+				long localIncomeTax = rs.getLong("LOCAL_INCOME_TAX");
+				if (localIncomeTax == 0 && incomeTax > 0) {
+					localIncomeTax = roundDownTen(incomeTax * 0.1);
+				}
 				return new long[] { nationalPension, healthInsurance, longTermCare, employmentInsurance,
-						rs.getLong("INCOME_TAX"), rs.getLong("LOCAL_INCOME_TAX") };
+						incomeTax, localIncomeTax };
 			}
 		}
+	}
+
+	private long selectEstimatedIncomeTax(Connection conn, int employeeId, Date startDate, Date endDate)
+			throws SQLException {
+		// 일 15만원 공제 후 6% 세율과 55% 근로소득세액공제를 적용한 간이 계산이다.
+		String sql = "SELECT NVL(SUM(FLOOR(GREATEST(DAILY_PAY - 150000, 0) * 0.027 / 10) * 10), 0) "
+				+ "FROM DAILY_WORK_RECORD WHERE EMPLOYEE_ID = ? AND WORK_DATE BETWEEN ? AND ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, employeeId);
+			pstmt.setDate(2, new java.sql.Date(startDate.getTime()));
+			pstmt.setDate(3, new java.sql.Date(endDate.getTime()));
+			try (ResultSet rs = pstmt.executeQuery()) {
+				rs.next();
+				return rs.getLong(1);
+			}
+		}
+	}
+
+	private long positiveBase(long registeredBase, long grossPay) {
+		return registeredBase > 0 ? registeredBase : grossPay;
+	}
+
+	private long roundDownTen(double amount) {
+		return ((long) amount / 10) * 10;
 	}
 
 	private void setAvailableParameters(PreparedStatement pstmt, int runId, String keyword, Integer departmentId)

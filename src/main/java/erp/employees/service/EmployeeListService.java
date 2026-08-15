@@ -5,16 +5,22 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
+import erp.employees.dao.CertificateIssuanceDao;
 import erp.employees.dao.EmployeeDao;
 import erp.employees.dto.EmployeeListItem;
 import erp.employees.dto.EmployeePageInfo;
 import erp.employees.dto.EmployeeSummary;
 import jdbc.connection.ConnectionProvider;
 import jdbc.JdbcUtil;
+import erp.payroll.dao.PayrollEmployeeDao;
+import erp.retirement.dao.RetirementCalculationDao;
 
 // 사원 목록 조회와 상단 현황 집계를 함께 처리하는 Service
 public class EmployeeListService {
 	private final EmployeeDao employeeDao = EmployeeDao.getInstance();
+	private final CertificateIssuanceDao certificateIssuanceDao = CertificateIssuanceDao.getInstance();
+	private final PayrollEmployeeDao payrollEmployeeDao = PayrollEmployeeDao.getInstance();
+	private final RetirementCalculationDao retirementCalculationDao = RetirementCalculationDao.getInstance();
 
 	public EmployeeListResult getEmployeeList(EmployeeSearchCondition condition) {
 		try (Connection conn = ConnectionProvider.getConnection()) {
@@ -35,7 +41,7 @@ public class EmployeeListService {
 		return Arrays.asList("정규직", "계약직", "임시직", "파견직", "위촉직", "일용직");
 	}
 
-	// 목록에서 선택한 사원 정보를 하나의 트랜잭션으로 삭제한다.
+	// 연결된 업무 자료와 선택한 사원을 하나의 트랜잭션으로 영구 삭제한다.
 	public int deleteEmployees(List<Integer> employeeIds) {
 		Connection conn = null;
 		try {
@@ -43,13 +49,17 @@ public class EmployeeListService {
 			conn.setAutoCommit(false);
 			int deletedCount = 0;
 			for (Integer employeeId : employeeIds) {
+				// EMPLOYEE를 참조하는 NO ACTION 외래키 자료부터 정리한다.
+				certificateIssuanceDao.deleteByEmployeeId(conn, employeeId);
+				payrollEmployeeDao.deleteByEmployeeId(conn, employeeId);
+				retirementCalculationDao.deleteByEmployeeId(conn, employeeId);
 				deletedCount += employeeDao.delete(conn, employeeId);
 			}
 			conn.commit();
 			return deletedCount;
 		} catch (SQLException e) {
 			JdbcUtil.rollback(conn);
-			throw new RuntimeException("급여나 근태 내역이 연결된 사원은 삭제할 수 없습니다.", e);
+			throw new RuntimeException("사원정보를 삭제하지 못했습니다. 잠시 후 다시 시도해주세요.", e);
 		} finally {
 			JdbcUtil.close(conn);
 		}

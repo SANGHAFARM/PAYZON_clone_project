@@ -34,9 +34,16 @@ public class EmployeePayrollHistoryHandler implements CommandHandler {
 			req.setAttribute("periodMessage", "급여내역은 최대 12개월까지 조회할 수 있습니다.");
 		}
 
-		EmployeePayrollHistoryPage page = historyService.getPage(integerValue(req.getParameter("employeeId")),
+		Integer employeeId = integerValue(req.getParameter("employeeId"));
+		boolean loadHistories = "history".equals(req.getParameter("mode"));
+		if (loadHistories && employeeId == null) {
+			req.setAttribute("historyPopupMessage", "급여내역을 조회할 사원을 선택해주세요");
+			loadHistories = false;
+		}
+
+		EmployeePayrollHistoryPage page = historyService.getPage(employeeId,
 				startMonth, endMonth, intValue(req.getParameter("page"), 1), req.getParameter("employeeKeyword"),
-				integerValue(req.getParameter("departmentId")), req.getParameter("status"));
+				integerValue(req.getParameter("departmentId")), req.getParameter("status"), loadHistories);
 		req.setAttribute("startMonth", startMonth);
 		req.setAttribute("endMonth", endMonth);
 		req.setAttribute("selectedEmployee", page.getSelectedEmployee());

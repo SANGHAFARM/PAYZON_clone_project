@@ -21,7 +21,7 @@
 	<link rel="stylesheet"
 		href="${pageContext.request.contextPath}/css/payroll/payroll-management.css">
 	<link rel="stylesheet"
-		href="${pageContext.request.contextPath}/css/payroll/day-worker-payroll-management.css">
+		href="${pageContext.request.contextPath}/css/payroll/day-worker-payroll-management.css?v=20260815-2">
 </head>
 
 <body>
@@ -312,56 +312,63 @@
 									<tr>
 										<th>국민연금</th>
 										<td>
-											<input type="number"
-												name="nationalPension"
+									<input type="number"
+										name="nationalPension"
+										min="0"
 												value="${selectedEmployee.nationalPension}">
 										</td>
 									</tr>
 									<tr>
 										<th>건강보험</th>
 										<td>
-											<input type="number"
-												name="healthInsurance"
+									<input type="number"
+										name="healthInsurance"
+										min="0"
 												value="${selectedEmployee.healthInsurance}">
 										</td>
 									</tr>
 									<tr>
 										<th>장기요양보험</th>
 										<td>
-											<input type="number"
-												name="longTermCareInsurance"
+									<input type="number"
+										name="longTermCareInsurance"
+										min="0"
 												value="${selectedEmployee.longTermCareInsurance}">
 										</td>
 									</tr>
 									<tr>
 										<th>고용보험</th>
 										<td>
-											<input type="number"
-												name="employmentInsurance"
+									<input type="number"
+										name="employmentInsurance"
+										min="0"
 												value="${selectedEmployee.employmentInsurance}">
 										</td>
 									</tr>
 									<tr>
 										<th>소득세</th>
 										<td>
-											<input type="number"
-												name="incomeTax"
+									<input type="number"
+										name="incomeTax"
+										min="0"
 												value="${selectedEmployee.incomeTax}">
 										</td>
 									</tr>
 									<tr>
 										<th>지방소득세</th>
 										<td>
-											<input type="number"
-												name="localIncomeTax"
+									<input type="number"
+										name="localIncomeTax"
+										min="0"
 												value="${selectedEmployee.localIncomeTax}">
 										</td>
 									</tr>
 									<tr>
 										<th>상조회비</th>
 										<td>
-											<input type="number"
-												name="mutualAidFee"
+									<input type="number"
+										name="mutualAidFee"
+										min="0"
 												value="${selectedEmployee.mutualAidFee}">
 										</td>
 									</tr>
@@ -532,6 +539,25 @@
 			</form>
 		</section>
 	</div>
+
+	<c:if test="${not empty payrollPopupMessage}">
+		<c:url var="dayWorkerReturnUrl" value="/payroll/day-worker-management.do">
+			<c:param name="paymentYear" value="${selectedYear}" />
+			<c:param name="paymentMonth" value="${selectedMonth}" />
+			<c:param name="paymentRound" value="${selectedRound}" />
+			<c:if test="${not empty selectedEmployeeId}">
+				<c:param name="employeeId" value="${selectedEmployeeId}" />
+			</c:if>
+		</c:url>
+		<div class="day-worker-alert" role="alertdialog" aria-modal="true"
+			aria-labelledby="day-worker-alert-message">
+			<a class="day-worker-alert__backdrop" href="${dayWorkerReturnUrl}" aria-label="닫기"></a>
+			<div class="day-worker-alert__panel">
+				<p id="day-worker-alert-message"><c:out value="${payrollPopupMessage}" /></p>
+				<a href="${dayWorkerReturnUrl}">확인</a>
+			</div>
+		</div>
+	</c:if>
 
 	<%@ include file="/WEB-INF/view/common/footer.jspf" %>
 </body>

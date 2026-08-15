@@ -35,3 +35,15 @@
 .payment-register-page .detail-card .detail-toolbar .register-information>div{display:flex!important;flex-direction:row!important;align-items:center!important;gap:7px!important}
 .payment-register-page .detail-card .detail-filter-controls{display:flex;flex:0 0 auto;align-items:center;gap:8px;margin-left:auto}
 .payment-register-page .detail-card .detail-filter-controls select{width:122px;height:34px;padding:5px 9px;border:1px solid #c5d2e1;border-radius:3px;background:#fff;font:12px "Malgun Gothic","맑은 고딕",Arial,sans-serif}
+
+/* 급여대장 삭제 확인 팝업 */
+.register-delete-alert{position:fixed;z-index:7000;inset:0;display:flex;align-items:center;justify-content:center;font-family:"Malgun Gothic","맑은 고딕",Arial,sans-serif}
+.register-delete-alert__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.48)}
+.register-delete-alert__panel{position:relative;width:480px;padding:24px;border:0;border-radius:10px;background:#fff;box-shadow:0 12px 35px rgba(0,0,0,.3);text-align:center}
+.register-delete-alert__panel p{margin:8px 0 14px;color:#555;font-size:13px;font-weight:700;line-height:1.7;white-space:nowrap}
+.register-delete-alert__panel p strong{color:#d64040}
+.register-delete-alert__panel .register-delete-alert__warning{margin:0 0 24px;color:#d64040;font-weight:400}
+.register-delete-alert__actions{display:flex;justify-content:center;gap:10px}
+.register-delete-alert__actions button,.register-delete-alert__actions a{width:97px;height:34px;display:flex;align-items:center;justify-content:center;border:0;border-radius:4px;color:#fff;text-decoration:none;font-weight:700}
+.register-delete-alert__actions button{background:#d64040;cursor:pointer}
+.register-delete-alert__actions a{background:#a5a5a5}

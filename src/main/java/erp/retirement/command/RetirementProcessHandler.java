@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import erp.employees.service.EmployeeSearchCondition;
 import erp.retirement.service.RetirementProcessService;
+import erp.retirement.service.RetirementProcessService.RetirementEmployeePage;
 import mvc.command.CommandHandler;
 
 // 사원 퇴직처리 화면의 목록 조회, 퇴직처리 및 처리취소 요청 Handler
@@ -29,8 +30,15 @@ public class RetirementProcessHandler implements CommandHandler {
 	}
 
 	private String processList(HttpServletRequest req) {
+		String mode = trim(req.getParameter("mode"));
+		String keyword = trim(req.getParameter("keyword"));
+		if ("search".equals(mode) && keyword.length() < 2) {
+			req.setAttribute("retirementPopupMessage", "검색어를 2자 이상 입력해주세요");
+		}
 		EmployeeSearchCondition condition = createCondition(req);
-		req.setAttribute("employees", retirementService.getEmployees(condition));
+		RetirementEmployeePage employeePage = retirementService.getEmployeePage(condition);
+		req.setAttribute("employees", employeePage.getEmployees());
+		req.setAttribute("pageInfo", employeePage.getPageInfo());
 		req.setAttribute("retirementTypes", retirementService.getRetirementTypes());
 		req.setAttribute("condition", condition);
 		req.setAttribute("currentDate", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
@@ -68,15 +76,27 @@ public class RetirementProcessHandler implements CommandHandler {
 
 	private EmployeeSearchCondition createCondition(HttpServletRequest req) {
 		EmployeeSearchCondition condition = new EmployeeSearchCondition();
-		String target = req.getParameter("searchTarget");
-		condition.setSearchTarget("employeeNo".equals(target) ? "EMPLOYEE_NO" : "department".equals(target) ? "DEPARTMENT" : "name".equals(target) ? "NAME" : "ALL");
-		condition.setKeyword(trim(req.getParameter("keyword")));
+		String mode = trim(req.getParameter("mode"));
+		String target = "search".equals(mode) ? req.getParameter("searchTarget") : "all";
+		String keyword = "search".equals(mode) && trim(req.getParameter("keyword")).length() >= 2
+				? trim(req.getParameter("keyword")) : "";
+		condition.setSearchTarget("employeeNo".equals(target) ? "EMPLOYEE_NO"
+				: "department".equals(target) ? "DEPARTMENT" : "name".equals(target) ? "NAME" : "ALL");
+		condition.setKeyword(keyword);
 		condition.setEmploymentType("");
-		String status = req.getParameter("status");
+		String status = "status".equals(mode) ? req.getParameter("status") : "";
 		condition.setStatus("ACTIVE".equals(status) ? "WORK" : "RETIRED".equals(status) ? "RETIRED" : "");
-		condition.setPage(1);
-		condition.setPageSize(100);
+		condition.setPage(Math.max(1, intValue(req.getParameter("page"), 1)));
+		condition.setPageSize(30);
 		return condition;
+	}
+
+	private int intValue(String value, int defaultValue) {
+		try {
+			return Integer.parseInt(value);
+		} catch (Exception e) {
+			return defaultValue;
+		}
 	}
 
 	private void redirect(HttpServletRequest req, HttpServletResponse res, String result) throws IOException {

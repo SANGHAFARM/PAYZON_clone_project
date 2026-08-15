@@ -9,7 +9,7 @@
 	<title>급여명세서</title>
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/common.css">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/payroll/payroll-payslip.css">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/payroll/payroll-payslip.css?v=20260815-2">
 </head>
 <body>
 	<%@ include file="/WEB-INF/view/common/header.jspf" %>
@@ -38,10 +38,10 @@
 			<aside class="employee-panel">
 				<form class="employee-search" method="get" action="${pageContext.request.contextPath}/payroll/payslip.do">
 					<input type="hidden" name="paymentYear" value="${selectedYear}"><input type="hidden" name="paymentMonth" value="${selectedMonth}"><input type="hidden" name="paymentRound" value="${selectedRound}">
-					<input type="search" name="keyword" value="${param.keyword}" placeholder="검색어 입력"><button type="submit" class="button button-primary">검색</button><a class="button button-outline" href="${pageContext.request.contextPath}/payroll/payslip.do?paymentYear=${selectedYear}&amp;paymentMonth=${selectedMonth}&amp;paymentRound=${selectedRound}">전체보기</a>
+					<input type="hidden" name="mode" value="search"><input type="search" name="keyword" value="${param.keyword}" placeholder="검색어 입력"><button type="submit" class="button button-primary">검색</button><a class="button button-outline" href="${pageContext.request.contextPath}/payroll/payslip.do?paymentYear=${selectedYear}&amp;paymentMonth=${selectedMonth}&amp;paymentRound=${selectedRound}">전체보기</a>
 				</form>
 				<div class="employee-table-wrap"><table class="employee-table"><thead><tr><th>구분</th><th>성명</th><th>실지급액</th></tr></thead><tbody>
-				<c:choose><c:when test="${not empty payslipEmployees}"><c:forEach var="employee" items="${payslipEmployees}"><tr class="${employee.employeeId eq selectedEmployee.employeeId ? 'selected-row' : ''}"><td>${employee.employmentTypeName}</td><td><a href="?paymentYear=${selectedYear}&amp;paymentMonth=${selectedMonth}&amp;paymentRound=${selectedRound}&amp;keyword=${param.keyword}&amp;employeeId=${employee.employeeId}">${employee.employeeName}</a></td><td class="amount">${employee.netPayment}</td></tr></c:forEach></c:when><c:otherwise>
+				<c:choose><c:when test="${not empty payslipEmployees}"><c:forEach var="employee" items="${payslipEmployees}"><c:url var="payslipEmployeeUrl" value="/payroll/payslip.do"><c:param name="paymentYear" value="${selectedYear}"/><c:param name="paymentMonth" value="${selectedMonth}"/><c:param name="paymentRound" value="${selectedRound}"/><c:param name="keyword" value="${param.keyword}"/><c:param name="employeeId" value="${employee.employeeId}"/></c:url><tr class="${employee.employeeId eq selectedEmployee.employeeId ? 'selected-row' : ''}"><td><a class="employee-row-link" href="${payslipEmployeeUrl}">${employee.employmentTypeName}</a></td><td><a class="employee-row-link" href="${payslipEmployeeUrl}">${employee.employeeName}</a></td><td class="amount"><a class="employee-row-link" href="${payslipEmployeeUrl}">${employee.netPayment}</a></td></tr></c:forEach></c:when><c:otherwise>
 					<tr><td colspan="3" class="empty-row">조회된 급여명세서 대상 사원이 없습니다.</td></tr>
 				</c:otherwise></c:choose>
 				</tbody></table></div>
@@ -56,22 +56,26 @@
 				</tbody></table>
 
 				<section class="pay-details"><h3>급여내역</h3><table class="pay-detail-table"><colgroup><col class="category-col"><col class="item-col"><col class="amount-col"><col></colgroup><thead><tr><th>구분</th><th>항목명</th><th>금액</th><th>산출식 또는 산출방법</th></tr></thead><tbody>
-				<c:choose><c:when test="${not empty paymentItems}"><c:forEach var="item" items="${paymentItems}" varStatus="status"><tr><c:if test="${status.first}"><th class="category payment-category" rowspan="${fn:length(paymentItems) + 1}">지급항목</th></c:if><td>${item.itemName}</td><td class="amount">${selectedEmployee.paymentAmounts[item.itemId]}</td><td>${selectedEmployee.paymentCalculations[item.itemId]}</td></tr></c:forEach></c:when><c:otherwise>
-				<tr><th class="category payment-category" rowspan="2">지급항목</th><td colspan="3" class="empty-item">등록된 지급항목이 없습니다.</td></tr>
+				<c:choose><c:when test="${not empty paymentItems}"><c:forEach var="item" items="${paymentItems}" varStatus="status"><tr><c:if test="${status.first}"><th class="category payment-category" rowspan="${fn:length(paymentItems) + 1}"><span>지급</span><span>항목</span></th></c:if><td>${item.itemName}</td><td class="amount">${selectedEmployee.paymentAmounts[item.itemId]}</td><td>${selectedEmployee.paymentCalculations[item.itemId]}</td></tr></c:forEach></c:when><c:otherwise>
+				<tr><th class="category payment-category" rowspan="2"><span>지급</span><span>항목</span></th><td colspan="3" class="empty-item">등록된 지급항목이 없습니다.</td></tr>
 				</c:otherwise></c:choose>
 				<tr class="total-row payment-total"><th colspan="2">지급총액</th><td class="amount">${selectedEmployee.totalPayment}</td></tr>
-				<c:choose><c:when test="${not empty deductionItems}"><c:forEach var="item" items="${deductionItems}" varStatus="status"><tr><c:if test="${status.first}"><th class="category deduction-category" rowspan="${fn:length(deductionItems) + 1}">공제항목</th></c:if><td>${item.itemName}</td><td class="amount">${selectedEmployee.deductionAmounts[item.itemId]}</td><td>${selectedEmployee.deductionCalculations[item.itemId]}</td></tr></c:forEach></c:when><c:otherwise>
-				<tr><th class="category deduction-category" rowspan="2">공제항목</th><td colspan="3" class="empty-item">등록된 공제항목이 없습니다.</td></tr>
+				<c:choose><c:when test="${not empty deductionItems}"><c:forEach var="item" items="${deductionItems}" varStatus="status"><tr><c:if test="${status.first}"><th class="category deduction-category" rowspan="${fn:length(deductionItems) + 1}"><span>공제</span><span>항목</span></th></c:if><td>${item.itemName}</td><td class="amount">${selectedEmployee.deductionAmounts[item.itemId]}</td><td>${selectedEmployee.deductionCalculations[item.itemId]}</td></tr></c:forEach></c:when><c:otherwise>
+				<tr><th class="category deduction-category" rowspan="2"><span>공제</span><span>항목</span></th><td colspan="3" class="empty-item">등록된 공제항목이 없습니다.</td></tr>
 				</c:otherwise></c:choose>
 				<tr class="total-row deduction-total"><th colspan="2">공제총액</th><td class="amount">${selectedEmployee.totalDeduction}</td></tr>
 				<tr class="net-row"><th colspan="3">실수령액</th><td class="amount">${selectedEmployee.netPayment} 원</td></tr>
 				</tbody></table></section>
 
 				<p class="closing-message">귀하의 노고에 감사드리며, 수고 많으셨습니다.</p>
-				<footer class="document-footer"><label><input type="checkbox" name="showRepresentative" checked> 대표자 표기</label><div class="approval-block"><div class="representative"><strong>${company.companyName}</strong><span>대표이사 ${company.representativeName}</span></div><div class="company-stamp"><c:choose><c:when test="${not empty company.stampUrl}"><img src="${company.stampUrl}" alt="회사 도장"></c:when><c:otherwise><span>회사 도장</span></c:otherwise></c:choose></div></div></footer>
+				<footer class="document-footer"><div class="approval-block"><div class="representative"><strong>${company.companyName}</strong><span>대표이사 ${company.representativeName}</span></div><div class="company-stamp"><c:choose><c:when test="${not empty company.stampUrl}"><img src="${company.stampUrl}" alt="회사 도장"></c:when><c:otherwise><span>회사 도장</span></c:otherwise></c:choose></div></div></footer>
 			</article>
 		</section>
 	</main>
+	<c:if test="${not empty payslipPopupMessage}">
+		<c:url var="payslipReturnUrl" value="/payroll/payslip.do"><c:param name="paymentYear" value="${selectedYear}"/><c:param name="paymentMonth" value="${selectedMonth}"/><c:param name="paymentRound" value="${selectedRound}"/></c:url>
+		<div class="payslip-alert" role="alertdialog" aria-modal="true" aria-labelledby="payslip-alert-message"><a class="payslip-alert__backdrop" href="${payslipReturnUrl}" aria-label="닫기"></a><div class="payslip-alert__panel"><p id="payslip-alert-message"><c:out value="${payslipPopupMessage}"/></p><a href="${payslipReturnUrl}">확인</a></div></div>
+	</c:if>
 	<%@ include file="/WEB-INF/view/common/footer.jspf" %>
 </body>
 </html>
