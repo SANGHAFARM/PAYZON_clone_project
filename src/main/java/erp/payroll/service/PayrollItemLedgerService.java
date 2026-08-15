@@ -8,8 +8,8 @@ import java.util.List;
 
 import erp.payroll.dao.PayrollItemLedgerDao;
 import erp.payroll.dto.PayrollItemLedgerPage;
-import erp.payroll.dto.PayrollItemLedgerRow;
-import erp.payroll.dto.PayrollItemLedgerTotals;
+import erp.payroll.dto.PayrollItemLedgerPage.PayrollItemLedgerRow;
+import erp.payroll.dto.PayrollItemLedgerPage.PayrollItemLedgerTotals;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 

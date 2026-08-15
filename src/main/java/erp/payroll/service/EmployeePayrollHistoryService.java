@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Map;
 
 import erp.payroll.dao.EmployeePayrollHistoryDao;
-import erp.payroll.dto.EmployeePayrollHistoryEmployee;
-import erp.payroll.dto.EmployeePayrollHistoryItem;
+import erp.payroll.dto.EmployeePayrollHistoryPage.EmployeePayrollHistoryEmployee;
+import erp.payroll.dto.EmployeePayrollHistoryPage.EmployeePayrollHistoryItem;
 import erp.payroll.dto.EmployeePayrollHistoryPage;
-import erp.payroll.dto.EmployeePayrollHistoryPageInfo;
-import erp.payroll.dto.EmployeePayrollHistoryTotal;
+import erp.payroll.dto.EmployeePayrollHistoryPage.EmployeePayrollHistoryPageInfo;
+import erp.payroll.dto.EmployeePayrollHistoryPage.EmployeePayrollHistoryTotal;
 import erp.settings.dao.DepartmentDao;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;

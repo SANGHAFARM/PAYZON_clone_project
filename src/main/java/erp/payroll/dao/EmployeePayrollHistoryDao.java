@@ -7,8 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import erp.payroll.dto.EmployeePayrollHistoryEmployee;
-import erp.payroll.dto.EmployeePayrollHistoryItem;
+import erp.payroll.dto.EmployeePayrollHistoryPage.EmployeePayrollHistoryEmployee;
+import erp.payroll.dto.EmployeePayrollHistoryPage.EmployeePayrollHistoryItem;
 
 // 사원과 월별 급여 지급 내역을 조회하는 DAO
 public class EmployeePayrollHistoryDao {

@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import erp.payroll.dao.PayrollPayslipDao;
-import erp.payroll.dto.PayrollPayslipCompany;
-import erp.payroll.dto.PayrollPayslipEmployee;
+import erp.payroll.dto.PayrollPayslipPage.PayrollPayslipCompany;
+import erp.payroll.dto.PayrollPayslipPage.PayrollPayslipEmployee;
 import erp.payroll.dto.PayrollPayslipPage;
 import erp.payroll.dto.PayrollRegisterColumn;
 import erp.payroll.model.PayrollRun;

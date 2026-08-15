@@ -118,4 +118,70 @@ public class PayrollManagementPage {
 	public void setAttendanceItems(List<AttendanceItem> attendanceItems) {
 		this.attendanceItems = attendanceItems;
 	}
+
+	// 급여입력 화면에 표시할 사원별 급여 정보
+	public static class PayrollManagementEmployee {
+		private int employeeId;
+		private String employmentType;
+		private String employeeNo;
+		private String name;
+		private String departmentName;
+		private String positionName;
+		private String statusName;
+		private long grossPayment;
+		private long totalDeduction;
+		public int getEmployeeId() { return employeeId; }
+		public void setEmployeeId(int value) { employeeId = value; }
+		public String getEmploymentType() { return employmentType; }
+		public void setEmploymentType(String value) { employmentType = value; }
+		public String getEmployeeNo() { return employeeNo; }
+		public void setEmployeeNo(String value) { employeeNo = value; }
+		public String getName() { return name; }
+		public void setName(String value) { name = value; }
+		public String getDepartmentName() { return departmentName; }
+		public void setDepartmentName(String value) { departmentName = value; }
+		public String getPositionName() { return positionName; }
+		public void setPositionName(String value) { positionName = value; }
+		public String getStatusName() { return statusName; }
+		public void setStatusName(String value) { statusName = value; }
+		public long getGrossPayment() { return grossPayment; }
+		public void setGrossPayment(long value) { grossPayment = value; }
+		public long getTotalDeduction() { return totalDeduction; }
+		public void setTotalDeduction(long value) { totalDeduction = value; }
+		public long getNetPayment() { return grossPayment - totalDeduction; }
+	}
+
+	public static class PayrollEmployeePage {
+		private List<PayrollManagementEmployee> content;
+		private int totalPages;
+		public PayrollEmployeePage(List<PayrollManagementEmployee> content, int totalPages) { this.content = content; this.totalPages = totalPages; }
+		public List<PayrollManagementEmployee> getContent() { return content; }
+		public int getTotalPages() { return totalPages; }
+	}
+
+	public static class PayrollTotals {
+		private long grossPayment;
+		private long totalDeduction;
+		public long getGrossPayment() { return grossPayment; }
+		public void setGrossPayment(long value) { grossPayment = value; }
+		public long getTotalDeduction() { return totalDeduction; }
+		public void setTotalDeduction(long value) { totalDeduction = value; }
+		public long getNetPayment() { return grossPayment - totalDeduction; }
+	}
+
+	public static class PayrollPositionOption {
+		private int positionId;
+		private String positionName;
+		public PayrollPositionOption(int id, String name) { positionId = id; positionName = name; }
+		public int getPositionId() { return positionId; }
+		public String getPositionName() { return positionName; }
+	}
+
+	public static class PayrollPeriodOption {
+		private int periodId;
+		private String periodName;
+		public PayrollPeriodOption(int id, String name) { periodId = id; periodName = name; }
+		public int getPeriodId() { return periodId; }
+		public String getPeriodName() { return periodName; }
+	}
 }

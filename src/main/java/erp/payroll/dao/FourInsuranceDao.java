@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import erp.payroll.dto.FourInsuranceDeduction;
+import erp.payroll.dto.FourInsurancePage.FourInsuranceDeduction;
 import erp.payroll.dto.FourInsurancePage;
 
 // 급여 차수별 4대보험 공제액을 조회하는 DAO

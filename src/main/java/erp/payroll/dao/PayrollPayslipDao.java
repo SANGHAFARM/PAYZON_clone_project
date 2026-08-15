@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import erp.payroll.dto.PayrollPayslipEmployee;
+import erp.payroll.dto.PayrollPayslipPage.PayrollPayslipEmployee;
 import erp.payroll.dto.PayrollRegisterColumn;
 import erp.payroll.model.PayrollRun;
 import jdbc.JdbcUtil;

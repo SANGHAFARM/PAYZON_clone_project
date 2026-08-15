@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import erp.payroll.dto.PayrollRegisterColumn;
-import erp.payroll.dto.PayrollRegisterEmployee;
-import erp.payroll.dto.PayrollRegisterItem;
+import erp.payroll.dto.PayrollRegisterPage.PayrollRegisterEmployee;
+import erp.payroll.dto.PayrollRegisterPage.PayrollRegisterItem;
 import jdbc.JdbcUtil;
 
 // 급여대장 목록과 상세 집계를 조회하는 DAO
