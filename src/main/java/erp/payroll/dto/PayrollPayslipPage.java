@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-// 급여명세서 화면에 필요한 회차와 사원 정보를 전달하는 DTO
+// 급여명세서 화면에 필요한 회차와 사원 정보를 전달한다.
 public class PayrollPayslipPage {
 
 	private Date calculationStart;

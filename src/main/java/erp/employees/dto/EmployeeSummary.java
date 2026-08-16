@@ -1,6 +1,6 @@
 package erp.employees.dto;
 
-// 사원현황 화면 상단의 상태별·고용형태별 인원수를 담는 DTO
+// 사원현황 화면의 상태별·고용형태별 인원수를 전달한다.
 public class EmployeeSummary {
 	private int workingCount;
 	private int regularCount;

@@ -10,7 +10,7 @@ import java.util.List;
 import erp.payroll.dto.EmployeePayrollHistoryPage.EmployeePayrollHistoryEmployee;
 import erp.payroll.dto.EmployeePayrollHistoryPage.EmployeePayrollHistoryItem;
 
-// 사원과 월별 급여 지급 내역을 조회하는 DAO
+// 사원과 월별 급여 지급 내역을 조회한다.
 public class EmployeePayrollHistoryDao {
 
 	private static final String HISTORY_SQL =

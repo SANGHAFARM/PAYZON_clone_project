@@ -1,6 +1,6 @@
 package erp.employees.service;
 
-// 발급대장의 증명서 종류, 발급기간, 검색어 및 페이지 조건 객체
+// 발급대장의 검색 및 페이지 조건을 전달한다.
 public class CertificateRegisterCondition {
 	private String certificateType;
 	private String issueDateFrom;

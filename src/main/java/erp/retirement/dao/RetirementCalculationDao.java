@@ -13,7 +13,7 @@ import erp.retirement.model.RetirementCalculation;
 import erp.retirement.dto.RetirementBenefitListItem;
 import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
-// 퇴직급여 계산내역 데이터베이스 접근(DAO) 클래스
+// 퇴직급여 계산내역을 저장하고 조회한다.
 public class RetirementCalculationDao {
 
 	// 싱글톤 인스턴스 생성
@@ -188,8 +188,7 @@ public class RetirementCalculationDao {
 		}
 	}
 
-	// 퇴직급여 계산내역 단건 조회
-	// 기본키(RETIREMENT_CALCULATION_ID)를 기준으로 1건의 데이터 반환
+	// 기본키로 퇴직급여 계산내역 한 건을 조회한다.
 	public RetirementCalculation selectById(Connection conn, int calcId) throws SQLException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -209,8 +208,7 @@ public class RetirementCalculationDao {
 		}
 	}
 
-	// 특정 사원의 퇴직급여 계산내역 목록 조회
-	// 사원번호(EMPLOYEE_ID)를 기준으로 최근 정산 내역순 정렬
+	// 특정 사원의 계산내역을 최근 정산 순서로 조회한다.
 	public List<RetirementCalculation> selectByEmpId(Connection conn, int empId) throws SQLException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -231,8 +229,7 @@ public class RetirementCalculationDao {
 		}
 	}
 
-	// 퇴직급여 계산내역 삭제
-	// 기본키를 기준으로 해당 데이터 삭제
+	// 기본키로 퇴직급여 계산내역을 삭제한다.
 	public int delete(Connection conn, int calcId) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
@@ -258,8 +255,7 @@ public class RetirementCalculationDao {
 		}
 	}
 
-	// ResultSet 데이터를 RetirementCalculation 객체로 변환
-	// 코드 중복 방지를 위한 공통 매핑 처리
+	// 조회 결과를 퇴직급여 계산 객체로 변환한다.
 	private RetirementCalculation makeCalcFromResultSet(ResultSet rs) throws SQLException {
 		RetirementCalculation calc = new RetirementCalculation();
 

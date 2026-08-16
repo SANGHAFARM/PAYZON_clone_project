@@ -16,7 +16,7 @@ import erp.payroll.model.PayrollRun;
 import erp.payroll.service.PayrollManagementService;
 import mvc.command.CommandHandler;
 
-// 급여입력 화면의 조회, 사원 관리, 급여 저장 요청을 처리하는 Handler
+// 급여입력 화면의 조회와 급여 저장 요청을 처리한다.
 public class PayrollManagementHandler implements CommandHandler {
 
 	private static final String VIEW = "/WEB-INF/view/payroll/payroll-management.jsp";

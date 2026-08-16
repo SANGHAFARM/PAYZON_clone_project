@@ -7,7 +7,7 @@ import erp.settings.model.Department;
 import erp.settings.model.AttendanceItem;
 import erp.settings.model.TaxFreeItem;
 
-// 급여입력 화면에 필요한 조회 결과를 한 번에 전달하는 DTO
+// 급여입력 화면에 필요한 조회 결과를 한 번에 전달한다.
 public class PayrollManagementPage {
 
 	private PayrollRun run;

@@ -3,7 +3,7 @@ package erp.payroll.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-// 항목별 대장 화면 조회 결과
+// 항목별 대장 화면의 조회 결과를 전달한다.
 public class PayrollItemLedgerPage {
 
 	private List<PayrollItemLedgerOption> items;

@@ -12,7 +12,7 @@ import java.util.List;
 import erp.retirement.model.RetirementTaxDeferral;
 import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
-// 퇴직연금계좌 과세이연 내역 데이터베이스 접근(DAO) 클래스
+// 퇴직연금계좌의 과세이연 내역을 저장하고 조회한다.
 public class RetirementTaxDeferralDao {
 
 	// 싱글톤 인스턴스 생성
@@ -57,8 +57,7 @@ public class RetirementTaxDeferralDao {
 		}
 	}
 
-	// 특정 퇴직정산에 포함된 과세이연 내역 조회
-	// 정산ID(RETIREMENT_CALCULATION_ID)를 기준으로 전체 반환
+	// 특정 퇴직정산에 포함된 과세이연 내역을 조회한다.
 	public List<RetirementTaxDeferral> selectByCalcId(Connection conn, int calcId) throws SQLException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -80,8 +79,7 @@ public class RetirementTaxDeferralDao {
 		}
 	}
 
-	// 과세이연 내역 삭제
-	// 기본키를 기준으로 해당 데이터 삭제
+	// 기본키로 과세이연 내역을 삭제한다.
 	public int delete(Connection conn, int deferralId) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
@@ -94,7 +92,7 @@ public class RetirementTaxDeferralDao {
 		}
 	}
 
-	// ResultSet 데이터를 RetirementTaxDeferral 객체로 변환
+	// 조회 결과를 과세이연 객체로 변환한다.
 	private RetirementTaxDeferral makeDeferralFromResultSet(ResultSet rs) throws SQLException {
 		RetirementTaxDeferral deferral = new RetirementTaxDeferral();
 

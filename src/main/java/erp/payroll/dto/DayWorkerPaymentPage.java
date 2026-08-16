@@ -6,7 +6,7 @@ import java.util.List;
 import erp.payroll.model.PayrollRun;
 import erp.settings.model.Department;
 
-// 일용직 급여입력 화면에 필요한 조회 결과
+// 일용직 급여입력 화면에 필요한 조회 결과를 전달한다.
 public class DayWorkerPaymentPage {
 
 	private PayrollRun run;

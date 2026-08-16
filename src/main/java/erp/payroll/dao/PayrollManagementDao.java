@@ -16,7 +16,7 @@ import erp.payroll.dto.PayrollManagementPage.PayrollPeriodOption;
 import erp.payroll.model.PayrollRun;
 import jdbc.JdbcUtil;
 
-// 급여입력 화면에서 사용하는 복합 조회와 저장을 처리하는 DAO
+// 급여입력 화면에 필요한 복합 조회와 저장을 처리한다.
 public class PayrollManagementDao {
 
 	public PayrollRun selectRun(Connection conn, String year, String month, String sequence, String incomeType)

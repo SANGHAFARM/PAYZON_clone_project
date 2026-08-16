@@ -13,7 +13,7 @@ import erp.payroll.dto.DayWorkerPaymentPage.DayWorkerPaymentWork;
 import erp.payroll.dto.PayrollManagementItem;
 import jdbc.JdbcUtil;
 
-// 일용직 근무기록과 급여 공제내역을 조회하는 DAO
+// 일용직 근무기록과 급여 공제내역을 조회한다.
 public class DayWorkerPayrollDao {
 
 	public List<DayWorkerPaymentEmployee> selectPaymentEmployees(Connection conn, int runId, Date startDate,

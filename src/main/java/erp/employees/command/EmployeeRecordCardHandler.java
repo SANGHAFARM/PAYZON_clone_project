@@ -8,7 +8,7 @@ import erp.employees.service.EmployeeRecordCardService.EmployeeRecordCardData;
 import erp.employees.service.EmployeeSearchCondition;
 import mvc.command.CommandHandler;
 
-// 인사기록카드의 사원 검색 및 선택된 사원의 상세 이력을 처리하는 Handler
+// 인사기록카드의 사원 검색과 상세 조회 요청을 처리한다.
 public class EmployeeRecordCardHandler implements CommandHandler {
 	private static final String VIEW = "/WEB-INF/view/employees/employees-record-card.jsp";
 	private final EmployeeRecordCardService recordCardService = new EmployeeRecordCardService();
@@ -43,7 +43,7 @@ public class EmployeeRecordCardHandler implements CommandHandler {
 			req.setAttribute("showEmployeeModal", true);
 		}
 
-		// Service에서 기록카드 한 화면에 필요한 모든 이력을 조회한다.
+		// 기록카드 한 화면에 필요한 모든 이력을 조회한다.
 		EmployeeRecordCardData data = recordCardService.getRecordCard(parseInteger(req.getParameter("employeeId")), condition);
 		// JSP의 각 표에서 바로 사용할 수 있도록 항목별 request 속성으로 저장한다.
 		req.setAttribute("selectedEmployee", data.getEmployee());

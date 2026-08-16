@@ -1,6 +1,6 @@
 package erp.employees.dto;
 
-// 사원 목록의 현재 페이지와 5개 단위 페이지 이동 범위를 계산하는 DTO
+// 사원 목록의 현재 페이지와 페이지 이동 범위를 계산한다.
 public class EmployeePageInfo {
 	private final int currentPage;
 	private final int totalPages;

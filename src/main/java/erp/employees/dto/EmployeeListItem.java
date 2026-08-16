@@ -1,6 +1,6 @@
 package erp.employees.dto;
 
-// EMPLOYEE, DEPARTMENT, JOB_POSITION JOIN 결과를 목록 화면에 전달하는 DTO
+// 부서와 직위를 포함한 사원 목록 한 행을 전달한다.
 public class EmployeeListItem {
 
 	private int employeeId;

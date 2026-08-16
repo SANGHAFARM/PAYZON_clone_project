@@ -11,7 +11,7 @@ import java.util.List;
 import erp.payroll.model.PayrollEntry;
 import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
-// 사원별 지급/공제 상세 내역 데이터베이스 접근(DAO) 클래스
+// 사원별 지급·공제 상세 내역을 저장하고 조회한다.
 public class PayrollEntryDao {
 
 	// 싱글톤 인스턴스 생성

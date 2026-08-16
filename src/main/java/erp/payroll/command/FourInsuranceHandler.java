@@ -11,7 +11,7 @@ import erp.payroll.dto.FourInsurancePage;
 import erp.payroll.service.FourInsuranceService;
 import mvc.command.CommandHandler;
 
-// 선택한 급여 차수의 4대보험 공제내역을 처리하는 Handler
+// 선택한 급여 차수의 4대보험 공제내역을 조회한다.
 public class FourInsuranceHandler implements CommandHandler {
 
 	private static final String VIEW = "/WEB-INF/view/payroll/four-insurance-deduction.jsp";

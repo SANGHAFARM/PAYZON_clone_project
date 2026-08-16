@@ -17,7 +17,7 @@ import erp.settings.dao.DepartmentDao;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
-// 일용직 근무기록을 급여 회차와 연결하는 서비스
+// 일용직 근무기록을 급여 회차와 연결한다.
 public class DayWorkerPayrollService {
 
 	private static final int EMPLOYEE_PAGE_SIZE = 10;

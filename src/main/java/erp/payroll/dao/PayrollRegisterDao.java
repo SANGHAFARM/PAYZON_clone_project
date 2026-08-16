@@ -12,7 +12,7 @@ import erp.payroll.dto.PayrollRegisterPage.PayrollRegisterEmployee;
 import erp.payroll.dto.PayrollRegisterPage.PayrollRegisterItem;
 import jdbc.JdbcUtil;
 
-// 급여대장 목록과 상세 집계를 조회하는 DAO
+// 급여대장 목록과 상세 집계를 조회한다.
 public class PayrollRegisterDao {
 
 	public int countRuns(Connection conn, String year) throws SQLException {

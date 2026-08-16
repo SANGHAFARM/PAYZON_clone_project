@@ -13,7 +13,7 @@ import erp.payroll.dto.PayrollRegisterPage.PayrollRegisterListPage;
 import erp.payroll.service.PayrollRegisterService;
 import mvc.command.CommandHandler;
 
-// 급여대장 목록, 상세 조회와 삭제 요청을 처리하는 Handler
+// 급여대장의 목록·상세 조회와 삭제 요청을 처리한다.
 public class PayrollRegisterHandler implements CommandHandler {
 
 	private static final String LIST_VIEW = "/WEB-INF/view/payroll/payroll-register.jsp";

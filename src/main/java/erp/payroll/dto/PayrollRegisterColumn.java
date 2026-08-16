@@ -1,6 +1,6 @@
 package erp.payroll.dto;
 
-// 급여대장 상세의 지급·공제 항목 열 정보
+// 급여대장 상세의 지급·공제 항목 열 정보를 전달한다.
 public class PayrollRegisterColumn {
 
 	private int itemId;

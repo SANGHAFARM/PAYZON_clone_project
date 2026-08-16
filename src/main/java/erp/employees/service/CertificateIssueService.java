@@ -20,7 +20,7 @@ import erp.settings.dao.DepartmentDao;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
-// 제증명서 화면 조회와 발급내역 저장을 처리하는 Service
+// 제증명서 화면 조회와 발급내역 저장을 처리한다.
 public class CertificateIssueService {
 	private final EmployeeDao employeeDao = EmployeeDao.getInstance();
 	private final CertificateIssuanceDao certificateDao = CertificateIssuanceDao.getInstance();

@@ -9,7 +9,7 @@
 	<!-- 사이트 이름과 홈 링크 영역 -->
 	<div class="site-header__brand">
 		<div class="site-header__logo"><span
-			class="site-header__logo-product">SITE NAME</span></div>
+			class="site-header__logo-product">PAYZON</span></div>
 	</div>
 
 	<!-- 자주 사용하는 업무로 바로 이동하는 아이콘 메뉴 -->

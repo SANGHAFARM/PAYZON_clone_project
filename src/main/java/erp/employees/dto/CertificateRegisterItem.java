@@ -1,6 +1,6 @@
 package erp.employees.dto;
 
-// 제증명서 발급대장의 CERTIFICATE_ISSUANCE 중심 JOIN 조회 결과 DTO
+// 제증명서 발급대장의 조회 결과 한 행을 전달한다.
 public class CertificateRegisterItem {
 	private int certificateId;
 	private String certificateNo;

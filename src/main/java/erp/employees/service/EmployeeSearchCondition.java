@@ -1,6 +1,6 @@
 package erp.employees.service;
 
-// 사원 목록 및 인사기록카드 사원 검색에 공통으로 사용하는 검색조건 객체
+// 사원 목록과 선택창에서 공통으로 사용하는 검색조건을 전달한다.
 public class EmployeeSearchCondition {
 	private String searchTarget;
 	private String keyword;

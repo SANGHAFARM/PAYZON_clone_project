@@ -17,7 +17,7 @@ import erp.retirement.dto.RetirementTypeItem;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
-// 퇴직대상 사원 조회와 퇴직처리·취소 트랜잭션을 담당하는 Service
+// 퇴직대상 사원 조회와 퇴직처리·취소 트랜잭션을 처리한다.
 public class RetirementProcessService {
 	private static final Set<String> RETIREMENT_TYPES = new HashSet<>(Arrays.asList(
 			"자진퇴사", "권고사직", "계약만료", "정년퇴직", "해고", "기타"));

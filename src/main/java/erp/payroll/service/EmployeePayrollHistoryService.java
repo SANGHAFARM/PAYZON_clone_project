@@ -17,7 +17,7 @@ import erp.settings.dao.DepartmentDao;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
-// 사원별 급여내역 화면에 필요한 조회 결과를 구성하는 서비스
+// 사원별 급여내역 화면에 필요한 조회 결과를 구성한다.
 public class EmployeePayrollHistoryService {
 
 	private static final int PAGE_SIZE = 10;

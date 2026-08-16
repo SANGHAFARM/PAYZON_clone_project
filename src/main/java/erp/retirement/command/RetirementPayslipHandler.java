@@ -25,7 +25,14 @@ public class RetirementPayslipHandler implements CommandHandler {
 
 		int year = intValue(req.getParameter("paymentYear"), LocalDate.now().getYear());
 		Integer calculationId = parseInt(req.getParameter("calculationId"));
-		PayslipData data = service.getData(year, req.getParameter("keyword"), calculationId);
+		String keyword = trim(req.getParameter("keyword"));
+		boolean searchRequested = req.getParameterMap().containsKey("keyword");
+		if (searchRequested && keyword.length() < 2) {
+			// 검색어가 짧으면 검색을 적용하지 않고 안내 팝업을 표시한다.
+			req.setAttribute("retirementPayslipPopupMessage", "검색어를 2자 이상 입력해주세요.");
+			keyword = "";
+		}
+		PayslipData data = service.getData(year, keyword, calculationId);
 
 		req.setAttribute("paymentYears", service.getPaymentYears());
 		req.setAttribute("selectedYear", year);
@@ -51,5 +58,9 @@ public class RetirementPayslipHandler implements CommandHandler {
 	private int intValue(String value, int defaultValue) {
 		Integer number = parseInt(value);
 		return number == null ? defaultValue : number;
+	}
+
+	private String trim(String value) {
+		return value == null ? "" : value.trim();
 	}
 }

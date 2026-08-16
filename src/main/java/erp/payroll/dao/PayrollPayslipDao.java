@@ -12,7 +12,7 @@ import erp.payroll.dto.PayrollRegisterColumn;
 import erp.payroll.model.PayrollRun;
 import jdbc.JdbcUtil;
 
-// 급여명세서의 회차, 사원, 지급·공제 내역을 조회하는 DAO
+// 급여명세서의 회차·사원·지급·공제 내역을 조회한다.
 public class PayrollPayslipDao {
 
 	public List<PayrollRun> selectRuns(Connection conn, String year, String month, String sequence)
