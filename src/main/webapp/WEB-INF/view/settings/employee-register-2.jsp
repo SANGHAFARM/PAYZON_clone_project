@@ -24,7 +24,7 @@
 
 			<header class="page-heading"><div><p>기본환경설정</p><h1>사원등록</h1></div><p class="page-heading__notice"><strong>*</strong> 표시는 필수입력사항입니다.</p></header>
 			<c:if test="${not empty message}"><p class="form-message"><c:out value="${message}" /></p></c:if>
-			<form action="${pageContext.request.contextPath}/employee/save2.do" method="post" enctype="multipart/form-data">
+			<form action="${pageContext.request.contextPath}/settings/register2.do" method="post" enctype="multipart/form-data">
 				<input type="hidden" name="empId" value="<c:out value='${employee.empId}' />">
 				<div class="employee-layout">
 					<aside class="employee-summary">
@@ -32,7 +32,7 @@
 						<div class="summary-actions"><a href="#photo-upload-modal">등록</a><button name="action" value="deletePhoto">삭제</button></div>
 						<dl><div><dt>사원번호</dt><dd><c:out value="${employee.empNo}" /></dd></div><div><dt>성명</dt><dd><c:out value="${employee.empNameKr}" /></dd></div><div><dt>부서</dt><dd><c:out value="${employee.deptName}" /></dd></div><div><dt>직위</dt><dd><c:out value="${employee.posName}" /></dd></div><div><dt>입사일</dt><dd><c:out value="${employee.joinDate}" /></dd></div></dl>
 						<nav class="section-shortcuts" aria-label="사원정보 바로가기">
-							<section><p class="shortcut-title"><span>사원정보</span><em>01</em></p><div class="section-links"><a href="${pageContext.request.contextPath}/employee/register1.do?empId=${employee.empId}#salary-insurance">급여/4대보험</a><a href="${pageContext.request.contextPath}/employee/register1.do?empId=${employee.empId}#dependents">부양가족</a><a href="${pageContext.request.contextPath}/employee/register1.do?empId=${employee.empId}#education">학력</a><a href="${pageContext.request.contextPath}/employee/register1.do?empId=${employee.empId}#career">경력</a><a href="${pageContext.request.contextPath}/employee/register1.do?empId=${employee.empId}#military">병역</a></div></section>
+							<section><p class="shortcut-title"><span>사원정보</span><em>01</em></p><div class="section-links"><a href="${pageContext.request.contextPath}/settings/register1.do?empId=${employee.empId}#salary-insurance">급여/4대보험</a><a href="${pageContext.request.contextPath}/settings/register1.do?empId=${employee.empId}#dependents">부양가족</a><a href="${pageContext.request.contextPath}/settings/register1.do?empId=${employee.empId}#education">학력</a><a href="${pageContext.request.contextPath}/settings/register1.do?empId=${employee.empId}#career">경력</a><a href="${pageContext.request.contextPath}/settings/register1.do?empId=${employee.empId}#military">병역</a></div></section>
 							<section><p class="shortcut-title"><span>사원정보</span><em>02</em></p><div class="section-links"><a href="#license">자격/면허</a><a href="#training">교육/훈련</a><a href="#reward-punish">상벌</a><a href="#appointment">발령</a><a href="#recommendation">추천/신원보증</a><a href="#retirement">퇴직</a></div></section>
 						</nav>
 					</aside>
@@ -61,7 +61,7 @@
 
 						<section class="form-card" id="retirement"><h2>퇴직</h2><div class="table-wrap"><table><thead><tr><th>퇴직구분</th><th>퇴직일자</th><th>퇴직사유</th><th>퇴직 후 연락처</th><th>퇴직금</th><th>퇴직금명세서</th></tr></thead><tbody><tr><td><select name="retireType"><option value="">선택</option><c:forEach var="type" items="${retireTypes}"><option ${type eq employee.retireType ? 'selected' : ''}>${type}</option></c:forEach></select></td><td><input type="date" name="retireDate" value="${employee.retireDate}"></td><td><input name="retireReason" value="${employee.retireReason}"></td><td><input name="afterRetireContact" value="${employee.afterRetireContact}"></td><td><label class="money-cell"><input value="${retireAmount}" readonly><span>원</span></label></td><td><a class="table-button" href="${pageContext.request.contextPath}/retirement/payslip.do?empId=${employee.empId}">명세서 다운로드</a></td></tr></tbody></table></div></section>
 
-						<div class="form-actions"><button class="button button--primary" name="action" value="save">저장하기</button><a class="button" href="${pageContext.request.contextPath}/employee/register2.do?empId=${employee.empId}">취소하기</a><a class="button" href="${pageContext.request.contextPath}/employee/list.do">리스트</a><a class="button" href="${pageContext.request.contextPath}/employee/register1.do">신규사원등록하기</a></div>
+						<div class="form-actions"><button class="button button--primary" name="action" value="save">저장하기</button><a class="button" href="${pageContext.request.contextPath}/settings/register2.do?empId=${employee.empId}">취소하기</a><a class="button" href="${pageContext.request.contextPath}/employees/employees.do">리스트</a><a class="button" href="${pageContext.request.contextPath}/settings/register2.do">신규사원등록하기</a></div>
 					</div>
 				</div>
 				<div id="photo-upload-modal" class="upload-modal" role="dialog" aria-modal="true" aria-labelledby="photo-upload-title"><a class="upload-modal__backdrop" href="#" aria-label="닫기"></a><div class="upload-modal__panel"><div class="upload-modal__title"><h2 id="photo-upload-title">이미지 등록하기</h2><a href="#" aria-label="닫기">×</a></div><div class="upload-modal__body"><input type="file" name="photoFile" accept="image/png,image/jpeg"><p>* 파일 용량 : <strong>1MB 미만</strong>이어야 합니다.<br>* 파일명 : <strong>영문 또는 숫자</strong>로 되어 있어야 합니다.</p></div><button class="upload-modal__confirm" name="action" value="savePhoto">확인</button></div></div>

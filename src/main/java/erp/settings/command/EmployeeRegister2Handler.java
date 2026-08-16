@@ -78,7 +78,7 @@ public class EmployeeRegister2Handler implements CommandHandler {
 		}
 
 		// JSP 화면 포워딩 처리
-		return "/WEB-INF/view/employees/employee-register-2.jsp";
+		return "/WEB-INF/view/settings/employee-register-2.jsp";
 	}
 
 	// [POST] 액션 파라미터에 따른 비즈니스 로직 분기 처리
@@ -200,7 +200,7 @@ public class EmployeeRegister2Handler implements CommandHandler {
 		}
 
 		// 데이터 중복 전송 방지를 위한 리다이렉트 처리
-		res.sendRedirect(req.getContextPath() + "/employee/register2.do?empId=" + empId);
+		res.sendRedirect(req.getContextPath() + "/settings/register2.do?empId=" + empId);
 		return null;
 	}
 

@@ -32,7 +32,7 @@
 				<p class="form-message" role="status"><c:out value="${message}" /></p>
 			</c:if>
 
-			<form class="company-form" action="${pageContext.request.contextPath}/company/save.do" method="post" enctype="multipart/form-data">
+			<form class="company-form" action="${pageContext.request.contextPath}/settings/user-info.do" method="post" enctype="multipart/form-data">
 				<input type="hidden" name="companyId" value="<c:out value='${company.companyId}' />">
 
 				<section class="form-section">
@@ -89,7 +89,7 @@
 				<div id="logo-upload-modal" class="upload-modal" role="dialog" aria-modal="true" aria-labelledby="logo-upload-title"><a class="upload-modal__backdrop" href="#" aria-label="닫기"></a><div class="upload-modal__panel"><div class="upload-modal__title"><h2 id="logo-upload-title">이미지 등록하기</h2><a href="#" aria-label="닫기">×</a></div><div class="upload-modal__body"><input type="file" name="logoFile" accept="image/png,image/jpeg"><p>* 파일 용량 : <strong>1MB 미만</strong>이어야 합니다.<br>* 파일명 : <strong>영문 또는 숫자</strong>로 되어 있어야 합니다.</p></div><button class="upload-modal__confirm" type="submit" name="action" value="saveLogo">확인</button></div></div>
 				<div id="stamp-upload-modal" class="upload-modal" role="dialog" aria-modal="true" aria-labelledby="stamp-upload-title"><a class="upload-modal__backdrop" href="#" aria-label="닫기"></a><div class="upload-modal__panel"><div class="upload-modal__title"><h2 id="stamp-upload-title">이미지 등록하기</h2><a href="#" aria-label="닫기">×</a></div><div class="upload-modal__body"><input type="file" name="stampFile" accept="image/png,image/jpeg"><p>* 파일 용량 : <strong>1MB 미만</strong>이어야 합니다.<br>* 파일명 : <strong>영문 또는 숫자</strong>로 되어 있어야 합니다.</p></div><button class="upload-modal__confirm" type="submit" name="action" value="saveStamp">확인</button></div></div>
 
-				<div class="form-actions"><button class="button button--primary" type="submit" name="action" value="save">저장하기</button><a class="button" href="${pageContext.request.contextPath}/company/info.do">취소하기</a></div>
+				<div class="form-actions"><button class="button button--primary" type="submit" name="action" value="save">저장하기</button><a class="button" href="${pageContext.request.contextPath}/settings/user-info.do">취소하기</a></div>
 			</form>
 		</div>
 	</main>

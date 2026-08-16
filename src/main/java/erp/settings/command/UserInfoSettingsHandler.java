@@ -33,9 +33,7 @@ public class UserInfoSettingsHandler implements CommandHandler {
 		return null;
 	}
 
-	/**
-	 * [GET] 화면 렌더링을 위한 데이터베이스 조회 및 바인딩 로직
-	 */
+	// [GET] 화면 렌더링을 위한 데이터베이스 조회 및 바인딩 로직
 	private String processForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		int companyId = 1;
 
@@ -52,9 +50,7 @@ public class UserInfoSettingsHandler implements CommandHandler {
 		return "/WEB-INF/view/settings/user-info.jsp";
 	}
 
-	/**
-	 * [POST] 폼 전송(Submit) 시 action 파라미터 값에 따른 분기 처리 로직
-	 */
+	// [POST] 폼 전송(Submit) 시 action 파라미터 값에 따른 분기 처리 로직
 	private String processAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		req.setCharacterEncoding("UTF-8");
 
@@ -100,13 +96,11 @@ public class UserInfoSettingsHandler implements CommandHandler {
 		}
 
 		// 로직 처리가 완료되면 POST 중복 전송 방지를 위해 GET 방식의 조회 페이지로 리다이렉트합니다.
-		res.sendRedirect(req.getContextPath() + "/company/info.do");
+		res.sendRedirect(req.getContextPath() + "/settings/user-info.do");
 		return null;
 	}
 
-	/**
-	 * 화면에서 입력받은 회사 기본정보를 추출하여 DB에 저장하는 헬퍼 메서드
-	 */
+	// 화면에서 입력받은 회사 기본정보를 추출하여 DB에 저장하는 헬퍼 메서드
 	private void saveCompanyTextInfo(HttpServletRequest req) throws Exception {
 		Company company = new Company();
 
