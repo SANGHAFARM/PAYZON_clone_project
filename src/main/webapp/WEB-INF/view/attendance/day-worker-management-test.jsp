@@ -123,11 +123,14 @@
 							value="${empty editId ? today : workDate}"></label> <label><span>현장/프로젝트</span><span
 							class="project-control"><select name="projectId"><option
 										value="">선택하세요.</option>
+
+									<!-- 프로젝트 목록 관리 -->
 									<c:forEach var="project" items="${projects}">
 										<option value="${project.projectId}"
 											${projectId eq project.projectId ? 'selected' : ''}><c:out
 												value="${project.projectName}" /></option>
 									</c:forEach></select><a class="button button-project" href="#project-manager">목록관리</a></span>
+
 						</label> <label> <span>일당</span> <span class="amount-control">
 								<input type="number" id="dailyPay" name="dailyPay" min="0"
 								value="${dailyPay}" placeholder="일당을 입력해주세요"> <em>원</em>
@@ -158,7 +161,8 @@
 									class="button button-primary action-button">저장</button>
 							</c:when>
 							<c:otherwise>
-								<button type="submit" class="button button-primary action-button">수정</button>
+								<button type="submit"
+									class="button button-primary action-button">수정</button>
 							</c:otherwise>
 						</c:choose>
 
@@ -276,31 +280,67 @@
 		</div>
 	</c:forEach>
 
+
 	<div id="project-manager" class="modal-overlay">
 		<section class="modal project-modal" role="dialog" aria-modal="true"
 			aria-labelledby="project-title">
 			<header>
 				<h2 id="project-title">현장/프로젝트 목록관리</h2>
-				<a href="#" aria-label="닫기">&times;</a>
+				<a href="${pageContext.request.contextPath}/attendance/day-worker-management.do" aria-label="닫기">&times;</a>
 			</header>
 			<div class="modal-body">
 				<ul class="project-list">
 					<c:forEach var="project" items="${projects}">
-						<li><span><c:out value="${project.projectName}" /></span><span><a
-								href="?projectEdit=${project.projectId}">수정</a><a
-								href="?projectDelete=${project.projectId}">삭제</a></span></li>
+						<li><span><c:out value="${project.projectName}" /></span><span
+							style="display: inline-flex; gap: 4px;"> <!-- 수정 링크 클릭 시 파라미터가 담겨 페이지가 새로고침되며 아래 폼에 값이 채워짐 -->
+								<a class="mini-button"
+								href="?projectId=${project.projectId}&projectName=${project.projectName}#project-manager">수정</a>
+
+								<!-- 삭제 폼 -->
+								<form
+									action="${pageContext.request.contextPath}/settings/project-manage.do#project-manager"
+									method="post" style="display: inline; margin: 0;">
+									<input type="hidden" name="projectAction" value="delete">
+									<input type="hidden" name="projectId"
+										value="${project.projectId}">
+									<button type="submit" class="mini-button mini-delete">삭제</button>
+								</form>
+						</span></li>
 					</c:forEach>
-					<c:if test="${empty workProjects}">
+					<c:if test="${empty projects}">
 						<li><span>등록된 현장/프로젝트가 없습니다.</span></li>
 					</c:if>
 				</ul>
 
-				<form class="project-add" method="post"
-					action="${pageContext.request.contextPath}/attendance/day-worker-management-test/project/save">
-					<input type="text" name="projectName" placeholder="새 현장/프로젝트명"
-						required>
-					<button type="submit" class="button button-primary">추가하기</button>
-				</form>
+<form class="project-add" method="post"
+    action="${pageContext.request.contextPath}/settings/project-manage.do#project-manager"
+    style="display: flex; gap: 8px; align-items: center;">
+    
+    <!-- 수정 모드일 때는 'edit', 아닐 때는 'add' -->
+    <input type="hidden" name="projectAction" value="${empty param.projectId ? 'add' : 'edit'}">
+    
+    <!-- 수정 모드일 때만 projectId를 전달 -->
+    <c:if test="${not empty param.projectId}">
+        <input type="hidden" name="projectId" value="${param.projectId}">
+    </c:if>
+    
+    <!-- 입력창 -->
+    <input type="text" name="projectName" 
+           value="${empty param.projectId ? '' : param.projectName}" 
+           placeholder="새 현장/프로젝트명" required style="flex: 1;">
+    
+        <!-- 추가하기 / 수정하기 버튼 -->
+    <button type="submit" class="button button-primary" style="white-space: nowrap;">
+        ${empty param.projectId ? '추가하기' : '수정하기'}
+    </button>
+    
+    <!-- 수정 모드일 때만 취소 버튼 표시 -->
+    <c:if test="${not empty param.projectId}">
+        <a href="?#project-manager" class="button button-muted" style="text-decoration: none; white-space: nowrap;">취소</a>
+    </c:if>
+    
+
+</form>
 			</div>
 		</section>
 	</div>

@@ -11,6 +11,12 @@ public class Project {
 	public Project() {
 	}
 
+	public Project(int projectId, String projectName) {
+		super();
+		this.projectId = projectId;
+		this.projectName = projectName;
+	}
+
 	// Getter & Setter
 	public int getProjectId() {
 		return projectId;
