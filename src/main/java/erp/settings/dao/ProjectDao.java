@@ -60,6 +60,29 @@ public class ProjectDao {
 			JdbcUtil.close(pstmt);
 		}
 	}
+	
+	//프로젝트 이름으로 프로젝트를 조회하는 메서드
+	public Project selectByName(Connection conn, String projectName) throws SQLException{
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			String sql = "SELECT * FROM PROJECT WHERE PROJECT_NAME = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, projectName);
+			rs = pstmt.executeQuery();
+			
+			if (rs.next()) {
+				Project project = new Project();
+				project.setProjectId(rs.getInt("PROJECT_ID"));
+				project.setProjectName(rs.getString("PROJECT_NAME"));
+				return project;
+			}
+			return null;
+		}finally {
+			JdbcUtil.close(rs);
+			JdbcUtil.close(pstmt);
+		}
+	}
 
 	// 프로젝트 목록 전체 조회
 	public List<Project> selectAll(Connection conn) throws SQLException {
