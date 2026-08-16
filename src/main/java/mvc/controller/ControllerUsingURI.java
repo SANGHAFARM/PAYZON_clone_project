@@ -9,6 +9,7 @@ import java.util.Properties;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,6 +17,11 @@ import javax.servlet.http.HttpServletResponse;
 import mvc.command.CommandHandler;
 import mvc.command.NullHandler;
 
+// 서블릿이 파일 업로드(multipart/form-data) 요청을 처리할 수 있도록 지정
+@MultipartConfig(
+	    maxFileSize = 1024 * 1024 * 5,       // 파일 1개당 최대 크기 제한 (5MB)
+	    maxRequestSize = 1024 * 1024 * 50    // 전체 폼 요청의 최대 크기 제한 (50MB)
+	)
 // 사용자의 모든 요청(URI)을 가장 먼저 받아 알맞은 핸들러로 분배해 주는 프론트 컨트롤러 서블릿 클래스
 public class ControllerUsingURI extends HttpServlet {
 

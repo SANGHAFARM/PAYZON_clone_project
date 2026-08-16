@@ -104,7 +104,7 @@ public class PayItemDao {
 
 		return item;
 	}
-	
+
 	// 지급항목 전체 목록과 연결된 비과세명, 근태항목명을 조인(Join)하여 조회 처리
 	public List<PayItemRow> selectPayItemRows(Connection conn) throws SQLException {
 		PreparedStatement pstmt = null;
@@ -113,8 +113,7 @@ public class PayItemDao {
 
 		try {
 			// PAY_ITEM을 기준으로 TAX_FREE_ITEM과 ATTENDANCE_ITEM을 LEFT JOIN 하는 쿼리 작성
-			String sql = "SELECT p.*, t.TAX_FREE_NAME, a.ATTEND_NAME "
-					+ "FROM PAY_ITEM p "
+			String sql = "SELECT p.*, t.TAX_FREE_NAME, a.ATTEND_NAME " + "FROM PAY_ITEM p "
 					+ "LEFT JOIN TAX_FREE_ITEM t ON p.TAX_FREE_CODE = t.TAX_FREE_CODE "
 					+ "LEFT JOIN ATTENDANCE_ITEM a ON p.LINK_ATTEND_ID = a.ATTENDANCE_ITEM_ID "
 					+ "ORDER BY p.PAY_ITEM_ID ASC";
@@ -132,14 +131,14 @@ public class PayItemDao {
 				row.setCalcMethod(rs.getString("CALC_METHOD"));
 				row.setRoundUnit(rs.getInt("ROUND_UNIT"));
 				row.setPayMethod(rs.getString("PAY_METHOD"));
-				
+
 				// 외래키 값이 0(또는 NULL)인 경우에 대한 안전한 매핑
 				int linkId = rs.getInt("LINK_ATTEND_ID");
 				row.setLinkAttendId(rs.wasNull() ? null : linkId);
-				
+
 				long bulkAmount = rs.getLong("BULK_PAY_AMOUNT");
 				row.setBulkPayAmount(rs.wasNull() ? null : bulkAmount);
-				
+
 				row.setUseYn(rs.getString("USE_YN"));
 				row.setTaxFreeName(rs.getString("TAX_FREE_NAME"));
 				row.setAttendName(rs.getString("ATTEND_NAME"));
@@ -160,7 +159,9 @@ public class PayItemDao {
 		ResultSet rs = null;
 
 		try {
-			String sql = "SELECT * FROM PAY_ITEM WHERE PAY_ITEM_ID = ?";
+			String sql = "SELECT p.*, t.TAX_FREE_NAME " + "FROM PAY_ITEM p "
+					+ "LEFT JOIN TAX_FREE_ITEM t ON p.TAX_FREE_CODE = t.TAX_FREE_CODE " + "WHERE p.PAY_ITEM_ID = ?";
+
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, payItemId);
 			rs = pstmt.executeQuery();
@@ -175,14 +176,17 @@ public class PayItemDao {
 				item.setCalcMethod(rs.getString("CALC_METHOD"));
 				item.setRoundUnit(rs.getInt("ROUND_UNIT"));
 				item.setPayMethod(rs.getString("PAY_METHOD"));
-				
+
 				int linkId = rs.getInt("LINK_ATTEND_ID");
 				item.setLinkAttendId(rs.wasNull() ? null : linkId);
-				
+
 				long bulkAmount = rs.getLong("BULK_PAY_AMOUNT");
 				item.setBulkPayAmount(rs.wasNull() ? null : bulkAmount);
-				
+
 				item.setUseYn(rs.getString("USE_YN"));
+
+				item.setTaxFreeName(rs.getString("TAX_FREE_NAME"));
+
 				return item;
 			}
 			return null;
@@ -198,11 +202,9 @@ public class PayItemDao {
 	public void update(Connection conn, PayItem item) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
-			String sql = "UPDATE PAY_ITEM SET "
-					+ "PAY_NAME = ?, TAX_TYPE = ?, TAX_FREE_CODE = ?, TAX_FREE_LIMIT = ?, "
+			String sql = "UPDATE PAY_ITEM SET " + "PAY_NAME = ?, TAX_TYPE = ?, TAX_FREE_CODE = ?, TAX_FREE_LIMIT = ?, "
 					+ "CALC_METHOD = ?, ROUND_UNIT = ?, PAY_METHOD = ?, LINK_ATTEND_ID = ?, "
-					+ "BULK_PAY_AMOUNT = ?, USE_YN = ? "
-					+ "WHERE PAY_ITEM_ID = ?";
+					+ "BULK_PAY_AMOUNT = ?, USE_YN = ? " + "WHERE PAY_ITEM_ID = ?";
 
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, item.getPayName());

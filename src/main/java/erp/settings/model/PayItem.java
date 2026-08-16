@@ -13,6 +13,7 @@ public class PayItem {
 	private String useYn;
 
 	private String taxFreeCode; // 비과세 코드 외래키
+	private String taxFreeName; // 비과세명을 임시로 담을 변수
 	private Long taxFreeLimit; // 비과세 한도
 	private Integer roundUnit; // 절사단위
 	private Integer linkAttendId; // 근태항목 외래키
@@ -52,6 +53,14 @@ public class PayItem {
 
 	public void setTaxFreeCode(String taxFreeCode) {
 		this.taxFreeCode = taxFreeCode;
+	}
+
+	public String getTaxFreeName() {
+		return taxFreeName;
+	}
+
+	public void setTaxFreeName(String taxFreeName) {
+		this.taxFreeName = taxFreeName;
 	}
 
 	public Long getTaxFreeLimit() {

@@ -67,7 +67,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		}
 
 		// 사원등록 1 프로토타입 JSP 화면으로 포워딩
-		return "/WEB-INF/view/employees/employee-register-1.jsp";
+		return "/WEB-INF/view/settings/employee-register-1.jsp";
 	}
 
 	// [POST] 폼 전송 시 'action' 파라미터에 따른 동적 로직 분기
@@ -160,7 +160,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		}
 
 		// 작업 완료 후 데이터 중복 전송(F5)을 막기 위해 현재 사원 번호를 달고 GET 화면으로 리다이렉트
-		res.sendRedirect(req.getContextPath() + "/employee/register.do?empId=" + empId);
+		res.sendRedirect(req.getContextPath() + "/settings/register1.do?empId=" + empId);
 		return null; // 포워딩 방지
 	}
 
@@ -239,7 +239,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 						: 0);
 
 		// [5. 두루누리 사회보험 지원]
-		// 화면에는 durunuriRate 하나의 라디오 버튼만 있으므로, v5 스키마에 맞춰 '통합(N)'으로 설정 후 양쪽에 동일 요율 적용
+		// 화면에는 durunuriRate 하나의 라디오 버튼만 있으므로, 스키마에 맞춰 '통합(N)'으로 설정 후 양쪽에 동일 요율 적용
 		String durunuriRateStr = req.getParameter("durunuriRate");
 		int duruRate = (durunuriRateStr != null && !durunuriRateStr.trim().isEmpty())
 				? Integer.parseInt(durunuriRateStr)
