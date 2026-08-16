@@ -19,7 +19,7 @@ import erp.settings.dao.DepartmentDao;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
-// 급여대장 목록과 사원별 상세 집계를 제공하는 서비스
+// 급여대장 목록과 사원별 상세 집계를 구성한다.
 public class PayrollRegisterService {
 
 	private static final int PAGE_SIZE = 10;

@@ -14,7 +14,7 @@ import erp.payroll.service.DayWorkerPayrollService;
 import erp.payroll.service.PayrollManagementService;
 import mvc.command.CommandHandler;
 
-// 일용직 급여입력 화면의 조회와 저장 요청을 처리하는 Handler
+// 일용직 급여입력 화면의 조회와 저장 요청을 처리한다.
 public class DayWorkerPayrollHandler implements CommandHandler {
 
 	private static final String VIEW = "/WEB-INF/view/payroll/day-worker-payroll-management.jsp";

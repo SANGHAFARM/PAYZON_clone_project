@@ -3,7 +3,7 @@ package erp.payroll.dto;
 import java.sql.Date;
 import java.util.List;
 
-// 4대보험 공제내역 화면 조회 결과
+// 4대보험 공제내역 화면의 조회 결과를 전달한다.
 public class FourInsurancePage {
 
 	private Date calculationStart;

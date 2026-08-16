@@ -10,7 +10,7 @@ import erp.employees.dto.EmployeePageInfo;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
-// 제증명서 발급대장 목록 조회와 삭제 트랜잭션을 처리하는 Service
+// 제증명서 발급대장 조회와 삭제 트랜잭션을 처리한다.
 public class CertificateRegisterService {
 	private final CertificateIssuanceDao certificateDao = CertificateIssuanceDao.getInstance();
 

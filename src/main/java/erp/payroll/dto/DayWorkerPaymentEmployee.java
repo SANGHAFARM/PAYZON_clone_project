@@ -3,7 +3,7 @@ package erp.payroll.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-// 일용직 급여입력 화면에 표시할 사원 정보
+// 일용직 급여입력 화면에 표시할 사원 정보를 전달한다.
 public class DayWorkerPaymentEmployee {
 
 	private int employeeId;

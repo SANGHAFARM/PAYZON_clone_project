@@ -22,7 +22,7 @@ import erp.settings.dao.DepartmentDao;
 import erp.settings.dao.JobPositionDao;
 import jdbc.connection.ConnectionProvider;
 
-// 여러 사원 상세 테이블을 모아 인사기록카드 한 화면의 데이터를 만드는 Service
+// 사원 상세 이력을 모아 인사기록카드 화면 데이터를 구성한다.
 public class EmployeeRecordCardService {
 	private final EmployeeDao employeeDao = EmployeeDao.getInstance();
 
@@ -64,7 +64,7 @@ public class EmployeeRecordCardService {
 	}
 
 	public static class EmployeeRecordCardData {
-		// Handler에 기록카드용 조회 결과들을 묶어서 반환하는 화면 데이터 객체
+		// 기록카드 조회 결과를 한 번에 반환한다.
 		private Employee employee;
 		private List<EmployeeListItem> employees;
 		private Object departments, positions, company, families, insurances, educations, careers, licenses, languages,

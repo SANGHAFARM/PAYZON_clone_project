@@ -13,7 +13,7 @@ import erp.payroll.dto.PayrollItemLedgerPage.PayrollItemLedgerTotals;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
-// 항목별 대장 조회 결과와 합계를 구성하는 서비스
+// 항목별 대장 조회 결과와 합계를 구성한다.
 public class PayrollItemLedgerService {
 
 	private PayrollItemLedgerDao ledgerDao = new PayrollItemLedgerDao();

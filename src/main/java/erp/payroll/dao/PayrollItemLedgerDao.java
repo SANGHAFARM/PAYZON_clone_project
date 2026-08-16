@@ -12,7 +12,7 @@ import java.util.Map;
 import erp.payroll.dto.PayrollItemLedgerPage.PayrollItemLedgerOption;
 import erp.payroll.dto.PayrollItemLedgerPage.PayrollItemLedgerRow;
 
-// 지급·공제 항목별 사원 금액을 조회하는 DAO
+// 지급·공제 항목별 사원 금액을 조회한다.
 public class PayrollItemLedgerDao {
 
 	public List<PayrollItemLedgerOption> selectItems(Connection conn) throws SQLException {

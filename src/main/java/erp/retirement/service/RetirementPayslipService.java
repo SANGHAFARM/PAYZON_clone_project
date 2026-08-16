@@ -44,10 +44,8 @@ public class RetirementPayslipService {
 			filterByEmployeeName(data.items, keyword);
 			data.company = CompanyDao.getInstance().selectById(conn, 1);
 
-			Integer selectedId = calculationId;
-			if (!containsCalculation(data.items, selectedId)) {
-				selectedId = data.items.isEmpty() ? null : data.items.get(0).getCalculationId();
-			}
+			// 최초 진입 시 첫 명세서를 자동 선택하지 않는다.
+			Integer selectedId = containsCalculation(data.items, calculationId) ? calculationId : null;
 			if (selectedId != null) {
 				data.selected = makePayslip(conn, selectedId);
 			}

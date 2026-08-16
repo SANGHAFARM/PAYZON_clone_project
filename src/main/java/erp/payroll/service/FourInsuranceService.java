@@ -10,7 +10,7 @@ import erp.payroll.dto.FourInsurancePage.FourInsuranceTotals;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
-// 4대보험 공제내역과 전체 합계를 제공하는 서비스
+// 4대보험 공제내역과 전체 합계를 구성한다.
 public class FourInsuranceService {
 
 	private FourInsuranceDao insuranceDao = new FourInsuranceDao();

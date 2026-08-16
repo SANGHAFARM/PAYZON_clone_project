@@ -1,6 +1,6 @@
 package erp.payroll.dto;
 
-// 급여입력 화면에 표시할 지급 또는 공제 항목
+// 급여입력 화면에 표시할 지급·공제 항목을 전달한다.
 public class PayrollManagementItem {
 
 	private int itemCode;

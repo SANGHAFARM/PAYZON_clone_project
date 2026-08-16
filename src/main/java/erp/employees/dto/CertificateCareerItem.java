@@ -1,6 +1,6 @@
 package erp.employees.dto;
 
-// 경력증명서의 근무기간 한 행을 표시하기 위한 DTO
+// 경력증명서에 표시할 근무기간 한 행을 전달한다.
 public class CertificateCareerItem {
 	private String joinDate;
 	private String retirementDate;

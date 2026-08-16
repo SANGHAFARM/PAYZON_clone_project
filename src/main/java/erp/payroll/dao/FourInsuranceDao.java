@@ -12,7 +12,7 @@ import java.util.Map;
 import erp.payroll.dto.FourInsurancePage.FourInsuranceDeduction;
 import erp.payroll.dto.FourInsurancePage;
 
-// 급여 차수별 4대보험 공제액을 조회하는 DAO
+// 급여 차수별 4대보험 공제액을 조회한다.
 public class FourInsuranceDao {
 
 	public FourInsurancePage selectPage(Connection conn, String year, String month, String sequence)

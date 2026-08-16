@@ -10,7 +10,7 @@ import erp.payroll.dto.EmployeePayrollHistoryPage;
 import erp.payroll.service.EmployeePayrollHistoryService;
 import mvc.command.CommandHandler;
 
-// 사원별 급여내역 조회 요청을 처리하는 Handler
+// 사원별 급여내역 조회 요청을 처리한다.
 public class EmployeePayrollHistoryHandler implements CommandHandler {
 
 	private static final String VIEW = "/WEB-INF/view/payroll/employees-payroll-history.jsp";

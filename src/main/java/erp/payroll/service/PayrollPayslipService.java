@@ -16,7 +16,7 @@ import erp.settings.model.Company;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
-// 급여 회차와 사원별 급여명세서를 구성하는 서비스
+// 급여 회차와 사원별 급여명세서를 구성한다.
 public class PayrollPayslipService {
 
 	private PayrollPayslipDao payslipDao = new PayrollPayslipDao();

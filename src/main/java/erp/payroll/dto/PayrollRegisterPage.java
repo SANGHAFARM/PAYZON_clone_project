@@ -7,7 +7,7 @@ import java.util.Map;
 
 import erp.settings.model.Department;
 
-// 급여대장 목록과 상세 화면에서 사용하는 조회 DTO를 묶는다.
+// 급여대장 목록과 상세 화면의 조회 결과를 묶어서 전달한다.
 public class PayrollRegisterPage {
 
 	public static class PayrollRegisterListPage {

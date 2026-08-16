@@ -34,18 +34,30 @@ public class RetirementBenefitHandler implements CommandHandler {
 		if (get && (uri.endsWith("/benefit.do") || uri.endsWith("/employee-search.do"))) {
 			return showPage(req, null);
 		}
+		if (post && uri.endsWith("/benefit.do") && "loadPay".equals(req.getParameter("action"))) {
+			return processLoadPay(req);
+		}
 		if (post && uri.endsWith("/new.do")) {
 			try {
 				List<Integer> employeeIds = integerValues(req.getParameterValues("employeeIds"));
+				List<Integer> newEmployeeIds = integerValues(req.getParameterValues("newEmployeeIds"));
+				Integer activeEmployeeId = parseInt(req.getParameter("activeEmployeeId"));
+				if (newEmployeeIds.isEmpty() && activeEmployeeId == null) {
+					throw new IllegalArgumentException("추가할 사원을 선택해주세요");
+				}
+				for (Integer newEmployeeId : newEmployeeIds) {
+					if (!employeeIds.contains(newEmployeeId)) {
+						employeeIds.add(newEmployeeId);
+					}
+				}
 				if (employeeIds.isEmpty()) {
 					throw new IllegalArgumentException("추가할 사원을 선택해주세요");
 				}
-				Integer activeEmployeeId = parseInt(req.getParameter("activeEmployeeId"));
-				if (activeEmployeeId == null || !employeeIds.contains(activeEmployeeId)) {
-					activeEmployeeId = employeeIds.get(0);
-				}
 				req.setAttribute("draftEmployeeIds", employeeIds);
-				return showPage(req, service.prepareNew(activeEmployeeId));
+				// 신규 추가 후에는 첫 사원을 자동 선택하지 않고, 행을 누른 경우에만 상세를 연다.
+				RetirementBenefitForm form = activeEmployeeId != null && employeeIds.contains(activeEmployeeId)
+						? service.prepareForManagement(activeEmployeeId) : null;
+				return showPage(req, form);
 			} catch (IllegalArgumentException e) {
 				req.setAttribute("message", e.getMessage());
 				return showPage(req, null);
@@ -61,15 +73,30 @@ public class RetirementBenefitHandler implements CommandHandler {
 			return processSave(req, res);
 		}
 		if (post && uri.endsWith("/delete-all.do")) {
+			List<Integer> draftEmployeeIds = integerValues(req.getParameterValues("employeeIds"));
+			if (!draftEmployeeIds.isEmpty()) {
+				// 신규 정산 임시 목록은 DB 삭제 없이 화면에서만 전체 제거한다.
+				req.setAttribute("draftEmployeeIds", new ArrayList<Integer>());
+				return showPage(req, null);
+			}
 			service.delete(null, true, parseInt(req.getParameter("paymentYear")));
 			redirectList(req, res);
 			return null;
 		}
 		if (post && uri.endsWith("/delete.do")) {
 			Integer calculationId = parseInt(req.getParameter("calculationId"));
-			if (calculationId == null) {
-				res.sendRedirect(req.getContextPath() + "/retirement/benefit.do");
-				return null;
+			List<Integer> draftEmployeeIds = integerValues(req.getParameterValues("employeeIds"));
+			if (!draftEmployeeIds.isEmpty()) {
+				// 선택한 임시 사원만 목록에서 제거하고 나머지는 그대로 유지한다.
+				Integer activeEmployeeId = parseInt(req.getParameter("activeEmployeeId"));
+				if (activeEmployeeId != null) {
+					draftEmployeeIds.remove(activeEmployeeId);
+				}
+				req.setAttribute("draftEmployeeIds", draftEmployeeIds);
+				return showPage(req, null);
+			}
+			if (calculationId == null || calculationId <= 0) {
+				return showPage(req, null);
 			}
 			service.delete(calculationId, false, null);
 			redirectList(req, res);
@@ -86,12 +113,25 @@ public class RetirementBenefitHandler implements CommandHandler {
 			form = readForm(req, true);
 			validateCalculationDates(form);
 			service.loadRecentSalaryEntries(form);
-			service.calculate(form);
-			req.setAttribute("message", "최근 3개월 급여내역을 불러왔습니다.");
+			if (hasSalaryHistory(form)) {
+				service.calculate(form);
+			} else {
+				// 조회 기간에 지급된 급여가 없을 때만 안내한다.
+				req.setAttribute("message", "급여내역이 없습니다.");
+			}
 		} catch (IllegalArgumentException e) {
 			req.setAttribute("message", e.getMessage());
 		}
 		return showPage(req, form);
+	}
+
+	private boolean hasSalaryHistory(RetirementBenefitForm form) {
+		for (RetirementIncomeEntry entry : form.getIncomeEntries()) {
+			if (entry.isSalaryData() && entry.getAmount() > 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private String processCalculate(HttpServletRequest req) {
@@ -100,6 +140,7 @@ public class RetirementBenefitHandler implements CommandHandler {
 			form = readForm(req, true);
 			validateCalculationDates(form);
 			service.calculate(form);
+			req.setAttribute("showCalculationResult", true);
 		} catch (IllegalArgumentException e) {
 			req.setAttribute("message", e.getMessage());
 		}
@@ -116,6 +157,10 @@ public class RetirementBenefitHandler implements CommandHandler {
 			return null;
 		} catch (IllegalArgumentException e) {
 			req.setAttribute("message", e.getMessage());
+			// 계산은 끝났지만 지급정보가 빠진 경우 결과 영역을 유지한다.
+			if (form != null && form.getTaxYear() > 0) {
+				req.setAttribute("showCalculationResult", true);
+			}
 			return showPage(req, form);
 		}
 	}
@@ -134,27 +179,33 @@ public class RetirementBenefitHandler implements CommandHandler {
 		Integer calculationId = parseInt(req.getParameter("calculationId"));
 		BenefitPageData data = service.getPage(year, calculationId,
 				employeeKeyword, parseInt(req.getParameter("departmentId")));
+		@SuppressWarnings("unchecked")
+		List<Integer> draftEmployeeIds = (List<Integer>) req.getAttribute("draftEmployeeIds");
+		if (draftEmployeeIds == null) {
+			draftEmployeeIds = integerValues(req.getParameterValues("employeeIds"));
+		}
 
 		req.setAttribute("paymentYears", service.getPaymentYears());
 		req.setAttribute("selectedYear", year);
 		boolean newRequest = req.getRequestURI().endsWith("/new.do");
-		boolean loadList = !newRequest && ("list".equals(req.getParameter("mode"))
+		// 신규 정산 임시 목록이 있으면 DB에 저장된 전체 목록을 섞지 않는다.
+		boolean loadList = !newRequest && draftEmployeeIds.isEmpty()
+				&& ("list".equals(req.getParameter("mode"))
 				|| calculationId != null || req.getParameter("result") != null
 				|| override != null);
 		req.setAttribute("retirementBenefits", loadList ? data.getBenefits() : java.util.Collections.emptyList());
 		req.setAttribute("selectableEmployees", data.getEmployees());
 		req.setAttribute("departments", data.getDepartments());
 		req.setAttribute("retirementBenefit", override == null ? data.getForm() : override);
-		@SuppressWarnings("unchecked")
-		List<Integer> draftEmployeeIds = (List<Integer>) req.getAttribute("draftEmployeeIds");
-		if (draftEmployeeIds != null) {
-			List<erp.employees.dto.EmployeeListItem> draftEmployees = new ArrayList<>();
-			for (erp.employees.dto.EmployeeListItem employee : data.getEmployees()) {
-				if (draftEmployeeIds.contains(employee.getEmployeeId())) {
-					draftEmployees.add(employee);
-				}
-			}
-			req.setAttribute("draftBenefitEmployees", draftEmployees);
+		RetirementBenefitForm displayedForm = override == null ? data.getForm() : override;
+		if (displayedForm != null && displayedForm.getCalculationId() > 0) {
+			// 저장된 정산을 수정할 때는 기존 계산 결과를 바로 표시한다.
+			req.setAttribute("showCalculationResult", true);
+		}
+		if (!draftEmployeeIds.isEmpty()) {
+			req.setAttribute("draftEmployeeIds", draftEmployeeIds);
+			req.setAttribute("draftBenefitEmployees", service.getEmployees(draftEmployeeIds));
+			req.setAttribute("draftBenefitForms", service.getLatestBenefits(draftEmployeeIds));
 		}
 		if (req.getAttribute("message") == null && "saved".equals(req.getParameter("result"))) {
 			req.setAttribute("message", "퇴직급여 내역을 저장했습니다.");

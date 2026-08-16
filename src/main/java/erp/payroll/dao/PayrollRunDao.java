@@ -12,7 +12,7 @@ import java.util.List;
 import erp.payroll.model.PayrollRun;
 import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
-// 월별 급여계산 회차 마스터 데이터베이스 접근(DAO) 클래스
+// 월별 급여계산 회차를 저장하고 조회한다.
 public class PayrollRunDao {
 
 	// 싱글톤 인스턴스 생성

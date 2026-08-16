@@ -13,7 +13,7 @@ import erp.employees.service.EmployeeListService.EmployeeListResult;
 import erp.employees.service.EmployeeSearchCondition;
 import mvc.command.CommandHandler;
 
-// 사원현황/관리 화면의 조회와 목록 설정 요청을 처리하는 Handler
+// 사원현황/관리 화면의 조회와 삭제 요청을 처리한다.
 public class EmployeeListHandler implements CommandHandler {
 
 	private static final String VIEW = "/WEB-INF/view/employees/employees-list.jsp";

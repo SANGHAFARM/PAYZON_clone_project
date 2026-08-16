@@ -11,7 +11,7 @@ import erp.payroll.dto.PayrollPayslipPage;
 import erp.payroll.service.PayrollPayslipService;
 import mvc.command.CommandHandler;
 
-// 급여명세서 회차와 사원 선택 요청을 처리하는 Handler
+// 급여명세서의 급여 회차와 사원 선택 요청을 처리한다.
 public class PayrollPayslipHandler implements CommandHandler {
 
 	private static final String VIEW = "/WEB-INF/view/payroll/payroll-payslip.jsp";

@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>퇴직급여명세서</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/retirement/retirement-payslip.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/retirement/retirement-payslip.css?v=20260816-1">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
 </head>
 <body>
@@ -54,9 +54,7 @@
         </aside>
 
         <section class="payslip-workspace">
-            <c:choose>
-                <c:when test="${not empty selectedPayslip}">
-                    <article class="retirement-document">
+            <article class="retirement-document">
                         <header class="payslip-document-title">
                             <div class="company-logo">
                                 <c:choose>
@@ -72,7 +70,7 @@
                             <table class="document-table employee-info-table"><tbody>
                             <tr><th>성명</th><td>${selectedPayslip.employeeName}</td><th>입사일</th><td>${selectedPayslip.joinDate}</td></tr>
                             <tr><th>부서</th><td>${selectedPayslip.departmentName}</td><th>퇴직일</th><td>${selectedPayslip.retirementDate}</td></tr>
-                            <tr><th>직위</th><td>${selectedPayslip.positionName}</td><th>근속일수</th><td><fmt:formatNumber value="${selectedPayslip.serviceDays}"/>일</td></tr>
+                            <tr><th>직위</th><td>${selectedPayslip.positionName}</td><th>근속일수</th><td><c:if test="${not empty selectedPayslip}"><fmt:formatNumber value="${selectedPayslip.serviceDays}"/>일</c:if></td></tr>
                             </tbody></table>
                         </section>
 
@@ -122,16 +120,22 @@
                         <footer class="payslip-document-footer">
                             <p>위 금액은 해당 사원의 퇴직금 정산액으로 정확히 영수함.</p>
                             <div class="document-date"><input name="issueYear" value="${issueYear}" maxlength="4">년 <input name="issueMonth" value="${issueMonth}" maxlength="2">월 <input name="issueDay" value="${issueDay}" maxlength="2">일</div>
-                            <div class="company-signature"><label><input type="checkbox" name="showCeo" value="Y" checked> 대표자 표기</label><div><strong>${company.cmpnName}</strong><span>${company.ceoTitle} ${company.ceoName}</span></div><div class="stamp-box"><c:choose><c:when test="${not empty company.stampImgPath}"><img src="${company.stampImgPath}" alt="회사 직인"></c:when><c:otherwise><span>회사 직인을<br>넣어주세요.</span></c:otherwise></c:choose></div></div>
+                            <div class="company-signature"><div><strong>${company.cmpnName}</strong><span>${company.ceoTitle} ${company.ceoName}</span></div><div class="stamp-box"><c:choose><c:when test="${not empty company.stampImgPath}"><img src="${company.stampImgPath}" alt="회사 직인"></c:when><c:otherwise><span>회사 직인을<br>넣어주세요.</span></c:otherwise></c:choose></div></div>
                             <table class="signature-table"><tbody><tr><td><div class="signature-party"><strong>근로자</strong><span>${selectedPayslip.employeeName}</span><em>인</em></div></td><td><div class="signature-party"><strong>사용자</strong><span>${company.ceoName}</span><em>인</em></div></td></tr></tbody></table>
                         </footer>
-                    </article>
-                </c:when>
-                <c:otherwise><div class="empty-row">왼쪽 목록에서 퇴직급여 내역을 선택하세요.</div></c:otherwise>
-            </c:choose>
+            </article>
         </section>
     </div>
 </main>
+<c:if test="${not empty retirementPayslipPopupMessage}">
+    <div class="retirement-payslip-alert" role="alertdialog" aria-modal="true" aria-labelledby="retirement-payslip-alert-message">
+        <a class="retirement-payslip-alert__backdrop" href="${pageContext.request.contextPath}/retirement/payslip.do?paymentYear=${selectedYear}" aria-label="안내 닫기"></a>
+        <div class="retirement-payslip-alert__panel">
+            <p id="retirement-payslip-alert-message"><c:out value="${retirementPayslipPopupMessage}" /></p>
+            <a href="${pageContext.request.contextPath}/retirement/payslip.do?paymentYear=${selectedYear}">확인</a>
+        </div>
+    </div>
+</c:if>
 <%@ include file="/WEB-INF/view/common/footer.jspf" %>
 </body>
 </html>

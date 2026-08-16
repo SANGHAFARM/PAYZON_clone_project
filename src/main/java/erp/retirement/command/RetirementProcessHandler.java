@@ -12,7 +12,7 @@ import erp.retirement.service.RetirementProcessService;
 import erp.retirement.service.RetirementProcessService.RetirementEmployeePage;
 import mvc.command.CommandHandler;
 
-// 사원 퇴직처리 화면의 목록 조회, 퇴직처리 및 처리취소 요청 Handler
+// 사원 퇴직처리 화면의 조회·처리·취소 요청을 처리한다.
 public class RetirementProcessHandler implements CommandHandler {
 	private static final String VIEW = "/WEB-INF/view/retirement/retirement-process.jsp";
 	private final RetirementProcessService retirementService = new RetirementProcessService();

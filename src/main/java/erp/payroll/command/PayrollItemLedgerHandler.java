@@ -10,7 +10,7 @@ import erp.payroll.dto.PayrollItemLedgerPage;
 import erp.payroll.service.PayrollItemLedgerService;
 import mvc.command.CommandHandler;
 
-// 항목별 대장 조회 요청을 처리하는 Handler
+// 항목별 대장 조회 요청을 처리한다.
 public class PayrollItemLedgerHandler implements CommandHandler {
 
 	private static final String VIEW = "/WEB-INF/view/payroll/payroll-item-ledger.jsp";

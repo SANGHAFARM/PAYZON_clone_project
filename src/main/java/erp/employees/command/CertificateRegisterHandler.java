@@ -12,7 +12,7 @@ import erp.employees.service.CertificateRegisterService;
 import erp.employees.service.CertificateRegisterService.CertificateRegisterResult;
 import mvc.command.CommandHandler;
 
-// 제증명서 발급대장의 검색, 페이징, 선택삭제 및 전체삭제 요청 Handler
+// 제증명서 발급대장의 조회와 삭제 요청을 처리한다.
 public class CertificateRegisterHandler implements CommandHandler {
 	private static final String VIEW = "/WEB-INF/view/employees/certificate-register.jsp";
 	private final CertificateRegisterService registerService = new CertificateRegisterService();

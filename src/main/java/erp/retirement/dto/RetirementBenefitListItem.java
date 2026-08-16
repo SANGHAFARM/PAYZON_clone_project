@@ -1,6 +1,6 @@
 package erp.retirement.dto;
 
-// 퇴직급여 입력/관리 상단 목록의 JOIN 조회 결과 DTO
+// 퇴직급여 입력/관리 목록의 조회 결과 한 행을 전달한다.
 public class RetirementBenefitListItem {
 	private int calculationId, employeeId, serviceDays;
 	private String paymentDate, settlementType, employeeName, positionName, departmentName,

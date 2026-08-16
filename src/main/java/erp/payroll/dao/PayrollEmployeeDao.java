@@ -10,7 +10,7 @@ import java.util.List;
 import erp.payroll.model.PayrollEmployee;
 import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
-// 사원별 급여결과 데이터베이스 접근(DAO) 클래스
+// 사원별 급여결과를 저장하고 조회한다.
 public class PayrollEmployeeDao {
 
     // 싱글톤 인스턴스 생성

@@ -12,7 +12,7 @@ import erp.employees.service.CertificateIssueService;
 import erp.employees.service.CertificateIssueService.CertificateIssueData;
 import mvc.command.CommandHandler;
 
-// 제증명서 발급 화면의 GET 조회와 POST 발급내역 저장을 처리하는 Handler
+// 제증명서 발급 화면의 조회와 발급 요청을 처리한다.
 public class CertificateIssueHandler implements CommandHandler {
 	private static final String VIEW = "/WEB-INF/view/employees/certificate-issue.jsp";
 	private final CertificateIssueService certificateService = new CertificateIssueService();

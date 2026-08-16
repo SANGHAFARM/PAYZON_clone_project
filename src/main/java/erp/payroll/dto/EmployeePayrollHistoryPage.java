@@ -3,7 +3,7 @@ package erp.payroll.dto;
 import java.util.List;
 import erp.settings.model.Department;
 
-// 사원별 급여내역 화면 조회 결과
+// 사원별 급여내역 화면의 조회 결과를 전달한다.
 public class EmployeePayrollHistoryPage {
 
 	private EmployeePayrollHistoryEmployee selectedEmployee;

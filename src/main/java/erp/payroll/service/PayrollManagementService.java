@@ -24,7 +24,7 @@ import erp.settings.dao.TaxFreeItemDao;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
-// 급여 회차와 사원별 지급·공제 내역을 관리하는 서비스
+// 급여 회차와 사원별 지급·공제 내역을 관리한다.
 public class PayrollManagementService {
 
 	private static final int EMPLOYEE_PAGE_SIZE = 10;

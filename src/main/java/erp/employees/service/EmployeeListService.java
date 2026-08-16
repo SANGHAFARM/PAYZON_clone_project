@@ -15,7 +15,7 @@ import jdbc.JdbcUtil;
 import erp.payroll.dao.PayrollEmployeeDao;
 import erp.retirement.dao.RetirementCalculationDao;
 
-// 사원 목록 조회와 상단 현황 집계를 함께 처리하는 Service
+// 사원 목록 조회와 현황 집계 및 삭제를 처리한다.
 public class EmployeeListService {
 	private final EmployeeDao employeeDao = EmployeeDao.getInstance();
 	private final CertificateIssuanceDao certificateIssuanceDao = CertificateIssuanceDao.getInstance();
@@ -66,7 +66,7 @@ public class EmployeeListService {
 	}
 
 	public static class EmployeeListResult {
-		// Handler에 여러 조회 결과를 한 번에 반환하기 위한 결과 객체
+		// 목록과 현황 집계 결과를 한 번에 반환한다.
 		private final List<EmployeeListItem> employees;
 		private final EmployeeSummary summary;
 		private final EmployeePageInfo pageInfo;

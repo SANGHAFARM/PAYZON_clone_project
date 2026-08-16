@@ -12,7 +12,7 @@ import java.util.List;
 import erp.retirement.model.RetirementIncomeEntry;
 import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
-// 퇴직급여 산정을 위한 급여내역 및 기타소득 데이터베이스 접근(DAO) 클래스
+// 퇴직급여 산정에 사용할 급여내역과 기타소득을 저장하고 조회한다.
 public class RetirementIncomeEntryDao {
 
 	// 싱글톤 인스턴스 생성
@@ -65,8 +65,7 @@ public class RetirementIncomeEntryDao {
 		}
 	}
 
-	// 특정 퇴직정산에 포함된 산정자료 목록 조회
-	// 정산ID(RETIREMENT_CALCULATION_ID)를 기준으로 전체 반환
+	// 특정 퇴직정산에 포함된 산정자료를 조회한다.
 	public List<RetirementIncomeEntry> selectByCalcId(Connection conn, int calcId) throws SQLException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -88,8 +87,7 @@ public class RetirementIncomeEntryDao {
 		}
 	}
 
-	// 퇴직급여 산정자료 삭제
-	// 기본키를 기준으로 해당 데이터 삭제
+	// 기본키로 퇴직급여 산정자료를 삭제한다.
 	public int delete(Connection conn, int entryId) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
@@ -102,7 +100,7 @@ public class RetirementIncomeEntryDao {
 		}
 	}
 
-	// ResultSet 데이터를 RetirementIncomeEntry 객체로 변환
+	// 조회 결과를 퇴직급여 산정자료 객체로 변환한다.
 	private RetirementIncomeEntry makeEntryFromResultSet(ResultSet rs) throws SQLException {
 		RetirementIncomeEntry entry = new RetirementIncomeEntry();
 

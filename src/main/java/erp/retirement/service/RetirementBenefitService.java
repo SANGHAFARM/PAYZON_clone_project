@@ -8,7 +8,9 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import erp.employees.dao.EmployeeDao;
 import erp.employees.dto.EmployeeListItem;
@@ -97,6 +99,54 @@ public class RetirementBenefitService {
 		return condition;
 	}
 
+	// 저장된 정산이 있으면 최근 내역을 불러오고, 없으면 신규 정산 화면을 준비한다.
+	public RetirementBenefitForm prepareForManagement(int employeeId) {
+		try (Connection conn = ConnectionProvider.getConnection()) {
+			List<RetirementCalculation> calculations = calculationDao.selectByEmpId(conn, employeeId);
+			if (calculations.isEmpty()) {
+				return prepareNew(employeeId);
+			}
+
+			RetirementCalculation calculation = calculations.get(0);
+			RetirementBenefitForm form = fromModel(calculation);
+			int calculationId = calculation.getRetirementCalculationId();
+			form.getIncomeEntries().addAll(incomeEntryDao.selectByCalcId(conn, calculationId));
+			form.getTaxDeferrals().addAll(taxDeferralDao.selectByCalcId(conn, calculationId));
+			return form;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	// 신규 정산 목록에 이미 추가한 사원을 검색 조건과 관계없이 다시 조회한다.
+	public List<EmployeeListItem> getEmployees(List<Integer> employeeIds) {
+		try (Connection conn = ConnectionProvider.getConnection()) {
+			EmployeeSearchCondition condition = createEmployeeCondition("", null);
+			condition.setPageSize(10000);
+			List<EmployeeListItem> employees = employeeDao.selectListByCondition(conn, condition);
+			employees.removeIf(employee -> !employeeIds.contains(employee.getEmployeeId()));
+			return employees;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	// 임시 목록에 담긴 사원별 최근 정산을 상단 목록 표시용으로 조회한다.
+	public Map<Integer, RetirementBenefitForm> getLatestBenefits(List<Integer> employeeIds) {
+		try (Connection conn = ConnectionProvider.getConnection()) {
+			Map<Integer, RetirementBenefitForm> benefits = new HashMap<>();
+			for (Integer employeeId : employeeIds) {
+				List<RetirementCalculation> calculations = calculationDao.selectByEmpId(conn, employeeId);
+				if (!calculations.isEmpty()) {
+					benefits.put(employeeId, fromModel(calculations.get(0)));
+				}
+			}
+			return benefits;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public RetirementBenefitForm prepareNew(int employeeId) {
 		try (Connection conn = ConnectionProvider.getConnection()) {
 			Employee employee = employeeDao.selectById(conn, employeeId);
@@ -107,6 +157,8 @@ public class RetirementBenefitService {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			RetirementBenefitForm form = new RetirementBenefitForm();
 			form.setEmployeeId(employeeId);
+			// 재직 사원은 중간정산, 퇴직 사원은 퇴직정산으로 고정한다.
+			form.setSettlementType("퇴직".equals(employee.getStatus()) ? "RETIREMENT" : "INTERIM");
 			if (employee.getJoinDate() != null) {
 				form.setStartDate(dateFormat.format(employee.getJoinDate()));
 			}
@@ -180,7 +232,10 @@ public class RetirementBenefitService {
 				salaryTotal += entry.getAmount();
 				salaryDays += entry.getCalcDays() == null ? 0 : Math.round(entry.getCalcDays());
 			} else {
-				otherIncomeTotal += entry.getThreeMonthAmount();
+				// 최근 1년 기타소득 중 평균임금 산정에 반영할 3개월분을 환산한다.
+				long threeMonthAmount = Math.max(0, entry.getAmount()) * 3 / 12;
+				entry.setThreeMonthAmount(threeMonthAmount);
+				otherIncomeTotal += threeMonthAmount;
 			}
 		}
 
@@ -188,25 +243,99 @@ public class RetirementBenefitService {
 		form.setSalaryDaysTotal(salaryDays);
 		form.setThreeMonthTotal(salaryTotal + otherIncomeTotal);
 		form.setDailyAverage(salaryDays == 0 ? 0 : form.getThreeMonthTotal() / salaryDays);
+		// 별도 통상임금 자료가 없으므로 프로젝트에서는 산정된 평균임금을 기준임금으로 사용한다.
+		form.setDailyOrdinary(form.getDailyAverage());
 	}
 
 	private void calculatePayment(RetirementBenefitForm form, int serviceDays) {
 		long dailyBase = Math.max(form.getDailyAverage(), form.getDailyOrdinary());
-		long retirementIncome = form.getRetirementIncome();
-		if (retirementIncome <= 0) {
-			retirementIncome = Math.round(dailyBase * 30.0 * serviceDays / 365.0)
-					+ form.getCompensation() + form.getDismissalAllowance();
-		}
+		long retirementIncome = Math.round(dailyBase * 30.0 * serviceDays / 365.0)
+				+ Math.max(0, form.getCompensation()) + Math.max(0, form.getDismissalAllowance());
+		long taxablePayment = Math.max(0, retirementIncome - Math.max(0, form.getTaxFreeRetirement()));
+		int serviceYears = Math.max(1, (int) Math.ceil(serviceDays / 365.0));
 
-		long taxablePayment = Math.max(0, retirementIncome - form.getTaxFreeRetirement());
-		long withholdingTax = form.getIncomeTax() + form.getLocalIncomeTax()
-				+ form.getRuralTax() + form.getOtherDeduction()
-				- form.getDeferredIncomeTax() - form.getDeferredLocalTax();
+		// 퇴직소득세는 근속연수공제와 환산급여공제를 차례로 적용해 계산한다.
+		long serviceDeduction = calculateServiceDeduction(serviceYears);
+		long convertedPay = Math.max(0, taxablePayment - serviceDeduction) * 12 / serviceYears;
+		long taxBase = Math.max(0, convertedPay - calculateConvertedPayDeduction(convertedPay));
+		long calculatedTax = floorToTen(calculateProgressiveTax(taxBase) * serviceYears / 12);
+		long incomeTax = floorToTen(Math.max(0,
+				calculatedTax - Math.max(0, form.getPrepaidTax()) - Math.max(0, form.getTaxCredit())));
+		long localIncomeTax = floorToTen(incomeTax / 10);
+
+		long deferralAmount = getDeferralAmount(form);
+		double deferralRate = retirementIncome == 0 ? 0
+				: Math.min(1.0, (double) deferralAmount / retirementIncome);
+		long deferredIncomeTax = floorToTen(Math.round(incomeTax * deferralRate));
+		long deferredLocalTax = floorToTen(Math.round(localIncomeTax * deferralRate));
+		long withholdingTax = Math.max(0, incomeTax + localIncomeTax
+				- deferredIncomeTax - deferredLocalTax);
 
 		form.setRetirementIncome(retirementIncome);
 		form.setTaxablePayment(taxablePayment);
-		form.setWithholdingTax(Math.max(0, withholdingTax));
-		form.setNetPayment(Math.max(0, taxablePayment - form.getWithholdingTax()));
+		form.setCalculatedTax(calculatedTax);
+		form.setIncomeTax(incomeTax);
+		form.setLocalIncomeTax(localIncomeTax);
+		form.setDeferredIncomeTax(deferredIncomeTax);
+		form.setDeferredLocalTax(deferredLocalTax);
+		form.setRuralTax(0);
+		form.setOtherDeduction(0);
+		form.setWithholdingTax(withholdingTax);
+		// 연금계좌 이체액은 현금 수령액에서 제외하되 퇴직급여 자체에는 포함한다.
+		form.setNetPayment(Math.max(0, retirementIncome - Math.min(retirementIncome, deferralAmount)
+				- withholdingTax));
+	}
+
+	private long calculateServiceDeduction(int serviceYears) {
+		if (serviceYears <= 5) {
+			return serviceYears * 1000000L;
+		}
+		if (serviceYears <= 10) {
+			return 5000000L + (serviceYears - 5) * 2000000L;
+		}
+		if (serviceYears <= 20) {
+			return 15000000L + (serviceYears - 10) * 2500000L;
+		}
+		return 40000000L + (serviceYears - 20) * 3000000L;
+	}
+
+	private long calculateConvertedPayDeduction(long convertedPay) {
+		if (convertedPay <= 8000000L) {
+			return convertedPay;
+		}
+		if (convertedPay <= 70000000L) {
+			return 8000000L + Math.round((convertedPay - 8000000L) * 0.60);
+		}
+		if (convertedPay <= 100000000L) {
+			return 45200000L + Math.round((convertedPay - 70000000L) * 0.55);
+		}
+		if (convertedPay <= 300000000L) {
+			return 61700000L + Math.round((convertedPay - 100000000L) * 0.45);
+		}
+		return 151700000L + Math.round((convertedPay - 300000000L) * 0.35);
+	}
+
+	private long calculateProgressiveTax(long taxBase) {
+		if (taxBase <= 14000000L) return Math.round(taxBase * 0.06);
+		if (taxBase <= 50000000L) return Math.round(taxBase * 0.15 - 1260000L);
+		if (taxBase <= 88000000L) return Math.round(taxBase * 0.24 - 5760000L);
+		if (taxBase <= 150000000L) return Math.round(taxBase * 0.35 - 15440000L);
+		if (taxBase <= 300000000L) return Math.round(taxBase * 0.38 - 19940000L);
+		if (taxBase <= 500000000L) return Math.round(taxBase * 0.40 - 25940000L);
+		if (taxBase <= 1000000000L) return Math.round(taxBase * 0.42 - 35940000L);
+		return Math.round(taxBase * 0.45 - 65940000L);
+	}
+
+	private long getDeferralAmount(RetirementBenefitForm form) {
+		long total = 0;
+		for (RetirementTaxDeferral deferral : form.getTaxDeferrals()) {
+			total += Math.max(0, deferral.getDepositAmt());
+		}
+		return total;
+	}
+
+	private long floorToTen(long amount) {
+		return Math.max(0, amount / 10 * 10);
 	}
 
 	public int save(RetirementBenefitForm form) {
