@@ -159,11 +159,12 @@
 			<li class="main-nav__item"><a class="main-nav__trigger"
 				href="${pageContext.request.contextPath}/example.do?menu=statistics">급여통계</a>
 				<ul class="dropdown-menu">
+					
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=annual-total">연도별
+						href="${pageContext.request.contextPath}/payroll-stats/annual.do">연도별
 							전체급여 통계</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=monthly-total">월별
+						href="${pageContext.request.contextPath}/payroll-stats/monthly.do">월별
 							전체급여 통계</a></li>
 					<li><a class="dropdown-menu__link"
 						href="${pageContext.request.contextPath}/example.do?menu=annual-personal">연도별
