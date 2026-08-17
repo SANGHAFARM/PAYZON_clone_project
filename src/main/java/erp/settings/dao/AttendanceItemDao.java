@@ -53,14 +53,28 @@ public class AttendanceItemDao {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			String sql = "SELECT * FROM ATTENDANCE_ITEM ORDER BY ATTENDANCE_GROUP_ID ASC, ATTENDANCE_ITEM_ID ASC";
+			// 그룹 테이블(G)과 휴가 테이블(L)을 LEFT JOIN
+			String sql = "SELECT " + "    A.*, " + "    G.GROUP_NAME, " + "    L.ITEM_NAME AS LEAVE_NAME " // 휴가항목 이름에
+																											// LEAVE_NAME
+																											// 이라는 별칭 부여
+					+ "FROM ATTENDANCE_ITEM A "
+					+ "LEFT JOIN ATTENDANCE_GROUP G ON A.ATTENDANCE_GROUP_ID = G.ATTENDANCE_GROUP_ID "
+					+ "LEFT JOIN LEAVE_ITEM L ON A.DEDUCT_LEAVE_ID = L.LEAVE_ITEM_ID "
+					+ "ORDER BY A.ATTENDANCE_GROUP_ID ASC, A.ATTENDANCE_ITEM_ID ASC";
 
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 
 			List<AttendanceItem> result = new ArrayList<>();
 			while (rs.next()) {
-				result.add(makeItemFromResultSet(rs));
+				// 기존 도우미 메서드로 기본 데이터를 세팅
+				AttendanceItem item = makeItemFromResultSet(rs);
+
+				//  조인(JOIN)해서 가져온 이름 2개를 추가
+				item.setGroupName(rs.getString("GROUP_NAME"));
+				item.setLeaveName(rs.getString("LEAVE_NAME"));
+
+				result.add(item);
 			}
 			return result;
 		} finally {
@@ -99,42 +113,40 @@ public class AttendanceItemDao {
 
 		return item;
 	}
-	
+
 	// 기존에 등록된 근태항목 정보 수정 처리
 	public void update(Connection conn, AttendanceItem item) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
 			// 근태항목 정보 갱신을 위한 UPDATE 쿼리문 작성
-			String sql = "UPDATE ATTENDANCE_ITEM "
-					+ "SET ATTEND_NAME = ?, UNIT_TYPE = ?, ATTENDANCE_GROUP_ID = ?, "
-					+ "DEDUCT_LEAVE_ID = ?, WORK_HOUR_TYPE = ?, USE_YN = ? "
-					+ "WHERE ATTENDANCE_ITEM_ID = ?";
-			
+			String sql = "UPDATE ATTENDANCE_ITEM " + "SET ATTEND_NAME = ?, UNIT_TYPE = ?, ATTENDANCE_GROUP_ID = ?, "
+					+ "DEDUCT_LEAVE_ID = ?, WORK_HOUR_TYPE = ?, USE_YN = ? " + "WHERE ATTENDANCE_ITEM_ID = ?";
+
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, item.getAttendName());
 			pstmt.setString(2, item.getUnitType());
 			pstmt.setInt(3, item.getAttendanceGroupId());
-			
+
 			// 외래키인 휴가공제 식별 번호가 0보다 크면 정수 할당, 아니면 DB에 NULL 세팅
 			if (item.getDeductLeaveId() > 0) {
 				pstmt.setInt(4, item.getDeductLeaveId());
 			} else {
 				pstmt.setNull(4, java.sql.Types.NUMERIC);
 			}
-			
+
 			// 근로시간연계 속성이 존재하면 문자열 할당, 아니면 DB에 NULL 세팅
 			if (item.getWorkHourType() != null && !item.getWorkHourType().trim().isEmpty()) {
 				pstmt.setString(5, item.getWorkHourType());
 			} else {
 				pstmt.setNull(5, java.sql.Types.VARCHAR);
 			}
-			
+
 			pstmt.setString(6, item.getUseYn());
 			pstmt.setInt(7, item.getAttendanceItemId()); // 식별 가능한 기본키 매핑
-			
+
 			// 쿼리 실행 수행
 			pstmt.executeUpdate();
-			
+
 		} finally {
 			// 자원 누수 방지를 위한 객체 반환 처리
 			JdbcUtil.close(pstmt);
@@ -147,13 +159,13 @@ public class AttendanceItemDao {
 		try {
 			// 기본키 기반 레코드 삭제 쿼리문 작성
 			String sql = "DELETE FROM ATTENDANCE_ITEM WHERE ATTENDANCE_ITEM_ID = ?";
-			
+
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, attendItemId);
-			
+
 			// 쿼리 실행 수행
 			pstmt.executeUpdate();
-			
+
 		} finally {
 			// 자원 누수 방지를 위한 객체 반환 처리
 			JdbcUtil.close(pstmt);

@@ -12,6 +12,9 @@ public class AttendanceItem {
 	private Integer deductLeaveId; // 휴가공제 외래키 (선택적 FK)
 	private String workHourType; // 근로시간연계
 
+	private String groupName;
+	private String leaveName;
+
 	public AttendanceItem() {
 	}
 
@@ -75,5 +78,21 @@ public class AttendanceItem {
 
 	public void setUseYn(String useYn) {
 		this.useYn = useYn;
+	}
+
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+
+	public String getLeaveName() {
+		return leaveName;
+	}
+
+	public void setLeaveName(String leaveName) {
+		this.leaveName = leaveName;
 	}
 }
