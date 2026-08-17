@@ -178,6 +178,20 @@
 	border-right: 1px solid #c9d7e5;
 }
 
+/* 사원 선택 모달 테이블 스크롤 처리 */
+.employee-modal__table-wrap {
+    max-height: 400px; /* 원하는 높이로 조절 가능 */
+    overflow-y: auto;  /* 내용이 넘치면 세로 스크롤 생성 */
+}
+
+/* 스크롤할 때 테이블 제목(thead)은 위에 고정되게 만들면 더 좋습니다 */
+.employee-modal__table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa; /* 헤더 배경색에 맞게 조정 */
+    z-index: 1;
+}
+
 .composition-summary > div:last-child { border-right: 0; }
 .composition-summary span { color: #526a80; font-weight: 700; }
 .composition-summary strong { color: #173f65; font-size: 14px; }
