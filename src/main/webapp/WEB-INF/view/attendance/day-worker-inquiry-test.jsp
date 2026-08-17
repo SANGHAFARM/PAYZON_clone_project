@@ -38,16 +38,23 @@
 					<div class="detail-layout">
 						<form class="detail-filter" method="get">
 							<input type="hidden" name="view" value="detail">
+							
+							<c:if test="${not empty dateError}">
+        <div style="color: red; font-size: 13px; margin-bottom: 10px; grid-column: 1 / -1;">
+            시작일이 종료일보다 늦을 수 없습니다. 올바른 날짜를 선택해주세요.
+        </div>
+    </c:if>
+							
 							<div class="filter-field">
+
 								<span>근무일자</span>
 								<div class="date-range">
-									<input type="date" name="startDate" value="${param.startDate}"><i>~</i><input
-										type="date" name="endDate" value="${param.endDate}">
+									<input type="date" name="startDate" value="${startDate}"><i>~</i><input
+										type="date" name="endDate" value="${endDate}">
 								</div>
 							</div>
 							<label class="filter-field"><span>성명</span><input
-								name="employeeName"
-								value="<c:out value='${param.empNameKr}' />"
+								name="empNameKr" value="<c:out value='${param.empNameKr}' />"
 								placeholder="성명을 입력하세요."></label> <label class="filter-field"><span>부서</span>
 								<select name="departmentId">
 									<option value="">전체 부서</option>
@@ -57,7 +64,7 @@
 												value="${department.departmentName}" /></option>
 									</c:forEach>
 								</select></label> <label class="filter-field"><span>현장/프로젝트</span> <select
-									name="projectCode">
+									name="projectId">
 									<option value="">전체 현장/프로젝트</option>
 									<c:forEach var="project" items="${projects}">
 										<option value="${project.projectId}"
@@ -232,19 +239,22 @@
 							<dl>
 								<div>
 									<dt>근무자</dt>
-									<dd style="text-align: right !important; display: block !important;">
+									<dd
+										style="text-align: right !important; display: block !important;">
 										<c:out value="${employee.empNameKr}" />
 									</dd>
 								</div>
 								<div>
 									<dt>현장/프로젝트</dt>
-									<dd style="text-align: right !important; display: block !important;">
+									<dd
+										style="text-align: right !important; display: block !important;">
 										<c:out value="${work.projectName}" />
 									</dd>
 								</div>
 								<div>
 									<dt>근무일자</dt>
-									<dd style="text-align: right !important; display: block !important;">
+									<dd
+										style="text-align: right !important; display: block !important;">
 										<c:out value="${work.workDate}" />
 									</dd>
 								</div>
