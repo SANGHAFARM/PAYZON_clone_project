@@ -1,6 +1,6 @@
 package erp.attendance.dto;
 
-import java.util.List;
+import java.util.Map;
 
 //일용직 근무 월별 조회 결과를 담을 클래스
 public class DailyWorkListDto {
@@ -9,21 +9,22 @@ public class DailyWorkListDto {
 	private String empNo;
 	private String empNameKr;
 	private String departmentName;
-	private List<Integer> days; 
+	private Map<Integer, DailyWorkRecordDto> workDayMap;
 	private int totalDays;
 	private long totalIncomeTax;
 	private long totalLocalIncomeTax;
 	private long totalActualPay;
 	public DailyWorkListDto() {
 	}
-	public DailyWorkListDto(String empType, String empNo, String empNameKr, String departmentName, List<Integer> days,
-			int totalDays, long totalIncomeTax, long totalLocalIncomeTax, long totalActualPay) {
+	public DailyWorkListDto(String empType, String empNo, String empNameKr, String departmentName,
+			Map<Integer, DailyWorkRecordDto> workDayMap, int totalDays, long totalIncomeTax, long totalLocalIncomeTax,
+			long totalActualPay) {
 		super();
 		this.empType = empType;
 		this.empNo = empNo;
 		this.empNameKr = empNameKr;
 		this.departmentName = departmentName;
-		this.days = days;
+		this.workDayMap = workDayMap;
 		this.totalDays = totalDays;
 		this.totalIncomeTax = totalIncomeTax;
 		this.totalLocalIncomeTax = totalLocalIncomeTax;
@@ -53,11 +54,11 @@ public class DailyWorkListDto {
 	public void setDepartmentName(String departmentName) {
 		this.departmentName = departmentName;
 	}
-	public List<Integer> getDays() {
-		return days;
+	public Map<Integer, DailyWorkRecordDto> getWorkDayMap() {
+		return workDayMap;
 	}
-	public void setDays(List<Integer> days) {
-		this.days = days;
+	public void setWorkDayMap(Map<Integer, DailyWorkRecordDto> workDayMap) {
+		this.workDayMap = workDayMap;
 	}
 	public int getTotalDays() {
 		return totalDays;
@@ -65,8 +66,11 @@ public class DailyWorkListDto {
 	public void setTotalDays(int totalDays) {
 		this.totalDays = totalDays;
 	}
-	public double getTotalIncomeTax() {
+	public long getTotalIncomeTax() {
 		return totalIncomeTax;
+	}
+	public void setTotalIncomeTax(long totalIncomeTax) {
+		this.totalIncomeTax = totalIncomeTax;
 	}
 	public long getTotalLocalIncomeTax() {
 		return totalLocalIncomeTax;
@@ -79,9 +83,6 @@ public class DailyWorkListDto {
 	}
 	public void setTotalActualPay(long totalActualPay) {
 		this.totalActualPay = totalActualPay;
-	}
-	public void setTotalIncomeTax(long totalIncomeTax) {
-		this.totalIncomeTax = totalIncomeTax;
 	}
 	
 	

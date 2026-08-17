@@ -7,7 +7,9 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import erp.attendance.dto.DailyWorkDetailDto;
 import erp.attendance.dto.DailyWorkListDto;
@@ -84,7 +86,7 @@ public class DailyWorkRecordDao {
 				+ "LEFT JOIN DEPARTMENT d ON e.DEPARTMENT_ID = d.department_id "
 				+ "WHERE dwr.work_date BETWEEN TO_DATE(?, 'YYYYMMDD') AND TO_DATE(?, 'YYYYMMDD') "
 				+ "AND (? IS NULL OR d.department_id = ?) " + "AND (? IS NULL OR e.job_position_id = ?) "
-				+ "GROUP BY e.EMP_TYPE, e.EMP_NO, e.EMP_NAME_KR, d.department_name ";
+				+ "GROUP BY e.EMPLOYEE_ID, e.EMP_TYPE, e.EMP_NO, e.EMP_NAME_KR, d.department_name ";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			int year = req.getYear();
 			int month = req.getMonth();
@@ -112,43 +114,79 @@ public class DailyWorkRecordDao {
 
 	}
 
-	// (3) 근무일자/성명/부서/현장 상세 (상세조회에서 사용)
-	public List<DailyWorkDetailDto> selectDetailByRequest(Connection conn, DailyWorkDetailRequest req, int firstRow,
-			int endRow) throws SQLException {
-		String sql = "select * from (select rownum as rnum, a.* from (SELECT p.project_name, dwr.work_date, e.employee_id, e.emp_name_kr, d.department_name, dwr.daily_pay, "
-				+ "dwr.pay_rate, dwr.income_tax, dwr.local_income_tax, dwr.actual_pay " + "FROM daily_work_record dwr "
-				+ "LEFT JOIN employee e ON dwr.employee_id = e.employee_id "
-				+ "LEFT JOIN department d ON e.department_id = d.department_id "
-				+ "LEFT JOIN project p ON dwr.project_id = p.project_id "
-				+ "WHERE (? IS NULL OR dwr.work_date BETWEEN TO_DATE(?, 'YYYYMMDD') AND TO_DATE(?, 'YYYYMMDD')) "
-				+ "AND (? IS NULL OR e.emp_name_kr LIKE '%' || ? || '%') " + "AND (? IS NULL OR d.department_id = ?) "
-				+ "AND (? IS NULL OR p.project_id = ?) "
-				+ "ORDER BY dwr.work_date desc) a where rownum <= ?)where rnum >= ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-			String startStr = (req.getStartDate() != null) ? sdf.format(req.getStartDate()) : null;
-			String endStr = (req.getEndDate() != null) ? sdf.format(req.getEndDate()) : null;
+	/*
+	 * // (3) 근무일자/성명/부서/현장 상세 (상세조회에서 사용) public List<DailyWorkDetailDto>
+	 * selectDetailByRequest(Connection conn, DailyWorkDetailRequest req, int
+	 * firstRow, int endRow) throws SQLException { String sql =
+	 * "select * from (select rownum as rnum, a.* from (SELECT p.project_name, dwr.work_date, e.employee_id, e.emp_name_kr, d.department_name, dwr.daily_pay, "
+	 * + "dwr.pay_rate, dwr.income_tax, dwr.local_income_tax, dwr.actual_pay " +
+	 * "FROM daily_work_record dwr " +
+	 * "LEFT JOIN employee e ON dwr.employee_id = e.employee_id " +
+	 * "LEFT JOIN department d ON e.department_id = d.department_id " +
+	 * "LEFT JOIN project p ON dwr.project_id = p.project_id " +
+	 * "WHERE (? IS NULL OR dwr.work_date BETWEEN TO_DATE(?, 'YYYYMMDD') AND TO_DATE(?, 'YYYYMMDD')) "
+	 * + "AND (? IS NULL OR e.emp_name_kr LIKE '%' || ? || '%') " +
+	 * "AND (? IS NULL OR d.department_id = ?) " +
+	 * "AND (? IS NULL OR p.project_id = ?) " +
+	 * "ORDER BY dwr.work_date desc) a where rownum <= ?)where rnum >= ?"; try
+	 * (PreparedStatement pstmt = conn.prepareStatement(sql)) { SimpleDateFormat sdf
+	 * = new SimpleDateFormat("yyyyMMdd"); String startStr = (req.getStartDate() !=
+	 * null) ? sdf.format(req.getStartDate()) : null; String endStr =
+	 * (req.getEndDate() != null) ? sdf.format(req.getEndDate()) : null;
+	 * 
+	 * pstmt.setString(1, startStr); pstmt.setString(2, startStr);
+	 * pstmt.setString(3, endStr);
+	 * 
+	 * pstmt.setString(4, req.getEmpNameKr()); pstmt.setString(5,
+	 * req.getEmpNameKr());
+	 * 
+	 * setIntOrNull(pstmt, 6, 7, req.getDepartmentId()); setIntOrNull(pstmt, 8, 9,
+	 * req.getProjectId());
+	 * 
+	 * pstmt.setInt(10, endRow); pstmt.setInt(11, firstRow);
+	 * List<DailyWorkDetailDto> list = new ArrayList<>(); try (ResultSet rs =
+	 * pstmt.executeQuery()) { while (rs.next()) {
+	 * list.add(convertDailyWorkDetailDto(rs)); } } return list; } }
+	 */
+	
+	// (3) 근무일자/성명/부서/현장 상세 (상세조회에서 사용 - 페이징 제거)
+	public List<DailyWorkDetailDto> selectDetailByRequest(Connection conn, DailyWorkDetailRequest req) throws SQLException {
+		String sql = "SELECT p.project_name AS PROJECT_NAME, dwr.work_date AS WORK_DATE, e.emp_no AS EMP_NO, e.emp_name_kr AS EMP_NAME_KR, "
+	            + "d.department_name AS DEPARTMENT_NAME, dwr.daily_pay AS DAILY_PAY, dwr.pay_rate AS PAY_RATE, "
+	            + "dwr.income_tax AS INCOME_TAX, dwr.local_income_tax AS LOCAL_INCOME_TAX, dwr.actual_pay AS ACTUAL_PAY " 
+	            + "FROM daily_work_record dwr "
+	            + "LEFT JOIN employee e ON dwr.employee_id = e.employee_id "
+	            + "LEFT JOIN department d ON e.department_id = d.department_id "
+	            + "LEFT JOIN project p ON dwr.project_id = p.project_id "
+	            + "WHERE (? IS NULL OR dwr.work_date BETWEEN TO_DATE(?, 'YYYYMMDD') AND TO_DATE(?, 'YYYYMMDD')) "
+	            + "AND (? IS NULL OR e.emp_name_kr LIKE '%' || ? || '%') " 
+	            + "AND (? IS NULL OR d.department_id = ?) "
+	            + "AND (? IS NULL OR p.project_id = ?) "
+	            + "ORDER BY dwr.work_date DESC";
 
-			pstmt.setString(1, startStr);
-			pstmt.setString(2, startStr);
-			pstmt.setString(3, endStr);
+	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+	        String startStr = (req.getStartDate() != null) ? sdf.format(req.getStartDate()) : null;
+	        String endStr = (req.getEndDate() != null) ? sdf.format(req.getEndDate()) : null;
 
-			pstmt.setString(4, req.getEmpNameKr());
-			pstmt.setString(5, req.getEmpNameKr());
+	        pstmt.setString(1, startStr);
+	        pstmt.setString(2, startStr);
+	        pstmt.setString(3, endStr);
 
-			setIntOrNull(pstmt, 6, 7, req.getDepartmentId());
-			setIntOrNull(pstmt, 8, 9, req.getProjectId());
+	        pstmt.setString(4, req.getEmpNameKr());
+	        pstmt.setString(5, req.getEmpNameKr());
 
-			pstmt.setInt(10, endRow);
-			pstmt.setInt(11, firstRow);
-			List<DailyWorkDetailDto> list = new ArrayList<>();
-			try (ResultSet rs = pstmt.executeQuery()) {
-				while (rs.next()) {
-					list.add(convertDailyWorkDetailDto(rs));
-				}
-			}
-			return list;
-		}
+	        setIntOrNull(pstmt, 6, 7, req.getDepartmentId());
+	        setIntOrNull(pstmt, 8, 9, req.getProjectId());
+
+	        List<DailyWorkDetailDto> list = new ArrayList<>();
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            while (rs.next()) {
+	                list.add(convertDailyWorkDetailDto(rs));
+	            }
+	        }
+	        return list;
+	    }
 	}
 	
 	//일용직 근무 기록 수정 메서드
@@ -228,26 +266,32 @@ public class DailyWorkRecordDao {
 		dto.setEmpType(rs.getString("EMP_TYPE"));
 		dto.setEmpNo(rs.getString("EMP_NO"));		
 		dto.setEmpNameKr(rs.getString("EMP_NAME_KR"));
+		dto.setDepartmentName(rs.getString("DEPARTMENT_NAME"));
 		dto.setTotalDays(rs.getInt("TOTAL_DAYS"));
 		dto.setTotalIncomeTax(rs.getLong("TOTAL_INCOME_TAX"));
 		dto.setTotalLocalIncomeTax(rs.getLong("TOTAL_LOCAL_INCOME_TAX"));
 		dto.setTotalActualPay(rs.getLong("TOTAL_ACTUAL_PAY"));
-		String sql = "SELECT WORK_DATE FROM DAILY_WORK_RECORD WHERE employee_id = ? AND work_date BETWEEN TO_DATE(?, 'YYYYMMDD') AND TO_DATE(?, 'YYYYMMDD')";
+		String sql = "SELECT dwr.*, e.EMP_NAME_KR, p.PROJECT_NAME "
+		           + "FROM DAILY_WORK_RECORD dwr "
+		           + "LEFT JOIN EMPLOYEE e ON e.EMPLOYEE_ID = dwr.EMPLOYEE_ID "
+		           + "LEFT JOIN PROJECT p ON p.PROJECT_ID = dwr.PROJECT_ID "
+		           + "WHERE dwr.employee_id = ? AND dwr.work_date BETWEEN TO_DATE(?, 'YYYYMMDD') AND TO_DATE(?, 'YYYYMMDD')";
 		try(PreparedStatement pstmt = conn.prepareStatement(sql)){
 			pstmt.setInt(1, employeeId);
 			pstmt.setString(2, start);
 			pstmt.setString(3, end);
-			List<Integer> list = new ArrayList<>();
+			Map<Integer, DailyWorkRecordDto> workmap = new HashMap<>();
 			try(ResultSet subRs = pstmt.executeQuery()){
 				while (subRs.next()) {
 					java.sql.Date sqlDate = subRs.getDate("WORK_DATE");
 					if (sqlDate!=null) {
-						int day = sqlDate.toLocalDate().getDayOfMonth();
-						list.add(day);
+						int day = sqlDate.toLocalDate().getDayOfMonth();						
+						DailyWorkRecordDto record = convertDailyWorkRecordDto(subRs);
+						workmap.put(day, record);
 					}
 				}
 			}
-			dto.setDays(list);
+			dto.setWorkDayMap(workmap);
 		}
 
 		

@@ -4,9 +4,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import erp.attendance.dao.DailyWorkRecordDao;
+import erp.attendance.dao.ProjectDao;
 import erp.attendance.model.DailyWorkRecord;
-import erp.settings.dao.ProjectDao;
-import erp.settings.model.Project;
+import erp.attendance.model.Project;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 

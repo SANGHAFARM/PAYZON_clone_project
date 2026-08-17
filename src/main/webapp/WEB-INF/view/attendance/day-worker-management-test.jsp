@@ -121,15 +121,16 @@
 						<label><span>근무일자</span> <input type="date"
 							name="workDate" required
 							value="${empty editId ? today : workDate}"></label> <label><span>현장/프로젝트</span><span
-							class="project-control"><select name="projectId"><option
-										value="">선택하세요.</option>
+							class="project-control"><select name="projectId">
+									<option value="">선택하세요.</option>
 
 									<!-- 프로젝트 목록 관리 -->
 									<c:forEach var="project" items="${projects}">
 										<option value="${project.projectId}"
 											${projectId eq project.projectId ? 'selected' : ''}><c:out
 												value="${project.projectName}" /></option>
-									</c:forEach></select><a class="button button-project" href="#project-manager">목록관리</a></span>
+									</c:forEach>
+								</select><a class="button button-project" href="#project-manager">목록관리</a></span>
 
 						</label> <label> <span>일당</span> <span class="amount-control">
 								<input type="number" id="dailyPay" name="dailyPay" min="0"
@@ -210,13 +211,14 @@
 						</p>
 						<form method="get">
 							<input type="hidden" name="employeeId"
-								value="${param.employeeId}"> <select name="year"
-								aria-label="연도">
+								value="${param.employeeId}">
+							<select name="year" aria-label="연도">
 								<c:forEach var="y" begin="2015" end="2026">
 									<option value="${y}"
 										${y eq (empty param.year ? 2026 : param.year) ? 'selected' : ''}>${y}년</option>
 								</c:forEach>
-							</select> <select name="month" aria-label="월">
+							</select>
+							<select name="month" aria-label="월">
 								<c:forEach var="monthNo" begin="1" end="12">
 									<option value="${monthNo}"
 										${monthNo eq (empty param.month ? 8 : param.month) ? 'selected' : ''}>${monthNo}월</option>
@@ -286,7 +288,9 @@
 			aria-labelledby="project-title">
 			<header>
 				<h2 id="project-title">현장/프로젝트 목록관리</h2>
-				<a href="${pageContext.request.contextPath}/attendance/day-worker-management.do" aria-label="닫기">&times;</a>
+				<a
+					href="${pageContext.request.contextPath}/attendance/day-worker-management.do"
+					aria-label="닫기">&times;</a>
 			</header>
 			<div class="modal-body">
 				<ul class="project-list">
@@ -312,35 +316,37 @@
 					</c:if>
 				</ul>
 
-<form class="project-add" method="post"
-    action="${pageContext.request.contextPath}/settings/project-manage.do#project-manager"
-    style="display: flex; gap: 8px; align-items: center;">
-    
-    <!-- 수정 모드일 때는 'edit', 아닐 때는 'add' -->
-    <input type="hidden" name="projectAction" value="${empty param.projectId ? 'add' : 'edit'}">
-    
-    <!-- 수정 모드일 때만 projectId를 전달 -->
-    <c:if test="${not empty param.projectId}">
-        <input type="hidden" name="projectId" value="${param.projectId}">
-    </c:if>
-    
-    <!-- 입력창 -->
-    <input type="text" name="projectName" 
-           value="${empty param.projectId ? '' : param.projectName}" 
-           placeholder="새 현장/프로젝트명" required style="flex: 1;">
-    
-        <!-- 추가하기 / 수정하기 버튼 -->
-    <button type="submit" class="button button-primary" style="white-space: nowrap;">
-        ${empty param.projectId ? '추가하기' : '수정하기'}
-    </button>
-    
-    <!-- 수정 모드일 때만 취소 버튼 표시 -->
-    <c:if test="${not empty param.projectId}">
-        <a href="?#project-manager" class="button button-muted" style="text-decoration: none; white-space: nowrap;">취소</a>
-    </c:if>
-    
+				<form class="project-add" method="post"
+					action="${pageContext.request.contextPath}/settings/project-manage.do#project-manager"
+					style="display: flex; gap: 8px; align-items: center;">
 
-</form>
+					<!-- 수정 모드일 때는 'edit', 아닐 때는 'add' -->
+					<input type="hidden" name="projectAction"
+						value="${empty param.projectId ? 'add' : 'edit'}">
+
+					<!-- 수정 모드일 때만 projectId를 전달 -->
+					<c:if test="${not empty param.projectId}">
+						<input type="hidden" name="projectId" value="${param.projectId}">
+					</c:if>
+
+					<!-- 입력창 -->
+					<input type="text" name="projectName"
+						value="${empty param.projectId ? '' : param.projectName}"
+						placeholder="새 현장/프로젝트명" required style="flex: 1;">
+
+					<!-- 추가하기 / 수정하기 버튼 -->
+					<button type="submit" class="button button-primary"
+						style="white-space: nowrap;">${empty param.projectId ? '추가하기' : '수정하기'}
+					</button>
+
+					<!-- 수정 모드일 때만 취소 버튼 표시 -->
+					<c:if test="${not empty param.projectId}">
+						<a href="?#project-manager" class="button button-muted"
+							style="text-decoration: none; white-space: nowrap;">취소</a>
+					</c:if>
+
+
+				</form>
 			</div>
 		</section>
 	</div>
