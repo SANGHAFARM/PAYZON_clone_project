@@ -1,4 +1,4 @@
-package erp.payroll.command;
+package erp.payrollstats.command;
 
 import java.text.DecimalFormat;
 import java.util.Calendar;
@@ -6,8 +6,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import erp.payroll.dto.PayrollStatItem;
-import erp.payroll.service.PayrollStatService;
+import erp.payrollstats.dto.PayrollStatItem;
+import erp.payrollstats.service.PayrollStatService;
 import mvc.command.CommandHandler;
 
 public class MonthlyPayrollStatHandler implements CommandHandler {

@@ -1,4 +1,4 @@
-package erp.payroll.service;
+package erp.payrollstats.service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -6,8 +6,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import erp.payroll.dao.PayrollStatDao;
-import erp.payroll.dto.PayrollStatItem;
+import erp.payrollstats.dao.PayrollStatDao;
+import erp.payrollstats.dto.PayrollStatItem;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 

@@ -1,4 +1,4 @@
-package erp.payroll.dao;
+package erp.payrollstats.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import erp.payroll.dto.PayrollStatItem;
+import erp.payrollstats.dto.PayrollStatItem;
 
 public class PayrollStatDao {
 
