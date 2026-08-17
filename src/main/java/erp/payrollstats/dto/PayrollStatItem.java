@@ -1,4 +1,4 @@
-package erp.payroll.dto;
+package erp.payrollstats.dto;
 
 public class PayrollStatItem {
     // 1. DB에서 조회할 원본 데이터 (Service에서 계산용으로 사용)
