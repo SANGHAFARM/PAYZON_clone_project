@@ -21,7 +21,7 @@
 				<span>HOME</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
-			href="${pageContext.request.contextPath}/example.do?menu=employee-register">
+			href="${pageContext.request.contextPath}/settings/register1.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/employee-register.png">
 				<span>사원등록</span>
@@ -39,7 +39,7 @@
 				<span>제증명서 발급</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
-			href="${pageContext.request.contextPath}/example.do?menu=attendance">
+			href="${pageContext.request.contextPath}/manage.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/attendance.png">
 				<span>근태기록/관리</span>
@@ -86,20 +86,20 @@
 	<nav class="main-nav">
 		<ul class="main-nav__list">
 			<li class="main-nav__item"><a class="main-nav__trigger"
-				href="${pageContext.request.contextPath}/example.do?menu=settings">기본
+				href="${pageContext.request.contextPath}/settings/user-info.do">기본
 					환경설정</a>
 				<ul class="dropdown-menu">
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=user-info">사용자
+						href="${pageContext.request.contextPath}/settings/user-info.do">사용자
 							정보</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=employee-register">사원
+						href="${pageContext.request.contextPath}/settings/register1.do">사원
 							등록</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=attendance-settings">휴가/근태
+						href="${pageContext.request.contextPath}/settings/attendance.do">휴가/근태
 							설정</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=payroll-settings">급여항목
+						href="${pageContext.request.contextPath}/settings/pay-item.do">급여항목
 							설정</a></li>
 				</ul></li>
 			<li class="main-nav__item"><a class="main-nav__trigger"
