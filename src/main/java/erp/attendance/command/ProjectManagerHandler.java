@@ -1,16 +1,14 @@
-package erp.settings.command;
+package erp.attendance.command;
 
 
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
-import erp.settings.model.Project;
-import erp.settings.service.ProjectDeleteService;
-import erp.settings.service.ProjectInsertService;
-import erp.settings.service.ProjectModifyService;
-
+import erp.attendance.model.Project;
+import erp.attendance.service.ProjectDeleteService;
+import erp.attendance.service.ProjectInsertService;
+import erp.attendance.service.ProjectModifyService;
 import mvc.command.CommandHandler;
 
 public class ProjectManagerHandler implements CommandHandler {

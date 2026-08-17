@@ -62,8 +62,8 @@ public class DailyWorkDetailDto {
 	public long getDailyPay() {
 		return dailyPay;
 	}
-	public void setDailyPay(long dailPay) {
-		this.dailyPay = dailPay;
+	public void setDailyPay(long dailyPay) {
+		this.dailyPay = dailyPay;
 	}
 	public double getPayRate() {
 		return payRate;

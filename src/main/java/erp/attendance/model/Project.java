@@ -1,4 +1,4 @@
-package erp.settings.model;
+package erp.attendance.model;
 
 /**
  * [기본환경설정] 현장/프로젝트 목록 Model DB 테이블: PROJECT

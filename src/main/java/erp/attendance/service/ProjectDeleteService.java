@@ -1,31 +1,28 @@
-package erp.settings.service;
+package erp.attendance.service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import erp.settings.dao.ProjectDao;
-import erp.settings.model.Project;
+import erp.attendance.dao.ProjectDao;
+import erp.attendance.model.Project;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
-public class ProjectInsertService {
+public class ProjectDeleteService {
 	private ProjectDao projectDao = ProjectDao.getInstance();
 	
-	public void insert(String projectName) {
+	public Integer delete(int projectId) {
 		Connection conn = null;
 		try {
 			conn = ConnectionProvider.getConnection();
 			conn.setAutoCommit(false);
-			
-			Project project = projectDao.selectByName(conn, projectName);
-			//만약 해당 이름의 프로젝트가 존재하면 중복 오류 발생
-			if (project!=null) {
-				throw new RuntimeException("Project name already exists : " + projectName );
+			Project project = projectDao.selectById(conn, projectId);
+			if (project==null) {
+				throw new RuntimeException("Invalid projectId : " + projectId);
 			}
-			project = new Project();
-			project.setProjectName(projectName);
-			projectDao.insert(conn, project);
+			int result = projectDao.delete(conn, projectId);
 			conn.commit();
+			return result;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			JdbcUtil.rollback(conn);

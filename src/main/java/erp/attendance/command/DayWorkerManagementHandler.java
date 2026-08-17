@@ -14,7 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import erp.attendance.dao.DailyWorkRecordDao;
+import erp.attendance.dao.ProjectDao;
 import erp.attendance.dto.DailyWorkRecordDto;
+import erp.attendance.model.Project;
 import erp.attendance.service.DailyWorkDeleteService;
 import erp.attendance.service.DailyWorkInsertRequest;
 import erp.attendance.service.DailyWorkInsertService;
@@ -24,8 +26,6 @@ import erp.attendance.service.DailyWorkUpdateService;
 import erp.attendance.service.ListDailyWorkRecordService;
 import erp.employees.dao.EmployeeDao;
 import erp.employees.dto.DayWorkerDto;
-import erp.settings.dao.ProjectDao;
-import erp.settings.model.Project;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 import mvc.command.CommandHandler;

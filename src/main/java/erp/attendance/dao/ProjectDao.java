@@ -1,4 +1,4 @@
-package erp.settings.dao;
+package erp.attendance.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import erp.settings.model.Project;
+import erp.attendance.model.Project;
 import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
 // 현장/프로젝트 목록 데이터베이스 접근(DAO) 클래스
