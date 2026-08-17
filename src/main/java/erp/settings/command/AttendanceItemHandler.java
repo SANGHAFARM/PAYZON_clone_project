@@ -26,7 +26,6 @@ public class AttendanceItemHandler implements CommandHandler {
 		String action = req.getParameter("action");
 
 		try {
-			// 파라미터 파싱 및 DTO 세팅
 			AttendanceItem item = new AttendanceItem();
 
 			String idStr = req.getParameter("attendItemId");
@@ -34,19 +33,18 @@ public class AttendanceItemHandler implements CommandHandler {
 				item.setAttendanceItemId(Integer.parseInt(idStr));
 			}
 
-			item.setAttendName(req.getParameter("attendanceName"));
+			item.setAttendName(req.getParameter("attendName"));
 			item.setUnitType(req.getParameter("unitType"));
 			item.setWorkHourType(req.getParameter("workHourType"));
 			item.setUseYn(req.getParameter("useYn"));
 
-			// 근태그룹 외래키 파싱 처리
 			String groupIdStr = req.getParameter("attendanceGroupId");
 			if (groupIdStr != null && !groupIdStr.isEmpty()) {
 				item.setAttendanceGroupId(Integer.parseInt(groupIdStr));
 			}
 
-			// 스키마 컬럼명에 맞춘 휴가공제 식별 번호 파싱 처리
-			String deductLeaveIdStr = req.getParameter("leaveItemId");
+			// 휴가공제 식별 번호
+			String deductLeaveIdStr = req.getParameter("deductLeaveId");
 			if (deductLeaveIdStr != null && !deductLeaveIdStr.isEmpty()) {
 				item.setDeductLeaveId(Integer.parseInt(deductLeaveIdStr));
 			}
@@ -59,10 +57,17 @@ public class AttendanceItemHandler implements CommandHandler {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			req.getSession().setAttribute("message", "오류 발생: " + e.getMessage());
+
+			Throwable cause = e.getCause();
+
+			// 중복 에러(SQLIntegrityConstraintViolationException)인지 확인
+			if (cause instanceof java.sql.SQLIntegrityConstraintViolationException) {
+				req.getSession().setAttribute("message", "이미 추가된 근태항목입니다.");
+			} else {
+				req.getSession().setAttribute("message", "오류 발생: " + e.getMessage());
+			}
 		}
 
-		// PRG 패턴 적용 리다이렉트 처리
 		res.sendRedirect(req.getContextPath() + "/settings/attendance.do");
 		return null;
 	}

@@ -7,6 +7,7 @@ import java.util.List;
 import erp.settings.dao.AttendanceGroupDao;
 import erp.settings.dao.AttendanceItemDao;
 import erp.settings.dao.LeaveItemDao;
+import erp.settings.dto.AttendanceGroupWithItemsDto;
 import erp.settings.model.AttendanceGroup;
 import erp.settings.model.AttendanceItem;
 import erp.settings.model.LeaveItem;
@@ -213,6 +214,25 @@ public class AttendanceSettingService {
 		} catch (SQLException e) {
 			JdbcUtil.rollback(conn);
 			throw new RuntimeException("근태그룹 액션 처리 중 오류 발생", e);
+		} finally {
+			JdbcUtil.close(conn);
+		}
+	}
+
+	/**
+	 * [조회] 근태그룹 및 하위 근태항목 계층형 리스트 조회 (화면 트리 렌더링용)
+	 *
+	 * @return 그룹별로 묶인 근태항목 DTO 목록 반환
+	 */
+	public List<AttendanceGroupWithItemsDto> getAttendanceGroupWithItems() {
+		Connection conn = null;
+		try {
+			conn = ConnectionProvider.getConnection();
+			// DAO에서 JOIN 쿼리를 통해 그룹과 항목을 묶어서 반환하는 메서드를 호출합니다.
+			// (attendGroupDao 또는 attendItemDao 중 쿼리를 작성하실 곳을 지정하세요)
+			return attendGroupDao.selectGroupWithItems(conn);
+		} catch (SQLException e) {
+			throw new RuntimeException("근태그룹 및 항목 계층 목록 조회 중 오류 발생", e);
 		} finally {
 			JdbcUtil.close(conn);
 		}

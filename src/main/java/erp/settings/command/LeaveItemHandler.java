@@ -22,50 +22,10 @@ public class LeaveItemHandler implements CommandHandler {
 
 	@Override
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		if (req.getMethod().equalsIgnoreCase("GET")) {
-			return processForm(req, res);
-		} else if (req.getMethod().equalsIgnoreCase("POST")) {
+		if (req.getMethod().equalsIgnoreCase("POST")) {
 			return processAction(req, res);
 		}
 		return null;
-	}
-
-	// [GET] 휴가/근태 설정 페이지 전체 화면 렌더링 처리
-	private String processForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		// 마스터 데이터 리스트 일괄 조회
-		List<LeaveItem> leaveItems = settingService.getLeaveItems();
-		List<AttendanceItem> attendItems = settingService.getAttendItems();
-		List<AttendanceGroup> attendGroups = settingService.getAttendGroups();
-
-		req.setAttribute("leaveItems", leaveItems);
-		req.setAttribute("attendItems", attendItems);
-		req.setAttribute("attendGroups", attendGroups);
-
-		// 선택된 휴가항목 파라미터 확인 및 단건 조회
-		String leaveItemIdStr = req.getParameter("leaveItemId");
-		if (leaveItemIdStr != null && !leaveItemIdStr.isEmpty()) {
-			int leaveItemId = Integer.parseInt(leaveItemIdStr);
-			LeaveItem selectedLeaveItem = settingService.getLeaveItem(leaveItemId);
-			req.setAttribute("selectedLeaveItem", selectedLeaveItem);
-
-			// 선택된 휴가항목이 있을 경우 사원별 휴가일수 목록 동시 조회 (모달용)
-			String keyword = req.getParameter("keyword");
-			String status = req.getParameter("status");
-			List<EmployeeLeaveRow> employeeLeaveRows = leaveBalanceService.getEmployeeLeaveRows(leaveItemId, keyword,
-					status);
-			req.setAttribute("employeeLeaveRows", employeeLeaveRows);
-		}
-
-		// 선택된 근태항목 파라미터 확인 및 단건 조회
-		String attendItemIdStr = req.getParameter("attendItemId");
-		if (attendItemIdStr != null && !attendItemIdStr.isEmpty()) {
-			int attendItemId = Integer.parseInt(attendItemIdStr);
-			AttendanceItem selectedAttendItem = settingService.getAttendItem(attendItemId);
-			req.setAttribute("selectedAttendItem", selectedAttendItem);
-		}
-
-		// JSP 뷰 포워딩 처리
-		return "/WEB-INF/view/settings/attendance-settings.jsp";
 	}
 
 	// [POST] 휴가항목 추가/수정/삭제 액션 분기 처리
@@ -104,7 +64,15 @@ public class LeaveItemHandler implements CommandHandler {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			req.getSession().setAttribute("message", "오류 발생: " + e.getMessage());
+
+			Throwable cause = e.getCause();
+
+			// 중복 에러(SQLIntegrityConstraintViolationException)인지 확인
+			if (cause instanceof java.sql.SQLIntegrityConstraintViolationException) {
+				req.getSession().setAttribute("message", "이미 등록된 휴가항목입니다. 다른 이름이나 날짜를 선택해 주세요.");
+			} else {
+				req.getSession().setAttribute("message", "오류 발생: " + e.getMessage());
+			}
 		}
 
 		// PRG 패턴 적용 리다이렉트 처리
