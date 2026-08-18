@@ -46,38 +46,48 @@ public class EmployeeRegister2Handler implements CommandHandler {
 	private String processForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String empIdStr = req.getParameter("empId");
 
-		// 사원번호 파라미터 존재 여부 검증
-		if (empIdStr != null && !empIdStr.trim().isEmpty()) {
-			int empId = Integer.parseInt(empIdStr);
-
-			// 1. 사원 공통 기본정보 조회
-			Employee employee = registerService.getEmployeeBasicProfile(empId);
-
-			// 2. 역량 및 인사기록(1:N) 리스트 조회
-			List<EmployeeLicense> licenses = skillService.getLicenses(empId);
-			List<EmployeeLanguage> languages = skillService.getLanguages(empId);
-			List<EmployeeTraining> trainings = skillService.getTrainings(empId);
-			List<EmployeeRewardDiscipline> rewardPunishes = skillService.getRewardPunishes(empId);
-			List<EmployeeAppointment> appointments = skillService.getAppointments(empId);
-
-			// 3. 추천 및 신원보증 단건 조회
-			EmployeeRecommender recommender = guaranteeService.getRecommender(empId);
-			EmployeeSuretyInsurance suretyInsurance = guaranteeService.getSuretyInsurance(empId);
-			EmployeeGuarantor guarantor = guaranteeService.getGuarantor(empId);
-
-			// 4. 조회 데이터를 JSP 속성으로 바인딩
-			req.setAttribute("employee", employee);
-			req.setAttribute("licenses", licenses);
-			req.setAttribute("languages", languages);
-			req.setAttribute("trainings", trainings);
-			req.setAttribute("rewardPunishes", rewardPunishes);
-			req.setAttribute("appointments", appointments);
-			req.setAttribute("recommender", recommender);
-			req.setAttribute("suretyInsurance", suretyInsurance);
-			req.setAttribute("guarantor", guarantor);
+		// 사원번호 파라미터가 아예 안 넘어왔을 경우 (신규 사원 등록 중 넘어오려 할 때)
+		if (empIdStr == null || empIdStr.trim().isEmpty()) {
+			req.getSession().setAttribute("message", "사원 기본 정보가 없습니다. 1단계를 먼저 완료해 주세요.");
+			res.sendRedirect(req.getContextPath() + "/settings/register1.do");
+			return null;
 		}
 
-		// JSP 화면 포워딩 처리
+		int empId = Integer.parseInt(empIdStr);
+
+		// 1. 사원 공통 기본정보 조회
+		Employee employee = registerService.getEmployeeBasicProfile(empId);
+
+		// 파라미터는 넘어왔지만 DB에 해당 사원이 없는 경우 (잘못된 주소 조작)
+		if (employee == null) {
+			req.getSession().setAttribute("message", "존재하지 않는 사원입니다. 1단계를 먼저 완료해 주세요.");
+			res.sendRedirect(req.getContextPath() + "/settings/register1.do");
+			return null;
+		}
+
+		// 2. 역량 및 인사기록(1:N) 리스트 조회
+		List<EmployeeLicense> licenses = skillService.getLicenses(empId);
+		List<EmployeeLanguage> languages = skillService.getLanguages(empId);
+		List<EmployeeTraining> trainings = skillService.getTrainings(empId);
+		List<EmployeeRewardDiscipline> rewardPunishes = skillService.getRewardPunishes(empId);
+		List<EmployeeAppointment> appointments = skillService.getAppointments(empId);
+
+		// 3. 추천 및 신원보증 단건 조회
+		EmployeeRecommender recommender = guaranteeService.getRecommender(empId);
+		EmployeeSuretyInsurance suretyInsurance = guaranteeService.getSuretyInsurance(empId);
+		EmployeeGuarantor guarantor = guaranteeService.getGuarantor(empId);
+
+		// 4. 조회 데이터를 JSP 속성으로 바인딩
+		req.setAttribute("employee", employee);
+		req.setAttribute("licenses", licenses);
+		req.setAttribute("languages", languages);
+		req.setAttribute("trainings", trainings);
+		req.setAttribute("rewardPunishes", rewardPunishes);
+		req.setAttribute("appointments", appointments);
+		req.setAttribute("recommender", recommender);
+		req.setAttribute("suretyInsurance", suretyInsurance);
+		req.setAttribute("guarantor", guarantor);
+
 		return "/WEB-INF/view/settings/employee-register-2.jsp";
 	}
 
@@ -94,6 +104,14 @@ public class EmployeeRegister2Handler implements CommandHandler {
 			if ("save".equals(action)) {
 				// [1] 사원 기본정보 중 퇴직 관련 속성 업데이트
 				Employee employee = registerService.getEmployeeBasicProfile(empId);
+
+				// DB에 해당 사원이 없으면 저장을 중단하고 돌려보냄
+				if (employee == null) {
+					req.getSession().setAttribute("message", "사원 기본 정보가 존재하지 않습니다. 1단계를 먼저 완료해 주세요.");
+					res.sendRedirect(req.getContextPath() + "/settings/register1.do"); // 1단계 화면으로 강제 이동
+					return null;
+				}
+
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 				employee.setRetireType(req.getParameter("retireType"));
@@ -102,7 +120,14 @@ public class EmployeeRegister2Handler implements CommandHandler {
 
 				String retireDateStr = req.getParameter("retireDate");
 				if (retireDateStr != null && !retireDateStr.trim().isEmpty()) {
+					// 1. 퇴직일자가 입력되었으므로 날짜를 세팅하고,
 					employee.setRetireDate(sdf.parse(retireDateStr));
+					// 2. 사원의 상태도 '퇴직'으로 변경해 줍니다!
+					employee.setStatus("퇴직");
+				} else {
+					// (선택 사항) 만약 실수로 날짜를 잘못 넣어서 다시 지웠을 경우를 대비해 '재직'으로 롤백
+					employee.setRetireDate(null);
+					employee.setStatus("재직");
 				}
 				// 갱신된 퇴직 정보 데이터베이스 저장
 				registerService.saveEmployeeBasicInfo(employee);
