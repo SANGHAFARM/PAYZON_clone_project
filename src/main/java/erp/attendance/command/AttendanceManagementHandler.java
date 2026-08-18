@@ -3,15 +3,13 @@ package erp.attendance.command;
 import java.sql.Connection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import erp.employees.dto.EmployeeListItem;
 // import erp.attend.dao.AttendItemDao;
 // import erp.attend.dao.EmpAttendRecordDao;
 // /*import erp.attend.model.AttendItem;*/
@@ -24,9 +22,9 @@ import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 import mvc.command.CommandHandler;
 
-public class AttendRecordManageRecordHandler implements CommandHandler {
+public class AttendanceManagementHandler implements CommandHandler {
 
-	private static final String FORM_VIEW = "/WEB-INF/view/attend/attendance-management-test.jsp";
+	private static final String FORM_VIEW = "/WEB-INF/view/attendance/attendance-management-test.jsp";
 	private static final String SUCCESS_VIEW = ""; // 임시적으로 적은 경로
 
 	/*
@@ -47,47 +45,57 @@ public class AttendRecordManageRecordHandler implements CommandHandler {
 
 	private String processForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
-		/*
-		 * String status = req.getParameter("status"); if (status == null) { status =
-		 * "재직"; } req.setAttribute("status", status); String keyword =
-		 * req.getParameter("keyword"); if (keyword == null) { keyword = ""; }
-		 * 
-		 * EmployeeListItemDao employeeListItemDao = EmployeeListItemDao.getInstance();
-		 * AttendItemDao attendItemDao = AttendItemDao.getInstance(); EmpAttendRecordDao
-		 * empAttendRecordDao = EmpAttendRecordDao.getInstance();
-		 * 
-		 * Connection conn = null; try { conn = ConnectionProvider.getConnection();
-		 * 
-		 * List<EmployeeListItem> employees =
-		 * employeeListItemDao.selectByCondition(conn, status, null, null, null,
-		 * keyword); req.setAttribute("employees", employees);
-		 * 
-		 * List<AttendItem> attendItems = attendItemDao.selectAll(conn);
-		 * req.setAttribute("attendanceItems", attendItems);
-		 * 
-		 * req.setAttribute("today", new SimpleDateFormat("yyyy-MM-dd").format(new
-		 * Date()));
-		 * 
-		 * String empIdVal = req.getParameter("empId"); if (empIdVal != null &&
-		 * !empIdVal.isEmpty()) { int empId = Integer.parseInt(empIdVal);
-		 * 
-		 * EmployeeListItem selectedEmployee = employeeListItemDao.selectById(conn,
-		 * empId); req.setAttribute("selectedEmployee", selectedEmployee);
-		 * 
-		 * String yearVal = req.getParameter("recordYear"); int recordYear = (yearVal !=
-		 * null && !yearVal.isEmpty()) ? Integer.parseInt(yearVal) : 2026;
-		 * req.setAttribute("recordYear", recordYear);
-		 * 
-		 * String monthVal = req.getParameter("recordMonth"); Integer recordMonth =
-		 * (monthVal != null && !monthVal.isEmpty()) ? Integer.parseInt(monthVal) :
-		 * null; req.setAttribute("recordMonth", recordMonth);
-		 * 
-		 * List<EmpAttendRecord> records =
-		 * empAttendRecordDao.selectByEmpIdAndYearAndMonth(conn, empId, recordYear,
-		 * recordMonth); req.setAttribute("attendanceRecords", records); }
-		 * 
-		 * } finally { JdbcUtil.close(conn); }
-		 */
+		String status = req.getParameter("status");
+		if (status == null) {
+			status = "재직";
+		}
+		req.setAttribute("status", status);
+		String keyword = req.getParameter("keyword");
+		if (keyword == null) {
+			keyword = "";
+		}
+
+		EmployeeListItemDao employeeListItemDao = EmployeeListItemDao.getInstance();
+		AttendItemDao attendItemDao = AttendItemDao.getInstance();
+		EmpAttendRecordDao empAttendRecordDao = EmpAttendRecordDao.getInstance();
+
+		Connection conn = null;
+		try {
+			conn = ConnectionProvider.getConnection();
+
+			List<EmployeeListItem> employees = employeeListItemDao.selectByCondition(conn, status, null, null, null,
+					keyword);
+			req.setAttribute("employees", employees);
+
+			List<AttendItem> attendItems = attendItemDao.selectAll(conn);
+			req.setAttribute("attendanceItems", attendItems);
+
+			req.setAttribute("today", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+
+			String empIdVal = req.getParameter("empId");
+			if (empIdVal != null && !empIdVal.isEmpty()) {
+				int empId = Integer.parseInt(empIdVal);
+
+				EmployeeListItem selectedEmployee = employeeListItemDao.selectById(conn, empId);
+				req.setAttribute("selectedEmployee", selectedEmployee);
+
+				String yearVal = req.getParameter("recordYear");
+				int recordYear = (yearVal != null && !yearVal.isEmpty()) ? Integer.parseInt(yearVal) : 2026;
+				req.setAttribute("recordYear", recordYear);
+
+				String monthVal = req.getParameter("recordMonth");
+				Integer recordMonth = (monthVal != null && !monthVal.isEmpty()) ? Integer.parseInt(monthVal) : null;
+				req.setAttribute("recordMonth", recordMonth);
+
+				List<EmpAttendRecord> records = empAttendRecordDao.selectByEmpIdAndYearAndMonth(conn, empId, recordYear,
+						recordMonth);
+				req.setAttribute("attendanceRecords", records);
+			}
+
+		} finally {
+			JdbcUtil.close(conn);
+		}
+
 		return FORM_VIEW;
 
 	}
