@@ -9,6 +9,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import erp.employees.dto.AttendanceEmployeeDto;
 import erp.employees.dto.DayWorkerDto;
 import erp.employees.dto.EmployeeListItem;
 import erp.employees.dto.EmployeeSummary;
@@ -208,6 +209,46 @@ public class EmployeeDao {
 				return result;
 			}
 		}
+	}
+	
+	//근태관리 전용 사원 목록 조회 메서드
+	public List<AttendanceEmployeeDto> selectAttendanceEmployees(Connection conn, String keyword, String status) throws SQLException{
+		String sql = "SELECT E.EMPLOYEE_ID, E.EMP_TYPE, E.EMP_NO, E.EMP_NAME_KR, D.DEPARTMENT_NAME, J.JOB_POSITION_NAME "
+				+ "FROM EMPLOYEE E "
+				+ "LEFT JOIN DEPARTMENT D ON E.DEPARTMENT_ID = D.DEPARTMENT_ID "
+				+ "LEFT JOIN JOB_POSITION J ON E.JOB_POSITION_ID = J.JOB_POSITION_ID "
+				+ "WHERE (? IS NULL OR ? = '' OR (E.EMP_NO LIKE '%' || ? || '%' OR E.EMP_NAME_KR LIKE '%' || ? || '%' OR D.DEPARTMENT_NAME LIKE '%' || ? || '%' OR J.JOB_POSITION_NAME LIKE '%' || ? || '%')) "
+				+ "AND (? IS NULL OR ? = '' OR E.STATUS = ?)";
+		try(PreparedStatement pstmt = conn.prepareStatement(sql)){
+			//keyword 세팅
+			pstmt.setString(1, keyword);
+			pstmt.setString(2, keyword);
+			pstmt.setString(3, keyword);
+			pstmt.setString(4, keyword);
+			pstmt.setString(5, keyword);
+			pstmt.setString(6, keyword);
+			
+			//재직 상태 세팅
+			pstmt.setString(7, status);
+			pstmt.setString(8, status);
+			pstmt.setString(9, status);
+			List<AttendanceEmployeeDto> list = new ArrayList<>();
+			try(ResultSet rs = pstmt.executeQuery()){
+				while (rs.next()) {
+					AttendanceEmployeeDto dto = new AttendanceEmployeeDto();
+					dto.setEmployeeId(rs.getInt("EMPLOYEE_ID"));
+					dto.setEmpType(rs.getString("EMP_TYPE"));
+					dto.setEmpNo(rs.getString("EMP_NO"));
+					dto.setEmpNameKr(rs.getString("EMP_NAME_KR"));
+					dto.setDepartmentName(rs.getString("DEPARTMENT_NAME"));
+					dto.setJobPositionName(rs.getString("JOB_POSITION_NAME"));
+					list.add(dto);
+				}
+			}
+			return list;
+			
+		}
+				
 	}
 	
 	//일용직 사원 정보 전용 조회 메서드
