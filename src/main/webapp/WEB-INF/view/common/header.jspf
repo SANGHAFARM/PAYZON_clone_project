@@ -127,10 +127,10 @@
 					<li><a class="dropdown-menu__link"
 						href="${pageContext.request.contextPath}/example.do?menu=leave-search">휴가조회</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=daily-attendance">일용직
+						href="${pageContext.request.contextPath}/attendance/day-worker-management.do">일용직
 							근무기록/관리</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=daily-search">일용직
+						href="${pageContext.request.contextPath}/attendance/day-worker-inquiry.do">일용직
 							근무 조회</a></li>
 				</ul></li>
 			<li class="main-nav__item"><a class="main-nav__trigger"
