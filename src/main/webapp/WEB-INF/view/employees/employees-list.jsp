@@ -86,7 +86,7 @@
 						<c:forEach var="pageNo" begin="${pageInfo.startPage}" end="${pageInfo.endPage}"><c:url var="pageUrl" value="/employees/employees.do"><c:param name="page" value="${pageNo}"/><c:param name="pageSize" value="${condition.pageSize}"/><c:param name="searchTarget" value="${condition.searchTarget}"/><c:param name="keyword" value="${condition.keyword}"/><c:param name="employmentType" value="${condition.employmentType}"/><c:param name="status" value="${condition.status}"/></c:url><a class="${pageNo eq pageInfo.currentPage ? 'is-current' : ''}" href="${pageUrl}">${pageNo}</a></c:forEach>
 						<c:if test="${pageInfo.hasNext}"><c:url var="nextUrl" value="/employees/employees.do"><c:param name="page" value="${pageInfo.nextPage}"/><c:param name="pageSize" value="${condition.pageSize}"/><c:param name="searchTarget" value="${condition.searchTarget}"/><c:param name="keyword" value="${condition.keyword}"/><c:param name="employmentType" value="${condition.employmentType}"/><c:param name="status" value="${condition.status}"/></c:url><a href="${nextUrl}">다음</a></c:if>
 					</div>
-					<div class="bottom-actions"><a class="primary" href="${pageContext.request.contextPath}/personnel/employee-register-1.do">신규 사원등록</a><button class="danger" name="action" value="requestDelete">선택 삭제</button></div>
+					<div class="bottom-actions"><a class="primary" href="${pageContext.request.contextPath}/settings/register1.do">신규 사원등록</a><button class="danger" name="action" value="requestDelete">선택 삭제</button></div>
 				</form>
 			</section>
 
