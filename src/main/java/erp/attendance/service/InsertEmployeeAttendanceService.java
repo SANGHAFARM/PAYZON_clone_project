@@ -31,7 +31,7 @@ public class InsertEmployeeAttendanceService {
             }
             
             int successCount = 0;
-            for (Integer empId : req.getEmpIds()) {
+            for (Integer empId : req.getEmployeeIds()) {
                 EmployeeAttendance record = toEmployeeAttendance(req, empId, attendanceItem);
                 int result = employeeAttendanceDao.insert(conn, record);
                 if (result == 0) {
