@@ -7,7 +7,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>기본환경설정 &gt; 사원등록 1</title>
+<title>기본환경설정 &gt; ${employee.employeeId gt 0 ? '사원정보 수정' : '사원등록 1'}</title>
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/settings/employee-register.css">
 <link rel="stylesheet"
@@ -34,7 +34,7 @@
 			<header class="page-heading">
 				<div>
 					<p>기본환경설정</p>
-					<h1>사원등록</h1>
+					<h1>${employee.employeeId gt 0 ? '사원정보 수정' : '사원등록'}</h1>
 				</div>
 				<p class="page-heading__notice">
 					<strong>*</strong> 표시는 필수입력사항입니다.
