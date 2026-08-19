@@ -33,7 +33,7 @@ public class EmployeeAttendanceDao {
 	 * 근태기록 입력
 	 */
 	public int insert(Connection conn, EmployeeAttendance empAt) throws SQLException {
-		String sql = "INSERT INTO EMP_ATTEND_RECORD VALUES (SEQ_EMP_ATTEND_REC_ID.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO EMPLOYEE_ATTENDANCE VALUES (EMPLOYEE_ATTENDANCE_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, empAt.getEmployeeId());
 			pstmt.setInt(2, empAt.getAttendanceItemId());
@@ -78,7 +78,7 @@ public class EmployeeAttendanceDao {
 	 */
 	
 	public List<AttendanceRecordDto> selectByEmpIdAndYearAndMonth(Connection conn, int empId, int year, Integer month) throws SQLException{
-		String sql = "SELECT A.EMPLOYEE_ATTENDANCE_ID, A.INPUT_DATE, I.ATTEND_NAME, A.START_DATE, A.END_DATE, A.ATTEND_VALUE, A.PAY_AMOUNT, A.NOTE "
+		String sql = "SELECT A.EMPLOYEE_ATTENDANCE_ID, A.INPUT_DATE, A.ATTENDANCE_ITEM_ID, I.ATTEND_NAME, A.START_DATE, A.END_DATE, A.ATTEND_VALUE, A.PAY_AMOUNT, A.NOTE "
 		           + "FROM EMPLOYEE_ATTENDANCE A LEFT JOIN ATTENDANCE_ITEM I ON I.ATTENDANCE_ITEM_ID = A.ATTENDANCE_ITEM_ID "
 		           + "WHERE EMPLOYEE_ID = ? "
 		           + "AND TO_CHAR(START_DATE, 'YYYY') = ? "
@@ -100,6 +100,7 @@ public class EmployeeAttendanceDao {
 					AttendanceRecordDto dto = new AttendanceRecordDto();
 					dto.setEmployeeAttendanceId(rs.getInt("EMPLOYEE_ATTENDANCE_ID"));
 					dto.setInputDate(rs.getDate("INPUT_DATE"));
+					dto.setAttendanceItemId(rs.getInt("ATTENDANCE_ITEM_ID"));
 					dto.setAttendName(rs.getString("ATTEND_NAME"));
 					dto.setStartDate(rs.getDate("START_DATE"));
 					dto.setEndDate(rs.getDate("END_DATE"));

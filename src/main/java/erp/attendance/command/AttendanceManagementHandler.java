@@ -19,6 +19,7 @@ import erp.attendance.dto.AttendanceRecordDto;
 import erp.attendance.model.EmployeeAttendance;
 import erp.attendance.service.DailyWorkRecordRequest;
 import erp.attendance.service.InsertEmployeeAttendanceRequest;
+import erp.attendance.service.InsertEmployeeAttendanceService;
 import erp.attendance.service.ListAttendanceEmployeeService;
 import erp.attendance.service.ListEmployeeAttendanceService;
 import erp.employees.dto.AttendanceEmployeeDto;
@@ -117,18 +118,14 @@ public class AttendanceManagementHandler implements CommandHandler {
 		Map<String, Boolean> errors = new HashMap<>();
 		req.setAttribute("errors", errors);
 		InsertEmployeeAttendanceRequest request = createInsertEmployeeAttendanceRequest(req, errors);
-		return FORM_VIEW;
-	}
-
-	private Date parseDate(String dateStr) {
-		if (dateStr == null || dateStr.isEmpty()) {
-			return null;
+		request.validate(errors);
+		if (errors.size()>0) {
+			return processForm(req, res);
 		}
-		try {
-			return new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
-		} catch (ParseException e) {
-			return null;
-		}
+		InsertEmployeeAttendanceService insertEmployeeAttendanceService = new InsertEmployeeAttendanceService();
+		insertEmployeeAttendanceService.insert(request);
+		
+		return processForm(req, res);
 	}
 	
 	private InsertEmployeeAttendanceRequest createInsertEmployeeAttendanceRequest(HttpServletRequest req, Map<String, Boolean> errors) {
@@ -160,8 +157,10 @@ public class AttendanceManagementHandler implements CommandHandler {
 		request.setAttendanceItemId(Integer.parseInt(req.getParameter("attendanceItemId")));
 		request.setStartDate(startDate);
 		request.setEndDate(endDate);
-		request.setAttendValue(Double.parseDouble(req.getParameter("attendValue")));
-		request.setPayAmount(Long.parseLong(req.getParameter("payAmount")));
+		String attendValue = req.getParameter("attendValue");
+		request.setAttendValue((attendValue!=null && !attendValue.trim().isEmpty())?Double.parseDouble(attendValue):0.0);
+		String payAmount = req.getParameter("payAmount");
+		request.setPayAmount((payAmount!=null&&!payAmount.trim().isEmpty())?Long.parseLong(payAmount):0);
 		request.setNote(req.getParameter("note"));
 		return request;
 	}

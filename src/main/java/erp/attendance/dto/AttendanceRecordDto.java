@@ -5,6 +5,7 @@ import java.util.Date;
 public class AttendanceRecordDto {
 	int employeeAttendanceId;
 	Date inputDate;
+	int attendanceItemId;
 	String attendName;
 	Date startDate;
 	Date endDate;
@@ -13,11 +14,17 @@ public class AttendanceRecordDto {
 	String note;
 
 
-	public AttendanceRecordDto(int employeeAttendanceId, Date inputDate, String attendName, Date startDate,
-			Date endDate, double attendValue, long payAmount, String note) {
+	
+	public AttendanceRecordDto() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public AttendanceRecordDto(int employeeAttendanceId, Date inputDate, int attendanceItemId, String attendName,
+			Date startDate, Date endDate, double attendValue, long payAmount, String note) {
 		super();
 		this.employeeAttendanceId = employeeAttendanceId;
 		this.inputDate = inputDate;
+		this.attendanceItemId = attendanceItemId;
 		this.attendName = attendName;
 		this.startDate = startDate;
 		this.endDate = endDate;
@@ -25,11 +32,6 @@ public class AttendanceRecordDto {
 		this.payAmount = payAmount;
 		this.note = note;
 	}
-	public AttendanceRecordDto() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	
 	public int getEmployeeAttendanceId() {
 		return employeeAttendanceId;
 	}
@@ -41,6 +43,13 @@ public class AttendanceRecordDto {
 	}
 	public void setInputDate(Date inputDate) {
 		this.inputDate = inputDate;
+	}
+	
+	public int getAttendanceItemId() {
+		return attendanceItemId;
+	}
+	public void setAttendanceItemId(int attendanceItemId) {
+		this.attendanceItemId = attendanceItemId;
 	}
 	public String getAttendName() {
 		return attendName;
