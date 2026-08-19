@@ -245,12 +245,12 @@
 											<c:set var="item" value="${licenses[row.index]}" />
 											<tr>
 												<td><input type="checkbox" name="licenseDeleteIds"
-													value="${item.licId}"></td>
+													value="${item.employeeLicenseId}"></td>
 												<td><input name="licenses[${row.index}].licenseName"
-													value="<c:out value='${item.licenseName}' />"></td>
+													value="<c:out value='${item.licName}' />"></td>
 												<td><input type="date"
 													name="licenses[${row.index}].acquireDate"
-													value="${item.acquireDate}"></td>
+													value="<fmt:formatDate value='${item.acqDate}' pattern='yyyy-MM-dd' />"></td>
 												<td><input name="licenses[${row.index}].issuer"
 													value="${item.issuer}"></td>
 												<td><input name="licenses[${row.index}].licenseNo"
@@ -287,15 +287,15 @@
 										<c:set var="lang" value="${languages[0]}" />
 										<tr>
 											<td><input type="checkbox" name="languageDeleteIds"
-												value="${lang.langId}"></td>
+												value="${lang.employeeLanguageId}"></td>
 											<td><input name="languages[0].languageName"
-												value="${lang.languageName}"></td>
+												value="${lang.langName}"></td>
 											<td><input name="languages[0].testName"
 												value="${lang.testName}"></td>
 											<td><input type="number" name="languages[0].score"
 												value="${lang.score}"></td>
 											<td><input type="date" name="languages[0].acquireDate"
-												value="${lang.acquireDate}"></td>
+												value="<fmt:formatDate value='${lang.acqDate}' pattern='yyyy-MM-dd' />"></td>
 											<c:forEach var="ability"
 												items="${fn:split('reading,writing,speaking', ',')}">
 												<td><select name="languages[0].${ability}"><option
@@ -337,25 +337,25 @@
 											<c:set var="item" value="${trainings[row.index]}" />
 											<tr>
 												<td><input type="checkbox" name="trainingDeleteIds"
-													value="${item.trainId}"></td>
+													value="${item.employeeTrainingId}"></td>
 												<td><select name="trainings[${row.index}].trainingType"><option
 															value="">선택</option>
 														<c:forEach var="type" items="${trainingTypes}">
-															<option ${type eq item.trainingType ? 'selected' : ''}>${type}</option>
+															<option ${type eq item.trainType ? 'selected' : ''}>${type}</option>
 														</c:forEach></select></td>
 												<td><input name="trainings[${row.index}].trainingName"
-													value="${item.trainingName}"></td>
+													value="${item.trainName}"></td>
 												<td><input type="date"
 													name="trainings[${row.index}].startDate"
-													value="${item.startDate}"></td>
+													value="<fmt:formatDate value='${item.startDate}' pattern='yyyy-MM-dd' />"></td>
 												<td><input type="date"
 													name="trainings[${row.index}].endDate"
-													value="${item.endDate}"></td>
+													value="<fmt:formatDate value='${item.endDate}' pattern='yyyy-MM-dd' />"></td>
 												<td><input name="trainings[${row.index}].institution"
-													value="${item.institution}"></td>
+													value="${item.trainInstitute}"></td>
 												<td><label class="money-cell"><input
 														type="number" name="trainings[${row.index}].trainingCost"
-														value="${item.trainingCost}"><span>원</span></label></td>
+														value="${item.trainCost}"><span>원</span></label></td>
 												<td><label class="money-cell"><input
 														type="number" name="trainings[${row.index}].refundCost"
 														value="${item.refundCost}"><span>원</span></label></td>
@@ -392,7 +392,7 @@
 											<c:set var="item" value="${rewardPunishes[row.index]}" />
 											<tr>
 												<td><input type="checkbox" name="rewardDeleteIds"
-													value="${item.rpId}"></td>
+													value="${item.employeeRewardDisciplineId}"></td>
 												<td><select name="rewardPunishes[${row.index}].rpType"><option
 															value="">선택</option>
 														<c:forEach var="type" items="${rewardTypes}">
@@ -401,12 +401,12 @@
 												<td><input name="rewardPunishes[${row.index}].rpName"
 													value="${item.rpName}"></td>
 												<td><input name="rewardPunishes[${row.index}].grantor"
-													value="${item.grantor}"></td>
+													value="${item.rpAuthority}"></td>
 												<td><input type="date"
 													name="rewardPunishes[${row.index}].rpDate"
-													value="${item.rpDate}"></td>
+													value="<fmt:formatDate value='${item.rpDate}' pattern='yyyy-MM-dd' />"></td>
 												<td><input name="rewardPunishes[${row.index}].content"
-													value="${item.content}"></td>
+													value="${item.rpContent}"></td>
 												<td><input name="rewardPunishes[${row.index}].note"
 													value="${item.note}"></td>
 											</tr>
@@ -442,22 +442,22 @@
 											<c:set var="item" value="${appointments[row.index]}" />
 											<tr>
 												<td><input type="checkbox" name="appointmentDeleteIds"
-													value="${item.appId}"></td>
+													value="${item.employeeAppointmentId}"></td>
 												<td><select
 													name="appointments[${row.index}].appointmentType"><option
 															value="">선택</option>
 														<c:forEach var="type" items="${appointmentTypes}">
-															<option ${type eq item.appointmentType ? 'selected' : ''}>${type}</option>
+															<option ${type eq item.appType ? 'selected' : ''}>${type}</option>
 														</c:forEach></select></td>
 												<td><input type="date"
 													name="appointments[${row.index}].appointmentDate"
-													value="${item.appointmentDate}"></td>
+													value="<fmt:formatDate value='${item.appDate}' pattern='yyyy-MM-dd' />"></td>
 												<td><input name="appointments[${row.index}].deptName"
-													value="${item.deptName}"></td>
+													value="${item.departmentName}"></td>
 												<td><input name="appointments[${row.index}].posName"
-													value="${item.posName}"></td>
+													value="${item.jobPositionName}"></td>
 												<td><input name="appointments[${row.index}].dutyName"
-													value="${item.dutyName}"></td>
+													value="${item.jobTitleDuty}"></td>
 												<td><input name="appointments[${row.index}].note"
 													value="${item.note}"></td>
 											</tr>
@@ -517,16 +517,16 @@
 									<tbody>
 										<tr>
 											<td><input name="suretyInsurance.institution"
-												value="${suretyInsurance.institution}"></td>
+												value="${suretyInsurance.providerName}"></td>
 											<td><input name="suretyInsurance.insuranceNo"
 												value="${suretyInsurance.insuranceNo}"></td>
 											<td><label class="money-cell"><input
 													type="number" name="suretyInsurance.amount"
-													value="${suretyInsurance.amount}"><span>원</span></label></td>
+													value="${suretyInsurance.insuranceAmt}"><span>원</span></label></td>
 											<td><input type="date" name="suretyInsurance.startDate"
-												value="${suretyInsurance.startDate}"></td>
+												value="<fmt:formatDate value='${suretyInsurance.signupDate}' pattern='yyyy-MM-dd' />"></td>
 											<td><input type="date" name="suretyInsurance.endDate"
-												value="${suretyInsurance.endDate}"></td>
+												value="<fmt:formatDate value='${suretyInsurance.expireDate}' pattern='yyyy-MM-dd' />"></td>
 											<td><input name="suretyInsurance.note"
 												value="${suretyInsurance.note}"></td>
 										</tr>
@@ -559,11 +559,11 @@
 												value="${guarantor.juminNo}"></td>
 											<td><label class="money-cell"><input
 													type="number" name="guarantor.amount"
-													value="${guarantor.amount}"><span>원</span></label></td>
+													value="${guarantor.guaranteeAmt}"><span>원</span></label></td>
 											<td><input type="date" name="guarantor.startDate"
-												value="${guarantor.startDate}"></td>
+												value="<fmt:formatDate value='${guarantor.guaranteeDate}' pattern='yyyy-MM-dd' />"></td>
 											<td><input type="date" name="guarantor.endDate"
-												value="${guarantor.endDate}"></td>
+												value="<fmt:formatDate value='${guarantor.expireDate}' pattern='yyyy-MM-dd' />"></td>
 											<td><input name="guarantor.telNo"
 												value="${guarantor.telNo}"></td>
 										</tr>

@@ -105,10 +105,9 @@ public class EmployeeRegister2Handler implements CommandHandler {
 				// [1] 사원 기본정보 중 퇴직 관련 속성 업데이트
 				Employee employee = registerService.getEmployeeBasicProfile(empId);
 
-				// DB에 해당 사원이 없으면 저장을 중단하고 돌려보냄
 				if (employee == null) {
 					req.getSession().setAttribute("message", "사원 기본 정보가 존재하지 않습니다. 1단계를 먼저 완료해 주세요.");
-					res.sendRedirect(req.getContextPath() + "/settings/register1.do"); // 1단계 화면으로 강제 이동
+					res.sendRedirect(req.getContextPath() + "/settings/register1.do");
 					return null;
 				}
 
@@ -120,12 +119,23 @@ public class EmployeeRegister2Handler implements CommandHandler {
 
 				String retireDateStr = req.getParameter("retireDate");
 				if (retireDateStr != null && !retireDateStr.trim().isEmpty()) {
-					// 1. 퇴직일자가 입력되었으므로 날짜를 세팅하고,
-					employee.setRetireDate(sdf.parse(retireDateStr));
-					// 2. 사원의 상태도 '퇴직'으로 변경해 줍니다!
+					java.util.Date parsedRetireDate = sdf.parse(retireDateStr);
+
+					// 퇴사일이 입사일보다 빠른지 검사
+					if (parsedRetireDate.before(employee.getJoinDate())) {
+						// 에러 메시지를 세션에 담고
+						req.getSession().setAttribute("message",
+								"저장 실패: 퇴직일자는 입사일(" + sdf.format(employee.getJoinDate()) + ")보다 이전일 수 없습니다.");
+						// 저장을 중단한 뒤 현재 페이지로 돌려보냄
+						res.sendRedirect(req.getContextPath() + "/settings/register2.do?empId=" + empId);
+						return null;
+					}
+
+					// 검사를 무사히 통과했다면 날짜와 '퇴직' 상태를 세팅
+					employee.setRetireDate(parsedRetireDate);
 					employee.setStatus("퇴직");
 				} else {
-					// (선택 사항) 만약 실수로 날짜를 잘못 넣어서 다시 지웠을 경우를 대비해 '재직'으로 롤백
+					// 날짜가 없으면 다시 '재직'으로 복구
 					employee.setRetireDate(null);
 					employee.setStatus("재직");
 				}
@@ -311,6 +321,11 @@ public class EmployeeRegister2Handler implements CommandHandler {
 				String refundStr = req.getParameter("trainings[" + i + "].refundCost");
 				if (refundStr != null && !refundStr.trim().isEmpty()) {
 					training.setRefundCost(Long.parseLong(refundStr));
+				}
+
+				// 리스트에 넣기 전에 금액을 비교
+				if (training.getRefundCost() > training.getTrainCost()) {
+					throw new IllegalArgumentException("환급교육비가 교육비보다 클 수 없습니다. (교육명: " + trainName + ")");
 				}
 
 				String startDateStr = req.getParameter("trainings[" + i + "].startDate");

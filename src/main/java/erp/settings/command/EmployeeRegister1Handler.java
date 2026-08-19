@@ -1,6 +1,9 @@
 package erp.settings.command;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,35 +41,51 @@ public class EmployeeRegister1Handler implements CommandHandler {
 
 	// [GET] 화면 렌더링 (사원 정보 조회)
 	private String processForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		// URL에서 사원번호(empId)를 파라미터로 받습니다.
-		// (신규 등록인 경우 empId가 없을 수 있으므로 예외 처리)
 		String empIdStr = req.getParameter("empId");
 
 		if (empIdStr != null && !empIdStr.trim().isEmpty()) {
 			int empId = Integer.parseInt(empIdStr);
 
-			// 1. 기본/급여/병역 정보 조회
 			Employee employee = registerService.getEmployeeBasicProfile(empId);
-
-			// 2. 1:N 하위 이력 리스트 조회
 			List<EmployeeDependent> dependents = historyService.getDependents(empId);
 			List<EmployeeEducation> educations = historyService.getEducations(empId);
 			List<EmployeeCareer> careers = historyService.getCareers(empId);
-
-			// 4대보험 이력 리스트 조회
 			List<EmployeeInsuranceHistory> insuranceRows = historyService.getInsuranceHistories(empId);
 
-			// 3. JSP(뷰)로 전달하기 위해 request 영역에 저장
+			// ✅ [추가] 서버에서 경력 기간(년/월) 직접 계산 로직
+			if (careers != null) {
+				for (EmployeeCareer c : careers) {
+					if (c.getJoinDate() != null && c.getQuitDate() != null) {
+						// 기존 Date 타입을 계산하기 쉬운 LocalDate로 변환
+						LocalDate start = c.getJoinDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+						LocalDate end = c.getQuitDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+						// 퇴사일이 입사일보다 이후인 정상적인 경우에만 계산
+						if (!end.isBefore(start)) {
+							Period period = Period.between(start, end);
+							int totalMonths = (period.getYears() * 12) + period.getMonths();
+
+							// 요구사항 반영: 1개월 미만일 경우 최소 1개월로 처리
+							if (totalMonths < 1) {
+								totalMonths = 1;
+							}
+
+							// 계산된 총 개월 수를 다시 년과 월로 분리하여 객체에 세팅
+							c.setYears(totalMonths / 12);
+							c.setMonths(totalMonths % 12);
+						}
+					}
+				}
+			}
+
+			// JSP(뷰)로 전달하기 위해 request 영역에 저장
 			req.setAttribute("employee", employee);
 			req.setAttribute("dependents", dependents);
 			req.setAttribute("educations", educations);
 			req.setAttribute("careers", careers);
-
-			// 조회된 4대보험 데이터를 JSP의 items="${insuranceRows}"에 매핑
 			req.setAttribute("insuranceRows", insuranceRows);
 		}
 
-		// 사원등록 1 프로토타입 JSP 화면으로 포워딩
 		return "/WEB-INF/view/settings/employee-register-1.jsp";
 	}
 
@@ -188,11 +207,20 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		// 부서 및 직위 (v5 스키마 기준 NUMBER 타입)
 		String deptIdStr = req.getParameter("deptId");
 		if (deptIdStr != null && !deptIdStr.trim().isEmpty()) {
-			emp.setDepartmentId(Integer.parseInt(deptIdStr));
+			try {
+				// 숫자로 변환을 시도합니다.
+				emp.setDepartmentId(Integer.parseInt(deptIdStr));
+			} catch (NumberFormatException e) {
+				// 글자(가짜 데이터)가 들어와 에러가 나면 무시
+			}
 		}
 		String posIdStr = req.getParameter("posId");
 		if (posIdStr != null && !posIdStr.trim().isEmpty()) {
-			emp.setJobPositionId(Integer.parseInt(posIdStr));
+			try {
+				emp.setJobPositionId(Integer.parseInt(posIdStr));
+			} catch (NumberFormatException e) {
+				// 글자가 들어오면 무시
+			}
 		}
 
 		// [2. 연락처 및 주소]

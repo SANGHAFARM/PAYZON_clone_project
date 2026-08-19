@@ -107,7 +107,8 @@
 							<div>
 								<dt>입사일</dt>
 								<dd>
-									<fmt:formatDate value="${employee.joinDate}" pattern="yyyy/MM/dd" />
+									<fmt:formatDate value="${employee.joinDate}"
+										pattern="yyyy/MM/dd" />
 								</dd>
 							</div>
 						</dl>
@@ -374,11 +375,11 @@
 											<tr>
 												<th>${insurance.insuranceType}</th>
 												<td><input name="insuranceNo"
-													value="<c:out value='${insurance.insuranceNo}' />"></td>
+													value="<c:out value='${insurance.symbolNo}' />"></td>
 												<td><input type="date" name="insuranceStartDate"
-													value="${insurance.startDate}"></td>
+													value="<fmt:formatDate value='${insurance.acquireDate}' pattern='yyyy-MM-dd' />"></td>
 												<td><input type="date" name="insuranceEndDate"
-													value="${insurance.endDate}"></td>
+													value="<fmt:formatDate value='${insurance.lossDate}' pattern='yyyy-MM-dd' />"></td>
 											</tr>
 										</c:forEach>
 										<c:if test="${empty insuranceRows}">
@@ -427,7 +428,7 @@
 											<c:set var="dep" value="${dependents[row.index]}" />
 											<tr>
 												<td><input type="checkbox" name="dependentDeleteIds"
-													value="${dep.depId}"></td>
+													value="${dep.employeeDependentId}"></td>
 												<td><select name="dependents[${row.index}].relation"><option
 															value="">선택</option>
 														<c:forEach var="rel" items="${relations}">
@@ -437,8 +438,8 @@
 													value="<c:out value='${dep.depName}' />"></td>
 												<td><select name="dependents[${row.index}].nationality"><option
 															value="">선택</option>
-														<option ${dep.nationality eq '내국인' ? 'selected' : ''}>내국인</option>
-														<option ${dep.nationality eq '외국인' ? 'selected' : ''}>외국인</option></select></td>
+														<option ${dep.nationalType eq '내국인' ? 'selected' : ''}>내국인</option>
+														<option ${dep.nationalType eq '외국인' ? 'selected' : ''}>외국인</option></select></td>
 												<td><input name="dependents[${row.index}].juminNo"
 													value="<c:out value='${dep.juminNo}' />"></td>
 												<td><input type="checkbox"
@@ -446,10 +447,10 @@
 													${dep.disabledYn eq 'Y' ? 'checked' : ''}></td>
 												<td><input type="checkbox"
 													name="dependents[${row.index}].deductionYn" value="Y"
-													${dep.deductionYn eq 'Y' ? 'checked' : ''}></td>
+													${dep.basicDeductYn eq 'Y' ? 'checked' : ''}></td>
 												<td><input type="checkbox"
 													name="dependents[${row.index}].healthYn" value="Y"
-													${dep.healthYn eq 'Y' ? 'checked' : ''}></td>
+													${dep.healthInsYn eq 'Y' ? 'checked' : ''}></td>
 												<td><input type="checkbox"
 													name="dependents[${row.index}].cohabitYn" value="Y"
 													${dep.cohabitYn eq 'Y' ? 'checked' : ''}></td>
@@ -458,7 +459,7 @@
 													${dep.incomeTaxYn eq 'Y' ? 'checked' : ''}></td>
 												<td><input type="checkbox"
 													name="dependents[${row.index}].childYn" value="Y"
-													${dep.childYn eq 'Y' ? 'checked' : ''}></td>
+													${dep.childUnder20Yn eq 'Y' ? 'checked' : ''}></td>
 											</tr>
 										</c:forEach>
 									</tbody>
@@ -492,28 +493,30 @@
 											<c:set var="edu" value="${educations[row.index]}" />
 											<tr>
 												<td><input type="checkbox" name="educationDeleteIds"
-													value="${edu.eduId}"></td>
+													value="${edu.employeeEducationId}"></td>
 												<td><select name="educations[${row.index}].schoolType"><option
 															value="">선택</option>
 														<c:forEach var="type" items="${schoolTypes}">
-															<option ${type eq edu.schoolType ? 'selected' : ''}>${type}</option>
+															<option ${type eq edu.eduType ? 'selected' : ''}>${type}</option>
 														</c:forEach></select></td>
+
 												<td><input type="month"
 													name="educations[${row.index}].admissionYm"
-													value="${edu.admissionYm}"></td>
+													value="${fn:length(edu.admissionYm) eq 6 ? fn:substring(edu.admissionYm, 0, 4) : ''}${fn:length(edu.admissionYm) eq 6 ? '-' : ''}${fn:length(edu.admissionYm) eq 6 ? fn:substring(edu.admissionYm, 4, 6) : edu.admissionYm}"></td>
+
 												<td><input type="month"
 													name="educations[${row.index}].graduationYm"
-													value="${edu.graduationYm}"></td>
+													value="${fn:length(edu.gradYm) eq 6 ? fn:substring(edu.gradYm, 0, 4) : ''}${fn:length(edu.gradYm) eq 6 ? '-' : ''}${fn:length(edu.gradYm) eq 6 ? fn:substring(edu.gradYm, 4, 6) : edu.gradYm}"></td>
+
 												<td><input name="educations[${row.index}].schoolName"
 													value="<c:out value='${edu.schoolName}' />"></td>
 												<td><input name="educations[${row.index}].major"
-													value="<c:out value='${edu.major}' />"></td>
+													value="<c:out value='${edu.majorName}' />"></td>
 												<td><select
 													name="educations[${row.index}].completionStatus"><option
 															value="">선택</option>
 														<c:forEach var="state" items="${schoolStates}">
-															<option
-																${state eq edu.completionStatus ? 'selected' : ''}>${state}</option>
+															<option ${state eq edu.completeType ? 'selected' : ''}>${state}</option>
 														</c:forEach></select></td>
 											</tr>
 										</c:forEach>
@@ -549,27 +552,25 @@
 											<c:set var="career" value="${careers[row.index]}" />
 											<tr>
 												<td><input type="checkbox" name="careerDeleteIds"
-													value="${career.carId}"></td>
+													value="${career.employeeCareerId}"></td>
 												<td><input name="careers[${row.index}].companyName"
 													value="<c:out value='${career.companyName}' />"></td>
 												<td><input type="date"
 													name="careers[${row.index}].startDate"
-													value="${career.startDate}"></td>
+													value="<fmt:formatDate value='${career.joinDate}' pattern='yyyy-MM-dd' />"></td>
 												<td><input type="date"
 													name="careers[${row.index}].endDate"
-													value="${career.endDate}"></td>
+													value="<fmt:formatDate value='${career.quitDate}' pattern='yyyy-MM-dd' />"></td>
 												<td><div class="duration">
-														<input name="careers[${row.index}].years"
-															value="${career.years}">년 <input
-															name="careers[${row.index}].months"
-															value="${career.months}">개월
+														<input value="${career.years}" readonly>년 <input
+															value="${career.months}" readonly>개월
 													</div></td>
 												<td><input name="careers[${row.index}].lastPosition"
-													value="<c:out value='${career.lastPosition}' />"></td>
+													value="<c:out value='${career.finalPosition}' />"></td>
 												<td><input name="careers[${row.index}].duty"
 													value="<c:out value='${career.duty}' />"></td>
 												<td><input name="careers[${row.index}].retireReason"
-													value="<c:out value='${career.retireReason}' />"></td>
+													value="<c:out value='${career.quitReason}' />"></td>
 											</tr>
 										</c:forEach>
 									</tbody>
@@ -606,9 +607,9 @@
 														<option ${branch eq employee.milBranch ? 'selected' : ''}>${branch}</option>
 													</c:forEach></select></td>
 											<td><input type="date" name="milServiceStart"
-												value="${employee.milServiceStart}"></td>
+												value="<fmt:formatDate value='${employee.milServiceStart}' pattern='yyyy-MM-dd' />"></td>
 											<td><input type="date" name="milServiceEnd"
-												value="${employee.milServiceEnd}"></td>
+												value="<fmt:formatDate value='${employee.milServiceEnd}' pattern='yyyy-MM-dd' />"></td>
 											<td><input name="milRank"
 												value="<c:out value='${employee.milRank}' />"></td>
 											<td><input name="milSpecialty"

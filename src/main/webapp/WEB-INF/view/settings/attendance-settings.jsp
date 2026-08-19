@@ -155,8 +155,8 @@
 							name="attendName"
 							value="<c:out value='${selectedAttendItem.attendName}' />"
 							maxlength="100" placeholder="근태항목을 입력해주세요" required></label> <label
-							class="editor-field"><span>단위</span><select name="unitType"><option
-									value="">선택하세요.</option>
+							class="editor-field"><span>단위</span><select
+							name="unitType"><option value="">선택하세요.</option>
 								<option value="일"
 									${selectedAttendItem.unitType eq '일' ? 'selected' : ''}>일</option>
 								<option value="시간"
