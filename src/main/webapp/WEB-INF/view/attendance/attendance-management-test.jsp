@@ -35,7 +35,8 @@
 					<input type="search" name="keyword" value="${keyword}"
 						placeholder="검색어 입력">
 					<button type="submit">검색</button>
-					<a href="${pageContext.request.contextPath}/attendance/attendance-management.do">전체보기</a>
+					<a
+						href="${pageContext.request.contextPath}/attendance/attendance-management.do">전체보기</a>
 				</form>
 				<form
 					action="${pageContext.request.contextPath}/attendance/attendance-management.do"
@@ -43,8 +44,7 @@
 					<select name="status" aria-label="사원 상태">
 						<option value="">상태별</option>
 						<option value="재직" ${status eq '재직' ? 'selected' : ''}>재직</option>
-						<option value="퇴직"
-							${status eq '퇴직' ? 'selected' : ''}>퇴직</option>
+						<option value="퇴직" ${status eq '퇴직' ? 'selected' : ''}>퇴직</option>
 					</select>
 					<button type="submit" class="status-search">조회</button>
 				</form>
@@ -74,8 +74,10 @@
 									<td><c:out value="${employee.empNameKr}" /></td>
 									<td><c:out value="${employee.departmentName}" /></td>
 									<td><c:out value="${employee.jobPositionName}" /></td>
-									<td><a class="manage-button"
-										href="#attendance-record-modal">관리</a></td>
+									<td>
+										<!-- 관리 버튼: employeeId와 앵커를 함께 전달 --> <a class="manage-button"
+										href="${pageContext.request.contextPath}/attendance/attendance-management.do?employeeId=${employee.employeeId}#attendance-record-modal-${employee.employeeId}">관리</a>
+									</td>
 								</tr>
 							</c:forEach>
 							<c:if test="${empty employees}">
@@ -90,7 +92,7 @@
 				<section class="attendance-editor">
 					<h2>근태기록 입력</h2>
 					<form id="attendance-form"
-						action="${pageContext.request.contextPath}/attendance/save.do"
+						action="${pageContext.request.contextPath}/attendance/attendance-management.do"
 						method="post">
 						<label><span>입력일자</span><input type="date"
 							name="inputDate" value="${today}"></label> <label><span>근태항목</span>
@@ -100,7 +102,7 @@
 									<option value="${item.attendanceItemId}"><c:out
 											value="${item.attendName}" /></option>
 								</c:forEach>
-							</select></label> <label class="period-field"><span>기간</span><span
+						</select></label> <label class="period-field"><span>기간</span><span
 							class="period-inputs"><input type="date" name="startDate"><i>~</i><input
 								type="date" name="endDate"></span></label> <label><span>근태일수</span><span
 							class="days-field"><input type="number"
@@ -119,74 +121,76 @@
 		</section>
 	</main>
 
-	<div class="modal-overlay" id="attendance-record-modal">
-		<section class="modal modal--record" role="dialog" aria-modal="true"
-			aria-labelledby="record-title">
-			<header>
-				<h2 id="record-title">사원별 근태기록</h2>
-				<a href="#" aria-label="닫기">&times;</a>
-			</header>
-			<div class="modal-body">
-				<div class="record-summary">
-					<span>성명 : <c:out value="${selectedEmployee.name}" /></span><span>부서
-						: <c:out value="${selectedEmployee.departmentName}" />
-					</span><span>직위 : <c:out value="${selectedEmployee.positionName}" /></span>
-					<form>
-						<select name="recordYear" aria-label="연도">
-							<c:forEach var="year" items="${recordYears}">
-								<option value="${year}"><c:out value="${year}" />년
-								</option>
-							</c:forEach>
-						</select>
-						<select name="recordItem" aria-label="근태 구분">
-							<option value="">전체</option>
-							<c:forEach var="item" items="${attendanceItems}">
-								<option value="${item.attendanceItemId}"><c:out
-										value="${item.attendName}" /></option>
-							</c:forEach>
-						</select>
-					</form>
-				</div>
-				<table>
-					<thead>
-						<tr>
-							<th>번호</th>
-							<th>입력일자</th>
-							<th>근태항목</th>
-							<th>근태기간</th>
-							<th>근태일수</th>
-							<th>금액</th>
-							<th>적요</th>
-							<th>수정/삭제</th>
-						</tr>
-					</thead>
-					<tbody>
-						<c:forEach var="record" items="${attendanceRecords}">
-							<tr>
-								<td><c:out value="${record.rowNumber}" /></td>
-								<td><c:out value="${record.inputDate}" /></td>
-								<td><c:out value="${record.itemName}" /></td>
-								<td><c:out value="${record.period}" /></td>
-								<td><c:out value="${record.days}" /></td>
-								<td><c:out value="${record.allowance}" /></td>
-								<td><c:out value="${record.note}" /></td>
-								<td><span class="record-buttons"><a
-										href="${pageContext.request.contextPath}/attendance/manage.do?editId=${record.recordId}"
-										class="edit-button">수정</a><a
-										href="${pageContext.request.contextPath}/attendance/delete.do?recordId=${record.recordId}"
-										class="delete-button">삭제</a></span></td>
-							</tr>
-						</c:forEach>
-						<c:if test="${empty attendanceRecords}">
-							<tr>
-								<td colspan="8" class="empty-row">등록된 근태기록이 없습니다.</td>
-							</tr>
-						</c:if>
-					</tbody>
-				</table>
+	<!-- 사원별 근태기록 -->
+	<!-- 사원별 근태기록: employees 목록에서 employeeId로 찾은 사원만 표시 -->
+<c:if test="${not empty employeeId}">
+	<c:forEach var="employee" items="${employees}">
+		<c:if test="${employee.employeeId eq employeeId}">
+			<div class="modal-overlay" id="attendance-record-modal-${employee.employeeId}">
+				<section class="modal modal--record" role="dialog" aria-modal="true"
+					aria-labelledby="record-title">
+					<header>
+						<h2 id="record-title">사원별 근태기록</h2>
+						<a href="${pageContext.request.contextPath}/attendance/attendance-management.do"
+							aria-label="닫기">&times;</a>
+					</header>
+					<div class="modal-body">
+						<div class="record-summary">
+							<span>성명 : <c:out value="${employee.empNameKr}" /></span>
+							<span>부서 : <c:out value="${employee.departmentName}" /></span>
+							<span>직위 : <c:out value="${employee.jobPositionName}" /></span>
+							<form method="get">
+								<input type="hidden" name="employeeId" value="${employee.employeeId}">
+								<select name="year" aria-label="연도">
+									<c:forEach var="y" begin="2015" end="2026">
+										<option value="${y}" ${y eq year ? 'selected' : ''}>${y}년</option>
+									</c:forEach>
+								</select>
+								<select name="month" aria-label="월">
+									<c:forEach var="monthNo" begin="1" end="12">
+										<option value="${monthNo}" ${monthNo eq month ? 'selected' : ''}>${monthNo}월</option>
+									</c:forEach>
+								</select>
+								<button type="submit">조회</button>
+							</form>
+						</div>
+						<table>
+							<thead>
+								<tr>
+									<th>번호</th><th>입력일자</th><th>근태항목</th><th>근태기간</th>
+									<th>근태일수</th><th>금액</th><th>적요</th><th>수정/삭제</th>
+								</tr>
+							</thead>
+							<tbody>
+								<c:forEach var="record" items="${attendanceRecords}" varStatus="status">
+									<tr>
+										<td><c:out value="${status.count}" /></td>
+										<td><c:out value="${record.inputDate}" /></td>
+										<td><c:out value="${record.attendName}" /></td>
+										<td><c:out value="${record.startDate}" />
+											<c:if test="${record.startDate ne record.endDate }">
+												<c:out value=" ~ ${record.endDate }"/>
+											</c:if></td>
+										<td><c:out value="${record.attendValue}" /></td>
+										<td><c:out value="${record.payAmount}" /></td>
+										<td><c:out value="${record.note}" /></td>
+										<td><span class="record-buttons">
+											<a href="${pageContext.request.contextPath}/attendance/manage.do?editId=${record.employeeAttendanceId}" class="edit-button">수정</a>
+											<a href="${pageContext.request.contextPath}/attendance/delete.do?recordId=${record.employeeAttendanceId}" class="delete-button">삭제</a>
+										</span></td>
+									</tr>
+								</c:forEach>
+								<c:if test="${empty attendanceRecords}">
+									<tr><td colspan="8" class="empty-row">등록된 근태기록이 없습니다.</td></tr>
+								</c:if>
+							</tbody>
+						</table>
+					</div>
+				</section>
 			</div>
-		</section>
-	</div>
+		</c:if>
+	</c:forEach>
+</c:if>
 
 	<div class="modal-overlay" id="holiday-status-modal">
 		<section class="modal modal--holiday" role="dialog" aria-modal="true"

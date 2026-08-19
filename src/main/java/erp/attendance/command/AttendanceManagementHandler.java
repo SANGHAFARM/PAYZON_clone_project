@@ -3,14 +3,24 @@ package erp.attendance.command;
 import java.sql.Connection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import erp.attendance.dao.DailyWorkRecordDao;
+import erp.attendance.dao.EmployeeAttendanceDao;
+import erp.attendance.dto.AttendanceRecordDto;
+import erp.attendance.model.EmployeeAttendance;
+import erp.attendance.service.DailyWorkRecordRequest;
+import erp.attendance.service.InsertEmployeeAttendanceRequest;
 import erp.attendance.service.ListAttendanceEmployeeService;
-import erp.attendance.service.ListAttendanceItemService;
+import erp.attendance.service.ListEmployeeAttendanceService;
 import erp.employees.dto.AttendanceEmployeeDto;
 import erp.employees.dto.EmployeeListItem;
 import erp.settings.dao.AttendanceItemDao;
@@ -50,7 +60,27 @@ public class AttendanceManagementHandler implements CommandHandler {
 	}
 
 	private String processForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
-
+		String employeeIdStr = req.getParameter("employeeId");
+		if (employeeIdStr != null) {
+			int employeeId = Integer.parseInt(employeeIdStr);
+			String editId = req.getParameter("editId");
+			if (editId != null) {
+				req.setAttribute("editId", editId);
+			} else {
+				req.setAttribute("employeeId", employeeId);
+				String yearParam = req.getParameter("year");
+				String monthParam = req.getParameter("month");
+				int year = (yearParam != null && !yearParam.isEmpty()) ? Integer.parseInt(yearParam)
+						: LocalDate.now().getYear();
+				int month = (monthParam != null && !monthParam.isEmpty()) ? Integer.parseInt(monthParam)
+						: LocalDate.now().getMonthValue();
+				req.setAttribute("year", year);
+				req.setAttribute("month", month);
+				ListEmployeeAttendanceService listEmployeeAttendanceService = new ListEmployeeAttendanceService();
+				List<AttendanceRecordDto> attendanceRecords = listEmployeeAttendanceService.getEmployeeAttendance(employeeId, year, month);
+				req.setAttribute("attendanceRecords", attendanceRecords);
+			}
+		}
 		String status = req.getParameter("status");
 		if (status == null) {
 			status = "재직";
@@ -61,26 +91,34 @@ public class AttendanceManagementHandler implements CommandHandler {
 			keyword = "";
 		}
 		req.setAttribute("keyword", keyword);
-		
-		//근태목록 조회
+
+		req.setAttribute("today", LocalDate.now());
+
+		// 근태목록 조회
 		AttendanceSettingService attendanceSettingService = AttendanceSettingService.getInstance();
 		List<AttendanceItem> attendanceItems = attendanceSettingService.getAttendItems();
 		req.setAttribute("attendanceItems", attendanceItems);
-		
-		//사원목록 조회
+
+		// 사원목록 조회
 		ListAttendanceEmployeeService listAttendanceEmployeeService = new ListAttendanceEmployeeService();
-		List<AttendanceEmployeeDto> employees = listAttendanceEmployeeService.getAttendanceEmployeeDtos(keyword, status);
+		List<AttendanceEmployeeDto> employees = listAttendanceEmployeeService.getAttendanceEmployeeDtos(keyword,
+				status);
 		req.setAttribute("employees", employees);
-		
+
+		// 사원 근태 조회
+
+		// 사원 휴가 조회
+
 		return FORM_VIEW;
 
 	}
 
 	private String processSubmit(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		return null;
+		Map<String, Boolean> errors = new HashMap<>();
+		req.setAttribute("errors", errors);
+		InsertEmployeeAttendanceRequest request = createInsertEmployeeAttendanceRequest(req, errors);
+		return FORM_VIEW;
 	}
-
-
 
 	private Date parseDate(String dateStr) {
 		if (dateStr == null || dateStr.isEmpty()) {
@@ -91,6 +129,41 @@ public class AttendanceManagementHandler implements CommandHandler {
 		} catch (ParseException e) {
 			return null;
 		}
+	}
+	
+	private InsertEmployeeAttendanceRequest createInsertEmployeeAttendanceRequest(HttpServletRequest req, Map<String, Boolean> errors) {
+		InsertEmployeeAttendanceRequest request = new InsertEmployeeAttendanceRequest();
+		String[] employeeIdsStr = req.getParameterValues("employeeIds");
+		List<Integer> employeeIds = new ArrayList<>();
+		if (employeeIdsStr != null) {
+			for (String idStr : employeeIdsStr) {
+				employeeIds.add(Integer.parseInt(idStr));
+			}
+		}
+		String startDateStr = req.getParameter("startDate");
+		String endDateStr = req.getParameter("endDate");
+		String inputDateStr = req.getParameter("inputDate");
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate = null;
+		Date endDate = null;
+		Date inputDate = null;
+		try {
+			startDate = formatter.parse(startDateStr);
+			endDate = formatter.parse(endDateStr);
+			inputDate = formatter.parse(inputDateStr);
+		}catch (ParseException e) {
+			errors.put("ParseException", Boolean.TRUE);
+		}
+		
+		request.setEmployeeIds(employeeIds);
+		request.setInputDate(inputDate);
+		request.setAttendanceItemId(Integer.parseInt(req.getParameter("attendanceItemId")));
+		request.setStartDate(startDate);
+		request.setEndDate(endDate);
+		request.setAttendValue(Double.parseDouble(req.getParameter("attendValue")));
+		request.setPayAmount(Long.parseLong(req.getParameter("payAmount")));
+		request.setNote(req.getParameter("note"));
+		return request;
 	}
 
 }

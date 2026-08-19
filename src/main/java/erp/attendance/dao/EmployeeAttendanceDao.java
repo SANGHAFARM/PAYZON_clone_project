@@ -9,6 +9,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import erp.attendance.dto.AttendanceRecordDto;
 import erp.attendance.model.EmployeeAttendance;
 /*import erp.attend.model.AttendDetailItem;
 import erp.attend.model.AttendSearchCondition;*/
@@ -75,30 +76,58 @@ public class EmployeeAttendanceDao {
 	 * EmpAttendRecord테이블에 있는 기록을 사원ID와 연도와 월로 조회하는 메서드 month가 null일 시, month조건은
 	 * 무시되고 해당년도 전체를 조회함 EmpAttendRecordテーブルにある記録を社員IDと年度と月で照会するメソッド
 	 */
-
-	public List<EmployeeAttendance> selectByEmpIdAndYearAndMonth(Connection conn, int empId, int year, Integer month)
-			throws SQLException {
-		String sql = "SELECT * FROM EMPLOYEE_ATTENDANCE " + "WHERE EMP_ID=? " + "AND TO_CHAR(START_DATE, 'YYYY')=? "
-				+ "AND (? IS NULL OR TO_CHAR(START_DATE, 'MM')=?)";
-		List<EmployeeAttendance> list = new ArrayList<>();
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	
+	public List<AttendanceRecordDto> selectByEmpIdAndYearAndMonth(Connection conn, int empId, int year, Integer month) throws SQLException{
+		String sql = "SELECT A.EMPLOYEE_ATTENDANCE_ID, A.INPUT_DATE, I.ATTEND_NAME, A.START_DATE, A.END_DATE, A.ATTEND_VALUE, A.PAY_AMOUNT, A.NOTE "
+		           + "FROM EMPLOYEE_ATTENDANCE A LEFT JOIN ATTENDANCE_ITEM I ON I.ATTENDANCE_ITEM_ID = A.ATTENDANCE_ITEM_ID "
+		           + "WHERE EMPLOYEE_ID = ? "
+		           + "AND TO_CHAR(START_DATE, 'YYYY') = ? "
+		           + "AND (? IS NULL OR TO_CHAR(START_DATE, 'MM') = ?)";
+		List<AttendanceRecordDto> list = new ArrayList<>();
+		try(PreparedStatement pstmt = conn.prepareStatement(sql)){
 			pstmt.setInt(1, empId);
 			pstmt.setString(2, String.valueOf(year));
-			if (month != null) {
+			if (month!=null) {
 				pstmt.setString(3, String.format("%02d", month));
 				pstmt.setString(4, String.format("%02d", month));
+				
 			} else {
 				pstmt.setString(3, null);
 				pstmt.setString(4, null);
 			}
-			try (ResultSet rs = pstmt.executeQuery()) {
+			try(ResultSet rs = pstmt.executeQuery()){
 				while (rs.next()) {
-					list.add(convertEmployeeAttendance(rs));
+					AttendanceRecordDto dto = new AttendanceRecordDto();
+					dto.setEmployeeAttendanceId(rs.getInt("EMPLOYEE_ATTENDANCE_ID"));
+					dto.setInputDate(rs.getDate("INPUT_DATE"));
+					dto.setAttendName(rs.getString("ATTEND_NAME"));
+					dto.setStartDate(rs.getDate("START_DATE"));
+					dto.setEndDate(rs.getDate("END_DATE"));
+					dto.setAttendValue(rs.getDouble("ATTEND_VALUE"));
+					dto.setPayAmount(rs.getLong("PAY_AMOUNT"));
+					dto.setNote(rs.getString("NOTE"));
+					list.add(dto);
 				}
 			}
 		}
 		return list;
+				
 	}
+
+	/*
+	 * public List<EmployeeAttendance> selectByEmpIdAndYearAndMonth(Connection conn,
+	 * int empId, int year, Integer month) throws SQLException { String sql =
+	 * "SELECT * FROM EMPLOYEE_ATTENDANCE " + "WHERE EMP_ID=? " +
+	 * "AND TO_CHAR(START_DATE, 'YYYY')=? " +
+	 * "AND (? IS NULL OR TO_CHAR(START_DATE, 'MM')=?)"; List<EmployeeAttendance>
+	 * list = new ArrayList<>(); try (PreparedStatement pstmt =
+	 * conn.prepareStatement(sql)) { pstmt.setInt(1, empId); pstmt.setString(2,
+	 * String.valueOf(year)); if (month != null) { pstmt.setString(3,
+	 * String.format("%02d", month)); pstmt.setString(4, String.format("%02d",
+	 * month)); } else { pstmt.setString(3, null); pstmt.setString(4, null); } try
+	 * (ResultSet rs = pstmt.executeQuery()) { while (rs.next()) {
+	 * list.add(convertEmployeeAttendance(rs)); } } } return list; }
+	 */
 
 	/*
 	 * EmpAttendRocrd테이블에서 사원ID와 휴가항목ID로 사용한 휴가의 합계를 조회하는 메서드

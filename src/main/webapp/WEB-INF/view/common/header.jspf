@@ -39,7 +39,7 @@
 				<span>제증명서 발급</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
-			href="${pageContext.request.contextPath}/manage.do">
+			href="${pageContext.request.contextPath}/attendance/attendance-management.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/attendance.png">
 				<span>근태기록/관리</span>
@@ -118,10 +118,10 @@
 							발급대장</a></li>
 				</ul></li>
 			<li class="main-nav__item"><a class="main-nav__trigger"
-				href="${pageContext.request.contextPath}/example.do?menu=attendance">근태관리</a>
+				href="${pageContext.request.contextPath}//attendance/attendance-management.do">근태관리</a>
 				<ul class="dropdown-menu">
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=attendance-management">근태기록/관리</a></li>
+						href="${pageContext.request.contextPath}/attendance/attendance-management.do">근태기록/관리</a></li>
 					<li><a class="dropdown-menu__link"
 						href="${pageContext.request.contextPath}/example.do?menu=attendance-search">근태조회</a></li>
 					<li><a class="dropdown-menu__link"

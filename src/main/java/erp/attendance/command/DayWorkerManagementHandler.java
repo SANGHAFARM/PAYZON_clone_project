@@ -65,22 +65,25 @@ public class DayWorkerManagementHandler implements CommandHandler {
 				req.setAttribute("incomeTax", req.getParameter("incomeTax"));
 				req.setAttribute("localIncomeTax", req.getParameter("localIncomeTax"));
 				req.setAttribute("actualPay", req.getParameter("actualPay"));
-			}
-			req.setAttribute("employeeId", employeeId);
-			DailyWorkRecordDao dailyWorkRecordDao = DailyWorkRecordDao.getInstance();
-			DailyWorkRecordRequest request = new DailyWorkRecordRequest();
-			String yearParam = req.getParameter("year");
-			String monthParam = req.getParameter("month");
-			int year = (yearParam != null && !yearParam.isEmpty()) ? Integer.parseInt(yearParam)
-					: LocalDate.now().getYear();
-			int month = (monthParam != null && !monthParam.isEmpty()) ? Integer.parseInt(monthParam)
-					: LocalDate.now().getMonthValue();
-			request.setEmployeeId(Integer.parseInt(employeeId));
-			request.setYear(year);
-			request.setMonth(month);
-			try (Connection conn = ConnectionProvider.getConnection()) {
-				List<DailyWorkRecordDto> workRecords = dailyWorkRecordDao.selectByRequest(conn, request);
-				req.setAttribute("workRecords", workRecords);
+			} else {
+				req.setAttribute("employeeId", employeeId);
+				DailyWorkRecordDao dailyWorkRecordDao = DailyWorkRecordDao.getInstance();
+				DailyWorkRecordRequest request = new DailyWorkRecordRequest();
+				String yearParam = req.getParameter("year");
+				String monthParam = req.getParameter("month");
+				int year = (yearParam != null && !yearParam.isEmpty()) ? Integer.parseInt(yearParam)
+						: LocalDate.now().getYear();
+				int month = (monthParam != null && !monthParam.isEmpty()) ? Integer.parseInt(monthParam)
+						: LocalDate.now().getMonthValue();
+				request.setEmployeeId(Integer.parseInt(employeeId));
+				request.setYear(year);
+				request.setMonth(month);
+				req.setAttribute("year", year);
+				req.setAttribute("month", month);
+				try (Connection conn = ConnectionProvider.getConnection()) {
+					List<DailyWorkRecordDto> workRecords = dailyWorkRecordDao.selectByRequest(conn, request);
+					req.setAttribute("workRecords", workRecords);
+				}
 			}
 		}
 		String status = req.getParameter("status");

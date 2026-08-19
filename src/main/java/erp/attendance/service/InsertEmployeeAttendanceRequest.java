@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 public class InsertEmployeeAttendanceRequest {
-	private List<Integer> empIds;
+	private List<Integer> employeeIds;
 	private Date inputDate;
 	private int attendanceItemId;
 	private Date startDate;
@@ -15,10 +15,10 @@ public class InsertEmployeeAttendanceRequest {
 	private String note;
 	public InsertEmployeeAttendanceRequest() {
 	}
-	public InsertEmployeeAttendanceRequest(List<Integer> empIds, Date inputDate, int attendanceItemId, Date startDate,
+	public InsertEmployeeAttendanceRequest(List<Integer> employeeIds, Date inputDate, int attendanceItemId, Date startDate,
 			Date endDate, double attendValue, long payAmount, String note) {
 		super();
-		this.empIds = empIds;
+		this.employeeIds = employeeIds;
 		this.inputDate = inputDate;
 		this.attendanceItemId = attendanceItemId;
 		this.startDate = startDate;
@@ -27,11 +27,11 @@ public class InsertEmployeeAttendanceRequest {
 		this.payAmount = payAmount;
 		this.note = note;
 	}
-	public List<Integer> getEmpIds() {
-		return empIds;
+	public List<Integer> getEmployeeIds() {
+		return employeeIds;
 	}
-	public void setEmpIds(List<Integer> empIds) {
-		this.empIds = empIds;
+	public void setEmployeeIds(List<Integer> employeeIds) {
+		this.employeeIds = employeeIds;
 	}
 	public Date getInputDate() {
 		return inputDate;
@@ -74,6 +74,20 @@ public class InsertEmployeeAttendanceRequest {
 	}
 	public void setNote(String note) {
 		this.note = note;
+	}
+	public void validate(Map<String, Boolean> errors) {
+		if (employeeIds==null||employeeIds.isEmpty()||employeeIds.size()==0) {
+			errors.put("empIds", Boolean.TRUE);
+		}
+		if (attendanceItemId<=0) {
+			errors.put("attendanceItemId", Boolean.TRUE);
+		}
+		if (endDate.before(startDate)) {
+			errors.put("dateError", Boolean.TRUE);
+		}
+		if (attendValue<=0) {
+			errors.put("attendValue", Boolean.TRUE);
+		}
 	}
 	
 	
