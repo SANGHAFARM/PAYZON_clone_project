@@ -156,7 +156,7 @@
 				</ul></li>
 				<li class="main-nav__item">
    
-    				<a class="main-nav__trigger" href="${pageContext.request.contextPath}/preview-payroll-stats/annual-payroll-statistics.jsp">급여통계</a>
+    				<a class="main-nav__trigger" href="${pageContext.request.contextPath}/payroll-stats/annual.do">급여통계</a>
     					<ul class="dropdown-menu">
 					
 					<li><a class="dropdown-menu__link"
