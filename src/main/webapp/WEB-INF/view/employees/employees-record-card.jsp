@@ -8,8 +8,8 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>인사관리 &gt; 인사기록카드</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/employees/employees-record-card.css?v=20260815-4">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/employees/employees-record-card.css?v=20260820-5">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260820-3">
 </head>
 <body>
 	<%@ include file="/WEB-INF/view/common/header.jspf" %>
@@ -30,7 +30,7 @@
 			<%-- 선택된 EMPLOYEE와 사원별 상세 이력을 인사기록카드 형식으로 출력한다. --%>
 			<article class="record-sheet">
 				<section class="identity-section">
-					<div class="photo-box"><c:choose><c:when test="${not empty selectedEmployee.photoPath}"><img src="<c:out value='${selectedEmployee.photoPath}' />" alt="사원사진"></c:when><c:otherwise><span>사진</span></c:otherwise></c:choose></div>
+					<div class="photo-box"><c:choose><c:when test="${not empty selectedEmployee.photoPath}"><c:url var="employeePhotoUrl" value="${selectedEmployee.photoPath}" /><img src="<c:out value='${employeePhotoUrl}' />" alt="사원사진"></c:when><c:otherwise><span>사진</span></c:otherwise></c:choose></div>
 					<dl class="record-number"><div><dt>사원번호</dt><dd><c:out value="${selectedEmployee.empNo}" /></dd></div><div><dt>입사일</dt><dd><fmt:formatDate value="${selectedEmployee.joinDate}" pattern="yyyy-MM-dd" /></dd></div><div><dt>퇴사일</dt><dd><fmt:formatDate value="${selectedEmployee.retireDate}" pattern="yyyy-MM-dd" /></dd></div></dl>
 					<dl class="identity-grid"><div><dt>성명(한글)</dt><dd><c:out value="${selectedEmployee.empNameKr}" /></dd></div><div><dt>성명(영문)</dt><dd><c:out value="${selectedEmployee.empNameEn}" /></dd></div><div><dt>주민등록번호</dt><dd><c:if test="${fn:length(selectedEmployee.juminNo) ge 6}"><c:out value="${fn:substring(selectedEmployee.juminNo, 0, 6)}-*******" /></c:if></dd></div><div><dt>사원구분</dt><dd><c:out value="${selectedEmployee.empType}" /></dd></div><div class="wide"><dt>주소</dt><dd><c:out value="${selectedEmployee.address}" /></dd></div><div><dt>휴대전화</dt><dd><c:out value="${selectedEmployee.mobileNo}" /></dd></div><div><dt>연락처</dt><dd><c:out value="${selectedEmployee.telNo}" /></dd></div><div class="wide"><dt>E-Mail</dt><dd><c:out value="${selectedEmployee.email}" /></dd></div></dl>
 				</section>

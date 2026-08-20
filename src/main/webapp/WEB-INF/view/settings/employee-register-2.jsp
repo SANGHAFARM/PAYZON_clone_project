@@ -11,7 +11,7 @@
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/settings/employee-register.css?v=20260820-12">
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
+	href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260820-3">
 </head>
 <body>
 	<%@ include file="/WEB-INF/view/common/header.jspf"%>
@@ -640,10 +640,10 @@
 	</main>
 	<c:if test="${not empty message}">
 		<div class="employee-setting-alert" role="alertdialog" aria-modal="true" aria-labelledby="employee-setting-alert-message">
-			<a class="employee-setting-alert__backdrop" href="${pageContext.request.contextPath}/settings/register2.do?empId=${employee.employeeId}" aria-label="확인"></a>
+			<a class="employee-setting-alert__backdrop" href="${pageContext.request.contextPath}/settings/register2.do?empId=${employee.employeeId}&amp;dismissMessage=true" aria-label="확인"></a>
 			<div class="employee-setting-alert__panel">
 				<p id="employee-setting-alert-message"><c:out value="${message}" /></p>
-				<a href="${pageContext.request.contextPath}/settings/register2.do?empId=${employee.employeeId}">확인</a>
+				<a href="${pageContext.request.contextPath}/settings/register2.do?empId=${employee.employeeId}&amp;dismissMessage=true">확인</a>
 			</div>
 		</div>
 		<c:remove var="message" scope="session" />

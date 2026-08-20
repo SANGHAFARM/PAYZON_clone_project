@@ -8,8 +8,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>급여명세서</title>
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/common.css">
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/payroll/payroll-payslip.css?v=20260815-2">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260820-3">
 </head>
 <body>
 	<%@ include file="/WEB-INF/view/common/header.jspf" %>

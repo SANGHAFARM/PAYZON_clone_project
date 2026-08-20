@@ -10,7 +10,7 @@
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/settings/pay-item-settings.css?v=20260820-7">
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
+	href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260820-3">
 </head>
 <body>
 	<%@ include file="/WEB-INF/view/common/header.jspf"%>
@@ -323,14 +323,14 @@
 	</main>
 	<c:if test="${not empty deleteItemType and not empty deleteItemId}">
 		<div class="setting-alert" role="alertdialog" aria-modal="true" aria-labelledby="delete-alert-message">
-			<a class="setting-alert__backdrop" href="${pageContext.request.contextPath}/settings/pay-item.do#${deleteItemType eq 'PAY' ? 'payment-settings' : 'deduction-settings'}" aria-label="삭제 취소"></a>
+			<a class="setting-alert__backdrop" href="${pageContext.request.contextPath}/settings/pay-item.do?dismissDelete=true#${deleteItemType eq 'PAY' ? 'payment-settings' : 'deduction-settings'}" aria-label="삭제 취소"></a>
 			<form class="setting-alert__panel" method="post" action="${pageContext.request.contextPath}/settings/${deleteItemType eq 'PAY' ? 'pay-item.do' : 'deduction-item.do'}">
 				<p id="delete-alert-message">선택한 ${deleteItemType eq 'PAY' ? '지급항목' : '공제항목'}을 삭제하시겠습니까?</p>
 				<p class="setting-alert__warning">삭제한 항목은 복구할 수 없습니다.</p>
 				<input type="hidden" name="${deleteItemType eq 'PAY' ? 'payItemId' : 'deductItemId'}" value="<c:out value='${deleteItemId}' />">
 				<div class="setting-alert__actions">
 					<button type="submit" name="action" value="delete">삭제</button>
-					<a href="${pageContext.request.contextPath}/settings/pay-item.do#${deleteItemType eq 'PAY' ? 'payment-settings' : 'deduction-settings'}">취소</a>
+					<a href="${pageContext.request.contextPath}/settings/pay-item.do?dismissDelete=true#${deleteItemType eq 'PAY' ? 'payment-settings' : 'deduction-settings'}">취소</a>
 				</div>
 			</form>
 		</div>
@@ -339,10 +339,10 @@
 	</c:if>
 	<c:if test="${not empty message}">
 		<div class="setting-alert" role="alertdialog" aria-modal="true" aria-labelledby="setting-alert-message">
-			<a class="setting-alert__backdrop" href="${pageContext.request.contextPath}/settings/pay-item.do${empty messageAnchor ? '' : messageAnchor}" aria-label="닫기"></a>
+			<a class="setting-alert__backdrop" href="${pageContext.request.contextPath}/settings/pay-item.do?dismissMessage=true${empty messageAnchor ? '' : messageAnchor}" aria-label="닫기"></a>
 			<div class="setting-alert__panel">
 				<p id="setting-alert-message"><c:out value="${message}" /></p>
-				<a class="setting-alert__confirm" href="${pageContext.request.contextPath}/settings/pay-item.do${empty messageAnchor ? '' : messageAnchor}">확인</a>
+				<a class="setting-alert__confirm" href="${pageContext.request.contextPath}/settings/pay-item.do?dismissMessage=true${empty messageAnchor ? '' : messageAnchor}">확인</a>
 			</div>
 		</div>
 		<c:remove var="message" scope="session" />

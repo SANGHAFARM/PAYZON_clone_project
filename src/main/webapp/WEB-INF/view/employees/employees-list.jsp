@@ -6,8 +6,8 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>인사관리 &gt; 사원현황/관리</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/employees/employees-list.css?v=20260819-1">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/employees/employees-list.css?v=20260820-1">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260820-3">
 	<style>
 		<c:if test="${not visibleColumns.contains('employmentType')}">.employee-table th:nth-child(2), .employee-table td:nth-child(2) { display:none; }</c:if>
 		<c:if test="${not visibleColumns.contains('joinDate')}">.employee-table th:nth-child(3), .employee-table td:nth-child(3) { display:none; }</c:if>
@@ -37,16 +37,16 @@
 		.delete-confirmation-actions button { color:#fff; background:#d64040; }
 		.delete-confirmation-actions a { color:#555; background:#e9edf2; }
 		.search-validation-actions a { color:#fff; background:#347fc3; }
-		.search-validation-panel { width:480px; }
-		.search-validation-text { margin:10px 0 4px; font-size:13px; font-weight:700; }
+		.search-validation-panel { width:430px; }
+		.search-validation-text { margin:0; font-size:13px; font-weight:400; }
 	</style>
 </head>
 <body>
 	<%@ include file="/WEB-INF/view/common/header.jspf" %>
 	<main class="page-content">
 		<div class="employee-list-page">
+			<c:url var="currentEmployeeListUrl" value="/employees/employees.do"><c:param name="page" value="${condition.page}"/><c:param name="pageSize" value="${condition.pageSize}"/><c:param name="searchTarget" value="${condition.searchTarget}"/><c:param name="keyword" value="${condition.keyword}"/><c:param name="employmentType" value="${condition.employmentType}"/><c:param name="status" value="${condition.status}"/></c:url>
 			<header class="page-heading"><div><p>인사관리</p><h1>사원현황/관리</h1></div></header>
-			<c:if test="${not empty message}"><p class="form-message" role="status"><c:out value="${message}" /></p></c:if>
 
 			<%-- DB에서 집계한 재직/퇴직 및 고용형태별 사원 수 --%>
 			<nav class="summary-grid" aria-label="사원 현황 요약">
@@ -112,7 +112,16 @@
 				</div>
 			</c:if>
 
-			<c:url var="currentEmployeeListUrl" value="/employees/employees.do"><c:param name="page" value="${condition.page}"/><c:param name="pageSize" value="${condition.pageSize}"/><c:param name="searchTarget" value="${condition.searchTarget}"/><c:param name="keyword" value="${condition.keyword}"/><c:param name="employmentType" value="${condition.employmentType}"/><c:param name="status" value="${condition.status}"/></c:url>
+			<c:if test="${not empty message}">
+				<div class="settings-modal" style="display:flex" role="alertdialog" aria-modal="true" aria-labelledby="employee-list-message">
+					<a class="modal-backdrop" href="${currentEmployeeListUrl}" aria-label="닫기"></a>
+					<div class="modal-panel delete-confirmation-panel search-validation-panel">
+						<p id="employee-list-message" class="delete-confirmation-text search-validation-text"><span><c:out value="${message}" /></span></p>
+						<div class="delete-confirmation-actions search-validation-actions"><a href="${currentEmployeeListUrl}">확인</a></div>
+					</div>
+				</div>
+			</c:if>
+
 			<div id="column-modal" class="settings-modal" role="dialog" aria-modal="true"><a class="modal-backdrop" href="${currentEmployeeListUrl}" aria-label="표시항목 설정 취소"></a><form class="modal-panel column-panel" action="${pageContext.request.contextPath}/employees/employee-columns.do" method="post"><div class="modal-title"><h2>표시항목 설정</h2><a href="${currentEmployeeListUrl}" aria-label="표시항목 설정 취소">×</a></div><div class="column-options">
 				<label><input id="column-type" type="checkbox" name="columns" value="employmentType" ${visibleColumns.contains('employmentType') ? 'checked' : ''}> 구분</label><label><input id="column-join-date" type="checkbox" name="columns" value="joinDate" ${visibleColumns.contains('joinDate') ? 'checked' : ''}> 입사일</label><label><input id="column-number" type="checkbox" name="columns" value="employeeNo" ${visibleColumns.contains('employeeNo') ? 'checked' : ''}> 사원번호</label><label><input id="column-name" type="checkbox" name="columns" value="name" ${visibleColumns.contains('name') ? 'checked' : ''}> 성명(한글)</label><label><input id="column-english-name" type="checkbox" name="columns" value="englishName" ${visibleColumns.contains('englishName') ? 'checked' : ''}> 성명(영문)</label><label><input id="column-department" type="checkbox" name="columns" value="department" ${visibleColumns.contains('department') ? 'checked' : ''}> 부서</label><label><input id="column-position" type="checkbox" name="columns" value="position" ${visibleColumns.contains('position') ? 'checked' : ''}> 직위</label><label><input id="column-resident" type="checkbox" name="columns" value="residentNo" ${visibleColumns.contains('residentNo') ? 'checked' : ''}> 주민번호</label><label><input id="column-nationality" type="checkbox" name="columns" value="nationalityType" ${visibleColumns.contains('nationalityType') ? 'checked' : ''}> 내/외국인</label><label><input id="column-address" type="checkbox" name="columns" value="address" ${visibleColumns.contains('address') ? 'checked' : ''}> 주소</label><label><input id="column-phone" type="checkbox" name="columns" value="phone" ${visibleColumns.contains('phone') ? 'checked' : ''}> 전화번호</label><label><input id="column-mobile" type="checkbox" name="columns" value="mobile" ${visibleColumns.contains('mobile') ? 'checked' : ''}> 휴대폰</label><label><input id="column-email" type="checkbox" name="columns" value="email" ${visibleColumns.contains('email') ? 'checked' : ''}> 이메일</label><label><input id="column-sns" type="checkbox" name="columns" value="sns" ${visibleColumns.contains('sns') ? 'checked' : ''}> SNS</label><label><input id="column-retirement" type="checkbox" name="columns" value="retirementDate" ${visibleColumns.contains('retirementDate') ? 'checked' : ''}> 퇴사일</label><label><input id="column-status" type="checkbox" name="columns" value="status" ${visibleColumns.contains('status') ? 'checked' : ''}> 상태</label><label><input id="column-account" type="checkbox" name="columns" value="bankAccount" ${visibleColumns.contains('bankAccount') ? 'checked' : ''}> 은행계좌</label>
 			</div><div class="modal-actions"><button>표시항목 저장</button></div></form></div>

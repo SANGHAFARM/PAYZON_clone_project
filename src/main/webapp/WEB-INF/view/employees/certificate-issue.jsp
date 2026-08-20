@@ -7,7 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>인사관리 &gt; 제증명서 발급</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/employees/certificate-issue.css?v=20260815-2">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260820-3">
 </head>
 <body>
 	<%@ include file="/WEB-INF/view/common/header.jspf" %>
