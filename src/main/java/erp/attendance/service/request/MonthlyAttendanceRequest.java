@@ -1,4 +1,4 @@
-package erp.attendance.service;
+package erp.attendance.service.request;
 
 public class MonthlyAttendanceRequest {
 	int year;

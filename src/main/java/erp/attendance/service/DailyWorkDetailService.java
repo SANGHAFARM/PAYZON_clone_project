@@ -6,6 +6,7 @@ import java.util.List;
 
 import erp.attendance.dao.DailyWorkRecordDao;
 import erp.attendance.dto.DailyWorkDetailDto;
+import erp.attendance.service.request.DailyWorkDetailRequest;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 

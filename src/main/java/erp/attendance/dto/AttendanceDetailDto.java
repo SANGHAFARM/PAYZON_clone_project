@@ -4,7 +4,7 @@ import java.util.Date;
 /*
  *근태 조회탭의 상세 조회 결과를 담을 모델
 */
-public class AttendDetailItem {
+public class AttendanceDetailDto {
     private Date inputDate;
     private String empType;
     private String empNameKr;
@@ -16,11 +16,8 @@ public class AttendDetailItem {
     private double attendValue;
     private long payAmount;
     private String note;
-	public AttendDetailItem() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	public AttendDetailItem(Date inputDate, String empType, String empNameKr, String departmentName,
+
+	public AttendanceDetailDto(Date inputDate, String empType, String empNameKr, String departmentName,
 			String jobPositionName, String attendName, Date startDate, Date endDate, double attendValue, long payAmount,
 			String note) {
 		super();
@@ -35,6 +32,10 @@ public class AttendDetailItem {
 		this.attendValue = attendValue;
 		this.payAmount = payAmount;
 		this.note = note;
+	}
+	public AttendanceDetailDto() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 	public Date getInputDate() {
 		return inputDate;

@@ -3,9 +3,9 @@ package erp.attendance.service;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-
 import erp.attendance.dao.EmployeeAttendanceDao;
 import erp.attendance.model.EmployeeAttendance;
+import erp.attendance.service.request.EmployeeAttendanceUpdateRequest;
 import erp.settings.dao.AttendanceItemDao;
 import erp.settings.model.AttendanceItem;
 import jdbc.JdbcUtil;
