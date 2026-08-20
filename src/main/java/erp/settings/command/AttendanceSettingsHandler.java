@@ -20,6 +20,10 @@ public class AttendanceSettingsHandler implements CommandHandler {
 	@Override
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		// 이 핸들러는 화면을 보여주는 용도(GET)로만 작동
+		if ("true".equals(req.getParameter("cancelEmployeeLeaveDelete"))) {
+			req.getSession().removeAttribute("employeeLeaveDeleteIds");
+			req.getSession().removeAttribute("employeeLeaveDeleteCount");
+		}
 
 		// 1. 마스터 데이터 리스트 일괄 조회
 		List<LeaveItem> leaveItems = settingService.getLeaveItems();
@@ -29,6 +33,38 @@ public class AttendanceSettingsHandler implements CommandHandler {
 		req.setAttribute("leaveItems", leaveItems);
 		req.setAttribute("attendItems", attendItems);
 		req.setAttribute("attendGroups", attendGroups);
+
+		// 삭제 요청은 실제 삭제 전에 확인 팝업에 필요한 정보만 구성한다.
+		String deleteType = req.getParameter("deleteType");
+		String deleteIdStr = req.getParameter("deleteId");
+		if (deleteType != null && deleteIdStr != null && !deleteIdStr.isEmpty()) {
+			int deleteId = Integer.parseInt(deleteIdStr);
+			req.setAttribute("deleteSettingType", deleteType);
+			req.setAttribute("deleteSettingId", deleteId);
+
+			if ("leave".equals(deleteType)) {
+				LeaveItem item = settingService.getLeaveItem(deleteId);
+				req.setAttribute("deleteSettingName", item == null ? "휴가항목" : item.getItemName());
+				req.setAttribute("deleteActionUrl", "/settings/leave-item.do");
+				req.setAttribute("deleteReturnHash", "#leave-settings");
+			} else if ("attendance".equals(deleteType)) {
+				AttendanceItem item = settingService.getAttendItem(deleteId);
+				req.setAttribute("deleteSettingName", item == null ? "근태항목" : item.getAttendName());
+				req.setAttribute("deleteActionUrl", "/settings/attend-item.do");
+				req.setAttribute("deleteReturnHash", "#attendance-item-settings");
+			} else if ("group".equals(deleteType)) {
+				String groupName = "근태그룹";
+				for (AttendanceGroup group : attendGroups) {
+					if (group.getAttendanceGroupId() == deleteId) {
+						groupName = group.getGroupName();
+						break;
+					}
+				}
+				req.setAttribute("deleteSettingName", groupName);
+				req.setAttribute("deleteActionUrl", "/settings/attend-group.do");
+				req.setAttribute("deleteReturnHash", "#attend-group-modal");
+			}
+		}
 
 		// 2. 선택된 휴가항목 단건 조회 (수정 폼용)
 		String leaveItemIdStr = req.getParameter("leaveItemId");

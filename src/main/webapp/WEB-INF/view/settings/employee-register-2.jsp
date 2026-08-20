@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>기본환경설정 &gt; 사원등록 2</title>
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/settings/employee-register.css">
+	href="${pageContext.request.contextPath}/css/settings/employee-register.css?v=20260820-12">
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
 </head>
@@ -41,17 +41,16 @@
 					<strong>*</strong> 표시는 필수입력사항입니다.
 				</p>
 			</header>
-			<c:if test="${not empty message}">
-				<p class="form-message">
-					<c:out value="${message}" />
-				</p>
-				<c:remove var="message" scope="session" />
-			</c:if>
 			<form
 				action="${pageContext.request.contextPath}/settings/register2.do"
 				method="post" enctype="multipart/form-data">
 				<input type="hidden" name="empId"
 					value="<c:out value='${employee.employeeId}' />">
+				<input type="hidden" name="licenseRowCount" value="${licenseRowCount}">
+				<input type="hidden" name="languageRowCount" value="${languageRowCount}">
+				<input type="hidden" name="trainingRowCount" value="${trainingRowCount}">
+				<input type="hidden" name="rewardRowCount" value="${rewardRowCount}">
+				<input type="hidden" name="appointmentRowCount" value="${appointmentRowCount}">
 				<div class="employee-layout">
 					<aside class="employee-summary">
 						<div class="photo-box">
@@ -68,7 +67,7 @@
 						</div>
 						<div class="summary-actions">
 							<a href="#photo-upload-modal">등록</a>
-							<button name="action" value="deletePhoto">삭제</button>
+							<button name="action" value="deletePhoto" formnovalidate>삭제</button>
 						</div>
 						<dl>
 							<div>
@@ -145,7 +144,7 @@
 							<div class="form-grid">
 								<label class="field"><span>사원번호</span><input
 									name="empNo" value="<c:out value='${employee.empNo}' />"
-									maxlength="50"></label><label class="field"><span><b>*</b>
+									readonly></label><label class="field"><span><b>*</b>
 										고용형태</span><select name="empType" required><option value="">선택해주세요.</option>
 										<c:forEach var="type" items="${employmentTypes}">
 											<option value="${type}"
@@ -171,10 +170,8 @@
 														${dept.departmentId eq employee.departmentId ? 'selected' : ''}>${dept.departmentName}</option>
 												</c:forEach>
 											</c:when>
-											<c:otherwise>
-												<c:forEach var="dept" items="${defaultDepartments}">
-													<option>${dept}</option>
-												</c:forEach>
+										<c:otherwise>
+											<option value="" disabled>등록된 부서가 없습니다.</option>
 											</c:otherwise>
 										</c:choose></select></label><label class="field"><span>직위</span><select
 									name="posId"><option value="">선택해주세요.</option>
@@ -185,10 +182,8 @@
 														${pos.jobPositionId eq employee.jobPositionId ? 'selected' : ''}>${pos.jobPositionName}</option>
 												</c:forEach>
 											</c:when>
-											<c:otherwise>
-												<c:forEach var="pos" items="${defaultPositions}">
-													<option>${pos}</option>
-												</c:forEach>
+										<c:otherwise>
+											<option value="" disabled>등록된 직위가 없습니다.</option>
 											</c:otherwise>
 										</c:choose></select></label> <label class="field"><span>내/외국인</span><select
 									name="foreignYn"><option value="">선택해주세요.</option>
@@ -225,8 +220,8 @@
 							<div class="sub-card-title">
 								<h3>자격 &amp; 면허</h3>
 								<div>
-									<button name="action" value="addLicense">추가하기</button>
-									<button name="action" value="deleteLicenses">선택삭제</button>
+									<button name="action" value="addLicense" formnovalidate>추가하기</button>
+									<button name="action" value="deleteLicenses" formnovalidate>선택삭제</button>
 								</div>
 							</div>
 							<div class="table-wrap">
@@ -242,7 +237,7 @@
 										</tr>
 									</thead>
 									<tbody>
-										<c:forEach begin="0" end="2" varStatus="row">
+										<c:forEach begin="0" end="${licenseRowCount - 1}" varStatus="row">
 											<c:set var="item" value="${licenses[row.index]}" />
 											<tr>
 												<td><input type="checkbox" name="licenseDeleteIds"
@@ -266,8 +261,8 @@
 							<div class="sub-card-title">
 								<h3>어학능력</h3>
 								<div>
-									<button name="action" value="addLanguage">추가하기</button>
-									<button name="action" value="deleteLanguages">선택삭제</button>
+									<button name="action" value="addLanguage" formnovalidate>추가하기</button>
+									<button name="action" value="deleteLanguages" formnovalidate>선택삭제</button>
 								</div>
 							</div>
 							<div class="table-wrap">
@@ -285,27 +280,29 @@
 										</tr>
 									</thead>
 									<tbody>
-										<c:set var="lang" value="${languages[0]}" />
+										<c:forEach begin="0" end="${languageRowCount - 1}" varStatus="row">
+										<c:set var="lang" value="${languages[row.index]}" />
 										<tr>
 											<td><input type="checkbox" name="languageDeleteIds"
 												value="${lang.employeeLanguageId}"></td>
-											<td><input name="languages[0].languageName"
+											<td><input name="languages[${row.index}].languageName"
 												value="${lang.langName}"></td>
-											<td><input name="languages[0].testName"
+											<td><input name="languages[${row.index}].testName"
 												value="${lang.testName}"></td>
-											<td><input type="number" name="languages[0].score"
+											<td><input type="number" name="languages[${row.index}].score"
 												value="${lang.score}"></td>
-											<td><input type="date" name="languages[0].acquireDate"
+											<td><input type="date" name="languages[${row.index}].acquireDate"
 												value="<fmt:formatDate value='${lang.acqDate}' pattern='yyyy-MM-dd' />"></td>
 											<c:forEach var="ability"
 												items="${fn:split('reading,writing,speaking', ',')}">
-												<td><select name="languages[0].${ability}"><option
+												<td><select name="languages[${row.index}].${ability}"><option
 															value="">선택</option>
 														<option value="상">상</option>
 														<option value="중">중</option>
 														<option value="하">하</option></select></td>
 											</c:forEach>
 										</tr>
+										</c:forEach>
 									</tbody>
 								</table>
 							</div>
@@ -315,8 +312,8 @@
 							<div class="card-title">
 								<h2>교육/훈련</h2>
 								<div>
-									<button name="action" value="addTraining">추가하기</button>
-									<button name="action" value="deleteTrainings">선택삭제</button>
+									<button name="action" value="addTraining" formnovalidate>추가하기</button>
+									<button name="action" value="deleteTrainings" formnovalidate>선택삭제</button>
 								</div>
 							</div>
 							<div class="table-wrap">
@@ -334,7 +331,7 @@
 										</tr>
 									</thead>
 									<tbody>
-										<c:forEach begin="0" end="1" varStatus="row">
+										<c:forEach begin="0" end="${trainingRowCount - 1}" varStatus="row">
 											<c:set var="item" value="${trainings[row.index]}" />
 											<tr>
 												<td><input type="checkbox" name="trainingDeleteIds"
@@ -371,8 +368,8 @@
 							<div class="card-title">
 								<h2>상벌</h2>
 								<div>
-									<button name="action" value="addRewardPunish">추가하기</button>
-									<button name="action" value="deleteRewardPunishes">선택삭제</button>
+									<button name="action" value="addRewardPunish" formnovalidate>추가하기</button>
+									<button name="action" value="deleteRewardPunishes" formnovalidate>선택삭제</button>
 								</div>
 							</div>
 							<div class="table-wrap">
@@ -389,7 +386,7 @@
 										</tr>
 									</thead>
 									<tbody>
-										<c:forEach begin="0" end="1" varStatus="row">
+										<c:forEach begin="0" end="${rewardRowCount - 1}" varStatus="row">
 											<c:set var="item" value="${rewardPunishes[row.index]}" />
 											<tr>
 												<td><input type="checkbox" name="rewardDeleteIds"
@@ -421,8 +418,8 @@
 							<div class="card-title">
 								<h2>발령</h2>
 								<div>
-									<button name="action" value="addAppointment">추가하기</button>
-									<button name="action" value="deleteAppointments">선택삭제</button>
+									<button name="action" value="addAppointment" formnovalidate>추가하기</button>
+									<button name="action" value="deleteAppointments" formnovalidate>선택삭제</button>
 								</div>
 							</div>
 							<div class="table-wrap">
@@ -439,7 +436,7 @@
 										</tr>
 									</thead>
 									<tbody>
-										<c:forEach begin="0" end="1" varStatus="row">
+										<c:forEach begin="0" end="${appointmentRowCount - 1}" varStatus="row">
 											<c:set var="item" value="${appointments[row.index]}" />
 											<tr>
 												<td><input type="checkbox" name="appointmentDeleteIds"
@@ -613,28 +610,26 @@
 						<div class="form-actions">
 							<button class="button button--primary" name="action" value="save">저장하기</button>
 							<a class="button"
-								href="${pageContext.request.contextPath}/settings/register2.do?empId=${employee.employeeId}">취소하기</a><a
-								class="button"
-								href="${pageContext.request.contextPath}/employees/employees.do">리스트</a><a
-								class="button"
-								href="${pageContext.request.contextPath}/settings/register2.do">신규사원등록하기</a>
+								href="${pageContext.request.contextPath}/settings/register2.do?empId=${employee.employeeId}">취소하기</a>
 						</div>
 					</div>
 				</div>
 				<div id="photo-upload-modal" class="upload-modal" role="dialog"
 					aria-modal="true" aria-labelledby="photo-upload-title">
-					<a class="upload-modal__backdrop" href="#" aria-label="닫기"></a>
+					<a class="upload-modal__backdrop" href="${pageContext.request.contextPath}/settings/register2.do?empId=${employee.employeeId}" aria-label="닫기"></a>
 					<div class="upload-modal__panel">
 						<div class="upload-modal__title">
 							<h2 id="photo-upload-title">이미지 등록하기</h2>
-							<a href="#" aria-label="닫기">×</a>
+							<a href="${pageContext.request.contextPath}/settings/register2.do?empId=${employee.employeeId}" aria-label="닫기">×</a>
 						</div>
 						<div class="upload-modal__body">
-							<input type="file" name="photoFile" accept="image/png,image/jpeg">
-							<p>
-								* 파일 용량 : <strong>1MB 미만</strong>이어야 합니다.<br>* 파일명 : <strong>영문
-									또는 숫자</strong>로 되어 있어야 합니다.
-							</p>
+							<div class="photo-preset-grid">
+								<label><input type="radio" name="photoPreset" value="01"><img src="${pageContext.request.contextPath}/images/settings/employee-presets/employee-01.png" alt="예시 사원 사진 1"><span>사진 1</span></label>
+								<label><input type="radio" name="photoPreset" value="02"><img src="${pageContext.request.contextPath}/images/settings/employee-presets/employee-02.png" alt="예시 사원 사진 2"><span>사진 2</span></label>
+								<label><input type="radio" name="photoPreset" value="03"><img src="${pageContext.request.contextPath}/images/settings/employee-presets/employee-03.png" alt="예시 사원 사진 3"><span>사진 3</span></label>
+								<label><input type="radio" name="photoPreset" value="04"><img src="${pageContext.request.contextPath}/images/settings/employee-presets/employee-04.png" alt="예시 사원 사진 4"><span>사진 4</span></label>
+								<label><input type="radio" name="photoPreset" value="05"><img src="${pageContext.request.contextPath}/images/settings/employee-presets/employee-05.png" alt="예시 사원 사진 5"><span>사진 5</span></label>
+							</div>
 						</div>
 						<button class="upload-modal__confirm" name="action"
 							value="savePhoto">확인</button>
@@ -643,6 +638,16 @@
 			</form>
 		</div>
 	</main>
+	<c:if test="${not empty message}">
+		<div class="employee-setting-alert" role="alertdialog" aria-modal="true" aria-labelledby="employee-setting-alert-message">
+			<a class="employee-setting-alert__backdrop" href="${pageContext.request.contextPath}/settings/register2.do?empId=${employee.employeeId}" aria-label="확인"></a>
+			<div class="employee-setting-alert__panel">
+				<p id="employee-setting-alert-message"><c:out value="${message}" /></p>
+				<a href="${pageContext.request.contextPath}/settings/register2.do?empId=${employee.employeeId}">확인</a>
+			</div>
+		</div>
+		<c:remove var="message" scope="session" />
+	</c:if>
 	<%@ include file="/WEB-INF/view/common/footer.jspf"%>
 </body>
 </html>

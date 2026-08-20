@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>기본환경설정 &gt; ${employee.employeeId gt 0 ? '사원정보 수정' : '사원등록 1'}</title>
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/settings/employee-register.css">
+	href="${pageContext.request.contextPath}/css/settings/employee-register.css?v=20260820-12">
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
 </head>
@@ -40,18 +40,14 @@
 					<strong>*</strong> 표시는 필수입력사항입니다.
 				</p>
 			</header>
-			<c:if test="${not empty message}">
-				<p class="form-message">
-					<c:out value="${message}" />
-				</p>
-				<c:remove var="message" scope="session" />
-			</c:if>
-
 			<form
 				action="${pageContext.request.contextPath}/settings/register1.do"
 				method="post" enctype="multipart/form-data">
 				<input type="hidden" name="empId"
 					value="<c:out value='${employee.employeeId}' />">
+				<input type="hidden" name="dependentRowCount" value="${dependentRowCount}">
+				<input type="hidden" name="educationRowCount" value="${educationRowCount}">
+				<input type="hidden" name="careerRowCount" value="${careerRowCount}">
 				<div class="employee-layout">
 					<aside class="employee-summary">
 						<div class="photo-box">
@@ -68,7 +64,17 @@
 						</div>
 						<div class="summary-actions">
 							<a href="#photo-upload-modal">등록</a>
-							<button type="submit" name="action" value="deletePhoto">삭제</button>
+							<input class="photo-preset-confirmed" type="radio" id="photoConfirmed01" name="photoPreset" value="01" ${draftPhotoPreset eq '01' ? 'checked' : ''}>
+							<input class="photo-preset-confirmed" type="radio" id="photoConfirmed02" name="photoPreset" value="02" ${draftPhotoPreset eq '02' ? 'checked' : ''}>
+							<input class="photo-preset-confirmed" type="radio" id="photoConfirmed03" name="photoPreset" value="03" ${draftPhotoPreset eq '03' ? 'checked' : ''}>
+							<input class="photo-preset-confirmed" type="radio" id="photoConfirmed04" name="photoPreset" value="04" ${draftPhotoPreset eq '04' ? 'checked' : ''}>
+							<input class="photo-preset-confirmed" type="radio" id="photoConfirmed05" name="photoPreset" value="05" ${draftPhotoPreset eq '05' ? 'checked' : ''}>
+							<input class="photo-preset-clear" type="radio" id="photoPresetNone" name="photoPreset" value="">
+							<label class="preview-photo-delete" for="photoPresetNone">삭제</label>
+							<c:choose>
+								<c:when test="${not empty employee.photoPath}"><button class="saved-photo-delete" type="submit" name="action" value="deletePhoto" formnovalidate>삭제</button></c:when>
+								<c:otherwise><span class="summary-action--disabled saved-photo-delete">삭제</span></c:otherwise>
+							</c:choose>
 						</div>
 						<dl>
 							<div>
@@ -172,8 +178,8 @@
 							<h2>기본정보</h2>
 							<div class="form-grid">
 								<label class="field"><span>사원번호</span><input
-									name="empNo" value="<c:out value='${employee.empNo}' />"
-									maxlength="50"></label> <label class="field"><span><b>*</b>
+									name="empNo" value="<c:out value='${not empty employee.empNo ? employee.empNo : anticipatedEmpNo}' />"
+									readonly></label> <label class="field"><span><b>*</b>
 										고용형태</span><select name="empType" required><option value="">선택해주세요.</option>
 										<c:forEach var="type" items="${employmentTypes}">
 											<option value="${type}"
@@ -200,10 +206,8 @@
 															value="${dept.departmentName}" /></option>
 												</c:forEach>
 											</c:when>
-											<c:otherwise>
-												<c:forEach var="dept" items="${defaultDepartments}">
-													<option value="${dept}">${dept}</option>
-												</c:forEach>
+										<c:otherwise>
+											<option value="" disabled>등록된 부서가 없습니다.</option>
 											</c:otherwise>
 										</c:choose></select></label> <label class="field"><span>직위</span><select
 									name="posId"><option value="">선택해주세요.</option>
@@ -215,10 +219,8 @@
 															value="${pos.jobPositionName}" /></option>
 												</c:forEach>
 											</c:when>
-											<c:otherwise>
-												<c:forEach var="pos" items="${defaultPositions}">
-													<option value="${pos}">${pos}</option>
-												</c:forEach>
+										<c:otherwise>
+											<option value="" disabled>등록된 직위가 없습니다.</option>
 											</c:otherwise>
 										</c:choose></select></label> <label class="field"><span><b>*</b> 내/외국인</span><select
 									name="foreignYn" required><option value="">선택해주세요.</option>
@@ -317,19 +319,33 @@
 										</div>
 									</div>
 								</div>
-								<div class="detail-row detail-row--wide">
-									<span><b>*</b> 두루누리<br>사회보험 지원</span>
-									<div class="option-line">
-										<label><input type="radio" name="durunuriRate"
-											value="0" checked> 해당 없음</label><label><input
-											type="radio" name="durunuriRate" value="80">
-											신규가입자(80% 지원)</label><label><input type="radio"
-											name="durunuriRate" value="90"> 신규가입자(90% 지원)</label>
+								<div class="detail-row detail-row--wide durunuri-setting">
+									<span><span class="durunuri-label-text"><b>*</b> 두루누리<br>사회보험 지원</span>
+										<label class="durunuri-separate"><input type="checkbox" name="durunuriSeparateYn" value="Y" ${employee.durunuriSeparateYn eq 'Y' ? 'checked' : ''}> 분리설정</label>
+									</span>
+									<div class="durunuri-options">
+										<div class="option-line">
+											<label><input type="radio" name="durunuriRate" value="0" ${empty employee.durunuriSeparateYn or employee.durunuriSeparateYn eq 'N' and employee.durunuriNpRate eq 0 ? 'checked' : ''}> 해당 없음</label>
+											<label><input type="radio" name="durunuriRate" value="80" ${employee.durunuriSeparateYn eq 'N' and employee.durunuriNpRate eq 80 ? 'checked' : ''}> 신규가입자(80% 지원)</label>
+											<label><input type="radio" name="durunuriRate" value="90" ${employee.durunuriSeparateYn eq 'N' and employee.durunuriNpRate eq 90 ? 'checked' : ''}> 신규가입자(90% 지원)</label>
+										</div>
+										<div class="durunuri-separate-fields">
+											<div class="option-line"><strong>국민연금</strong>
+												<label><input type="radio" name="durunuriNpRate" value="0" ${empty employee.durunuriNpRate or employee.durunuriNpRate eq 0 ? 'checked' : ''}> 해당 없음</label>
+												<label><input type="radio" name="durunuriNpRate" value="80" ${employee.durunuriNpRate eq 80 ? 'checked' : ''}> 80% 지원</label>
+												<label><input type="radio" name="durunuriNpRate" value="90" ${employee.durunuriNpRate eq 90 ? 'checked' : ''}> 90% 지원</label>
+											</div>
+											<div class="option-line"><strong>고용보험</strong>
+												<label><input type="radio" name="durunuriEiRate" value="0" ${empty employee.durunuriEiRate or employee.durunuriEiRate eq 0 ? 'checked' : ''}> 해당 없음</label>
+												<label><input type="radio" name="durunuriEiRate" value="80" ${employee.durunuriEiRate eq 80 ? 'checked' : ''}> 80% 지원</label>
+												<label><input type="radio" name="durunuriEiRate" value="90" ${employee.durunuriEiRate eq 90 ? 'checked' : ''}> 90% 지원</label>
+											</div>
+										</div>
 									</div>
 								</div>
 								<div class="detail-row">
 									<span><b>*</b> 기본급/일급</span><label><input type="number"
-										min="0" name="basicPay"
+										min="0" name="basicPay" required
 										value="<c:out value='${employee.basicPay}' />"> 원</label>
 								</div>
 								<div class="detail-row">
@@ -403,8 +419,8 @@
 							<div class="card-title">
 								<h2>부양가족</h2>
 								<div>
-									<button name="action" value="addDependent">추가하기</button>
-									<button name="action" value="deleteDependents">선택삭제</button>
+									<button name="action" value="addDependent" formnovalidate>추가하기</button>
+									<button name="action" value="deleteDependents" formnovalidate>선택삭제</button>
 								</div>
 							</div>
 							<div class="table-wrap table-wrap--wide">
@@ -425,7 +441,7 @@
 										</tr>
 									</thead>
 									<tbody>
-										<c:forEach begin="0" end="3" varStatus="row">
+										<c:forEach begin="0" end="${dependentRowCount - 1}" varStatus="row">
 											<c:set var="dep" value="${dependents[row.index]}" />
 											<tr>
 												<td><input type="checkbox" name="dependentDeleteIds"
@@ -472,8 +488,8 @@
 							<div class="card-title">
 								<h2>학력</h2>
 								<div>
-									<button name="action" value="addEducation">추가하기</button>
-									<button name="action" value="deleteEducations">선택삭제</button>
+									<button name="action" value="addEducation" formnovalidate>추가하기</button>
+									<button name="action" value="deleteEducations" formnovalidate>선택삭제</button>
 								</div>
 							</div>
 							<div class="table-wrap">
@@ -490,7 +506,7 @@
 										</tr>
 									</thead>
 									<tbody>
-										<c:forEach begin="0" end="2" varStatus="row">
+										<c:forEach begin="0" end="${educationRowCount - 1}" varStatus="row">
 											<c:set var="edu" value="${educations[row.index]}" />
 											<tr>
 												<td><input type="checkbox" name="educationDeleteIds"
@@ -530,8 +546,8 @@
 							<div class="card-title">
 								<h2>경력</h2>
 								<div>
-									<button name="action" value="addCareer">추가하기</button>
-									<button name="action" value="deleteCareers">선택삭제</button>
+									<button name="action" value="addCareer" formnovalidate>추가하기</button>
+									<button name="action" value="deleteCareers" formnovalidate>선택삭제</button>
 								</div>
 							</div>
 							<div class="table-wrap">
@@ -549,7 +565,7 @@
 										</tr>
 									</thead>
 									<tbody>
-										<c:forEach begin="0" end="2" varStatus="row">
+										<c:forEach begin="0" end="${careerRowCount - 1}" varStatus="row">
 											<c:set var="career" value="${careers[row.index]}" />
 											<tr>
 												<td><input type="checkbox" name="careerDeleteIds"
@@ -626,11 +642,15 @@
 						<div class="form-actions">
 							<button class="button button--primary" name="action" value="save">저장하기</button>
 							<a class="button"
-								href="${pageContext.request.contextPath}/settings/register1.do">취소하기</a><a
-								class="button"
-								href="${pageContext.request.contextPath}/employees/employees.do">리스트</a><a
-								class="button"
-								href="${pageContext.request.contextPath}/settings/register1.do">신규사원등록하기</a>
+								href="${pageContext.request.contextPath}/settings/register1.do">취소하기</a>
+							<c:choose>
+								<c:when test="${employee.employeeId gt 0}">
+									<a class="button button--step" href="${pageContext.request.contextPath}/settings/register2.do?empId=${employee.employeeId}">다음으로</a>
+								</c:when>
+								<c:otherwise>
+									<span class="button button--disabled" title="사원정보 1을 먼저 저장해 주세요.">다음으로</span>
+								</c:otherwise>
+							</c:choose>
 						</div>
 					</div>
 				</div>
@@ -644,19 +664,35 @@
 							<a href="#" aria-label="닫기">×</a>
 						</div>
 						<div class="upload-modal__body">
-							<input type="file" name="photoFile" accept="image/png,image/jpeg">
-							<p>
-								* 파일 용량 : <strong>1MB 미만</strong>이어야 합니다.<br>* 파일명 : <strong>영문
-									또는 숫자</strong>로 되어 있어야 합니다.
-							</p>
+							<div class="photo-preset-grid">
+								<label><input type="radio" name="photoCandidate" value="01" ${draftPhotoPreset eq '01' ? 'checked' : ''}><img src="${pageContext.request.contextPath}/images/settings/employee-presets/employee-01.png" alt="예시 사원 사진 1"><span>사진 1</span></label>
+								<label><input type="radio" name="photoCandidate" value="02" ${draftPhotoPreset eq '02' ? 'checked' : ''}><img src="${pageContext.request.contextPath}/images/settings/employee-presets/employee-02.png" alt="예시 사원 사진 2"><span>사진 2</span></label>
+								<label><input type="radio" name="photoCandidate" value="03" ${draftPhotoPreset eq '03' ? 'checked' : ''}><img src="${pageContext.request.contextPath}/images/settings/employee-presets/employee-03.png" alt="예시 사원 사진 3"><span>사진 3</span></label>
+								<label><input type="radio" name="photoCandidate" value="04" ${draftPhotoPreset eq '04' ? 'checked' : ''}><img src="${pageContext.request.contextPath}/images/settings/employee-presets/employee-04.png" alt="예시 사원 사진 4"><span>사진 4</span></label>
+								<label><input type="radio" name="photoCandidate" value="05" ${draftPhotoPreset eq '05' ? 'checked' : ''}><img src="${pageContext.request.contextPath}/images/settings/employee-presets/employee-05.png" alt="예시 사원 사진 5"><span>사진 5</span></label>
+							</div>
 						</div>
-						<button class="upload-modal__confirm" name="action"
-							value="savePhoto">확인</button>
+						<div class="photo-confirm-actions">
+							<span class="upload-modal__confirm photo-confirm-disabled">사진을 선택해 주세요.</span>
+							<button class="upload-modal__confirm photo-confirm" type="submit"
+								name="action" value="previewPhoto" formnovalidate>선택 완료</button>
+						</div>
 					</div>
 				</div>
 			</form>
 		</div>
 	</main>
+	<c:if test="${not empty message}">
+		<c:url var="register1ReturnUrl" value="/settings/register1.do"><c:if test="${employee.employeeId gt 0}"><c:param name="empId" value="${employee.employeeId}" /></c:if></c:url>
+		<div class="employee-setting-alert" role="alertdialog" aria-modal="true" aria-labelledby="employee-setting-alert-message">
+			<a class="employee-setting-alert__backdrop" href="${register1ReturnUrl}" aria-label="확인"></a>
+			<div class="employee-setting-alert__panel">
+				<p id="employee-setting-alert-message"><c:out value="${message}" /></p>
+				<a href="${register1ReturnUrl}">확인</a>
+			</div>
+		</div>
+		<c:remove var="message" scope="session" />
+	</c:if>
 	<%@ include file="/WEB-INF/view/common/footer.jspf"%>
 </body>
 </html>

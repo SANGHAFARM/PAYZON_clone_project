@@ -9,7 +9,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 
 import erp.employees.model.Employee;
 import erp.employees.model.EmployeeCareer;
@@ -52,10 +51,15 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		req.setAttribute("departmentList", departmentList);
 		req.setAttribute("positionList", positionList);
 
-		if (empIdStr != null && !empIdStr.trim().isEmpty()) {
-			int empId = Integer.parseInt(empIdStr);
+		int empId = parseEmployeeId(empIdStr);
+		if (empId > 0) {
 
 			Employee employee = registerService.getEmployeeBasicProfile(empId);
+			if (employee == null) {
+				req.getSession().setAttribute("message", "존재하지 않는 사원입니다.");
+				res.sendRedirect(req.getContextPath() + "/settings/register1.do");
+				return null;
+			}
 			List<EmployeeDependent> dependents = historyService.getDependents(empId);
 			List<EmployeeEducation> educations = historyService.getEducations(empId);
 			List<EmployeeCareer> careers = historyService.getCareers(empId);
@@ -93,7 +97,17 @@ public class EmployeeRegister1Handler implements CommandHandler {
 			req.setAttribute("educations", educations);
 			req.setAttribute("careers", careers);
 			req.setAttribute("insuranceRows", insuranceRows);
+		} else {
+			Integer reservedId = (Integer) req.getSession().getAttribute("reservedEmployeeId");
+			if (reservedId == null || reservedId <= 0) {
+				reservedId = registerService.reserveEmployeeId();
+				req.getSession().setAttribute("reservedEmployeeId", reservedId);
+			}
+			req.setAttribute("anticipatedEmpNo", registerService.getEmployeeNumberPreview(reservedId));
 		}
+		req.setAttribute("draftPhotoPreset", req.getSession().getAttribute("draftPhotoPreset"));
+
+		bindRowCounts(req);
 
 		return "/WEB-INF/view/settings/employee-register-1.jsp";
 	}
@@ -106,16 +120,57 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		String action = req.getParameter("action");
 		String empIdStr = req.getParameter("empId");
 
-		// 신규 등록 시에는 empId가 없으므로 임시 생성 혹은 DB Sequence를 활용
-		int empId = (empIdStr != null && !empIdStr.isEmpty()) ? Integer.parseInt(empIdStr) : 100;
+		// 신규 등록은 0으로 구분하고 실제 PK는 서비스에서 시퀀스로 발급합니다.
+		int empId = parseEmployeeId(empIdStr);
 
 		try {
+			if ("clearPhotoPreview".equals(action)) {
+				req.getSession().removeAttribute("draftPhotoPreset");
+				res.sendRedirect(req.getContextPath() + "/settings/register1.do"
+						+ (empId > 0 ? "?empId=" + empId : ""));
+				return null;
+			}
+
+			if ("previewPhoto".equals(action)) {
+				String photoCandidate = req.getParameter("photoCandidate");
+				getPresetPhotoPath(photoCandidate);
+				req.getSession().setAttribute("draftPhotoPreset", photoCandidate);
+				res.sendRedirect(req.getContextPath() + "/settings/register1.do"
+						+ (empId > 0 ? "?empId=" + empId : ""));
+				return null;
+			}
+
+			if (action != null && action.startsWith("add")) {
+				increaseRowCount(req, action);
+				res.sendRedirect(req.getContextPath() + "/settings/register1.do"
+						+ (empId > 0 ? "?empId=" + empId : ""));
+				return null;
+			}
+
 			if ("save".equals(action)) {
 				// 1. 통합 저장 로직
+				validateRequiredFields(req);
 
 				// 1-1. 텍스트 폼에서 메인 사원(Employee) 객체 추출 및 저장
 				Employee employee = parseEmployeeBasicInfo(req, empId);
-				registerService.saveEmployeeBasicInfo(employee);
+				if (empId == 0) {
+					Integer reservedId = (Integer) req.getSession().getAttribute("reservedEmployeeId");
+					if (reservedId != null && reservedId > 0) {
+						employee.setEmployeeId(reservedId);
+					}
+				}
+				if (empId > 0) {
+					// 사원정보 1 화면에 없는 퇴직 항목은 기존 값을 그대로 유지한다.
+					Employee existingEmployee = registerService.getEmployeeBasicProfile(empId);
+					if (existingEmployee != null) {
+						employee.setStatus(existingEmployee.getStatus());
+						employee.setRetireType(existingEmployee.getRetireType());
+						employee.setRetireDate(existingEmployee.getRetireDate());
+						employee.setRetireReason(existingEmployee.getRetireReason());
+						employee.setAfterRetireContact(existingEmployee.getAfterRetireContact());
+					}
+				}
+				empId = registerService.saveEmployeeBasicInfo(employee);
 
 				// 1-2. 1:N 이력 리스트 추출 및 일괄 갱신 (모든 함수에 empId 전달)
 				List<EmployeeDependent> deps = parseDependents(req, empId);
@@ -125,22 +180,28 @@ public class EmployeeRegister1Handler implements CommandHandler {
 
 				// 서비스 호출 시 4대보험 이력(insurances)도 함께 넘겨줍니다.
 				historyService.saveAllHistories(empId, deps, edus, cars, insurances);
+				String photoPreset = req.getParameter("photoPreset");
+				if (isBlank(photoPreset)) {
+					photoPreset = (String) req.getSession().getAttribute("draftPhotoPreset");
+				}
+				if (!isBlank(photoPreset)) {
+					photoService.uploadPhoto(empId, getPresetPhotoPath(photoPreset));
+				}
+				req.getSession().removeAttribute("reservedEmployeeId");
+				req.getSession().removeAttribute("draftPhotoPreset");
 
 				req.getSession().setAttribute("message", "사원 정보가 성공적으로 저장되었습니다.");
 
 			} else if ("savePhoto".equals(action)) {
-				// 2. 사진 등록 로직
-				Part photoPart = req.getPart("photoFile");
-
-				// [TODO] 실제 물리적 경로에 이미지 파일 저장 로직 (예: /upload/emp/photo_100.jpg)
-				String savedPath = "/upload/emp/photo_" + empId + ".jpg";
-
+				requireSavedEmployee(empId);
+				String savedPath = getPresetPhotoPath(req.getParameter("photoPreset"));
 				photoService.uploadPhoto(empId, savedPath);
 				req.getSession().setAttribute("message", "사진이 등록되었습니다.");
 
 			} else if ("deletePhoto".equals(action)) {
-				// 3. 사진 삭제 로직
+				requireSavedEmployee(empId);
 				photoService.deletePhoto(empId);
+				req.getSession().removeAttribute("draftPhotoPreset");
 				req.getSession().setAttribute("message", "사진이 삭제되었습니다.");
 
 			} else if ("deleteDependents".equals(action)) {
@@ -149,9 +210,10 @@ public class EmployeeRegister1Handler implements CommandHandler {
 				if (deleteIds != null) {
 					List<Integer> idList = new ArrayList<>();
 					for (String id : deleteIds) {
-						idList.add(Integer.parseInt(id));
+						if (!isBlank(id)) idList.add(Integer.parseInt(id));
 					}
-					historyService.deleteSelectedItems("dependent", idList);
+					if (!idList.isEmpty()) historyService.deleteSelectedItems("dependent", idList);
+					decreaseRowCount(req, "dependentRowCount", 4, deleteIds.length);
 					req.getSession().setAttribute("message", "선택한 부양가족이 삭제되었습니다.");
 				}
 
@@ -161,9 +223,10 @@ public class EmployeeRegister1Handler implements CommandHandler {
 				if (deleteIds != null) {
 					List<Integer> idList = new ArrayList<>();
 					for (String id : deleteIds) {
-						idList.add(Integer.parseInt(id));
+						if (!isBlank(id)) idList.add(Integer.parseInt(id));
 					}
-					historyService.deleteSelectedItems("education", idList);
+					if (!idList.isEmpty()) historyService.deleteSelectedItems("education", idList);
+					decreaseRowCount(req, "educationRowCount", 3, deleteIds.length);
 					req.getSession().setAttribute("message", "선택한 학력이 삭제되었습니다.");
 				}
 
@@ -173,15 +236,14 @@ public class EmployeeRegister1Handler implements CommandHandler {
 				if (deleteIds != null) {
 					List<Integer> idList = new ArrayList<>();
 					for (String id : deleteIds) {
-						idList.add(Integer.parseInt(id));
+						if (!isBlank(id)) idList.add(Integer.parseInt(id));
 					}
-					historyService.deleteSelectedItems("career", idList);
+					if (!idList.isEmpty()) historyService.deleteSelectedItems("career", idList);
+					decreaseRowCount(req, "careerRowCount", 3, deleteIds.length);
 					req.getSession().setAttribute("message", "선택한 경력이 삭제되었습니다.");
 				}
 			}
-		} catch (
-
-		Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			req.getSession().setAttribute("message", "처리 중 오류가 발생했습니다: " + e.getMessage());
 		}
@@ -189,6 +251,80 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		// 작업 완료 후 데이터 중복 전송(F5)을 막기 위해 현재 사원 번호를 달고 GET 화면으로 리다이렉트
 		res.sendRedirect(req.getContextPath() + "/settings/register1.do?empId=" + empId);
 		return null; // 포워딩 방지
+	}
+
+	private int parseEmployeeId(String value) {
+		try {
+			int employeeId = Integer.parseInt(value);
+			return employeeId > 0 ? employeeId : 0;
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+
+	private void requireSavedEmployee(int employeeId) {
+		if (employeeId <= 0 || registerService.getEmployeeBasicProfile(employeeId) == null) {
+			throw new IllegalArgumentException("사원정보 1을 먼저 저장해주세요.");
+		}
+	}
+
+	private String getPresetPhotoPath(String preset) {
+		if (preset != null && preset.matches("0[1-5]")) {
+			return "/images/settings/employee-presets/employee-" + preset + ".png";
+		}
+		throw new IllegalArgumentException("사용할 기본 사원사진을 선택해주세요.");
+	}
+
+	private void validateRequiredFields(HttpServletRequest req) {
+		if (isBlank(req.getParameter("empType")) || isBlank(req.getParameter("empNameKr"))
+				|| isBlank(req.getParameter("joinDate")) || isBlank(req.getParameter("foreignYn"))
+				|| isBlank(req.getParameter("basicPay")) || isBlank(req.getParameter("incomeType"))) {
+			throw new IllegalArgumentException("필수 입력사항을 모두 입력해주세요.");
+		}
+		boolean separate = req.getParameter("durunuriSeparateYn") != null;
+		if ((!separate && isBlank(req.getParameter("durunuriRate")))
+				|| (separate && (isBlank(req.getParameter("durunuriNpRate"))
+						|| isBlank(req.getParameter("durunuriEiRate"))))) {
+			throw new IllegalArgumentException("두루누리 사회보험 지원 설정을 선택해주세요.");
+		}
+	}
+
+	private boolean isBlank(String value) {
+		return value == null || value.trim().isEmpty();
+	}
+
+	private void bindRowCounts(HttpServletRequest req) {
+		req.setAttribute("dependentRowCount", getRowCount(req, "dependentRowCount", 4));
+		req.setAttribute("educationRowCount", getRowCount(req, "educationRowCount", 3));
+		req.setAttribute("careerRowCount", getRowCount(req, "careerRowCount", 3));
+	}
+
+	private int getRowCount(HttpServletRequest req, String key, int defaultCount) {
+		Integer count = (Integer) req.getSession().getAttribute(key);
+		return count == null ? defaultCount : Math.max(defaultCount, Math.min(count, 20));
+	}
+
+	private void increaseRowCount(HttpServletRequest req, String action) {
+		String key;
+		int defaultCount;
+		if ("addDependent".equals(action)) {
+			key = "dependentRowCount";
+			defaultCount = 4;
+		} else if ("addEducation".equals(action)) {
+			key = "educationRowCount";
+			defaultCount = 3;
+		} else if ("addCareer".equals(action)) {
+			key = "careerRowCount";
+			defaultCount = 3;
+		} else {
+			return;
+		}
+		req.getSession().setAttribute(key, Math.min(getRowCount(req, key, defaultCount) + 1, 20));
+	}
+
+	private void decreaseRowCount(HttpServletRequest req, String key, int defaultCount, int amount) {
+		int count = getRowCount(req, key, defaultCount);
+		req.getSession().setAttribute(key, Math.max(defaultCount, count - Math.max(amount, 0)));
 	}
 
 	/**
@@ -215,20 +351,11 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		// 부서 및 직위 (v5 스키마 기준 NUMBER 타입)
 		String deptIdStr = req.getParameter("deptId");
 		if (deptIdStr != null && !deptIdStr.trim().isEmpty()) {
-			try {
-				// 숫자로 변환을 시도합니다.
-				emp.setDepartmentId(Integer.parseInt(deptIdStr));
-			} catch (NumberFormatException e) {
-				// 글자(가짜 데이터)가 들어와 에러가 나면 무시
-			}
+			emp.setDepartmentId(deptPosService.requireDepartmentId(deptIdStr));
 		}
 		String posIdStr = req.getParameter("posId");
 		if (posIdStr != null && !posIdStr.trim().isEmpty()) {
-			try {
-				emp.setJobPositionId(Integer.parseInt(posIdStr));
-			} catch (NumberFormatException e) {
-				// 글자가 들어오면 무시
-			}
+			emp.setJobPositionId(deptPosService.requireJobPositionId(posIdStr));
 		}
 
 		// [2. 연락처 및 주소]
@@ -275,14 +402,17 @@ public class EmployeeRegister1Handler implements CommandHandler {
 						: 0);
 
 		// [5. 두루누리 사회보험 지원]
-		// 화면에는 durunuriRate 하나의 라디오 버튼만 있으므로, 스키마에 맞춰 '통합(N)'으로 설정 후 양쪽에 동일 요율 적용
-		String durunuriRateStr = req.getParameter("durunuriRate");
-		int duruRate = (durunuriRateStr != null && !durunuriRateStr.trim().isEmpty())
-				? Integer.parseInt(durunuriRateStr)
-				: 0;
-		emp.setDurunuriSeparateYn("N");
-		emp.setDurunuriNpRate(duruRate);
-		emp.setDurunuriEiRate(duruRate);
+		// 통합 설정은 같은 지원율을 적용하고, 분리 설정은 국민연금과 고용보험을 각각 저장합니다.
+		boolean separate = req.getParameter("durunuriSeparateYn") != null;
+		emp.setDurunuriSeparateYn(separate ? "Y" : "N");
+		if (separate) {
+			emp.setDurunuriNpRate(parseRate(req.getParameter("durunuriNpRate")));
+			emp.setDurunuriEiRate(parseRate(req.getParameter("durunuriEiRate")));
+		} else {
+			int rate = parseRate(req.getParameter("durunuriRate"));
+			emp.setDurunuriNpRate(rate);
+			emp.setDurunuriEiRate(rate);
+		}
 
 		// [6. 보험료 계산 기준 금액]
 		String npBase = req.getParameter("npMonthlyBase");
@@ -323,11 +453,18 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		return emp;
 	}
 
+	private int parseRate(String value) {
+		if ("80".equals(value) || "90".equals(value)) {
+			return Integer.parseInt(value);
+		}
+		return 0;
+	}
+
 	// [Helper] 폼에서 배열 형태로 넘어온 부양가족 리스트를 DTO에 맞게 파싱하는 메서드
 	private List<EmployeeDependent> parseDependents(HttpServletRequest req, int empId) {
 		List<EmployeeDependent> list = new ArrayList<>();
 
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < parseRowCount(req, "dependentRowCount", 4); i++) {
 			String relation = req.getParameter("dependents[" + i + "].relation");
 			String depName = req.getParameter("dependents[" + i + "].depName");
 
@@ -404,7 +541,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 	private List<EmployeeEducation> parseEducations(HttpServletRequest req, int empId) {
 		List<EmployeeEducation> list = new ArrayList<>();
 
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < parseRowCount(req, "educationRowCount", 3); i++) {
 			String schoolName = req.getParameter("educations[" + i + "].schoolName");
 
 			// 학교명이 비어있지 않은 실제 데이터만 리스트에 추가
@@ -445,7 +582,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		List<EmployeeCareer> list = new ArrayList<>();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < parseRowCount(req, "careerRowCount", 3); i++) {
 			String companyName = req.getParameter("careers[" + i + "].companyName");
 
 			// 회사명이 비어있지 않은 실제 데이터만 리스트에 추가
@@ -479,5 +616,13 @@ public class EmployeeRegister1Handler implements CommandHandler {
 			}
 		}
 		return list;
+	}
+
+	private int parseRowCount(HttpServletRequest req, String name, int defaultCount) {
+		try {
+			return Math.max(defaultCount, Math.min(Integer.parseInt(req.getParameter(name)), 20));
+		} catch (Exception e) {
+			return defaultCount;
+		}
 	}
 }

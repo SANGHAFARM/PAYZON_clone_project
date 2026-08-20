@@ -62,8 +62,9 @@ public class EmployeeLeaveHandler implements CommandHandler {
 					// 4. 리스트에 담긴 '체크된 사원'들의 데이터만 일괄 저장
 					leaveBalanceService.saveLeaveBalances(balances);
 					req.getSession().setAttribute("message", "선택한 사원의 휴가일수가 저장되었습니다.");
+					req.getSession().setAttribute("messageReturnTarget", "employeeLeave");
 				}
-			} else if ("delete".equals(action)) {
+			} else if ("requestDelete".equals(action)) {
 				// 1. 화면에서 체크박스에 체크한 사원들의 ID(employeeId) 배열을 추출
 				String[] checkedEmployeeIds = req.getParameterValues("checkedEmpIds");
 
@@ -81,12 +82,21 @@ public class EmployeeLeaveHandler implements CommandHandler {
 						}
 					}
 
-					// 5. 모아둔 휴가내역 ID들을 서비스로 넘겨 DB에서 일괄 삭제 처리
 					if (!deleteIds.isEmpty()) {
-						leaveBalanceService.deleteLeaveBalances(deleteIds);
+						req.getSession().setAttribute("employeeLeaveDeleteIds", deleteIds);
+						req.getSession().setAttribute("employeeLeaveDeleteCount", deleteIds.size());
 					}
-					req.getSession().setAttribute("message", "선택된 사원의 휴가일수가 삭제(0일) 되었습니다.");
 				}
+			} else if ("confirmDelete".equals(action)) {
+				@SuppressWarnings("unchecked")
+				List<Integer> deleteIds = (List<Integer>) req.getSession().getAttribute("employeeLeaveDeleteIds");
+				if (deleteIds != null && !deleteIds.isEmpty()) {
+					leaveBalanceService.deleteLeaveBalances(deleteIds);
+					req.getSession().setAttribute("message", "선택한 사원의 휴가일수가 삭제되었습니다.");
+					req.getSession().setAttribute("messageReturnTarget", "employeeLeave");
+				}
+				req.getSession().removeAttribute("employeeLeaveDeleteIds");
+				req.getSession().removeAttribute("employeeLeaveDeleteCount");
 			} else if ("search".equals(action) || "showAll".equals(action)) {
 				// 1. 파라미터를 추출 (전체보기일 경우 빈 칸으로 초기화)
 				String keyword = "search".equals(action) ? req.getParameter("keyword") : "";
@@ -111,6 +121,7 @@ public class EmployeeLeaveHandler implements CommandHandler {
 		} catch (Exception e) {
 			e.printStackTrace();
 			req.getSession().setAttribute("message", "오류 발생: " + e.getMessage());
+			req.getSession().setAttribute("messageReturnTarget", "employeeLeave");
 		}
 
 		res.sendRedirect(req.getContextPath() + "/settings/attendance.do?leaveItemId=" + leaveItemIdStr
