@@ -37,6 +37,12 @@ public class PayrollManagementService {
 
 	public PayrollManagementPage getPage(String year, String month, String sequence, String incomeType,
 			Integer employeeId, String keyword, int employeePage) {
+		return getPage(year, month, sequence, incomeType, employeeId, keyword, null, null, null, employeePage);
+	}
+
+	public PayrollManagementPage getPage(String year, String month, String sequence, String incomeType,
+			Integer employeeId, String keyword, Integer departmentId, Integer positionId, String status,
+			int employeePage) {
 		Connection conn = null;
 		try {
 			conn = ConnectionProvider.getConnection();
@@ -76,12 +82,13 @@ public class PayrollManagementService {
 			if (run == null) {
 				page.setAvailableEmployeePage(new PayrollEmployeePage(new ArrayList<>(), 1));
 			} else {
-				int count = managementDao.countAvailableEmployees(conn, run.getPayrollRunId(), keyword);
+				int count = managementDao.countAvailableEmployees(conn, run.getPayrollRunId(), keyword,
+						departmentId, positionId, status);
 				int totalPages = Math.max(1, (count + EMPLOYEE_PAGE_SIZE - 1) / EMPLOYEE_PAGE_SIZE);
 				int currentPage = Math.min(Math.max(employeePage, 1), totalPages);
 				page.setAvailableEmployeePage(new PayrollEmployeePage(
-						managementDao.selectAvailableEmployees(conn, run.getPayrollRunId(), keyword, currentPage,
-								EMPLOYEE_PAGE_SIZE),
+						managementDao.selectAvailableEmployees(conn, run.getPayrollRunId(), keyword, departmentId,
+								positionId, status, currentPage, EMPLOYEE_PAGE_SIZE),
 						totalPages));
 			}
 			return page;

@@ -65,7 +65,10 @@
 													test="${not empty item.taxFreeLimit}">
 													<c:out value="${item.taxFreeLimit}" />원</c:if></td>
 											<td><c:out value="${item.roundUnit}" /></td>
-											<td><c:out value="${item.linkAttendId}" /></td>
+											<td><c:choose>
+												<c:when test="${item.payMethod eq '일괄지급'}">일괄지급<c:if test="${not empty item.bulkPayAmount}">_<fmt:formatNumber value="${item.bulkPayAmount}" pattern="#,##0" />원</c:if></c:when>
+												<c:when test="${not empty item.attendName}"><c:out value="${item.attendName}" /></c:when>
+											</c:choose></td>
 											<td><span
 												class="use-status use-status--${item.useYn eq 'Y' ? 'on' : 'off'}">${item.useYn eq 'Y' ? '사용' : '미사용'}</span></td>
 										</tr>
