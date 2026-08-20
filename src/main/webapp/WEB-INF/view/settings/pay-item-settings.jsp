@@ -26,6 +26,7 @@
 				<p class="form-message" role="status">
 					<c:out value="${message}" />
 				</p>
+				<c:remove var="message" scope="session" />
 			</c:if>
 
 			<section class="setting-card" id="payment-settings">

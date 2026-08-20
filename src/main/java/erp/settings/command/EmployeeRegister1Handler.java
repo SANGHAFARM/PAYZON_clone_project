@@ -19,6 +19,9 @@ import erp.employees.model.EmployeeInsuranceHistory;
 import erp.employees.service.EmployeeHistoryService;
 import erp.employees.service.EmployeePhotoService;
 import erp.employees.service.EmployeeRegisterService;
+import erp.settings.model.Department;
+import erp.settings.model.JobPosition;
+import erp.settings.service.DepartmentPositionService;
 import mvc.command.CommandHandler;
 
 public class EmployeeRegister1Handler implements CommandHandler {
@@ -27,6 +30,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 	private EmployeeRegisterService registerService = EmployeeRegisterService.getInstance();
 	private EmployeeHistoryService historyService = EmployeeHistoryService.getInstance();
 	private EmployeePhotoService photoService = EmployeePhotoService.getInstance();
+	private DepartmentPositionService deptPosService = DepartmentPositionService.getInstance();
 
 	@Override
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -42,6 +46,11 @@ public class EmployeeRegister1Handler implements CommandHandler {
 	// [GET] 화면 렌더링 (사원 정보 조회)
 	private String processForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String empIdStr = req.getParameter("empId");
+		
+		List<Department> departmentList = deptPosService.getDepartmentOptions();
+		List<JobPosition> positionList = deptPosService.getJobPositionOptions();
+		req.setAttribute("departmentList", departmentList);
+		req.setAttribute("positionList", positionList);
 
 		if (empIdStr != null && !empIdStr.trim().isEmpty()) {
 			int empId = Integer.parseInt(empIdStr);
@@ -51,8 +60,8 @@ public class EmployeeRegister1Handler implements CommandHandler {
 			List<EmployeeEducation> educations = historyService.getEducations(empId);
 			List<EmployeeCareer> careers = historyService.getCareers(empId);
 			List<EmployeeInsuranceHistory> insuranceRows = historyService.getInsuranceHistories(empId);
-
-			// ✅ [추가] 서버에서 경력 기간(년/월) 직접 계산 로직
+			
+			// 서버에서 경력 기간(년/월) 직접 계산 로직
 			if (careers != null) {
 				for (EmployeeCareer c : careers) {
 					if (c.getJoinDate() != null && c.getQuitDate() != null) {
@@ -97,8 +106,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		String action = req.getParameter("action");
 		String empIdStr = req.getParameter("empId");
 
-		// 신규 등록 시에는 empId가 없으므로 임시 생성 혹은 DB Sequence를 활용해야 합니다.
-		// 이 예제에서는 기존 사원(empId=100)을 수정한다고 가정합니다.
+		// 신규 등록 시에는 empId가 없으므로 임시 생성 혹은 DB Sequence를 활용
 		int empId = (empIdStr != null && !empIdStr.isEmpty()) ? Integer.parseInt(empIdStr) : 100;
 
 		try {

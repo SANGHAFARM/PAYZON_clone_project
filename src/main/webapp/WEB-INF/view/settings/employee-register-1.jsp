@@ -44,6 +44,7 @@
 				<p class="form-message">
 					<c:out value="${message}" />
 				</p>
+				<c:remove var="message" scope="session" />
 			</c:if>
 
 			<form
@@ -87,8 +88,8 @@
 								<dd>
 									<%-- 전체 부서 목록을 돌면서 현재 사원의 부서ID와 일치하는 부서명을 출력 --%>
 									<c:forEach var="dept" items="${departmentList}">
-										<c:if test="${dept.deptId eq employee.departmentId}">
-											<c:out value="${dept.deptName}" />
+										<c:if test="${dept.departmentId eq employee.departmentId}">
+											<c:out value="${dept.departmentName}" />
 										</c:if>
 									</c:forEach>
 								</dd>
@@ -98,8 +99,8 @@
 								<dd>
 									<%-- 전체 직위 목록을 돌면서 현재 사원의 직위ID와 일치하는 직위명을 출력 --%>
 									<c:forEach var="pos" items="${positionList}">
-										<c:if test="${pos.posId eq employee.jobPositionId}">
-											<c:out value="${pos.posName}" />
+										<c:if test="${pos.jobPositionId eq employee.jobPositionId}">
+											<c:out value="${pos.jobPositionName}" />
 										</c:if>
 									</c:forEach>
 								</dd>
