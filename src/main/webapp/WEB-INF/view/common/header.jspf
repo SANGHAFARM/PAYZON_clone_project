@@ -154,9 +154,10 @@
 						href="${pageContext.request.contextPath}/payroll/four-insurance.do">4대보험
 							공제내역</a></li>
 				</ul></li>
-			<li class="main-nav__item"><a class="main-nav__trigger"
-				href="${pageContext.request.contextPath}/example.do?menu=statistics">급여통계</a>
-				<ul class="dropdown-menu">
+				<li class="main-nav__item">
+   
+    				<a class="main-nav__trigger" href="${pageContext.request.contextPath}/preview-payroll-stats/annual-payroll-statistics.jsp">급여통계</a>
+    					<ul class="dropdown-menu">
 					
 					<li><a class="dropdown-menu__link"
 						href="${pageContext.request.contextPath}/payroll-stats/annual.do">연도별
