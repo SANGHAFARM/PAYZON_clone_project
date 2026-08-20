@@ -55,7 +55,7 @@
 		<div class="modal-dialog employee-modal">
 			<header class="modal-header"><h2 id="employeeModalTitle">급여내역 조회 사원선택</h2><a href="#" class="modal-close" aria-label="닫기">×</a></header>
 			<div class="modal-body">
-				<form class="modal-search" method="get" action="${pageContext.request.contextPath}/payroll/employee-history.do">
+				<form class="modal-search" method="get" action="${pageContext.request.contextPath}/payroll/employee-history.do#employeeSelectModal">
 					<input type="hidden" name="employeeId" value="${selectedEmployee.employeeId}">
 					<input type="hidden" name="startMonth" value="${startMonth}">
 					<input type="hidden" name="endMonth" value="${endMonth}">
