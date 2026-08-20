@@ -25,6 +25,13 @@ public class AttendanceGroupHandler implements CommandHandler {
 		req.setCharacterEncoding("UTF-8");
 		String action = req.getParameter("action"); // 예: "insert" 또는 "update:5"
 
+		if (action != null && action.startsWith("requestDelete:")) {
+			String groupId = action.substring(action.indexOf(':') + 1);
+			res.sendRedirect(req.getContextPath()
+					+ "/settings/attendance.do?deleteType=group&deleteId=" + groupId + "#attend-group-modal");
+			return null;
+		}
+
 		try {
 			AttendanceGroup group = new AttendanceGroup();
 
@@ -32,7 +39,11 @@ public class AttendanceGroupHandler implements CommandHandler {
 				// 신규 등록 로직 (하단 input 사용)
 				group.setGroupName(req.getParameter("newGroupName"));
 				settingService.processAttendGroupAction(group, "insert");
-				req.getSession().setAttribute("message", "새로운 근태그룹이 추가되었습니다.");
+			} else if ("confirmDelete".equals(action)) {
+				group.setAttendanceGroupId(Integer.parseInt(req.getParameter("deleteId")));
+				settingService.processAttendGroupAction(group, "delete");
+				req.getSession().setAttribute("message", "근태그룹이 삭제되었습니다.");
+				req.getSession().setAttribute("messageReturnTarget", "group");
 				
 			} else if (action != null && action.contains(":")) {
 				// 기존 목록의 개별 수정/삭제 로직 파싱 처리
@@ -56,15 +67,17 @@ public class AttendanceGroupHandler implements CommandHandler {
 				}
 				
 				settingService.processAttendGroupAction(group, realAction);
-				req.getSession().setAttribute("message", "근태그룹 변경 사항이 적용되었습니다.");
+				req.getSession().setAttribute("message", "근태그룹이 수정되었습니다.");
+				req.getSession().setAttribute("messageReturnTarget", "group");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			req.getSession().setAttribute("message", "오류 발생: " + e.getMessage());
+			req.getSession().setAttribute("messageReturnTarget", "group");
 		}
 
-		res.sendRedirect(req.getContextPath() + "/settings/attendance.do#attendance-item-settings");
+		res.sendRedirect(req.getContextPath() + "/settings/attendance.do#attend-group-modal");
 		return null;
 	}
 }

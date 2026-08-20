@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>기본환경설정 &gt; 휴가/근태 설정</title>
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/settings/attendance-settings.css">
+	href="${pageContext.request.contextPath}/css/settings/attendance-settings.css?v=20260820-3">
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
 </head>
@@ -22,13 +22,6 @@
 					<h1>휴가/근태 설정</h1>
 				</div>
 			</header>
-			<c:if test="${not empty message}">
-				<p class="form-message" role="status">
-					<c:out value="${message}" />
-				</p>
-				<c:remove var="message" scope="session" />
-			</c:if>
-
 			<section class="setting-card" id="leave-settings">
 				<div class="card-title">
 					<h2>휴가항목 설정</h2>
@@ -103,7 +96,7 @@
 						<div class="editor-actions">
 							<button name="action" value="insert">추가</button>
 							<button name="action" value="update">수정</button>
-							<button class="danger" name="action" value="delete">삭제</button>
+							<button class="danger" name="action" value="requestDelete" formnovalidate>삭제</button>
 							<button class="clear" name="action" value="clear">내용지우기</button>
 						</div>
 					</form>
@@ -204,7 +197,7 @@
 						<div class="editor-actions">
 							<button name="action" value="insert">추가</button>
 							<button name="action" value="update">수정</button>
-							<button class="danger" name="action" value="delete">삭제</button>
+							<button class="danger" name="action" value="requestDelete" formnovalidate>삭제</button>
 							<button class="clear" name="action" value="clear">내용지우기</button>
 						</div>
 					</form>
@@ -225,15 +218,15 @@
 						method="post">
 						<ul class="group-list">
 							<c:forEach var="group" items="${attendGroups}">
-								<li><span class="group-list__handle">↕</span><input
+								<li><input
 									name="groupNames" value="<c:out value='${group.groupName}' />"
-									aria-label="근태그룹명"><input type="hidden" name="groupIds"
+									aria-label="근태그룹명" maxlength="100" required><input type="hidden" name="groupIds"
 									value="${group.attendanceGroupId}">
 									<div>
 										<button name="action"
 											value="update:${group.attendanceGroupId}">수정</button>
-										<button name="action"
-											value="delete:${group.attendanceGroupId}">삭제</button>
+										<button name="action" formnovalidate
+											value="requestDelete:${group.attendanceGroupId}">삭제</button>
 									</div></li>
 							</c:forEach>
 							<c:if test="${empty attendGroups}">
@@ -241,12 +234,8 @@
 							</c:if>
 						</ul>
 						<div class="group-add">
-							<input name="newGroupName" placeholder="새 근태그룹명">
+							<input name="newGroupName" placeholder="새 근태그룹명" maxlength="100" required>
 							<button name="action" value="insert">＋ 추가하기</button>
-						</div>
-						<p class="group-modal__notice">그룹의 표시 순서는 서버에서 저장된 순서를 따릅니다.</p>
-						<div class="group-modal__actions">
-							<button name="action" value="resetOrder">초기화</button>
 						</div>
 					</form>
 				</div>
@@ -326,7 +315,7 @@
 						</div>
 						<div class="employee-leave-actions">
 							<div>
-								<button class="delete" name="action" value="delete">휴가일수
+								<button class="delete" name="action" value="requestDelete" formnovalidate>휴가일수
 									삭제</button>
 								<button name="action" value="save">휴가일수 저장</button>
 							</div>
@@ -337,6 +326,56 @@
 					</form>
 				</div>
 			</div>
+
+			<c:if test="${not empty deleteSettingType}">
+				<div class="attendance-delete-modal" role="alertdialog" aria-modal="true"
+					aria-labelledby="attendance-delete-title">
+					<a class="attendance-modal__backdrop"
+						href="${pageContext.request.contextPath}/settings/attendance.do${deleteReturnHash}"
+						aria-label="삭제 취소"></a>
+					<form class="attendance-delete-modal__panel" method="post"
+						action="${pageContext.request.contextPath}${deleteActionUrl}">
+						<p id="attendance-delete-title"><strong><c:out value="${deleteSettingName}" /></strong> 항목을 삭제하시겠습니까?</p>
+						<p class="attendance-delete-warning">삭제한 항목은 복구할 수 없습니다.</p>
+						<input type="hidden" name="action" value="confirmDelete">
+						<input type="hidden" name="deleteId" value="${deleteSettingId}">
+						<c:if test="${deleteSettingType eq 'leave'}"><input type="hidden" name="leaveItemId" value="${deleteSettingId}"></c:if>
+						<c:if test="${deleteSettingType eq 'attendance'}"><input type="hidden" name="attendItemId" value="${deleteSettingId}"></c:if>
+						<div><button type="submit">삭제</button><a href="${pageContext.request.contextPath}/settings/attendance.do${deleteReturnHash}">취소</a></div>
+					</form>
+				</div>
+			</c:if>
+
+			<c:if test="${not empty employeeLeaveDeleteCount}">
+				<div class="attendance-delete-modal" role="alertdialog" aria-modal="true"
+					aria-labelledby="employee-leave-delete-title">
+					<a class="attendance-modal__backdrop" href="${pageContext.request.contextPath}/settings/attendance.do?cancelEmployeeLeaveDelete=true&amp;leaveItemId=${selectedLeaveItem.leaveItemId}#employee-leave-modal" aria-label="삭제 취소"></a>
+					<form class="attendance-delete-modal__panel" method="post"
+						action="${pageContext.request.contextPath}/settings/employee-leave.do">
+						<p id="employee-leave-delete-title">선택한 <strong><c:out value="${employeeLeaveDeleteCount}" />명</strong>의 휴가일수를 삭제하시겠습니까?</p>
+						<p class="attendance-delete-warning">삭제한 휴가일수는 복구할 수 없습니다.</p>
+						<input type="hidden" name="action" value="confirmDelete">
+						<input type="hidden" name="leaveItemId" value="${selectedLeaveItem.leaveItemId}">
+						<div><button type="submit">삭제</button><a href="${pageContext.request.contextPath}/settings/attendance.do?cancelEmployeeLeaveDelete=true&amp;leaveItemId=${selectedLeaveItem.leaveItemId}#employee-leave-modal">취소</a></div>
+					</form>
+				</div>
+			</c:if>
+
+			<c:if test="${not empty message}">
+				<c:set var="messageHash" value="${messageReturnTarget eq 'group' ? '#attend-group-modal' : messageReturnTarget eq 'employeeLeave' ? '#employee-leave-modal' : ''}" />
+				<div class="attendance-alert" role="alertdialog" aria-modal="true"
+					aria-labelledby="attendance-alert-message">
+					<a class="attendance-modal__backdrop"
+						href="${pageContext.request.contextPath}/settings/attendance.do${messageHash}"
+						aria-label="확인"></a>
+					<div class="attendance-alert__panel">
+						<p id="attendance-alert-message"><c:out value="${message}" /></p>
+						<a href="${pageContext.request.contextPath}/settings/attendance.do${messageHash}">확인</a>
+					</div>
+				</div>
+				<c:remove var="message" scope="session" />
+				<c:remove var="messageReturnTarget" scope="session" />
+			</c:if>
 		</div>
 		<!-- ▼▼ 연차휴가 계산방법 모달 (순수 CSS 방식) ▼▼ -->
 		<div id="annual-leave-info-modal" class="info-modal" role="dialog"

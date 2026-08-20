@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 
 import erp.employees.model.Employee;
 import erp.employees.model.EmployeeAppointment;
@@ -44,16 +43,14 @@ public class EmployeeRegister2Handler implements CommandHandler {
 
 	// [GET] 사원정보 2 화면 렌더링 및 데이터 조회
 	private String processForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		String empIdStr = req.getParameter("empId");
+		int empId = parseEmployeeId(req.getParameter("empId"));
 
-		// 사원번호 파라미터가 아예 안 넘어왔을 경우 (신규 사원 등록 중 넘어오려 할 때)
-		if (empIdStr == null || empIdStr.trim().isEmpty()) {
+		// 1단계에서 저장된 사원만 사원정보 2 화면에 접근할 수 있다.
+		if (empId == 0) {
 			req.getSession().setAttribute("message", "사원 기본 정보가 없습니다. 1단계를 먼저 완료해 주세요.");
 			res.sendRedirect(req.getContextPath() + "/settings/register1.do");
 			return null;
 		}
-
-		int empId = Integer.parseInt(empIdStr);
 
 		// 1. 사원 공통 기본정보 조회
 		Employee employee = registerService.getEmployeeBasicProfile(empId);
@@ -87,6 +84,7 @@ public class EmployeeRegister2Handler implements CommandHandler {
 		req.setAttribute("recommender", recommender);
 		req.setAttribute("suretyInsurance", suretyInsurance);
 		req.setAttribute("guarantor", guarantor);
+		bindRowCounts(req, licenses.size(), languages.size(), trainings.size(), rewardPunishes.size(), appointments.size());
 
 		return "/WEB-INF/view/settings/employee-register-2.jsp";
 	}
@@ -95,12 +93,22 @@ public class EmployeeRegister2Handler implements CommandHandler {
 	private String processAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		req.setCharacterEncoding("UTF-8");
 		String action = req.getParameter("action");
-		String empIdStr = req.getParameter("empId");
+		int empId = parseEmployeeId(req.getParameter("empId"));
 
-		// 신규 등록 방지를 위한 사원번호 임시 기본값 할당
-		int empId = (empIdStr != null && !empIdStr.isEmpty()) ? Integer.parseInt(empIdStr) : 100;
+		// 임의의 ID로 저장하지 않고, 1단계에서 실제로 생성된 사원만 처리한다.
+		if (empId == 0 || registerService.getEmployeeBasicProfile(empId) == null) {
+			req.getSession().setAttribute("message", "사원정보 1을 먼저 저장해 주세요.");
+			res.sendRedirect(req.getContextPath() + "/settings/register1.do");
+			return null;
+		}
 
 		try {
+			if (action != null && action.startsWith("add")) {
+				increaseRowCount(req, action);
+				res.sendRedirect(req.getContextPath() + "/settings/register2.do?empId=" + empId);
+				return null;
+			}
+
 			if ("save".equals(action)) {
 				// [1] 사원 기본정보 중 퇴직 관련 속성 업데이트
 				Employee employee = registerService.getEmployeeBasicProfile(empId);
@@ -163,9 +171,8 @@ public class EmployeeRegister2Handler implements CommandHandler {
 				req.getSession().setAttribute("message", "사원 정보(2)가 저장되었습니다.");
 
 			} else if ("savePhoto".equals(action)) {
-				// 프로필 사진 등록 로직
-				Part photoPart = req.getPart("photoFile");
-				photoService.uploadPhoto(empId, "/upload/emp/photo_" + empId + ".jpg");
+				// 서버 업로드 대신 프로젝트에 준비된 예시 사진 중 하나를 저장한다.
+				photoService.uploadPhoto(empId, getPresetPhotoPath(req.getParameter("photoPreset")));
 				req.getSession().setAttribute("message", "사진이 등록되었습니다.");
 
 			} else if ("deletePhoto".equals(action)) {
@@ -178,9 +185,9 @@ public class EmployeeRegister2Handler implements CommandHandler {
 				String[] deleteIds = req.getParameterValues("licenseDeleteIds");
 				if (deleteIds != null) {
 					List<Integer> idList = new ArrayList<>();
-					for (String id : deleteIds)
-						idList.add(Integer.parseInt(id));
-					skillService.deleteSelectedItems("license", idList);
+					for (String id : deleteIds) if (!isBlank(id)) idList.add(Integer.parseInt(id));
+					if (!idList.isEmpty()) skillService.deleteSelectedItems("license", idList);
+					decreaseRowCount(req, "licenseRowCount", 3, deleteIds.length);
 					req.getSession().setAttribute("message", "선택한 자격/면허가 삭제되었습니다.");
 				}
 
@@ -189,9 +196,9 @@ public class EmployeeRegister2Handler implements CommandHandler {
 				String[] deleteIds = req.getParameterValues("languageDeleteIds");
 				if (deleteIds != null) {
 					List<Integer> idList = new ArrayList<>();
-					for (String id : deleteIds)
-						idList.add(Integer.parseInt(id));
-					skillService.deleteSelectedItems("language", idList);
+					for (String id : deleteIds) if (!isBlank(id)) idList.add(Integer.parseInt(id));
+					if (!idList.isEmpty()) skillService.deleteSelectedItems("language", idList);
+					decreaseRowCount(req, "languageRowCount", 1, deleteIds.length);
 					req.getSession().setAttribute("message", "선택한 어학능력이 삭제되었습니다.");
 				}
 
@@ -200,9 +207,9 @@ public class EmployeeRegister2Handler implements CommandHandler {
 				String[] deleteIds = req.getParameterValues("trainingDeleteIds");
 				if (deleteIds != null) {
 					List<Integer> idList = new ArrayList<>();
-					for (String id : deleteIds)
-						idList.add(Integer.parseInt(id));
-					skillService.deleteSelectedItems("training", idList);
+					for (String id : deleteIds) if (!isBlank(id)) idList.add(Integer.parseInt(id));
+					if (!idList.isEmpty()) skillService.deleteSelectedItems("training", idList);
+					decreaseRowCount(req, "trainingRowCount", 2, deleteIds.length);
 					req.getSession().setAttribute("message", "선택한 교육/훈련이 삭제되었습니다.");
 				}
 
@@ -211,9 +218,9 @@ public class EmployeeRegister2Handler implements CommandHandler {
 				String[] deleteIds = req.getParameterValues("rewardDeleteIds");
 				if (deleteIds != null) {
 					List<Integer> idList = new ArrayList<>();
-					for (String id : deleteIds)
-						idList.add(Integer.parseInt(id));
-					skillService.deleteSelectedItems("reward", idList);
+					for (String id : deleteIds) if (!isBlank(id)) idList.add(Integer.parseInt(id));
+					if (!idList.isEmpty()) skillService.deleteSelectedItems("reward", idList);
+					decreaseRowCount(req, "rewardRowCount", 2, deleteIds.length);
 					req.getSession().setAttribute("message", "선택한 상벌 내역이 삭제되었습니다.");
 				}
 
@@ -222,9 +229,9 @@ public class EmployeeRegister2Handler implements CommandHandler {
 				String[] deleteIds = req.getParameterValues("appointmentDeleteIds");
 				if (deleteIds != null) {
 					List<Integer> idList = new ArrayList<>();
-					for (String id : deleteIds)
-						idList.add(Integer.parseInt(id));
-					skillService.deleteSelectedItems("appointment", idList);
+					for (String id : deleteIds) if (!isBlank(id)) idList.add(Integer.parseInt(id));
+					if (!idList.isEmpty()) skillService.deleteSelectedItems("appointment", idList);
+					decreaseRowCount(req, "appointmentRowCount", 2, deleteIds.length);
 					req.getSession().setAttribute("message", "선택한 인사발령 내역이 삭제되었습니다.");
 				}
 			}
@@ -239,13 +246,79 @@ public class EmployeeRegister2Handler implements CommandHandler {
 		return null;
 	}
 
+	private int parseEmployeeId(String value) {
+		try {
+			int employeeId = Integer.parseInt(value);
+			return employeeId > 0 ? employeeId : 0;
+		} catch (NumberFormatException e) {
+			return 0;
+		}
+	}
+
+	private String getPresetPhotoPath(String presetPhoto) {
+		if (presetPhoto == null || !presetPhoto.matches("0[1-5]")) {
+			throw new IllegalArgumentException("사용할 사원 사진을 선택해 주세요.");
+		}
+		return "/images/settings/employee-presets/employee-" + presetPhoto + ".png";
+	}
+
+	private boolean isBlank(String value) {
+		return value == null || value.trim().isEmpty();
+	}
+
+	private void bindRowCounts(HttpServletRequest req, int licenses, int languages, int trainings,
+			int rewards, int appointments) {
+		req.setAttribute("licenseRowCount", getRowCount(req, "licenseRowCount", Math.max(3, licenses)));
+		req.setAttribute("languageRowCount", getRowCount(req, "languageRowCount", Math.max(1, languages)));
+		req.setAttribute("trainingRowCount", getRowCount(req, "trainingRowCount", Math.max(2, trainings)));
+		req.setAttribute("rewardRowCount", getRowCount(req, "rewardRowCount", Math.max(2, rewards)));
+		req.setAttribute("appointmentRowCount", getRowCount(req, "appointmentRowCount", Math.max(2, appointments)));
+	}
+
+	private int getRowCount(HttpServletRequest req, String key, int defaultCount) {
+		Integer count = (Integer) req.getSession().getAttribute(key);
+		return count == null ? defaultCount : Math.max(defaultCount, Math.min(count, 20));
+	}
+
+	private void increaseRowCount(HttpServletRequest req, String action) {
+		String key;
+		int defaultCount;
+		if ("addLicense".equals(action)) {
+			key = "licenseRowCount"; defaultCount = 3;
+		} else if ("addLanguage".equals(action)) {
+			key = "languageRowCount"; defaultCount = 1;
+		} else if ("addTraining".equals(action)) {
+			key = "trainingRowCount"; defaultCount = 2;
+		} else if ("addRewardPunish".equals(action)) {
+			key = "rewardRowCount"; defaultCount = 2;
+		} else if ("addAppointment".equals(action)) {
+			key = "appointmentRowCount"; defaultCount = 2;
+		} else {
+			return;
+		}
+		req.getSession().setAttribute(key, Math.min(getRowCount(req, key, defaultCount) + 1, 20));
+	}
+
+	private void decreaseRowCount(HttpServletRequest req, String key, int defaultCount, int amount) {
+		int count = getRowCount(req, key, defaultCount);
+		req.getSession().setAttribute(key, Math.max(defaultCount, count - Math.max(amount, 0)));
+	}
+
+	private int parseRowCount(HttpServletRequest req, String name, int defaultCount) {
+		try {
+			return Math.max(defaultCount, Math.min(Integer.parseInt(req.getParameter(name)), 20));
+		} catch (Exception e) {
+			return defaultCount;
+		}
+	}
+
 	// [Helper] 자격 및 면허 폼 데이터 파싱
 	private List<EmployeeLicense> parseLicenses(HttpServletRequest req, int empId) throws Exception {
 		List<EmployeeLicense> list = new ArrayList<>();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		// 화면 0~2 루프 기준 반복 파싱
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < parseRowCount(req, "licenseRowCount", 3); i++) {
 			String licName = req.getParameter("licenses[" + i + "].licenseName");
 
 			if (licName != null && !licName.trim().isEmpty()) {
@@ -273,7 +346,7 @@ public class EmployeeRegister2Handler implements CommandHandler {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		// 화면 1줄 기준 반복 파싱
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < parseRowCount(req, "languageRowCount", 1); i++) {
 			String langName = req.getParameter("languages[" + i + "].languageName");
 
 			if (langName != null && !langName.trim().isEmpty()) {
@@ -303,7 +376,7 @@ public class EmployeeRegister2Handler implements CommandHandler {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		// 화면 0~1 루프 기준 반복 파싱
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < parseRowCount(req, "trainingRowCount", 2); i++) {
 			String trainName = req.getParameter("trainings[" + i + "].trainingName");
 
 			if (trainName != null && !trainName.trim().isEmpty()) {
@@ -350,7 +423,7 @@ public class EmployeeRegister2Handler implements CommandHandler {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		// 화면 0~1 루프 기준 반복 파싱
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < parseRowCount(req, "rewardRowCount", 2); i++) {
 			String rpName = req.getParameter("rewardPunishes[" + i + "].rpName");
 			String rpType = req.getParameter("rewardPunishes[" + i + "].rpType");
 
@@ -380,7 +453,7 @@ public class EmployeeRegister2Handler implements CommandHandler {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		// 화면 0~1 루프 기준 반복 파싱
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < parseRowCount(req, "appointmentRowCount", 2); i++) {
 			String appType = req.getParameter("appointments[" + i + "].appointmentType");
 			String appDateStr = req.getParameter("appointments[" + i + "].appointmentDate");
 

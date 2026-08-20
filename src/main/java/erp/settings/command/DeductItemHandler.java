@@ -24,6 +24,12 @@ public class DeductItemHandler implements CommandHandler {
 	private String processAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		req.setCharacterEncoding("UTF-8");
 		String action = req.getParameter("action");
+		if ("requestDelete".equals(action)) {
+			req.getSession().setAttribute("deleteItemType", "DEDUCT");
+			req.getSession().setAttribute("deleteItemId", req.getParameter("deductItemId"));
+			res.sendRedirect(req.getContextPath() + "/settings/pay-item.do#deduction-settings");
+			return null;
+		}
 
 		try {
 			DeductItem item = new DeductItem();
@@ -50,11 +56,13 @@ public class DeductItemHandler implements CommandHandler {
 			if (!"clear".equals(action)) {
 				payService.processDeductItemAction(item, action);
 				req.getSession().setAttribute("message", "공제항목 설정이 완료되었습니다.");
+				req.getSession().setAttribute("messageAnchor", "#deduction-settings");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			req.getSession().setAttribute("message", "오류 발생: " + e.getMessage());
+			req.getSession().setAttribute("messageAnchor", "#deduction-settings");
 		}
 
 		// 처리 후 공제항목 설정 패널 앵커(#deduction-settings)로 리다이렉트 처리

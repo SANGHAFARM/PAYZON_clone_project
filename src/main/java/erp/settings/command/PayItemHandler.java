@@ -47,19 +47,31 @@ public class PayItemHandler implements CommandHandler {
 
 		// 2. 선택된 지급항목 파라미터 확인 및 단건 조회 (에디터 패널용)
 		String payItemIdStr = req.getParameter("payItemId");
+		PayItem selectedPaymentItem = null;
 		if (payItemIdStr != null && !payItemIdStr.isEmpty()) {
 			int payItemId = Integer.parseInt(payItemIdStr);
-			PayItem selectedPaymentItem = payService.getPayItem(payItemId);
-
-			// 비과세 모달창에서 비과세 코드를 선택하여 돌아왔을 경우 임시 매핑 처리
-			String taxFreeCode = req.getParameter("taxFreeCode");
-			if (taxFreeCode != null && !taxFreeCode.isEmpty()) {
-				selectedPaymentItem.setTaxType("비과세");
-				selectedPaymentItem.setTaxFreeCode(taxFreeCode);
-			}
-
-			req.setAttribute("selectedPaymentItem", selectedPaymentItem);
+			selectedPaymentItem = payService.getPayItem(payItemId);
 		}
+
+		// 비과세 목록에서 선택한 경우 입력 중인 폼 값과 법정 한도액을 함께 복원한다.
+		String selectedTaxFreeCode = req.getParameter("selectedTaxFreeCode");
+		if (selectedTaxFreeCode != null && !selectedTaxFreeCode.isEmpty()) {
+			selectedPaymentItem = parsePayItem(req);
+			if ("DIRECT".equals(selectedTaxFreeCode)) {
+				selectedPaymentItem.setTaxType("비과세");
+				selectedPaymentItem.setTaxFreeCode("DIRECT");
+				selectedPaymentItem.setTaxFreeName("직접입력");
+			} else {
+				TaxFreeItem taxFreeItem = payService.getTaxFreeItem(selectedTaxFreeCode);
+				if (taxFreeItem != null) {
+					selectedPaymentItem.setTaxType("비과세");
+					selectedPaymentItem.setTaxFreeCode(taxFreeItem.getTaxFreeCode());
+					selectedPaymentItem.setTaxFreeName(taxFreeItem.getTaxFreeName());
+					selectedPaymentItem.setTaxFreeLimit(taxFreeItem.getDefaultLimit());
+				}
+			}
+		}
+		req.setAttribute("selectedPaymentItem", selectedPaymentItem);
 
 		// 3. 선택된 공제항목 파라미터 확인 및 단건 조회 (에디터 패널용)
 		String deductItemIdStr = req.getParameter("deductItemId");
@@ -77,61 +89,73 @@ public class PayItemHandler implements CommandHandler {
 	private String processAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		req.setCharacterEncoding("UTF-8");
 		String action = req.getParameter("action");
+		if ("requestDelete".equals(action)) {
+			req.getSession().setAttribute("deleteItemType", "PAY");
+			req.getSession().setAttribute("deleteItemId", req.getParameter("payItemId"));
+			res.sendRedirect(req.getContextPath() + "/settings/pay-item.do#payment-settings");
+			return null;
+		}
 
 		try {
-			PayItem item = new PayItem();
-
-			// 기본키 파싱
-			String idStr = req.getParameter("payItemId");
-			if (idStr != null && !idStr.isEmpty()) {
-				item.setPayItemId(Integer.parseInt(idStr));
-			}
-
-			// 스키마 명명 규칙이 적용된 파라미터 파싱 처리
-			item.setPayName(req.getParameter("payName"));
-			item.setTaxType(req.getParameter("taxType"));
-			item.setTaxFreeCode(req.getParameter("taxFreeCode"));
-
-			String limitStr = req.getParameter("taxFreeLimit");
-			if (limitStr != null && !limitStr.isEmpty()) {
-				item.setTaxFreeLimit(Long.parseLong(limitStr));
-			}
-
-			item.setCalcMethod(req.getParameter("calcMethod"));
-
-			String roundStr = req.getParameter("roundUnit");
-			if (roundStr != null && !roundStr.isEmpty()) {
-				item.setRoundUnit(Integer.parseInt(roundStr));
-			}
-
-			item.setUseYn(req.getParameter("useYn"));
-
-			// 근태연결 또는 일괄지급 선택값 파싱 처리
-			String linkAttendStr = req.getParameter("linkAttendId");
-			if ("BATCH".equals(linkAttendStr)) {
-				// 일괄지급 선택 시
-				String bulkAmountStr = req.getParameter("bulkPayAmount");
-				if (bulkAmountStr != null && !bulkAmountStr.isEmpty()) {
-					item.setBulkPayAmount(Long.parseLong(bulkAmountStr));
-				}
-			} else if (linkAttendStr != null && !linkAttendStr.isEmpty()) {
-				// 근태항목 연결 선택 시
-				item.setLinkAttendId(Integer.parseInt(linkAttendStr));
-			}
+			PayItem item = parsePayItem(req);
 
 			// 내용 지우기 액션 외에는 서비스 로직 호출을 통한 트랜잭션 수행
 			if (!"clear".equals(action)) {
 				payService.processPayItemAction(item, action);
 				req.getSession().setAttribute("message", "지급항목 설정이 완료되었습니다.");
+				req.getSession().setAttribute("messageAnchor", "#payment-settings");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			req.getSession().setAttribute("message", "오류 발생: " + e.getMessage());
+			req.getSession().setAttribute("messageAnchor", "#payment-settings");
 		}
 
 		// 처리 후 데이터 중복 전송을 막기 위한 PRG(Post-Redirect-Get) 패턴 적용
 		res.sendRedirect(req.getContextPath() + "/settings/pay-item.do#payment-settings");
 		return null;
+	}
+
+	// 지급항목 입력값을 화면 재표시와 저장 처리에서 공통으로 사용한다.
+	private PayItem parsePayItem(HttpServletRequest req) {
+		PayItem item = new PayItem();
+		String idStr = req.getParameter("payItemId");
+		if (idStr != null && !idStr.isEmpty()) {
+			item.setPayItemId(Integer.parseInt(idStr));
+		}
+
+		item.setPayName(req.getParameter("payName"));
+		item.setTaxType(req.getParameter("taxType"));
+		item.setTaxFreeCode(req.getParameter("taxFreeCode"));
+		item.setTaxFreeName(req.getParameter("taxFreeName"));
+		item.setDirectTaxFreeName(req.getParameter("directTaxFreeName"));
+		item.setCalcMethod(req.getParameter("calcMethod"));
+		item.setUseYn(req.getParameter("useYn"));
+
+		String limitStr = req.getParameter("taxFreeLimit");
+		if (limitStr != null && !limitStr.isEmpty()) {
+			item.setTaxFreeLimit(Long.parseLong(limitStr));
+		}
+		String directLimitStr = req.getParameter("directTaxFreeLimit");
+		if (directLimitStr != null && !directLimitStr.isEmpty()) {
+			item.setDirectTaxFreeLimit(Long.parseLong(directLimitStr));
+		}
+		String roundStr = req.getParameter("roundUnit");
+		if (roundStr != null && !roundStr.isEmpty()) {
+			item.setRoundUnit(Integer.parseInt(roundStr));
+		}
+
+		String linkAttendStr = req.getParameter("linkAttendId");
+		if ("BATCH".equals(linkAttendStr)) {
+			item.setPayMethod("일괄지급");
+			String bulkAmountStr = req.getParameter("bulkPayAmount");
+			if (bulkAmountStr != null && !bulkAmountStr.isEmpty()) {
+				item.setBulkPayAmount(Long.parseLong(bulkAmountStr));
+			}
+		} else if (linkAttendStr != null && !linkAttendStr.isEmpty()) {
+			item.setLinkAttendId(Integer.parseInt(linkAttendStr));
+		}
+		return item;
 	}
 }

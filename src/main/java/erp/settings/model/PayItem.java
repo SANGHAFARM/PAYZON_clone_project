@@ -18,6 +18,8 @@ public class PayItem {
 	private Integer roundUnit; // 절사단위
 	private Integer linkAttendId; // 근태항목 외래키
 	private Long bulkPayAmount; // 일괄지급액
+	private String directTaxFreeName; // 사용자 직접입력 비과세명
+	private Long directTaxFreeLimit; // 사용자 직접입력 한도액
 
 	public PayItem() {
 	}
@@ -117,5 +119,21 @@ public class PayItem {
 
 	public void setUseYn(String useYn) {
 		this.useYn = useYn;
+	}
+
+	public String getDirectTaxFreeName() {
+		return directTaxFreeName;
+	}
+
+	public void setDirectTaxFreeName(String directTaxFreeName) {
+		this.directTaxFreeName = directTaxFreeName;
+	}
+
+	public Long getDirectTaxFreeLimit() {
+		return directTaxFreeLimit;
+	}
+
+	public void setDirectTaxFreeLimit(Long directTaxFreeLimit) {
+		this.directTaxFreeLimit = directTaxFreeLimit;
 	}
 }
