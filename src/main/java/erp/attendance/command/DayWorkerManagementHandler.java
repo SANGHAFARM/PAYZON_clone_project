@@ -26,7 +26,6 @@ import erp.attendance.service.DailyWorkUpdateService;
 import erp.attendance.service.ListDailyWorkRecordService;
 import erp.employees.dao.EmployeeDao;
 import erp.employees.dto.DayWorkerDto;
-import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 import mvc.command.CommandHandler;
 
@@ -97,16 +96,12 @@ public class DayWorkerManagementHandler implements CommandHandler {
 		ProjectDao projectDao = ProjectDao.getInstance();
 		LocalDate today = LocalDate.now();
 		req.setAttribute("today", today);
-		Connection conn = null;
-		try {
-			conn = ConnectionProvider.getConnection();
+		try (Connection conn = ConnectionProvider.getConnection()){
 			List<DayWorkerDto> dayWorkers = employeeDao.selectDayWorkerListByKeywordAndStatus(conn, keyword, status);
 			req.setAttribute("dayWorkers", dayWorkers);
 			List<Project> projects = projectDao.selectAll(conn);
 			req.setAttribute("projects", projects);
 
-		} finally {
-			JdbcUtil.close(conn);
 		}
 		return FORM_VIEW;
 
@@ -162,15 +157,24 @@ public class DayWorkerManagementHandler implements CommandHandler {
 
 		request.setWorkDate(workDate);
 		request.setProjectId(Integer.parseInt(req.getParameter("projectId")));
-		request.setDailyPay(Long.parseLong(req.getParameter("dailyPay")));
-		request.setPayRate(Double.parseDouble(req.getParameter("payRate")));
+		
+		String dailyPayStr = req.getParameter("dailyPay");
+		long dailyPay = (dailyPayStr!=null&&!dailyPayStr.trim().isEmpty())?Long.parseLong(dailyPayStr):0L;
+		request.setDailyPay(dailyPay);
+		
+		String payRateStr = req.getParameter("payRate");
+		double payRate = (payRateStr!=null&&!payRateStr.trim().isEmpty())?Double.parseDouble(payRateStr):0.0;
+		request.setPayRate(payRate);
 
-		String incomeTax = req.getParameter("incomeTax").replaceAll(",", "");
-		String localIncomTax = req.getParameter("localIncomeTax").replaceAll(",", "");
-		String actualPay = req.getParameter("actualPay").replaceAll(",", "");
-		request.setIncomeTax(Long.parseLong(incomeTax));
-		request.setLocalIncomeTax(Long.parseLong(localIncomTax));
-		request.setActualPay(Long.parseLong(actualPay));
+		String incomeTaxStr = req.getParameter("incomeTax").replaceAll(",", "");
+		String localIncomTaxStr = req.getParameter("localIncomeTax").replaceAll(",", "");
+		String actualPayStr = req.getParameter("actualPay").replaceAll(",", "");
+		Long incomTax = (incomeTaxStr!=null&&!incomeTaxStr.trim().isEmpty())?Long.parseLong(incomeTaxStr):0L;
+		Long localIncomeTax = (localIncomTaxStr!=null&&!localIncomTaxStr.trim().isEmpty())?Long.parseLong(localIncomTaxStr):0L;
+		Long actualPay = (actualPayStr!=null&&!actualPayStr.trim().isEmpty())?Long.parseLong(actualPayStr):0L;
+		request.setIncomeTax(incomTax);
+		request.setLocalIncomeTax(localIncomeTax);
+		request.setActualPay(actualPay);
 
 		return request;
 	}
@@ -195,19 +199,27 @@ public class DayWorkerManagementHandler implements CommandHandler {
 		} catch (ParseException e) {
 			errors.put("ParseException", Boolean.TRUE);
 		}
-
 		request.setEmployeeIds(employeeIds);
 		request.setWorkDate(workDate);
 		request.setProjectId(Integer.parseInt(req.getParameter("projectId")));
-		request.setDailyPay(Long.parseLong(req.getParameter("dailyPay")));
-		request.setPayRate(Double.parseDouble(req.getParameter("payRate")));
+		
+		String dailyPayStr = req.getParameter("dailyPay");
+		long dailyPay = (dailyPayStr!=null&&!dailyPayStr.trim().isEmpty())?Long.parseLong(dailyPayStr):0L;
+		request.setDailyPay(dailyPay);
+		
+		String payRateStr = req.getParameter("payRate");
+		double payRate = (payRateStr!=null&&!payRateStr.trim().isEmpty())?Double.parseDouble(payRateStr):0.0;
+		request.setPayRate(payRate);
 
-		String incomeTax = req.getParameter("incomeTax").replaceAll(",", "");
-		String localIncomTax = req.getParameter("localIncomeTax").replaceAll(",", "");
-		String actualPay = req.getParameter("actualPay").replaceAll(",", "");
-		request.setIncomeTax(Long.parseLong(incomeTax));
-		request.setLocalIncomeTax(Long.parseLong(localIncomTax));
-		request.setActualPay(Long.parseLong(actualPay));
+		String incomeTaxStr = req.getParameter("incomeTax").replaceAll(",", "");
+		String localIncomTaxStr = req.getParameter("localIncomeTax").replaceAll(",", "");
+		String actualPayStr = req.getParameter("actualPay").replaceAll(",", "");
+		Long incomTax = (incomeTaxStr!=null&&!incomeTaxStr.trim().isEmpty())?Long.parseLong(incomeTaxStr):0L;
+		Long localIncomeTax = (localIncomTaxStr!=null&&!localIncomTaxStr.trim().isEmpty())?Long.parseLong(localIncomTaxStr):0L;
+		Long actualPay = (actualPayStr!=null&&!actualPayStr.trim().isEmpty())?Long.parseLong(actualPayStr):0L;
+		request.setIncomeTax(incomTax);
+		request.setLocalIncomeTax(localIncomeTax);
+		request.setActualPay(actualPay);
 
 		return request;
 	}

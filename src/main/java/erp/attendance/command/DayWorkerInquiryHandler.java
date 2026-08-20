@@ -1,5 +1,6 @@
 package erp.attendance.command;
 
+import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
@@ -70,8 +71,10 @@ public class DayWorkerInquiryHandler implements CommandHandler{
 
 			//현장/프로젝트 목록
 			ProjectDao projectDao = ProjectDao.getInstance();
-			List<Project> projects = projectDao.selectAll(ConnectionProvider.getConnection());
+			try (Connection conn = ConnectionProvider.getConnection()){
+			List<Project> projects = projectDao.selectAll(conn);
 			req.setAttribute("projects", projects);
+			}
 			
 			//파라미터 기반으로 리퀘스트 생성
 			String startStr = req.getParameter("startDate");

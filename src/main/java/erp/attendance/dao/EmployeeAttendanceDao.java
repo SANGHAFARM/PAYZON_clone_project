@@ -5,12 +5,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.sql.Types;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import erp.attendance.dto.AttendanceRecordDto;
+import erp.attendance.dto.MonthlyAttendanceDto;
 import erp.attendance.model.EmployeeAttendance;
+import erp.attendance.service.MonthlyAttendanceRequest;
 /*import erp.attend.model.AttendDetailItem;
 import erp.attend.model.AttendSearchCondition;*/
 /*import erp.attend.model.EmpAttendRecord;*/
@@ -76,26 +80,26 @@ public class EmployeeAttendanceDao {
 	 * EmpAttendRecord테이블에 있는 기록을 사원ID와 연도와 월로 조회하는 메서드 month가 null일 시, month조건은
 	 * 무시되고 해당년도 전체를 조회함 EmpAttendRecordテーブルにある記録を社員IDと年度と月で照会するメソッド
 	 */
-	
-	public List<AttendanceRecordDto> selectByEmpIdAndYearAndMonth(Connection conn, int empId, int year, Integer month) throws SQLException{
+
+	public List<AttendanceRecordDto> selectByEmpIdAndYearAndMonth(Connection conn, int empId, int year, Integer month)
+			throws SQLException {
 		String sql = "SELECT A.EMPLOYEE_ATTENDANCE_ID, A.INPUT_DATE, A.ATTENDANCE_ITEM_ID, I.ATTEND_NAME, A.START_DATE, A.END_DATE, A.ATTEND_VALUE, A.PAY_AMOUNT, A.NOTE "
-		           + "FROM EMPLOYEE_ATTENDANCE A LEFT JOIN ATTENDANCE_ITEM I ON I.ATTENDANCE_ITEM_ID = A.ATTENDANCE_ITEM_ID "
-		           + "WHERE EMPLOYEE_ID = ? "
-		           + "AND TO_CHAR(START_DATE, 'YYYY') = ? "
-		           + "AND (? IS NULL OR TO_CHAR(START_DATE, 'MM') = ?)";
+				+ "FROM EMPLOYEE_ATTENDANCE A LEFT JOIN ATTENDANCE_ITEM I ON I.ATTENDANCE_ITEM_ID = A.ATTENDANCE_ITEM_ID "
+				+ "WHERE EMPLOYEE_ID = ? " + "AND TO_CHAR(START_DATE, 'YYYY') = ? "
+				+ "AND (? IS NULL OR TO_CHAR(START_DATE, 'MM') = ?)";
 		List<AttendanceRecordDto> list = new ArrayList<>();
-		try(PreparedStatement pstmt = conn.prepareStatement(sql)){
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, empId);
 			pstmt.setString(2, String.valueOf(year));
-			if (month!=null) {
+			if (month != null) {
 				pstmt.setString(3, String.format("%02d", month));
 				pstmt.setString(4, String.format("%02d", month));
-				
+
 			} else {
 				pstmt.setString(3, null);
 				pstmt.setString(4, null);
 			}
-			try(ResultSet rs = pstmt.executeQuery()){
+			try (ResultSet rs = pstmt.executeQuery()) {
 				while (rs.next()) {
 					AttendanceRecordDto dto = new AttendanceRecordDto();
 					dto.setEmployeeAttendanceId(rs.getInt("EMPLOYEE_ATTENDANCE_ID"));
@@ -112,7 +116,7 @@ public class EmployeeAttendanceDao {
 			}
 		}
 		return list;
-				
+
 	}
 
 	/*
@@ -155,26 +159,141 @@ public class EmployeeAttendanceDao {
 	 * 
 	 * 월별조회에서 사용하는 메서드 사원 1 명의 해당 연월의 근태기록을 조회
 	 */
+	/*
+	 * public List<EmployeeAttendance> selectByEmpIdAndMonthOverlap(Connection conn,
+	 * Long empId, int year, int month) throws SQLException { String sql =
+	 * "SELECT * FROM EMPLOYEE_ATTENDANCE " + "WHERE EMPLOYEE_ID = ? " +
+	 * "AND START_DATE <= LAST_DAY(TO_DATE(?, 'YYYYMM')) " +
+	 * "AND END_DATE >=TO_DATE(?, 'YYYYMM')";
+	 * 
+	 * String yyyymm = String.format("%04d%02d", year, month);
+	 * List<EmployeeAttendance> list = new ArrayList<>(); try (PreparedStatement
+	 * pstmt = conn.prepareStatement(sql)) { pstmt.setLong(1, empId);
+	 * pstmt.setString(2, yyyymm); pstmt.setString(3, yyyymm); try (ResultSet rs =
+	 * pstmt.executeQuery()) { while (rs.next()) {
+	 * list.add(convertEmployeeAttendance(rs)); } } } return list; }
+	 */
 
-	public List<EmployeeAttendance> selectByEmpIdAndMonthOverlap(Connection conn, Long empId, int year, int month)
-			throws SQLException {
-		String sql = "SELECT * FROM EMPLOYEE_ATTENDANCE " + "WHERE EMPLOYEE_ID = ? "
-				+ "AND START_DATE <= LAST_DAY(TO_DATE(?, 'YYYYMM')) " + "AND END_DATE >=TO_DATE(?, 'YYYYMM')";
-
-		String yyyymm = String.format("%04d%02d", year, month);
-		List<EmployeeAttendance> list = new ArrayList<>();
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setLong(1, empId);
-			pstmt.setString(2, yyyymm);
-			pstmt.setString(3, yyyymm);
-			try (ResultSet rs = pstmt.executeQuery()) {
+	//월별조회 사원목록
+	public List<MonthlyAttendanceDto> selectByCondition(Connection conn,MonthlyAttendanceRequest req) throws SQLException{
+		String sql = "SELECT E.EMPLOYEE_ID, E.EMP_TYPE, E.EMP_NO, E.EMP_NAME_KR, D.DEPARTMENT_NAME, J.JOB_POSITION_NAME "
+				+ "FROM EMPLOYEE E "
+				+ "LEFT JOIN DEPARTMENT D ON D.DEPARTMENT_ID = E.DEPARTMENT_ID "
+				+ "LEFT JOIN JOB_POSITION J ON J.JOB_POSITION_ID = E.JOB_POSITION_ID "
+				+ "WHERE (? IS NULL OR E.STATUS = ? ) "
+				+ "AND (? IS NULL OR E.EMP_TYPE = ?) "
+				+ "AND (? IS NULL OR D.DEPARTMENT_ID = ? ) "
+				+ "AND (? IS NULL OR J.JOB_POSITION_ID = ? )"
+				+ "ORDER BY EMPLOYEE_ID DESC";
+		try(PreparedStatement pstmt = conn.prepareStatement(sql)){
+			pstmt.setString(1, req.getStatus());
+			pstmt.setString(2, req.getStatus());
+			pstmt.setString(3, req.getEmpType());
+			pstmt.setString(4, req.getEmpType());
+			setIntOrNull(pstmt, 5, 6, req.getDepartmentId());
+			setIntOrNull(pstmt, 7, 8, req.getJobPositionId());
+			List<MonthlyAttendanceDto> list = new ArrayList<>();
+			try(ResultSet rs = pstmt.executeQuery()){
 				while (rs.next()) {
-					list.add(convertEmployeeAttendance(rs));
+					MonthlyAttendanceDto dto = new MonthlyAttendanceDto();
+					dto.setEmpType(rs.getString("EMP_TYPE"));
+					dto.setEmpNo(rs.getString("EMP_NO"));
+					dto.setEmpNameKr(rs.getString("EMP_NAME_KR"));
+					dto.setDepartmentName(rs.getString("DEPARTMENT_NAME"));
+					dto.setJobPositionName(rs.getString("JOB_POSITION_NAME"));
+					int empId = rs.getInt("EMPLOYEE_ID");
+					int year = req.getYear();
+					int month = req.getMonth();
+					dto.setDailyAttendance(selectDailyAttendance(conn, empId, year, month));
+					dto.setTotalAttendValue(selectTotalAttendValue(conn, empId, year, month, dto));
+					list.add(dto);
 				}
 			}
+			return list;
 		}
-		return list;
+				
+		
 	}
+	
+	private Map<Integer, String> selectDailyAttendance(Connection conn, int empId, int year, int month) throws SQLException {
+	    // 해당 연월의 시작일과 마지막 날 계산 (예: 2026-08-01 ~ 2026-08-31)
+	    String targetYearMonth = String.format("%d-%02d", year, month);
+	    
+	    // SQL 쿼리: 해당 사원의 데이터 중, 조회하려는 월과 겹치는 기간의 데이터만 조회
+	    String sql = "SELECT START_DATE, END_DATE FROM EMPLOYEE_ATTENDANCE "
+	               + "WHERE EMPLOYEE_ID = ? "
+	               + "  AND START_DATE <= LAST_DAY(TO_DATE(?, 'YYYY-MM')) "
+	               + "  AND END_DATE >= TO_DATE(?, 'YYYY-MM')";
+	               
+	    Map<Integer, String> dailyAttendance = new HashMap<>();
+	    
+	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        pstmt.setInt(1, empId);
+	        pstmt.setString(2, targetYearMonth); // START_DATE 비교용
+	        pstmt.setString(3, targetYearMonth); // END_DATE 비교용
+	        
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            while (rs.next()) {
+	                java.sql.Date dbStartDate = rs.getDate("START_DATE");
+	                java.sql.Date dbEndDate = rs.getDate("END_DATE");
+
+	                if (dbStartDate == null || dbEndDate == null) {
+	                    continue;
+	                }
+
+	                LocalDate startDate = dbStartDate.toLocalDate();
+	                LocalDate endDate = dbEndDate.toLocalDate();
+	                
+	                // 기간을 하루씩 돌면서 맵에 담기
+	                for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+	                    // 조회하는 연월에 해당하는 날짜만 맵에 담기 (전월/익월로 넘어간 날짜 제외)
+	                    if (date.getYear() == year && date.getMonthValue() == month) {
+	                        int day = date.getDayOfMonth();
+	                        dailyAttendance.put(day, "O");
+	                    }
+	                }
+	            }
+	        }
+	    }
+	    return dailyAttendance;
+	}
+
+	public Map<String, Double> selectTotalAttendValue(Connection conn, int empId, int year, int month, MonthlyAttendanceDto dto) throws SQLException {
+	    // 해당 연월 문자열 생성 (예: "2026-08")
+	    String targetYearMonth = String.format("%d-%02d", year, month);
+	    
+	    String sql = "SELECT i.attend_name, SUM(e.attend_value) AS TOTAL_ATTEND_VALUE " 
+	               + "FROM employee_attendance e "
+	               + "JOIN attendance_item i " 
+	               + "  ON i.attendance_item_id = e.attendance_item_id "
+	               + "WHERE e.employee_id = ? " 
+	               + "  AND e.start_date <= LAST_DAY(TO_DATE(?, 'YYYY-MM')) "
+	               + "  AND e.end_date >= TO_DATE(?, 'YYYY-MM') "
+	               + "GROUP BY i.attend_name";
+	               
+	    Map<String, Double> map = new HashMap<>();
+	    
+	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        pstmt.setInt(1, empId);
+	        pstmt.setString(2, targetYearMonth); // start_date 비교용
+	        pstmt.setString(3, targetYearMonth); // end_date 비교용
+	        
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	        	double sum = 0;
+	            while (rs.next()) {
+	                String key = rs.getString("ATTEND_NAME");
+	                double value = rs.getDouble("TOTAL_ATTEND_VALUE");
+	                if(key.equals("연차")||key.equals("반차")||key.equals("포상휴가")) {
+	                	sum+=value;
+	                	dto.setTotalLeaveDeduction(sum);
+	                }
+	                map.put(key, value);
+	            }
+	        }
+	    }
+	    return map;
+	}
+
 
 	/*
 	 * 근태관리>근태조회>
@@ -237,7 +356,7 @@ public class EmployeeAttendanceDao {
 		String sql = "UPDATE EMPLOYEE_ATTENDANCE SET ATTENDANCE_ITEM_ID=?, LEAVE_ITEM_ID=?, INPUT_DATE=?, START_DATE=?, END_DATE=?, ATTEND_VALUE=?, PAY_AMOUNT=?, NOTE=? WHERE EMPLOYEE_ATTENDANCE_ID=?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, empAt.getAttendanceItemId());
-			pstmt.setInt(2, empAt.getLeaveItemId());
+			setIntOrNull(pstmt, 2, empAt.getLeaveItemId());
 			pstmt.setTimestamp(3, dateToTimestamp(empAt.getInputDate()));
 			pstmt.setTimestamp(4, dateToTimestamp(empAt.getStartDate()));
 			pstmt.setTimestamp(5, dateToTimestamp(empAt.getEndDate()));
@@ -279,7 +398,7 @@ public class EmployeeAttendanceDao {
 		empAt.setEmployeeAttendanceId(rs.getInt("EMPLOYEE_ATTENDANCE_ID"));
 		empAt.setEmployeeId(rs.getInt("EMPLOYEE_ID"));
 		empAt.setAttendanceItemId(rs.getInt("ATTENDANCE_ITEM_ID"));
-		empAt.setLeaveItemId((Integer)rs.getObject("LEAVE_ITEM_ID"));
+		empAt.setLeaveItemId((Integer) rs.getObject("LEAVE_ITEM_ID"));
 		empAt.setInputDate(rs.getDate("INPUT_DATE"));
 		empAt.setStartDate(rs.getDate("START_DATE"));
 		empAt.setEndDate(rs.getDate("END_DATE"));

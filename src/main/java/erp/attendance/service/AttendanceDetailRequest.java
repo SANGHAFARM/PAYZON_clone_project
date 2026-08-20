@@ -5,7 +5,7 @@ import java.util.Date;
 /*
  * 근태 조회탭의 상세 조회 검색에 사용할 모델
 */
-public class AttendSearchCondition {
+public class AttendanceDetailRequest {
 	private Date inputDate;
 	private Date periodStart;
 	private Date periodEnd;
@@ -15,9 +15,8 @@ public class AttendSearchCondition {
     private Integer attendItemId;
     private Integer leaveItemId;
     private String note;
-	public AttendSearchCondition() {
-	}
-	public AttendSearchCondition(Date inputDate, Date periodStart, Date periodEnd, Integer deptId, String empName,
+    
+	public AttendanceDetailRequest(Date inputDate, Date periodStart, Date periodEnd, Integer deptId, String empName,
 			String empType, Integer attendItemId, Integer leaveItemId, String note) {
 		super();
 		this.inputDate = inputDate;
@@ -29,6 +28,10 @@ public class AttendSearchCondition {
 		this.attendItemId = attendItemId;
 		this.leaveItemId = leaveItemId;
 		this.note = note;
+	}
+	public AttendanceDetailRequest() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 	public Date getInputDate() {
 		return inputDate;

@@ -5,42 +5,36 @@ import java.util.Date;
  *근태 조회탭의 상세 조회 결과를 담을 모델
 */
 public class AttendDetailItem {
-    private int attendRecId;
     private Date inputDate;
     private String empType;
     private String empNameKr;
-    private String deptName;
-    private String posName;
-    private String attendItemName;
+    private String departmentName;
+    private String jobPositionName;
+    private String attendName;
     private Date startDate;
     private Date endDate;
     private double attendValue;
     private long payAmount;
     private String note;
 	public AttendDetailItem() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
-	public AttendDetailItem(int attendRecId, Date inputDate, String empType, String empNameKr, String deptName,
-			String posName, String attendItemName, Date startDate, Date endDate, double attendValue, long payAmount,
+	public AttendDetailItem(Date inputDate, String empType, String empNameKr, String departmentName,
+			String jobPositionName, String attendName, Date startDate, Date endDate, double attendValue, long payAmount,
 			String note) {
 		super();
-		this.attendRecId = attendRecId;
 		this.inputDate = inputDate;
 		this.empType = empType;
 		this.empNameKr = empNameKr;
-		this.deptName = deptName;
-		this.posName = posName;
-		this.attendItemName = attendItemName;
+		this.departmentName = departmentName;
+		this.jobPositionName = jobPositionName;
+		this.attendName = attendName;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.attendValue = attendValue;
 		this.payAmount = payAmount;
 		this.note = note;
-	}
-	public int getAttendRecId() {
-		return attendRecId;
-	}
-	public void setAttendRecId(int attendRecId) {
-		this.attendRecId = attendRecId;
 	}
 	public Date getInputDate() {
 		return inputDate;
@@ -60,23 +54,23 @@ public class AttendDetailItem {
 	public void setEmpNameKr(String empNameKr) {
 		this.empNameKr = empNameKr;
 	}
-	public String getDeptName() {
-		return deptName;
+	public String getDepartmentName() {
+		return departmentName;
 	}
-	public void setDeptName(String deptName) {
-		this.deptName = deptName;
+	public void setDepartmentName(String departmentName) {
+		this.departmentName = departmentName;
 	}
-	public String getPosName() {
-		return posName;
+	public String getJobPositionName() {
+		return jobPositionName;
 	}
-	public void setPosName(String posName) {
-		this.posName = posName;
+	public void setJobPositionName(String jobPositionName) {
+		this.jobPositionName = jobPositionName;
 	}
-	public String getAttendItemName() {
-		return attendItemName;
+	public String getAttendName() {
+		return attendName;
 	}
-	public void setAttendItemName(String attendItemName) {
-		this.attendItemName = attendItemName;
+	public void setAttendName(String attendName) {
+		this.attendName = attendName;
 	}
 	public Date getStartDate() {
 		return startDate;
@@ -108,6 +102,7 @@ public class AttendDetailItem {
 	public void setNote(String note) {
 		this.note = note;
 	}
+	
     
     
 }

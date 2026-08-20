@@ -44,8 +44,8 @@
 				<form
 					action="${pageContext.request.contextPath}/attendance/attendance-management.do"
 					method="get">
-					<input type="hidden" name="keyword" value="${keyword }">
-					<select name="status" aria-label="사원 상태">
+					<input type="hidden" name="keyword" value="${keyword }"> <select
+						name="status" aria-label="사원 상태">
 						<option value="" ${status eq '' ? 'selected' : '' }>상태별</option>
 						<option value="재직" ${status eq '재직' ? 'selected' : ''}>재직</option>
 						<option value="퇴직" ${status eq '퇴직' ? 'selected' : ''}>퇴직</option>
@@ -99,23 +99,27 @@
 				<!-- =========================================================== -->
 				<section class="attendance-editor">
 
-					<c:if test="${not empty editId }">
-						<input type="hidden" name="editId" value="${editId }">
-					</c:if>
 
 					<h2>근태기록 입력</h2>
 					<form id="attendance-form"
 						action="${pageContext.request.contextPath}/attendance/attendance-management.do"
 						method="post">
+
+
+						<c:if test="${not empty editId }">
+							<input type="hidden" name="editId" value="${editId }">
+						</c:if>
+
 						<label><span>입력일자</span><input type="date"
 							name="inputDate" value="${empty editId ? today : inputDate}"></label>
 						<label><span>근태항목</span> <select name="attendanceItemId">
 								<option value="">선택하세요.</option>
 								<c:forEach var="item" items="${attendanceItems}">
-									<option value="${item.attendanceItemId}" ${attendanceItemId eq item.attendanceItemId ? 'selected' : '' }><c:out
+									<option value="${item.attendanceItemId}"
+										${attendanceItemId eq item.attendanceItemId ? 'selected' : '' }><c:out
 											value="${item.attendName}" /></option>
 								</c:forEach>
-							</select></label> <label class="period-field"><span>기간</span> <span
+						</select></label> <label class="period-field"><span>기간</span> <span
 							class="period-inputs"> <input type="date" name="startDate"
 								value="${empty editId ? '' : startDate }"><i>~</i><input
 								type="date" name="endDate"
@@ -141,18 +145,18 @@
 										class="button button-primary action-button">수정</button>
 								</c:otherwise>
 							</c:choose>
-						<!-- 수정 모드일 시 수정취소 버튼 활성화 -->
-						<c:choose>
-							<c:when test="${empty editId}">
-								<button type="reset"
-									class="button button-muted action-button clear-button">내용지우기</button>
-							</c:when>
-							<c:otherwise>
-								<a
-									href="${pageContext.request.contextPath}/attendance/attendance-management.do"
-									class="button button-muted action-button">수정취소</a>
-							</c:otherwise>
-						</c:choose>
+							<!-- 수정 모드일 시 수정취소 버튼 활성화 -->
+							<c:choose>
+								<c:when test="${empty editId}">
+									<button type="reset"
+										class="button button-muted action-button clear-button">내용지우기</button>
+								</c:when>
+								<c:otherwise>
+									<a
+										href="${pageContext.request.contextPath}/attendance/attendance-management.do"
+										class="button button-muted action-button">수정취소</a>
+								</c:otherwise>
+							</c:choose>
 						</div>
 					</form>
 				</section>
@@ -182,13 +186,12 @@
 								</span> <span>직위 : <c:out value="${employee.jobPositionName}" /></span>
 								<form method="get">
 									<input type="hidden" name="employeeId"
-										value="${employee.employeeId}">
-									<select name="year" aria-label="연도">
+										value="${employee.employeeId}"> <select name="year"
+										aria-label="연도">
 										<c:forEach var="y" begin="2015" end="2026">
 											<option value="${y}" ${y eq year ? 'selected' : ''}>${y}년</option>
 										</c:forEach>
-									</select>
-									<select name="month" aria-label="월">
+									</select> <select name="month" aria-label="월">
 										<c:forEach var="monthNo" begin="1" end="12">
 											<option value="${monthNo}"
 												${monthNo eq month ? 'selected' : ''}>${monthNo}월</option>
@@ -224,12 +227,11 @@
 											<td><c:out value="${record.attendValue}" /></td>
 											<td><c:out value="${record.payAmount}" /></td>
 											<td><c:out value="${record.note}" /></td>
-											<td>
-											<a class="mini-button"
+											<td><a class="mini-button"
 												href="?editId=${record.employeeAttendanceId}&employeeId=${employee.employeeId}&inputDate=${record.inputDate}
-												&attendanceItemId=${record.attendanceItemId }&startDate=${startDate }&endDate=${endDate}
-												&attendValue=${attendValue}&payAmount=${payAmount }&note=${note}">수정</a>
-												
+												&attendanceItemId=${record.attendanceItemId }&startDate=${record.startDate }&endDate=${record.endDate}
+												&attendValue=${record.attendValue}&payAmount=${record.payAmount }&note=${record.note}">수정</a>
+
 												<form
 													action="${pageContext.request.contextPath}/attendance/attendance-management.do"
 													method="post" style="display: inline;">
@@ -241,6 +243,7 @@
 														type="hidden" name="month" value="${month}">
 													<button type="submit" class="mini-button mini-delete">삭제</button>
 												</form></td>
+												
 										</tr>
 									</c:forEach>
 									<c:if test="${empty attendanceRecords}">
