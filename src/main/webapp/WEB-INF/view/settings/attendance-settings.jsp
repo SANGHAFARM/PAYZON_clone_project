@@ -10,7 +10,7 @@
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/settings/attendance-settings.css?v=20260820-3">
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260820-3">
+	href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260821-1">
 </head>
 <body>
 	<%@ include file="/WEB-INF/view/common/header.jspf"%>

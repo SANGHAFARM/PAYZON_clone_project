@@ -7,7 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>인사관리 &gt; 사원현황/관리</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/employees/employees-list.css?v=20260820-1">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260820-3">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260821-1">
 	<style>
 		<c:if test="${not visibleColumns.contains('employmentType')}">.employee-table th:nth-child(2), .employee-table td:nth-child(2) { display:none; }</c:if>
 		<c:if test="${not visibleColumns.contains('joinDate')}">.employee-table th:nth-child(3), .employee-table td:nth-child(3) { display:none; }</c:if>

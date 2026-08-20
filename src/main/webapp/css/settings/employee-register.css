@@ -819,7 +819,7 @@ form:has(input[name="photoCandidate"]:checked) .photo-confirm-disabled {
 	position:fixed;
 	z-index:4000;
 	inset:0;
-	dis:flex;
+	display:flex;
 	align-items:center;
 	justify-content:center
 }
