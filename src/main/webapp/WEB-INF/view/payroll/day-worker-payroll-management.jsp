@@ -17,7 +17,7 @@
 	<link rel="stylesheet"
 		href="${pageContext.request.contextPath}/css/common/common.css">
 	<link rel="stylesheet"
-		href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260820-3">
+		href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260821-1">
 	<link rel="stylesheet"
 		href="${pageContext.request.contextPath}/css/payroll/payroll-management.css">
 	<link rel="stylesheet"
