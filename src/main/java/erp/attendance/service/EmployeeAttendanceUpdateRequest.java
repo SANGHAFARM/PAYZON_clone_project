@@ -1,32 +1,27 @@
-package erp.attendance.dto;
+package erp.attendance.service;
 
 import java.util.Date;
+import java.util.Map;
 
-//근태기록 입력 폼에 사용할 dto
-public class AttendanceRecordDto {
-	int employeeAttendanceId;
-	Date inputDate;
-	int attendanceItemId;
-	String attendName;
-	Date startDate;
-	Date endDate;
-	double attendValue;
-	long payAmount;
-	String note;
-
-
-	
-	public AttendanceRecordDto() {
+public class EmployeeAttendanceUpdateRequest {
+	private int employeeAttendanceId;
+	private Date inputDate;
+	private int attendanceItemId;
+	private Date startDate;
+	private Date endDate;
+	private double attendValue;
+	private long payAmount;
+	private String note;
+	public EmployeeAttendanceUpdateRequest() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public AttendanceRecordDto(int employeeAttendanceId, Date inputDate, int attendanceItemId, String attendName,
-			Date startDate, Date endDate, double attendValue, long payAmount, String note) {
+	public EmployeeAttendanceUpdateRequest(int employeeAttendanceId, int employeeId, Date inputDate,
+			int attendanceItemId, Date startDate, Date endDate, double attendValue, long payAmount, String note) {
 		super();
 		this.employeeAttendanceId = employeeAttendanceId;
 		this.inputDate = inputDate;
 		this.attendanceItemId = attendanceItemId;
-		this.attendName = attendName;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.attendValue = attendValue;
@@ -45,18 +40,11 @@ public class AttendanceRecordDto {
 	public void setInputDate(Date inputDate) {
 		this.inputDate = inputDate;
 	}
-	
 	public int getAttendanceItemId() {
 		return attendanceItemId;
 	}
 	public void setAttendanceItemId(int attendanceItemId) {
 		this.attendanceItemId = attendanceItemId;
-	}
-	public String getAttendName() {
-		return attendName;
-	}
-	public void setAttendName(String attendName) {
-		this.attendName = attendName;
 	}
 	public Date getStartDate() {
 		return startDate;
@@ -64,12 +52,11 @@ public class AttendanceRecordDto {
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
-
 	public Date getEndDate() {
 		return endDate;
 	}
-	public void setEndDate(Date enDDate) {
-		this.endDate = enDDate;
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 	public double getAttendValue() {
 		return attendValue;
@@ -89,6 +76,16 @@ public class AttendanceRecordDto {
 	public void setNote(String note) {
 		this.note = note;
 	}
-	
+	public void validate(Map<String, Boolean> errors) {
+		if (attendanceItemId<=0) {
+			errors.put("attendanceItemId", Boolean.TRUE);
+		}
+		if (endDate.before(startDate)) {
+			errors.put("dateError", Boolean.TRUE);
+		}
+		if (attendValue<=0) {
+			errors.put("attendValue", Boolean.TRUE);
+		}
+	}
 	
 }

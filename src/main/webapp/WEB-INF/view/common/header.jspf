@@ -123,7 +123,7 @@
 					<li><a class="dropdown-menu__link"
 						href="${pageContext.request.contextPath}/attendance/attendance-management.do">근태기록/관리</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=attendance-search">근태조회</a></li>
+						href="${pageContext.request.contextPath}/attendance/attendance-inquiry.do">근태조회</a></li>
 					<li><a class="dropdown-menu__link"
 						href="${pageContext.request.contextPath}/example.do?menu=leave-search">휴가조회</a></li>
 					<li><a class="dropdown-menu__link"
