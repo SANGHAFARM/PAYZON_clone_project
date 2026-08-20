@@ -31,5 +31,4 @@
 .detail-layout .detail-search label>*{min-width:0}
 .detail-layout .detail-period{min-width:0;width:100%}
 .detail-layout .detail-period input{min-width:0;width:100%}
-.detail-layout .detail-search label{grid-template-columns:82px minmax(0,1fr)}
-.detail-layout .detail-search label>input[type="checkbox"]{display:none}
+.detail-layout .detail-search label{grid-template-columns:18px 82px minmax(0,1fr)}

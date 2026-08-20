@@ -1,4 +1,4 @@
-package erp.attendance.service;
+package erp.attendance.service.request;
 
 
 //일용직 근무 월별 조회에서 사용

@@ -1,11 +1,12 @@
-package erp.attendance.service;
+package erp.attendance.service.request;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
-//일용직 근무기록 수정 리퀘스트
-public class DailyWorkUpdateRequest {
-	private int dailyWorkRecordId;
+//일용직 근무기록 입력 리퀘스트
+public class DailyWorkInsertRequest {
+	private List<Integer> employeeIds;
 	private Date workDate;
 	private Integer projectId;
 	private long dailyPay;
@@ -13,18 +14,14 @@ public class DailyWorkUpdateRequest {
 	private long incomeTax;
 	private long localIncomeTax;
 	private long actualPay;
-	
-	
 
-	public DailyWorkUpdateRequest() {
-		super();
-		// TODO Auto-generated constructor stub
+	public DailyWorkInsertRequest() {
 	}
 
-	public DailyWorkUpdateRequest(int dailyWorkRecordId, Date workDate, Integer projectId, long dailyPay,
+	public DailyWorkInsertRequest(List<Integer> employeeIds, Date workDate, Integer projectId, long dailyPay,
 			double payRate, long incomeTax, long localIncomeTax, long actualPay) {
 		super();
-		this.dailyWorkRecordId = dailyWorkRecordId;
+		this.employeeIds = employeeIds;
 		this.workDate = workDate;
 		this.projectId = projectId;
 		this.dailyPay = dailyPay;
@@ -32,6 +29,14 @@ public class DailyWorkUpdateRequest {
 		this.incomeTax = incomeTax;
 		this.localIncomeTax = localIncomeTax;
 		this.actualPay = actualPay;
+	}
+
+	public List<Integer> getEmployeeIds() {
+		return employeeIds;
+	}
+
+	public void setEmployeeIds(List<Integer> employeeIds) {
+		this.employeeIds = employeeIds;
 	}
 
 	public Date getWorkDate() {
@@ -91,8 +96,8 @@ public class DailyWorkUpdateRequest {
 	}
 
 	public void validate(Map<String, Boolean> errors) {
-		if (dailyWorkRecordId==0) {
-			errors.put("dailyWorkRecordId", Boolean.TRUE);
+		if (employeeIds == null || employeeIds.size() == 0) {
+			errors.put("employeeIds", Boolean.TRUE);
 		}
 		if (projectId == null || projectId == 0) {
 			errors.put("projectId", Boolean.TRUE);
@@ -102,14 +107,5 @@ public class DailyWorkUpdateRequest {
 		}
 
 	}
-
-	public int getDailyWorkRecordId() {
-		return dailyWorkRecordId;
-	}
-
-	public void setDailyWorkRecordId(int dailyWorkRecordId) {
-		this.dailyWorkRecordId = dailyWorkRecordId;
-	}
-	
 
 }

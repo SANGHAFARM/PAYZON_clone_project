@@ -11,10 +11,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import erp.attendance.dto.AttendanceDetailDto;
 import erp.attendance.dto.AttendanceRecordDto;
 import erp.attendance.dto.MonthlyAttendanceDto;
 import erp.attendance.model.EmployeeAttendance;
-import erp.attendance.service.MonthlyAttendanceRequest;
+import erp.attendance.service.request.AttendanceDetailRequest;
+import erp.attendance.service.request.MonthlyAttendanceRequest;
 /*import erp.attend.model.AttendDetailItem;
 import erp.attend.model.AttendSearchCondition;*/
 /*import erp.attend.model.EmpAttendRecord;*/
@@ -174,18 +176,16 @@ public class EmployeeAttendanceDao {
 	 * list.add(convertEmployeeAttendance(rs)); } } } return list; }
 	 */
 
-	//월별조회 사원목록
-	public List<MonthlyAttendanceDto> selectByCondition(Connection conn,MonthlyAttendanceRequest req) throws SQLException{
+	// 월별조회 사원목록
+	public List<MonthlyAttendanceDto> selectByCondition(Connection conn, MonthlyAttendanceRequest req)
+			throws SQLException {
 		String sql = "SELECT E.EMPLOYEE_ID, E.EMP_TYPE, E.EMP_NO, E.EMP_NAME_KR, D.DEPARTMENT_NAME, J.JOB_POSITION_NAME "
-				+ "FROM EMPLOYEE E "
-				+ "LEFT JOIN DEPARTMENT D ON D.DEPARTMENT_ID = E.DEPARTMENT_ID "
+				+ "FROM EMPLOYEE E " + "LEFT JOIN DEPARTMENT D ON D.DEPARTMENT_ID = E.DEPARTMENT_ID "
 				+ "LEFT JOIN JOB_POSITION J ON J.JOB_POSITION_ID = E.JOB_POSITION_ID "
-				+ "WHERE (? IS NULL OR E.STATUS = ? ) "
-				+ "AND (? IS NULL OR E.EMP_TYPE = ?) "
-				+ "AND (? IS NULL OR D.DEPARTMENT_ID = ? ) "
-				+ "AND (? IS NULL OR J.JOB_POSITION_ID = ? )"
+				+ "WHERE (? IS NULL OR E.STATUS = ? ) " + "AND (? IS NULL OR E.EMP_TYPE = ?) "
+				+ "AND (? IS NULL OR D.DEPARTMENT_ID = ? ) " + "AND (? IS NULL OR J.JOB_POSITION_ID = ? )"
 				+ "ORDER BY EMPLOYEE_ID DESC";
-		try(PreparedStatement pstmt = conn.prepareStatement(sql)){
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, req.getStatus());
 			pstmt.setString(2, req.getStatus());
 			pstmt.setString(3, req.getEmpType());
@@ -193,7 +193,7 @@ public class EmployeeAttendanceDao {
 			setIntOrNull(pstmt, 5, 6, req.getDepartmentId());
 			setIntOrNull(pstmt, 7, 8, req.getJobPositionId());
 			List<MonthlyAttendanceDto> list = new ArrayList<>();
-			try(ResultSet rs = pstmt.executeQuery()){
+			try (ResultSet rs = pstmt.executeQuery()) {
 				while (rs.next()) {
 					MonthlyAttendanceDto dto = new MonthlyAttendanceDto();
 					dto.setEmpType(rs.getString("EMP_TYPE"));
@@ -211,145 +211,146 @@ public class EmployeeAttendanceDao {
 			}
 			return list;
 		}
-				
-		
-	}
-	
-	private Map<Integer, String> selectDailyAttendance(Connection conn, int empId, int year, int month) throws SQLException {
-	    // 해당 연월의 시작일과 마지막 날 계산 (예: 2026-08-01 ~ 2026-08-31)
-	    String targetYearMonth = String.format("%d-%02d", year, month);
-	    
-	    // SQL 쿼리: 해당 사원의 데이터 중, 조회하려는 월과 겹치는 기간의 데이터만 조회
-	    String sql = "SELECT START_DATE, END_DATE FROM EMPLOYEE_ATTENDANCE "
-	               + "WHERE EMPLOYEE_ID = ? "
-	               + "  AND START_DATE <= LAST_DAY(TO_DATE(?, 'YYYY-MM')) "
-	               + "  AND END_DATE >= TO_DATE(?, 'YYYY-MM')";
-	               
-	    Map<Integer, String> dailyAttendance = new HashMap<>();
-	    
-	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-	        pstmt.setInt(1, empId);
-	        pstmt.setString(2, targetYearMonth); // START_DATE 비교용
-	        pstmt.setString(3, targetYearMonth); // END_DATE 비교용
-	        
-	        try (ResultSet rs = pstmt.executeQuery()) {
-	            while (rs.next()) {
-	                java.sql.Date dbStartDate = rs.getDate("START_DATE");
-	                java.sql.Date dbEndDate = rs.getDate("END_DATE");
 
-	                if (dbStartDate == null || dbEndDate == null) {
-	                    continue;
-	                }
-
-	                LocalDate startDate = dbStartDate.toLocalDate();
-	                LocalDate endDate = dbEndDate.toLocalDate();
-	                
-	                // 기간을 하루씩 돌면서 맵에 담기
-	                for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
-	                    // 조회하는 연월에 해당하는 날짜만 맵에 담기 (전월/익월로 넘어간 날짜 제외)
-	                    if (date.getYear() == year && date.getMonthValue() == month) {
-	                        int day = date.getDayOfMonth();
-	                        dailyAttendance.put(day, "O");
-	                    }
-	                }
-	            }
-	        }
-	    }
-	    return dailyAttendance;
 	}
 
-	public Map<String, Double> selectTotalAttendValue(Connection conn, int empId, int year, int month, MonthlyAttendanceDto dto) throws SQLException {
-	    // 해당 연월 문자열 생성 (예: "2026-08")
-	    String targetYearMonth = String.format("%d-%02d", year, month);
-	    
-	    String sql = "SELECT i.attend_name, SUM(e.attend_value) AS TOTAL_ATTEND_VALUE " 
-	               + "FROM employee_attendance e "
-	               + "JOIN attendance_item i " 
-	               + "  ON i.attendance_item_id = e.attendance_item_id "
-	               + "WHERE e.employee_id = ? " 
-	               + "  AND e.start_date <= LAST_DAY(TO_DATE(?, 'YYYY-MM')) "
-	               + "  AND e.end_date >= TO_DATE(?, 'YYYY-MM') "
-	               + "GROUP BY i.attend_name";
-	               
-	    Map<String, Double> map = new HashMap<>();
-	    
-	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-	        pstmt.setInt(1, empId);
-	        pstmt.setString(2, targetYearMonth); // start_date 비교용
-	        pstmt.setString(3, targetYearMonth); // end_date 비교용
-	        
-	        try (ResultSet rs = pstmt.executeQuery()) {
-	        	double sum = 0;
-	            while (rs.next()) {
-	                String key = rs.getString("ATTEND_NAME");
-	                double value = rs.getDouble("TOTAL_ATTEND_VALUE");
-	                if(key.equals("연차")||key.equals("반차")||key.equals("포상휴가")) {
-	                	sum+=value;
-	                	dto.setTotalLeaveDeduction(sum);
-	                }
-	                map.put(key, value);
-	            }
-	        }
-	    }
-	    return map;
+	private Map<Integer, String> selectDailyAttendance(Connection conn, int empId, int year, int month)
+			throws SQLException {
+		// 해당 연월의 시작일과 마지막 날 계산 (예: 2026-08-01 ~ 2026-08-31)
+		String targetYearMonth = String.format("%d-%02d", year, month);
+
+		// SQL 쿼리: 해당 사원의 데이터 중, 조회하려는 월과 겹치는 기간의 데이터만 조회
+		String sql = "SELECT START_DATE, END_DATE FROM EMPLOYEE_ATTENDANCE " + "WHERE EMPLOYEE_ID = ? "
+				+ "  AND START_DATE <= LAST_DAY(TO_DATE(?, 'YYYY-MM')) " + "  AND END_DATE >= TO_DATE(?, 'YYYY-MM')";
+
+		Map<Integer, String> dailyAttendance = new HashMap<>();
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, empId);
+			pstmt.setString(2, targetYearMonth); // START_DATE 비교용
+			pstmt.setString(3, targetYearMonth); // END_DATE 비교용
+
+			try (ResultSet rs = pstmt.executeQuery()) {
+				while (rs.next()) {
+					java.sql.Date dbStartDate = rs.getDate("START_DATE");
+					java.sql.Date dbEndDate = rs.getDate("END_DATE");
+
+					if (dbStartDate == null || dbEndDate == null) {
+						continue;
+					}
+
+					LocalDate startDate = dbStartDate.toLocalDate();
+					LocalDate endDate = dbEndDate.toLocalDate();
+
+					// 기간을 하루씩 돌면서 맵에 담기
+					for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+						// 조회하는 연월에 해당하는 날짜만 맵에 담기 (전월/익월로 넘어간 날짜 제외)
+						if (date.getYear() == year && date.getMonthValue() == month) {
+							int day = date.getDayOfMonth();
+							dailyAttendance.put(day, "O");
+						}
+					}
+				}
+			}
+		}
+		return dailyAttendance;
 	}
 
+	public Map<String, Double> selectTotalAttendValue(Connection conn, int empId, int year, int month,
+			MonthlyAttendanceDto dto) throws SQLException {
+		// 해당 연월 문자열 생성 (예: "2026-08")
+		String targetYearMonth = String.format("%d-%02d", year, month);
+
+		String sql = "SELECT i.attend_name, SUM(e.attend_value) AS TOTAL_ATTEND_VALUE " + "FROM employee_attendance e "
+				+ "JOIN attendance_item i " + "  ON i.attendance_item_id = e.attendance_item_id "
+				+ "WHERE e.employee_id = ? " + "  AND e.start_date <= LAST_DAY(TO_DATE(?, 'YYYY-MM')) "
+				+ "  AND e.end_date >= TO_DATE(?, 'YYYY-MM') " + "GROUP BY i.attend_name";
+
+		Map<String, Double> map = new HashMap<>();
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, empId);
+			pstmt.setString(2, targetYearMonth); // start_date 비교용
+			pstmt.setString(3, targetYearMonth); // end_date 비교용
+
+			try (ResultSet rs = pstmt.executeQuery()) {
+				double sum = 0;
+				while (rs.next()) {
+					String key = rs.getString("ATTEND_NAME");
+					double value = rs.getDouble("TOTAL_ATTEND_VALUE");
+					if (key.equals("연차") || key.equals("반차") || key.equals("포상휴가")) {
+						sum += value;
+						dto.setTotalLeaveDeduction(sum);
+					}
+					map.put(key, value);
+				}
+			}
+		}
+		return map;
+	}
 
 	/*
 	 * 근태관리>근태조회>
 	 * 
 	 * 상세 조회에서 사용하는 메서드 입력일자,근태기간,부서,성명,근태그룹,근태항목,휴가항목, 적요로 상세 기록을 검색
 	 */
-	/*
-	 * public List<AttendDetailItem> selectDetailList(Connection conn,
-	 * AttendSearchCondition cond) throws SQLException { String sql =
-	 * "SELECT ear.ATTEND_REC_ID, ear.INPUT_DATE, e.EMP_TYPE, e.EMP_NAME_KR, " +
-	 * "       d.DEPT_NAME, p.POS_NAME, ai.ITEM_NAME AS ATTEND_ITEM_NAME, " +
-	 * "       ear.START_DATE, ear.END_DATE, ear.ATTEND_VALUE, ear.PAY_AMOUNT, ear.NOTE "
-	 * + "FROM EMP_ATTEND_RECORD ear " + "JOIN EMPLOYEE e ON ear.EMP_ID = e.EMP_ID "
-	 * + "LEFT JOIN DEPARTMENT d ON e.DEPT_ID = d.DEPT_ID " +
-	 * "LEFT JOIN POSITION p ON e.POS_ID = p.POS_ID " +
-	 * "LEFT JOIN ATTEND_ITEM ai ON ear.ATTEND_ITEM_ID = ai.ATTEND_ITEM_ID " +
-	 * "WHERE (? IS NULL OR ear.INPUT_DATE = ?) " +
-	 * "AND (? IS NULL OR ear.END_DATE >= ?) " +
-	 * "AND (? IS NULL OR ear.START_DATE <= ?) " +
-	 * "AND (? IS NULL OR e.DEPT_ID = ?) " +
-	 * "AND (? IS NULL OR e.EMP_NAME_KR LIKE '%' || ? || '%') " +
-	 * "AND (? IS NULL OR e.EMP_TYPE = ?) " +
-	 * "AND (? IS NULL OR ear.ATTEND_ITEM_ID = ?) " +
-	 * "AND (? IS NULL OR ear.LEAVE_ITEM_ID = ?) " +
-	 * "AND (? IS NULL OR ear.NOTE LIKE '%' || ? || '%') " +
-	 * "ORDER BY ear.INPUT_DATE DESC"; List<AttendDetailItem> list = new
-	 * ArrayList<>(); try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-	 * java.sql.Date inputdate = dateToSQLDate(cond.getInputDate());
-	 * pstmt.setDate(1, inputdate); pstmt.setDate(2, inputdate);
-	 * 
-	 * java.sql.Date periodStart = dateToSQLDate(cond.getPeriodStart());
-	 * pstmt.setDate(3, periodStart); pstmt.setDate(4, periodStart);
-	 * 
-	 * java.sql.Date periodEnd = dateToSQLDate(cond.getPeriodEnd());
-	 * pstmt.setDate(5, periodEnd); pstmt.setDate(6, periodEnd);
-	 * 
-	 * setIntOrNull(pstmt, 7, 8, cond.getDeptId());
-	 * 
-	 * pstmt.setString(9, cond.getEmpName()); pstmt.setString(10,
-	 * cond.getEmpName());
-	 * 
-	 * pstmt.setString(11, cond.getEmpType()); pstmt.setString(12,
-	 * cond.getEmpType());
-	 * 
-	 * setIntOrNull(pstmt, 13, 14, cond.getAttendItemId()); setIntOrNull(pstmt, 15,
-	 * 16, cond.getLeaveItemId());
-	 * 
-	 * pstmt.setString(17, cond.getNote()); pstmt.setString(18, cond.getNote());
-	 * 
-	 * try (ResultSet rs = pstmt.executeQuery()) { while (rs.next()) {
-	 * list.add(convertAttendDetailItem(rs)); } } } return list; }
-	 */
 
-	/*
-	 * EmpAttendRecord테이블에 있는 기록을 수정하는 메서드 EmpAttendRecordテーブルにある記録を修正するメソッド
-	 */
+	public List<AttendanceDetailDto> selectDetailList(Connection conn, AttendanceDetailRequest req)
+			throws SQLException {
+		String sql = "SELECT ea.INPUT_DATE, e.EMP_TYPE, e.EMP_NAME_KR, "
+				+ "       d.DEPARTMENT_NAME, p.JOB_POSITION_NAME, ai.ATTEND_NAME, "
+				+ "       ea.START_DATE, ea.END_DATE, ea.ATTEND_VALUE, ea.PAY_AMOUNT, ea.NOTE "
+				+ "FROM EMPLOYEE_ATTENDANCE ea " + "JOIN EMPLOYEE e ON ea.EMPLOYEE_ID = e.EMPLOYEE_ID "
+				+ "LEFT JOIN DEPARTMENT d ON e.DEPARTMENT_ID = d.DEPARTMENT_ID "
+				+ "LEFT JOIN JOB_POSITION p ON e.JOB_POSITION_ID = p.JOB_POSITION_ID "
+				+ "LEFT JOIN ATTENDANCE_ITEM ai ON ea.ATTENDANCE_ITEM_ID = ai.ATTENDANCE_ITEM_ID "
+				+ "WHERE (? IS NULL OR ea.INPUT_DATE = ?) " + "AND (? IS NULL OR ea.END_DATE >= ?) "
+				+ "AND (? IS NULL OR ea.START_DATE <= ?) " + "AND (? IS NULL OR e.DEPARTMENT_ID = ?) "
+				+ "AND (? IS NULL OR e.EMP_NAME_KR LIKE '%' || ? || '%') "
+				+ "AND (? IS NULL OR ai.ATTENDANCE_GROUP_ID = ?) " + "AND (? IS NULL OR ea.ATTENDANCE_ITEM_ID = ?) "
+				+ "AND (? IS NULL OR ai.DEDUCT_LEAVE_ID = ?) " + "AND (? IS NULL OR ea.NOTE LIKE '%' || ? || '%') "
+				+ "ORDER BY ea.INPUT_DATE DESC";
+		List<AttendanceDetailDto> list = new ArrayList<>();
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			java.sql.Date inputdate = dateToSQLDate(req.getInputDate());
+			pstmt.setDate(1, inputdate);
+			pstmt.setDate(2, inputdate);
+
+			java.sql.Date periodStart = dateToSQLDate(req.getStartDate());
+			pstmt.setDate(3, periodStart);
+			pstmt.setDate(4, periodStart);
+
+			java.sql.Date periodEnd = dateToSQLDate(req.getEndDate());
+			pstmt.setDate(5, periodEnd);
+			pstmt.setDate(6, periodEnd);
+
+			setIntOrNull(pstmt, 7, 8, req.getDepartmentId());
+
+			pstmt.setString(9, req.getEmpNameKr());
+			pstmt.setString(10, req.getEmpNameKr());
+
+			setIntOrNull(pstmt, 11, 12, req.getAttendanceGroupId());
+
+			setIntOrNull(pstmt, 13, 14, req.getAttendanceItemId());
+			setIntOrNull(pstmt, 15, 16, req.getLeaveItemId());
+
+			pstmt.setString(17, req.getNote());
+			pstmt.setString(18, req.getNote());
+
+			try (ResultSet rs = pstmt.executeQuery()) {
+				while (rs.next()) {
+					list.add(convertAttendanceDetailDto(rs));
+				}
+			}
+		}
+		return list;
+	}
+
+	private java.sql.Date dateToSQLDate(java.util.Date date) {
+		return date != null ? new java.sql.Date(date.getTime()) : null;
+	}
+
+	/* EmpAttendRecord테이블에 있는 기록을 수정하는 메서드 EmpAttendRecordテーブルにある記録を修正するメソッド */
 
 	// 근태기록 수정
 	public int update(Connection conn, EmployeeAttendance empAt) throws SQLException {
@@ -409,24 +410,23 @@ public class EmployeeAttendanceDao {
 	}
 
 	/*
-	 * ResultSet으로 AttendDetailItem을 만들어 반환하는 메서드
+	 * ResultSet으로 AttendDetailItem을 만들어 반환하는 메서드*
 	 */
-	/*
-	 * private AttendDetailItem convertAttendDetailItem(ResultSet rs) throws
-	 * SQLException { AttendDetailItem item = new AttendDetailItem();
-	 * item.setAttendRecId(rs.getInt("ATTEND_REC_ID"));
-	 * item.setInputDate(rs.getDate("INPUT_DATE"));
-	 * item.setEmpType(rs.getString("EMP_TYPE"));
-	 * item.setEmpNameKr(rs.getString("EMP_NAME_KR"));
-	 * item.setDeptName(rs.getString("DEPT_NAME"));
-	 * item.setPosName(rs.getString("POS_NAME"));
-	 * item.setAttendItemName(rs.getString("ATTEND_ITEM_NAME"));
-	 * item.setStartDate(rs.getDate("START_DATE"));
-	 * item.setEndDate(rs.getDate("END_DATE"));
-	 * item.setAttendValue(rs.getDouble("ATTEND_VALUE"));
-	 * item.setPayAmount(rs.getLong("PAY_AMOUNT"));
-	 * item.setNote(rs.getString("NOTE")); return item; }
-	 */
+	private AttendanceDetailDto convertAttendanceDetailDto(ResultSet rs) throws SQLException {
+		AttendanceDetailDto dto = new AttendanceDetailDto();
+		dto.setInputDate(rs.getDate("INPUT_DATE"));
+		dto.setEmpType(rs.getString("EMP_TYPE"));
+		dto.setEmpNameKr(rs.getString("EMP_NAME_KR"));
+		dto.setDepartmentName(rs.getString("DEPARTMENT_NAME"));
+		dto.setJobPositionName(rs.getString("JOB_POSITION_NAME"));
+		dto.setAttendName(rs.getString("ATTEND_NAME"));
+		dto.setStartDate(rs.getDate("START_DATE"));
+		dto.setEndDate(rs.getDate("END_DATE"));
+		dto.setAttendValue(rs.getDouble("ATTEND_VALUE"));
+		dto.setPayAmount(rs.getLong("PAY_AMOUNT"));
+		dto.setNote(rs.getString("NOTE"));
+		return dto;
+	}
 
 	/*
 	 * 값이 null인지 구분하고, null일 시, SQLNULL을 입력하는 메서드

@@ -1,6 +1,5 @@
 package erp.attendance.command;
 
-import java.sql.Connection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -13,18 +12,15 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 import erp.attendance.dto.AttendanceRecordDto;
-
 import erp.attendance.service.EmployeeAttendanceDeleteService;
-import erp.attendance.service.EmployeeAttendanceUpdateRequest;
 import erp.attendance.service.EmployeeAttendanceUpdateService;
-import erp.attendance.service.InsertEmployeeAttendanceRequest;
 import erp.attendance.service.InsertEmployeeAttendanceService;
 import erp.attendance.service.ListAttendanceEmployeeService;
 import erp.attendance.service.ListEmployeeAttendanceService;
+import erp.attendance.service.request.EmployeeAttendanceUpdateRequest;
+import erp.attendance.service.request.InsertEmployeeAttendanceRequest;
 import erp.employees.dto.AttendanceEmployeeDto;
-
 import erp.settings.model.AttendanceItem;
 import erp.settings.service.AttendanceSettingService;
 import mvc.command.CommandHandler;

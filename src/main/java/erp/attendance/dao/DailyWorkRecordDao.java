@@ -15,9 +15,9 @@ import erp.attendance.dto.DailyWorkDetailDto;
 import erp.attendance.dto.DailyWorkListDto;
 import erp.attendance.dto.DailyWorkRecordDto;
 import erp.attendance.model.DailyWorkRecord;
-import erp.attendance.service.DailyWorkDetailRequest;
-import erp.attendance.service.DailyWorkListRequest;
-import erp.attendance.service.DailyWorkRecordRequest;
+import erp.attendance.service.request.DailyWorkDetailRequest;
+import erp.attendance.service.request.DailyWorkListRequest;
+import erp.attendance.service.request.DailyWorkRecordRequest;
 
 public class DailyWorkRecordDao {
 	private static DailyWorkRecordDao dailyWorkRecordDao = new DailyWorkRecordDao();
