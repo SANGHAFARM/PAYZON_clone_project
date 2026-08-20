@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -40,6 +41,7 @@
 				<p class="form-message" role="status">
 					<c:out value="${message}" />
 				</p>
+				<c:remove var="message" scope="session" />
 			</c:if>
 
 			<form class="company-form"
@@ -70,8 +72,8 @@
 							name="corpRegNo" value="<c:out value='${company.corpRegNo}' />"
 							maxlength="20"></label> <label class="field"><span>설립일</span><input
 							type="date" name="foundationDate"
-							value="<c:out value='${company.foundationDate}' />"></label> <label
-							class="field"><span>홈페이지</span><input type="url"
+							value="<fmt:formatDate value='${company.foundationDate}' pattern='yyyy-MM-dd' />"></label>
+						<label class="field"><span>홈페이지</span><input type="url"
 							name="homepageUrl"
 							value="<c:out value='${company.homepageUrl}' />" maxlength="300"
 							placeholder="https://example.com"></label>

@@ -45,6 +45,7 @@
 				<p class="form-message">
 					<c:out value="${message}" />
 				</p>
+				<c:remove var="message" scope="session" />
 			</c:if>
 			<form
 				action="${pageContext.request.contextPath}/settings/register2.do"
