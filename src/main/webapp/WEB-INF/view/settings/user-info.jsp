@@ -11,7 +11,7 @@
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/settings/user-info.css?v=20260820-8">
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
+	href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260820-3">
 </head>
 <body>
 	<%@ include file="/WEB-INF/view/common/header.jspf"%>
@@ -357,10 +357,10 @@
 
 			<c:if test="${not empty message}">
 				<div class="user-info-alert" role="alertdialog" aria-modal="true" aria-labelledby="user-info-alert-message">
-					<a class="user-info-alert__backdrop" href="${pageContext.request.contextPath}/settings/user-info.do" aria-label="확인"></a>
+					<a class="user-info-alert__backdrop" href="${pageContext.request.contextPath}/settings/user-info.do?dismissMessage=true" aria-label="확인"></a>
 					<div class="user-info-alert__panel">
 						<p id="user-info-alert-message"><c:out value="${message}" /></p>
-						<a href="${pageContext.request.contextPath}/settings/user-info.do">확인</a>
+						<a href="${pageContext.request.contextPath}/settings/user-info.do?dismissMessage=true">확인</a>
 					</div>
 				</div>
 				<c:remove var="message" scope="session" />
@@ -369,10 +369,10 @@
 			<c:if test="${not empty managerMessage}">
 				<c:set var="managerReturnHash" value="${managerType eq 'position' ? '#position-manager-modal' : '#department-manager-modal'}" />
 				<div class="user-info-alert" role="alertdialog" aria-modal="true" aria-labelledby="manager-alert-message">
-					<a class="user-info-alert__backdrop" href="${pageContext.request.contextPath}/settings/user-info.do${managerReturnHash}" aria-label="확인"></a>
+					<a class="user-info-alert__backdrop" href="${pageContext.request.contextPath}/settings/user-info.do?dismissMessage=true${managerReturnHash}" aria-label="확인"></a>
 					<div class="user-info-alert__panel">
 						<p id="manager-alert-message"><c:out value="${managerMessage}" /></p>
-						<a href="${pageContext.request.contextPath}/settings/user-info.do${managerReturnHash}">확인</a>
+						<a href="${pageContext.request.contextPath}/settings/user-info.do?dismissMessage=true${managerReturnHash}">확인</a>
 					</div>
 				</div>
 			</c:if>

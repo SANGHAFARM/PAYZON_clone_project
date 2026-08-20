@@ -10,7 +10,7 @@
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/settings/attendance-settings.css?v=20260820-3">
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
+	href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260820-3">
 </head>
 <body>
 	<%@ include file="/WEB-INF/view/common/header.jspf"%>
@@ -366,11 +366,11 @@
 				<div class="attendance-alert" role="alertdialog" aria-modal="true"
 					aria-labelledby="attendance-alert-message">
 					<a class="attendance-modal__backdrop"
-						href="${pageContext.request.contextPath}/settings/attendance.do${messageHash}"
+						href="${pageContext.request.contextPath}/settings/attendance.do?dismissMessage=true${messageHash}"
 						aria-label="확인"></a>
 					<div class="attendance-alert__panel">
 						<p id="attendance-alert-message"><c:out value="${message}" /></p>
-						<a href="${pageContext.request.contextPath}/settings/attendance.do${messageHash}">확인</a>
+						<a href="${pageContext.request.contextPath}/settings/attendance.do?dismissMessage=true${messageHash}">확인</a>
 					</div>
 				</div>
 				<c:remove var="message" scope="session" />

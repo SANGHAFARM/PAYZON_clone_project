@@ -11,7 +11,7 @@
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/settings/employee-register.css?v=20260820-12">
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
+	href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260820-3">
 </head>
 <body>
 	<%@ include file="/WEB-INF/view/common/header.jspf"%>
@@ -683,7 +683,7 @@
 		</div>
 	</main>
 	<c:if test="${not empty message}">
-		<c:url var="register1ReturnUrl" value="/settings/register1.do"><c:if test="${employee.employeeId gt 0}"><c:param name="empId" value="${employee.employeeId}" /></c:if></c:url>
+		<c:url var="register1ReturnUrl" value="/settings/register1.do"><c:param name="dismissMessage" value="true" /><c:if test="${employee.employeeId gt 0}"><c:param name="empId" value="${employee.employeeId}" /></c:if></c:url>
 		<div class="employee-setting-alert" role="alertdialog" aria-modal="true" aria-labelledby="employee-setting-alert-message">
 			<a class="employee-setting-alert__backdrop" href="${register1ReturnUrl}" aria-label="확인"></a>
 			<div class="employee-setting-alert__panel">

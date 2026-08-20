@@ -7,7 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>4대보험 공제내역</title>
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/common.css">
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260820-3">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/payroll/four-insurance-deduction.css">
 </head>
 <body>

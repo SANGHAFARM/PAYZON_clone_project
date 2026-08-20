@@ -7,8 +7,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>사원별 급여내역</title>
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/common.css">
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/payroll/employees-payroll-history.css?v=20260815-1">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260820-3">
 </head>
 <body>
 	<%@ include file="/WEB-INF/view/common/header.jspf" %>
