@@ -20,6 +20,8 @@ import erp.employees.service.EmployeeGuaranteeService;
 import erp.employees.service.EmployeePhotoService;
 import erp.employees.service.EmployeeRegisterService;
 import erp.employees.service.EmployeeSkillRecordService;
+import erp.settings.service.DepartmentPositionService;
+import erp.retirement.service.RetirementBenefitService;
 import mvc.command.CommandHandler;
 
 public class EmployeeRegister2Handler implements CommandHandler {
@@ -29,6 +31,8 @@ public class EmployeeRegister2Handler implements CommandHandler {
 	private EmployeePhotoService photoService = EmployeePhotoService.getInstance();
 	private EmployeeSkillRecordService skillService = EmployeeSkillRecordService.getInstance();
 	private EmployeeGuaranteeService guaranteeService = EmployeeGuaranteeService.getInstance();
+	private DepartmentPositionService deptPosService = DepartmentPositionService.getInstance();
+	private RetirementBenefitService retirementBenefitService = new RetirementBenefitService();
 
 	@Override
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -76,6 +80,9 @@ public class EmployeeRegister2Handler implements CommandHandler {
 
 		// 4. 조회 데이터를 JSP 속성으로 바인딩
 		req.setAttribute("employee", employee);
+		// 사원정보 1에서 저장한 부서와 직위를 요약 카드와 기본정보에 표시한다.
+		req.setAttribute("departmentList", deptPosService.getDepartmentOptions());
+		req.setAttribute("positionList", deptPosService.getJobPositionOptions());
 		req.setAttribute("licenses", licenses);
 		req.setAttribute("languages", languages);
 		req.setAttribute("trainings", trainings);
@@ -84,6 +91,7 @@ public class EmployeeRegister2Handler implements CommandHandler {
 		req.setAttribute("recommender", recommender);
 		req.setAttribute("suretyInsurance", suretyInsurance);
 		req.setAttribute("guarantor", guarantor);
+		req.setAttribute("latestRetirementBenefit", retirementBenefitService.getLatestBenefit(empId));
 		bindRowCounts(req, licenses.size(), languages.size(), trainings.size(), rewardPunishes.size(), appointments.size());
 
 		return "/WEB-INF/view/settings/employee-register-2.jsp";

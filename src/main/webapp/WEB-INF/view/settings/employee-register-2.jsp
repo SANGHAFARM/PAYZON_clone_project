@@ -289,17 +289,17 @@
 												value="${lang.langName}"></td>
 											<td><input name="languages[${row.index}].testName"
 												value="${lang.testName}"></td>
-											<td><input type="number" name="languages[${row.index}].score"
-												value="${lang.score}"></td>
+											<td><input type="text" name="languages[${row.index}].score"
+												value="${lang.score}" maxlength="50" inputmode="numeric"></td>
 											<td><input type="date" name="languages[${row.index}].acquireDate"
 												value="<fmt:formatDate value='${lang.acqDate}' pattern='yyyy-MM-dd' />"></td>
 											<c:forEach var="ability"
 												items="${fn:split('reading,writing,speaking', ',')}">
 												<td><select name="languages[${row.index}].${ability}"><option
 															value="">선택</option>
-														<option value="상">상</option>
-														<option value="중">중</option>
-														<option value="하">하</option></select></td>
+												<option value="상" ${(ability eq 'reading' and lang.readingLevel eq '상') or (ability eq 'writing' and lang.writingLevel eq '상') or (ability eq 'speaking' and lang.speakingLevel eq '상') ? 'selected' : ''}>상</option>
+												<option value="중" ${(ability eq 'reading' and lang.readingLevel eq '중') or (ability eq 'writing' and lang.writingLevel eq '중') or (ability eq 'speaking' and lang.speakingLevel eq '중') ? 'selected' : ''}>중</option>
+												<option value="하" ${(ability eq 'reading' and lang.readingLevel eq '하') or (ability eq 'writing' and lang.writingLevel eq '하') or (ability eq 'speaking' and lang.speakingLevel eq '하') ? 'selected' : ''}>하</option></select></td>
 											</c:forEach>
 										</tr>
 										</c:forEach>
@@ -342,7 +342,7 @@
 															<option ${type eq item.trainType ? 'selected' : ''}>${type}</option>
 														</c:forEach></select></td>
 												<td><input name="trainings[${row.index}].trainingName"
-													value="${item.trainName}"></td>
+											value="${item.trainName}" maxlength="200"></td>
 												<td><input type="date"
 													name="trainings[${row.index}].startDate"
 													value="<fmt:formatDate value='${item.startDate}' pattern='yyyy-MM-dd' />"></td>
@@ -350,7 +350,7 @@
 													name="trainings[${row.index}].endDate"
 													value="<fmt:formatDate value='${item.endDate}' pattern='yyyy-MM-dd' />"></td>
 												<td><input name="trainings[${row.index}].institution"
-													value="${item.trainInstitute}"></td>
+											value="${item.trainInstitute}" maxlength="150"></td>
 												<td><label class="money-cell"><input
 														type="number" name="trainings[${row.index}].trainingCost"
 														value="${item.trainCost}"><span>원</span></label></td>
@@ -397,16 +397,16 @@
 															<option ${type eq item.rpType ? 'selected' : ''}>${type}</option>
 														</c:forEach></select></td>
 												<td><input name="rewardPunishes[${row.index}].rpName"
-													value="${item.rpName}"></td>
+											value="${item.rpName}" maxlength="100"></td>
 												<td><input name="rewardPunishes[${row.index}].grantor"
-													value="${item.rpAuthority}"></td>
+											value="${item.rpAuthority}" maxlength="100"></td>
 												<td><input type="date"
 													name="rewardPunishes[${row.index}].rpDate"
 													value="<fmt:formatDate value='${item.rpDate}' pattern='yyyy-MM-dd' />"></td>
 												<td><input name="rewardPunishes[${row.index}].content"
-													value="${item.rpContent}"></td>
+											value="${item.rpContent}" maxlength="500"></td>
 												<td><input name="rewardPunishes[${row.index}].note"
-													value="${item.note}"></td>
+											value="${item.note}" maxlength="300"></td>
 											</tr>
 										</c:forEach>
 									</tbody>
@@ -451,13 +451,13 @@
 													name="appointments[${row.index}].appointmentDate"
 													value="<fmt:formatDate value='${item.appDate}' pattern='yyyy-MM-dd' />"></td>
 												<td><input name="appointments[${row.index}].deptName"
-													value="${item.departmentName}"></td>
+											value="${item.departmentName}" maxlength="100"></td>
 												<td><input name="appointments[${row.index}].posName"
-													value="${item.jobPositionName}"></td>
+											value="${item.jobPositionName}" maxlength="100"></td>
 												<td><input name="appointments[${row.index}].dutyName"
-													value="${item.jobTitleDuty}"></td>
+											value="${item.jobTitleDuty}" maxlength="300"></td>
 												<td><input name="appointments[${row.index}].note"
-													value="${item.note}"></td>
+											value="${item.note}" maxlength="300"></td>
 											</tr>
 										</c:forEach>
 									</tbody>
@@ -597,7 +597,7 @@
 											<td><input name="afterRetireContact"
 												value="${employee.afterRetireContact}"></td>
 											<td><label class="money-cell"><input
-													value="${retireAmount}" readonly><span>원</span></label></td>
+													value="<fmt:formatNumber value='${latestRetirementBenefit.netPayment}' pattern='#,##0' />" readonly><span>원</span></label></td>
 											<td><a class="table-button"
 												href="${pageContext.request.contextPath}/retirement/payslip.do?empId=${employee.employeeId}">명세서
 													다운로드</a></td>

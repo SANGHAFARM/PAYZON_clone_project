@@ -63,7 +63,7 @@
 			</section>
 
 			<section class="home-panel home-company-panel">
-				<div class="home-panel__heading"><div><span>COMPANY</span><h2>사업장 정보</h2></div><a href="${pageContext.request.contextPath}/settings/info.do">정보 보기</a></div>
+				<div class="home-panel__heading"><div><span>COMPANY</span><h2>사업장 정보</h2></div><a href="${pageContext.request.contextPath}/settings/user-info.do">정보 보기</a></div>
 				<h3><c:out value="${empty dashboard.company.cmpnName ? '등록된 회사정보가 없습니다' : dashboard.company.cmpnName}" /></h3>
 				<dl>
 					<div><dt>대표자</dt><dd><c:out value="${empty dashboard.company.ceoName ? '-' : dashboard.company.ceoName}" /></dd></div>

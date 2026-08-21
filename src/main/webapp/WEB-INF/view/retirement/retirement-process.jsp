@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>사원 퇴직처리</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/retirement/retirement-process.css?v=20260820-1">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/retirement/retirement-process.css?v=20260821-1">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260821-1">
 </head>
 <body>
@@ -23,7 +23,6 @@
     <section class="retirement-card">
         <div class="retirement-toolbar">
         <form class="retirement-keyword-search" method="get" action="${pageContext.request.contextPath}/retirement/process.do">
-            <input type="hidden" name="mode" value="search">
             <select name="searchTarget" aria-label="검색 항목">
 				<option value="name" ${param.searchTarget eq 'name' ? 'selected' : ''}>성명</option>
 				<option value="employeeNo" ${param.searchTarget eq 'employeeNo' ? 'selected' : ''}>사원번호</option>
@@ -34,9 +33,6 @@
                    placeholder="검색어 입력" aria-label="검색어">
             <button type="submit" class="search-button">검색</button>
             <a class="all-view" href="${pageContext.request.contextPath}/retirement/process.do">전체보기</a>
-        </form>
-        <form class="retirement-status-search" method="get" action="${pageContext.request.contextPath}/retirement/process.do">
-            <input type="hidden" name="mode" value="status">
             <select class="status-filter" name="status" aria-label="재직 상태">
                 <option value="">상태별</option>
 				<option value="ACTIVE" ${param.status eq 'ACTIVE' ? 'selected' : ''}>재직</option>
@@ -82,9 +78,9 @@
             </table>
         </div>
         <div class="pagination">
-            <c:if test="${pageInfo.hasPrevious}"><c:url var="previousUrl" value="/retirement/process.do"><c:param name="page" value="${pageInfo.previousPage}"/><c:choose><c:when test="${not empty condition.keyword}"><c:param name="mode" value="search"/><c:param name="searchTarget" value="${param.searchTarget}"/><c:param name="keyword" value="${condition.keyword}"/></c:when><c:when test="${not empty condition.status}"><c:param name="mode" value="status"/><c:param name="status" value="${condition.status eq 'WORK' ? 'ACTIVE' : 'RETIRED'}"/></c:when></c:choose></c:url><a href="${previousUrl}">이전</a></c:if>
-            <c:forEach var="pageNo" begin="${pageInfo.startPage}" end="${pageInfo.endPage}"><c:url var="pageUrl" value="/retirement/process.do"><c:param name="page" value="${pageNo}"/><c:choose><c:when test="${not empty condition.keyword}"><c:param name="mode" value="search"/><c:param name="searchTarget" value="${param.searchTarget}"/><c:param name="keyword" value="${condition.keyword}"/></c:when><c:when test="${not empty condition.status}"><c:param name="mode" value="status"/><c:param name="status" value="${condition.status eq 'WORK' ? 'ACTIVE' : 'RETIRED'}"/></c:when></c:choose></c:url><a class="${pageNo eq pageInfo.currentPage ? 'is-current' : ''}" href="${pageUrl}">${pageNo}</a></c:forEach>
-            <c:if test="${pageInfo.hasNext}"><c:url var="nextUrl" value="/retirement/process.do"><c:param name="page" value="${pageInfo.nextPage}"/><c:choose><c:when test="${not empty condition.keyword}"><c:param name="mode" value="search"/><c:param name="searchTarget" value="${param.searchTarget}"/><c:param name="keyword" value="${condition.keyword}"/></c:when><c:when test="${not empty condition.status}"><c:param name="mode" value="status"/><c:param name="status" value="${condition.status eq 'WORK' ? 'ACTIVE' : 'RETIRED'}"/></c:when></c:choose></c:url><a href="${nextUrl}">다음</a></c:if>
+            <c:if test="${pageInfo.hasPrevious}"><c:url var="previousUrl" value="/retirement/process.do"><c:param name="page" value="${pageInfo.previousPage}"/><c:param name="searchTarget" value="${param.searchTarget}"/><c:param name="keyword" value="${condition.keyword}"/><c:param name="status" value="${condition.status eq 'WORK' ? 'ACTIVE' : condition.status eq 'RETIRED' ? 'RETIRED' : ''}"/></c:url><a href="${previousUrl}">이전</a></c:if>
+            <c:forEach var="pageNo" begin="${pageInfo.startPage}" end="${pageInfo.endPage}"><c:url var="pageUrl" value="/retirement/process.do"><c:param name="page" value="${pageNo}"/><c:param name="searchTarget" value="${param.searchTarget}"/><c:param name="keyword" value="${condition.keyword}"/><c:param name="status" value="${condition.status eq 'WORK' ? 'ACTIVE' : condition.status eq 'RETIRED' ? 'RETIRED' : ''}"/></c:url><a class="${pageNo eq pageInfo.currentPage ? 'is-current' : ''}" href="${pageUrl}">${pageNo}</a></c:forEach>
+            <c:if test="${pageInfo.hasNext}"><c:url var="nextUrl" value="/retirement/process.do"><c:param name="page" value="${pageInfo.nextPage}"/><c:param name="searchTarget" value="${param.searchTarget}"/><c:param name="keyword" value="${condition.keyword}"/><c:param name="status" value="${condition.status eq 'WORK' ? 'ACTIVE' : condition.status eq 'RETIRED' ? 'RETIRED' : ''}"/></c:url><a href="${nextUrl}">다음</a></c:if>
         </div>
     </section>
 

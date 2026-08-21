@@ -29,6 +29,10 @@
     gap: 8px;
 }
 
+/* 검색어와 상태 조건을 한 요청으로 보내면서 기존 좌우 배치를 유지한다. */
+.retirement-keyword-search { width: 100%; }
+.retirement-keyword-search .status-filter { margin-left: auto; }
+
 .retirement-status-search { margin-left: auto; }
 
 .retirement-toolbar select:first-child { width: 112px; }

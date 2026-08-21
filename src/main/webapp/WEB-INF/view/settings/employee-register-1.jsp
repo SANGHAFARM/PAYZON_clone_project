@@ -295,27 +295,27 @@
 												value="근로소득자"
 												${empty employee.incomeType or employee.incomeType eq '근로소득자' ? 'checked' : ''}>
 												근로소득자(근로소득간이세액표)</label><label>세액 <select
-												name="incomeTaxRate"><option>80</option>
-													<option selected>100</option>
-													<option>120</option></select>%
+											name="incomeTaxRate"><option value="80" ${employee.incomeTaxRate eq 80 ? 'selected' : ''}>80</option>
+												<option value="100" ${empty employee or employee.incomeTaxRate eq 100 or employee.incomeTaxRate eq 0 ? 'selected' : ''}>100</option>
+												<option value="120" ${employee.incomeTaxRate eq 120 ? 'selected' : ''}>120</option></select>%
 											</label><label><input type="checkbox" name="youthTaxReduceYn"
 												value="Y"
 												${employee.youthTaxReduceYn eq 'Y' ? 'checked' : ''}>
 												중소기업 청년 소득세 감면</label><select name="youthTaxRate"><option
-													value="0">선택</option>
-												<option>50</option>
-												<option>70</option>
-												<option>90</option></select>
+												value="0" ${empty employee.youthTaxRate or employee.youthTaxRate eq 0 ? 'selected' : ''}>선택</option>
+											<option value="50" ${employee.youthTaxRate eq 50 ? 'selected' : ''}>50</option>
+											<option value="70" ${employee.youthTaxRate eq 70 ? 'selected' : ''}>70</option>
+											<option value="90" ${employee.youthTaxRate eq 90 ? 'selected' : ''}>90</option></select>
 										</div>
 										<div class="tax-line">
 											<label><input type="radio" name="incomeType"
-												value="사업소득자"> 사업소득자(3.3%)</label><label><input
-												type="radio" name="incomeType" value="일용직">
+											value="사업소득자" ${employee.incomeType eq '사업소득자' ? 'checked' : ''}> 사업소득자(3.3%)</label><label><input
+											type="radio" name="incomeType" value="일용직" ${employee.incomeType eq '일용직' ? 'checked' : ''}>
 												일용직(2.97%)</label><label><input type="radio"
-												name="incomeType" value="기타소득자"> 기타소득자(8.8%)</label><label><input
-												type="radio" name="incomeType" value="근로/사업소득자">
+											name="incomeType" value="기타소득자" ${employee.incomeType eq '기타소득자' ? 'checked' : ''}> 기타소득자(8.8%)</label><label><input
+											type="radio" name="incomeType" value="근로/사업소득자" ${employee.incomeType eq '근로/사업소득자' ? 'checked' : ''}>
 												근로/사업소득자</label><label><input type="radio" name="incomeType"
-												value="면제"> 면제</label>
+												value="면제" ${employee.incomeType eq '면제' ? 'checked' : ''}> 면제</label>
 										</div>
 									</div>
 								</div>

@@ -61,8 +61,7 @@ public class EmployeeLeaveHandler implements CommandHandler {
 
 					// 4. 리스트에 담긴 '체크된 사원'들의 데이터만 일괄 저장
 					leaveBalanceService.saveLeaveBalances(balances);
-					req.getSession().setAttribute("message", "선택한 사원의 휴가일수가 저장되었습니다.");
-					req.getSession().setAttribute("messageReturnTarget", "employeeLeave");
+					// 저장 후 같은 휴가항목의 관리 팝업을 다시 조회해 변경값을 바로 보여준다.
 				}
 			} else if ("requestDelete".equals(action)) {
 				// 1. 화면에서 체크박스에 체크한 사원들의 ID(employeeId) 배열을 추출
@@ -124,8 +123,12 @@ public class EmployeeLeaveHandler implements CommandHandler {
 			req.getSession().setAttribute("messageReturnTarget", "employeeLeave");
 		}
 
+		String keyword = req.getParameter("keyword");
+		String status = req.getParameter("status");
+		String query = "&keyword=" + java.net.URLEncoder.encode(keyword == null ? "" : keyword, "UTF-8")
+				+ "&status=" + java.net.URLEncoder.encode(status == null ? "" : status, "UTF-8");
 		res.sendRedirect(req.getContextPath() + "/settings/attendance.do?leaveItemId=" + leaveItemIdStr
-				+ "#employee-leave-modal");
+				+ query + "#employee-leave-modal");
 		return null;
 	}
 }
