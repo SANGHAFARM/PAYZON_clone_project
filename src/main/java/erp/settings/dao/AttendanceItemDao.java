@@ -128,7 +128,7 @@ public class AttendanceItemDao {
 			pstmt.setInt(3, item.getAttendanceGroupId());
 
 			// 외래키인 휴가공제 식별 번호가 0보다 크면 정수 할당, 아니면 DB에 NULL 세팅
-			if (item.getDeductLeaveId() > 0) {
+			if (item.getDeductLeaveId() != null && item.getDeductLeaveId() > 0) {
 				pstmt.setInt(4, item.getDeductLeaveId());
 			} else {
 				pstmt.setNull(4, java.sql.Types.NUMERIC);

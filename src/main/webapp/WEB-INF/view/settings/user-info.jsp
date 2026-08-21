@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -8,20 +9,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>기본환경설정 &gt; 사용자 정보</title>
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/settings/user-info.css">
+	href="${pageContext.request.contextPath}/css/settings/user-info.css?v=20260820-8">
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
+	href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260821-1">
 </head>
 <body>
 	<%@ include file="/WEB-INF/view/common/header.jspf"%>
 
 	<main class="page-content">
 		<div class="user-info-page">
-			<%-- 컨트롤러 목록이 아직 연결되지 않은 미리보기에서도 원본 선택 항목이 모두 표시되도록 하는 기본값 --%>
-			<c:set var="defaultDepartments"
-				value="${fn:split('사장실,개발팀,콘텐츠팀,업무지원팀,디자인팀,관리팀,기획전략팀', ',')}" />
-			<c:set var="defaultPositions"
-				value="${fn:split('이사,차장,사장,부장,과장,대리,주임,사원,실장', ',')}" />
 			<c:set var="defaultBanks"
 				value="${fn:split('국민은행,기업은행,농협중앙회,농협은행,산업은행,신한은행,스탠다드차타드은행,우리은행,외환은행,하나은행,한국씨티은행,경남은행,광주은행,지역농협,대구은행,부산은행,전북은행,제주은행,카카오뱅크,케이뱅크,토스뱅크,산림조합,상호저축은행,새마을금고,신용협동조합,수협중앙회,우체국,도이치뱅크,BOA,에이비엔암로,HSBC,JP모간,BNP파리바,OK저축은행,골든브릿지투자증권,교보증권,대신증권,동부증권,리딩투자증권,메리츠종합금융증권,미래에셋대우,미래에셋증권,바로투자증권,부국증권,삼성증권,신영증권,신한금융투자,유안타증권,유진투자증권,유화증권,이베스트투자증권,카카오페이증권,코리아에셋투자증권,키움증권,토스증권,하나금융투자,하이투자증권,한국투자증권,한양증권,한화투자증권,현대증권,흥국증권,BNK투자증권,HMC투자증권,IBK투자증권,KB투자증권,KTB투자증권,LIG투자증권,NH투자증권,SK증권', ',')}" />
 			<c:set var="payDays"
@@ -35,12 +31,6 @@
 					<strong>*</strong> 표시는 필수입력사항입니다.
 				</p>
 			</header>
-
-			<c:if test="${not empty message}">
-				<p class="form-message" role="status">
-					<c:out value="${message}" />
-				</p>
-			</c:if>
 
 			<form class="company-form"
 				action="${pageContext.request.contextPath}/settings/user-info.do"
@@ -70,8 +60,8 @@
 							name="corpRegNo" value="<c:out value='${company.corpRegNo}' />"
 							maxlength="20"></label> <label class="field"><span>설립일</span><input
 							type="date" name="foundationDate"
-							value="<c:out value='${company.foundationDate}' />"></label> <label
-							class="field"><span>홈페이지</span><input type="url"
+							value="<fmt:formatDate value='${company.foundationDate}' pattern='yyyy-MM-dd' />"></label>
+						<label class="field"><span>홈페이지</span><input type="url"
 							name="homepageUrl"
 							value="<c:out value='${company.homepageUrl}' />" maxlength="300"
 							placeholder="https://example.com"></label>
@@ -107,41 +97,19 @@
 						<label class="field"><span><b>*</b> 성명</span><input
 							name="managerName"
 							value="<c:out value='${company.managerName}' />" required
-							maxlength="50"></label> <label class="field"><span>부서</span><select
+							maxlength="50"></label> <div class="field"><span>부서</span><div class="managed-select"><select
 							name="managerDeptName"><option value="">선택</option>
-								<c:choose>
-									<c:when test="${not empty departmentList}">
-										<c:forEach var="dept" items="${departmentList}">
-											<option value="<c:out value='${dept.departmentName}' />"
-												${dept.departmentName eq company.managerDeptName ? 'selected' : ''}><c:out
-													value="${dept.departmentName}" /></option>
-										</c:forEach>
-									</c:when>
-									<c:otherwise>
-										<c:forEach var="deptName" items="${defaultDepartments}">
-											<option value="<c:out value='${deptName}' />"
-												${deptName eq company.managerDeptName ? 'selected' : ''}><c:out
-													value="${deptName}" /></option>
-										</c:forEach>
-									</c:otherwise>
-								</c:choose></select></label> <label class="field"><span>직위</span><select
+								<c:forEach var="dept" items="${departmentList}">
+									<option value="<c:out value='${dept.departmentName}' />"
+										${dept.departmentName eq company.managerDeptName ? 'selected' : ''}><c:out
+											value="${dept.departmentName}" /></option>
+								</c:forEach></select><a href="#department-manager-modal">관리</a></div></div> <div class="field"><span>직위</span><div class="managed-select"><select
 							name="managerPosName"><option value="">선택</option>
-								<c:choose>
-									<c:when test="${not empty positionList}">
-										<c:forEach var="pos" items="${positionList}">
-											<option value="<c:out value='${pos.jobPositionName}' />"
-												${pos.jobPositionName eq company.managerPosName ? 'selected' : ''}><c:out
-													value="${pos.jobPositionName}" /></option>
-										</c:forEach>
-									</c:when>
-									<c:otherwise>
-										<c:forEach var="posName" items="${defaultPositions}">
-											<option value="<c:out value='${posName}' />"
-												${posName eq company.managerPosName ? 'selected' : ''}><c:out
-													value="${posName}" /></option>
-										</c:forEach>
-									</c:otherwise>
-								</c:choose></select></label> <label class="field"><span>전화번호</span><input type="tel"
+								<c:forEach var="pos" items="${positionList}">
+									<option value="<c:out value='${pos.jobPositionName}' />"
+										${pos.jobPositionName eq company.managerPosName ? 'selected' : ''}><c:out
+											value="${pos.jobPositionName}" /></option>
+								</c:forEach></select><a href="#position-manager-modal">관리</a></div></div> <label class="field"><span>전화번호</span><input type="tel"
 							name="managerTelNo"
 							value="<c:out value='${company.managerTelNo}' />" maxlength="30"></label>
 						<label class="field"><span>휴대폰번호</span><input type="tel"
@@ -156,7 +124,7 @@
 				<section class="form-section">
 					<h2>급여지급 정보</h2>
 					<div class="pay-info-table">
-						<div class="pay-info-label">급여 산정기간</div>
+						<div class="pay-info-label"><b>*</b>&nbsp;급여 산정기간</div>
 						<div class="pay-period">
 							<select name="payCalcStartScope" required><option
 									value="P" ${company.payCalcStartScope eq 'P' ? 'selected' : ''}>전월</option>
@@ -176,7 +144,7 @@
 										${day eq company.payCalcEndDay or (empty company.payCalcEndDay and day eq '99') ? 'selected' : ''}>${day eq '99' ? '말일' : day}</option>
 								</c:forEach></select>
 						</div>
-						<div class="pay-info-label">급여지급일</div>
+						<div class="pay-info-label"><b>*</b>&nbsp;급여지급일</div>
 						<div class="pay-day">
 							<select name="payDateScope" required><option value="0"
 									${company.payDateScope eq '0' ? 'selected' : ''}>당월</option>
@@ -217,9 +185,6 @@
 					<article class="asset-card">
 						<div class="asset-card__title">
 							<h2>로고등록</h2>
-							<c:if test="${not empty company.logoImgPath}">
-								<span>완료</span>
-							</c:if>
 						</div>
 						<div class="asset-card__body">
 							<div class="asset-preview">
@@ -235,7 +200,7 @@
 								</c:choose>
 							</div>
 							<div>
-								<p>로고는 가로 150px 썸네일로 생성됩니다.</p>
+								<p>로고는 가로 150px 이하의 PNG로 저장됩니다.</p>
 								<p>투명 PNG 이미지 사용을 권장합니다.</p>
 								<div class="mini-actions">
 									<a href="#logo-upload-modal">등록</a>
@@ -247,9 +212,6 @@
 					<article class="asset-card">
 						<div class="asset-card__title">
 							<h2>도장등록</h2>
-							<c:if test="${not empty company.stampImgPath}">
-								<span>사용</span>
-							</c:if>
 						</div>
 						<div class="asset-card__body">
 							<div class="asset-preview">
@@ -265,7 +227,7 @@
 								</c:choose>
 							</div>
 							<div>
-								<p>로고는 가로 150px 썸네일로 생성됩니다.</p>
+								<p>도장은 가로 150px 이하의 PNG로 저장됩니다.</p>
 								<p>투명 PNG 이미지 사용을 권장합니다.</p>
 								<div class="mini-actions">
 									<a href="#stamp-upload-modal">등록</a>
@@ -278,17 +240,24 @@
 
 				<div id="logo-upload-modal" class="upload-modal" role="dialog"
 					aria-modal="true" aria-labelledby="logo-upload-title">
-					<a class="upload-modal__backdrop" href="#" aria-label="닫기"></a>
+					<a class="upload-modal__backdrop" href="${pageContext.request.contextPath}/settings/user-info.do" aria-label="닫기"></a>
 					<div class="upload-modal__panel">
 						<div class="upload-modal__title">
 							<h2 id="logo-upload-title">이미지 등록하기</h2>
-							<a href="#" aria-label="닫기">×</a>
+							<a href="${pageContext.request.contextPath}/settings/user-info.do" aria-label="닫기">×</a>
 						</div>
 						<div class="upload-modal__body">
+							<p class="upload-modal__subtitle">기본 이미지 선택</p>
+							<label class="preset-image-option">
+								<input type="radio" name="logoPreset" value="payzon">
+								<img src="${pageContext.request.contextPath}/images/settings/presets/payzon-logo.png" alt="PAYZON 기본 로고">
+								<span>PAYZON 기본 로고</span>
+							</label>
+							<p class="upload-modal__divider"><span>또는 직접 업로드</span></p>
+							<label class="upload-file-choice"><input type="radio" name="logoPreset" value="upload" checked> 직접 업로드 파일 사용</label>
 							<input type="file" name="logoFile" accept="image/png,image/jpeg">
 							<p>
-								* 파일 용량 : <strong>1MB 미만</strong>이어야 합니다.<br>* 파일명 : <strong>영문
-									또는 숫자</strong>로 되어 있어야 합니다.
+								* 파일 용량 : <strong>1MB 미만</strong>이어야 합니다.<br>* 파일 형식 : <strong>PNG 또는 JPG</strong>만 등록할 수 있습니다.
 							</p>
 						</div>
 						<button class="upload-modal__confirm" type="submit" name="action"
@@ -297,17 +266,24 @@
 				</div>
 				<div id="stamp-upload-modal" class="upload-modal" role="dialog"
 					aria-modal="true" aria-labelledby="stamp-upload-title">
-					<a class="upload-modal__backdrop" href="#" aria-label="닫기"></a>
+					<a class="upload-modal__backdrop" href="${pageContext.request.contextPath}/settings/user-info.do" aria-label="닫기"></a>
 					<div class="upload-modal__panel">
 						<div class="upload-modal__title">
 							<h2 id="stamp-upload-title">이미지 등록하기</h2>
-							<a href="#" aria-label="닫기">×</a>
+							<a href="${pageContext.request.contextPath}/settings/user-info.do" aria-label="닫기">×</a>
 						</div>
 						<div class="upload-modal__body">
+							<p class="upload-modal__subtitle">기본 이미지 선택</p>
+							<label class="preset-image-option preset-image-option--stamp">
+								<input type="radio" name="stampPreset" value="payzon">
+								<img src="${pageContext.request.contextPath}/images/settings/presets/payzon-stamp.png" alt="PAYZON 기본 도장">
+								<span>PAYZON 기본 도장</span>
+							</label>
+							<p class="upload-modal__divider"><span>또는 직접 업로드</span></p>
+							<label class="upload-file-choice"><input type="radio" name="stampPreset" value="upload" checked> 직접 업로드 파일 사용</label>
 							<input type="file" name="stampFile" accept="image/png,image/jpeg">
 							<p>
-								* 파일 용량 : <strong>1MB 미만</strong>이어야 합니다.<br>* 파일명 : <strong>영문
-									또는 숫자</strong>로 되어 있어야 합니다.
+								* 파일 용량 : <strong>1MB 미만</strong>이어야 합니다.<br>* 파일 형식 : <strong>PNG 또는 JPG</strong>만 등록할 수 있습니다.
 							</p>
 						</div>
 						<button class="upload-modal__confirm" type="submit" name="action"
@@ -322,6 +298,84 @@
 						href="${pageContext.request.contextPath}/settings/user-info.do">취소하기</a>
 				</div>
 			</form>
+
+			<div id="department-manager-modal" class="setting-manager-modal" role="dialog" aria-modal="true" aria-labelledby="department-manager-title">
+				<a class="setting-manager-modal__backdrop" href="${pageContext.request.contextPath}/settings/user-info.do" aria-label="부서 관리 닫기"></a>
+				<section class="setting-manager-modal__panel">
+					<header><h2 id="department-manager-title">부서 목록관리</h2><a href="${pageContext.request.contextPath}/settings/user-info.do" aria-label="닫기">×</a></header>
+					<div class="setting-manager-list">
+						<c:forEach var="dept" items="${departmentList}">
+							<form method="post" action="${pageContext.request.contextPath}/settings/user-info.do" class="setting-manager-row">
+								<input type="hidden" name="departmentId" value="${dept.departmentId}">
+								<input type="text" name="departmentName" value="<c:out value='${dept.departmentName}' />" maxlength="100" required aria-label="부서명">
+								<button type="submit" name="action" value="updateDepartment">수정</button>
+								<button type="submit" name="action" value="requestDeleteDepartment" formnovalidate>삭제</button>
+							</form>
+						</c:forEach>
+						<c:if test="${empty departmentList}"><p class="setting-manager-empty">등록된 부서가 없습니다.</p></c:if>
+					</div>
+					<form method="post" action="${pageContext.request.contextPath}/settings/user-info.do" class="setting-manager-add">
+						<input type="text" name="departmentName" maxlength="100" placeholder="새 부서명" required>
+						<button type="submit" name="action" value="addDepartment">추가하기</button>
+					</form>
+				</section>
+			</div>
+
+			<div id="position-manager-modal" class="setting-manager-modal" role="dialog" aria-modal="true" aria-labelledby="position-manager-title">
+				<a class="setting-manager-modal__backdrop" href="${pageContext.request.contextPath}/settings/user-info.do" aria-label="직위 관리 닫기"></a>
+				<section class="setting-manager-modal__panel">
+					<header><h2 id="position-manager-title">직위 목록관리</h2><a href="${pageContext.request.contextPath}/settings/user-info.do" aria-label="닫기">×</a></header>
+					<div class="setting-manager-list">
+						<c:forEach var="pos" items="${positionList}">
+							<form method="post" action="${pageContext.request.contextPath}/settings/user-info.do" class="setting-manager-row">
+								<input type="hidden" name="positionId" value="${pos.jobPositionId}">
+								<input type="text" name="positionName" value="<c:out value='${pos.jobPositionName}' />" maxlength="100" required aria-label="직위명">
+								<button type="submit" name="action" value="updatePosition">수정</button>
+								<button type="submit" name="action" value="requestDeletePosition" formnovalidate>삭제</button>
+							</form>
+						</c:forEach>
+						<c:if test="${empty positionList}"><p class="setting-manager-empty">등록된 직위가 없습니다.</p></c:if>
+					</div>
+					<form method="post" action="${pageContext.request.contextPath}/settings/user-info.do" class="setting-manager-add">
+						<input type="text" name="positionName" maxlength="100" placeholder="새 직위명" required>
+						<button type="submit" name="action" value="addPosition">추가하기</button>
+					</form>
+				</section>
+			</div>
+
+			<c:if test="${not empty deleteSettingType}">
+				<div class="setting-delete-modal" role="alertdialog" aria-modal="true" aria-labelledby="setting-delete-title">
+					<a class="setting-manager-modal__backdrop" href="${pageContext.request.contextPath}/settings/user-info.do" aria-label="삭제 취소"></a>
+					<form class="setting-delete-modal__panel" method="post" action="${pageContext.request.contextPath}/settings/user-info.do">
+						<p id="setting-delete-title"><strong><c:out value="${deleteSettingName}" /></strong> 항목을 삭제하시겠습니까?</p>
+						<p class="setting-delete-warning">삭제한 항목은 복구할 수 없습니다.</p>
+						<c:choose><c:when test="${deleteSettingType eq 'department'}"><input type="hidden" name="departmentId" value="${deleteSettingId}"><input type="hidden" name="action" value="deleteDepartment"></c:when><c:otherwise><input type="hidden" name="positionId" value="${deleteSettingId}"><input type="hidden" name="action" value="deletePosition"></c:otherwise></c:choose>
+						<div><button type="submit">삭제</button><a href="${pageContext.request.contextPath}/settings/user-info.do">취소</a></div>
+					</form>
+				</div>
+			</c:if>
+
+			<c:if test="${not empty message}">
+				<div class="user-info-alert" role="alertdialog" aria-modal="true" aria-labelledby="user-info-alert-message">
+					<a class="user-info-alert__backdrop" href="${pageContext.request.contextPath}/settings/user-info.do?dismissMessage=true" aria-label="확인"></a>
+					<div class="user-info-alert__panel">
+						<p id="user-info-alert-message"><c:out value="${message}" /></p>
+						<a href="${pageContext.request.contextPath}/settings/user-info.do?dismissMessage=true">확인</a>
+					</div>
+				</div>
+				<c:remove var="message" scope="session" />
+			</c:if>
+
+			<c:if test="${not empty managerMessage}">
+				<c:set var="managerReturnHash" value="${managerType eq 'position' ? '#position-manager-modal' : '#department-manager-modal'}" />
+				<div class="user-info-alert" role="alertdialog" aria-modal="true" aria-labelledby="manager-alert-message">
+					<a class="user-info-alert__backdrop" href="${pageContext.request.contextPath}/settings/user-info.do?dismissMessage=true${managerReturnHash}" aria-label="확인"></a>
+					<div class="user-info-alert__panel">
+						<p id="manager-alert-message"><c:out value="${managerMessage}" /></p>
+						<a href="${pageContext.request.contextPath}/settings/user-info.do?dismissMessage=true${managerReturnHash}">확인</a>
+					</div>
+				</div>
+			</c:if>
 		</div>
 	</main>
 

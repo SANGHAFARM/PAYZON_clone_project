@@ -9,6 +9,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import erp.employees.dto.AttendanceEmployeeDto;
 import erp.employees.dto.DayWorkerDto;
 import erp.employees.dto.EmployeeListItem;
 import erp.employees.dto.EmployeeSummary;
@@ -31,8 +32,18 @@ public class EmployeeDao {
 	private EmployeeDao() {
 	}
 
-	// 사원 정보 등록 (INSERT)
-	// 시퀀스를 활용하여 PK 발급 및 사원의 전체 정보 저장
+	// 신규 사원과 하위 이력이 동일한 PK를 사용하도록 INSERT 전에 시퀀스 값을 확보합니다.
+	public int nextEmployeeId(Connection conn) throws SQLException {
+		String sql = "SELECT EMPLOYEE_SEQ.NEXTVAL FROM DUAL";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
+			if (rs.next()) {
+				return rs.getInt(1);
+			}
+			throw new SQLException("사원 식별번호를 생성하지 못했습니다.");
+		}
+	}
+
+	// 서비스에서 미리 발급한 PK로 사원의 전체 정보를 저장합니다.
 	public void insert(Connection conn, Employee emp) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
@@ -44,78 +55,79 @@ public class EmployeeDao {
 					+ "NP_MONTHLY_BASE, HI_MONTHLY_BASE, EI_MONTHLY_BASE, BANK_NAME, ACCOUNT_NO, DISCHARGE_TYPE, MIL_BRANCH, "
 					+ "MIL_SERVICE_START, MIL_SERVICE_END, MIL_RANK, MIL_SPECIALTY, MIL_UNFINISHED_REASON, STATUS, RETIRE_TYPE, "
 					+ "RETIRE_DATE, RETIRE_REASON, AFTER_RETIRE_CONTACT) "
-					+ "VALUES (EMPLOYEE_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 			pstmt = conn.prepareStatement(sql);
 
-			pstmt.setString(1, emp.getEmpNo());
-			pstmt.setString(2, emp.getEmpType());
-			pstmt.setString(3, emp.getEmpNameKr());
-			pstmt.setString(4, emp.getEmpNameEn());
-			pstmt.setString(5, emp.getForeignYn());
-			pstmt.setTimestamp(6, new Timestamp(emp.getJoinDate().getTime()));
+			pstmt.setInt(1, emp.getEmployeeId());
+			pstmt.setString(2, emp.getEmpNo());
+			pstmt.setString(3, emp.getEmpType());
+			pstmt.setString(4, emp.getEmpNameKr());
+			pstmt.setString(5, emp.getEmpNameEn());
+			pstmt.setString(6, emp.getForeignYn());
+			pstmt.setTimestamp(7, new Timestamp(emp.getJoinDate().getTime()));
 
-			pstmt.setObject(7, emp.getDepartmentId(), Types.NUMERIC);
-			pstmt.setObject(8, emp.getJobPositionId(), Types.NUMERIC);
+			pstmt.setObject(8, emp.getDepartmentId(), Types.NUMERIC);
+			pstmt.setObject(9, emp.getJobPositionId(), Types.NUMERIC);
 
-			pstmt.setString(9, emp.getJuminNo());
-			pstmt.setString(10, emp.getZipCode());
-			pstmt.setString(11, emp.getAddress());
-			pstmt.setString(12, emp.getTelNo());
-			pstmt.setString(13, emp.getMobileNo());
-			pstmt.setString(14, emp.getEmail());
-			pstmt.setString(15, emp.getSnsAddress());
-			pstmt.setString(16, emp.getMemo());
-			pstmt.setString(17, emp.getPhotoPath());
+			pstmt.setString(10, emp.getJuminNo());
+			pstmt.setString(11, emp.getZipCode());
+			pstmt.setString(12, emp.getAddress());
+			pstmt.setString(13, emp.getTelNo());
+			pstmt.setString(14, emp.getMobileNo());
+			pstmt.setString(15, emp.getEmail());
+			pstmt.setString(16, emp.getSnsAddress());
+			pstmt.setString(17, emp.getMemo());
+			pstmt.setString(18, emp.getPhotoPath());
 
-			pstmt.setLong(18, emp.getBasicPay());
-			pstmt.setString(19, emp.getIncomeType());
-			pstmt.setInt(20, emp.getIncomeTaxRate());
-			pstmt.setString(21, emp.getYouthTaxReduceYn());
-			pstmt.setObject(22, emp.getYouthTaxRate(), Types.NUMERIC);
+			pstmt.setLong(19, emp.getBasicPay());
+			pstmt.setString(20, emp.getIncomeType());
+			pstmt.setInt(21, emp.getIncomeTaxRate());
+			pstmt.setString(22, emp.getYouthTaxReduceYn());
+			pstmt.setObject(23, emp.getYouthTaxRate(), Types.NUMERIC);
 
-			pstmt.setString(23, emp.getNpYn());
-			pstmt.setString(24, emp.getHiYn());
-			pstmt.setString(25, emp.getLtciYn());
-			pstmt.setString(26, emp.getEiYn());
-			pstmt.setObject(27, emp.getHiReduceRate(), Types.NUMERIC);
-			pstmt.setObject(28, emp.getLtciReduceRate(), Types.NUMERIC);
-			pstmt.setString(29, emp.getDurunuriSeparateYn());
-			pstmt.setObject(30, emp.getDurunuriNpRate(), Types.NUMERIC);
-			pstmt.setObject(31, emp.getDurunuriEiRate(), Types.NUMERIC);
+			pstmt.setString(24, emp.getNpYn());
+			pstmt.setString(25, emp.getHiYn());
+			pstmt.setString(26, emp.getLtciYn());
+			pstmt.setString(27, emp.getEiYn());
+			pstmt.setObject(28, emp.getHiReduceRate(), Types.NUMERIC);
+			pstmt.setObject(29, emp.getLtciReduceRate(), Types.NUMERIC);
+			pstmt.setString(30, emp.getDurunuriSeparateYn());
+			pstmt.setObject(31, emp.getDurunuriNpRate(), Types.NUMERIC);
+			pstmt.setObject(32, emp.getDurunuriEiRate(), Types.NUMERIC);
 
-			pstmt.setObject(32, emp.getNpMonthlyBase(), Types.NUMERIC);
-			pstmt.setObject(33, emp.getHiMonthlyBase(), Types.NUMERIC);
-			pstmt.setObject(34, emp.getEiMonthlyBase(), Types.NUMERIC);
-			pstmt.setString(35, emp.getBankName());
-			pstmt.setString(36, emp.getAccountNo());
+			pstmt.setObject(33, emp.getNpMonthlyBase(), Types.NUMERIC);
+			pstmt.setObject(34, emp.getHiMonthlyBase(), Types.NUMERIC);
+			pstmt.setObject(35, emp.getEiMonthlyBase(), Types.NUMERIC);
+			pstmt.setString(36, emp.getBankName());
+			pstmt.setString(37, emp.getAccountNo());
 
-			pstmt.setString(37, emp.getDischargeType());
-			pstmt.setString(38, emp.getMilBranch());
+			pstmt.setString(38, emp.getDischargeType());
+			pstmt.setString(39, emp.getMilBranch());
 
 			if (emp.getMilServiceStart() == null)
-				pstmt.setNull(39, Types.DATE);
-			else
-				pstmt.setTimestamp(39, new Timestamp(emp.getMilServiceStart().getTime()));
-
-			if (emp.getMilServiceEnd() == null)
 				pstmt.setNull(40, Types.DATE);
 			else
-				pstmt.setTimestamp(40, new Timestamp(emp.getMilServiceEnd().getTime()));
+				pstmt.setTimestamp(40, new Timestamp(emp.getMilServiceStart().getTime()));
 
-			pstmt.setString(41, emp.getMilRank());
-			pstmt.setString(42, emp.getMilSpecialty());
-			pstmt.setString(43, emp.getMilUnfinishedReason());
-			pstmt.setString(44, emp.getStatus());
-			pstmt.setString(45, emp.getRetireType());
+			if (emp.getMilServiceEnd() == null)
+				pstmt.setNull(41, Types.DATE);
+			else
+				pstmt.setTimestamp(41, new Timestamp(emp.getMilServiceEnd().getTime()));
+
+			pstmt.setString(42, emp.getMilRank());
+			pstmt.setString(43, emp.getMilSpecialty());
+			pstmt.setString(44, emp.getMilUnfinishedReason());
+			pstmt.setString(45, emp.getStatus());
+			pstmt.setString(46, emp.getRetireType());
 
 			if (emp.getRetireDate() == null)
-				pstmt.setNull(46, Types.DATE);
+				pstmt.setNull(47, Types.DATE);
 			else
-				pstmt.setTimestamp(46, new Timestamp(emp.getRetireDate().getTime()));
+				pstmt.setTimestamp(47, new Timestamp(emp.getRetireDate().getTime()));
 
-			pstmt.setString(47, emp.getRetireReason());
-			pstmt.setString(48, emp.getAfterRetireContact());
+			pstmt.setString(48, emp.getRetireReason());
+			pstmt.setString(49, emp.getAfterRetireContact());
 
 			pstmt.executeUpdate();
 		} finally {
@@ -208,6 +220,46 @@ public class EmployeeDao {
 				return result;
 			}
 		}
+	}
+	
+	//근태관리 전용 사원 목록 조회 메서드
+	public List<AttendanceEmployeeDto> selectAttendanceEmployees(Connection conn, String keyword, String status) throws SQLException{
+		String sql = "SELECT E.EMPLOYEE_ID, E.EMP_TYPE, E.EMP_NO, E.EMP_NAME_KR, D.DEPARTMENT_NAME, J.JOB_POSITION_NAME "
+				+ "FROM EMPLOYEE E "
+				+ "LEFT JOIN DEPARTMENT D ON E.DEPARTMENT_ID = D.DEPARTMENT_ID "
+				+ "LEFT JOIN JOB_POSITION J ON E.JOB_POSITION_ID = J.JOB_POSITION_ID "
+				+ "WHERE (? IS NULL OR ? = '' OR (E.EMP_NO LIKE '%' || ? || '%' OR E.EMP_NAME_KR LIKE '%' || ? || '%' OR D.DEPARTMENT_NAME LIKE '%' || ? || '%' OR J.JOB_POSITION_NAME LIKE '%' || ? || '%')) "
+				+ "AND (? IS NULL OR ? = '' OR E.STATUS = ?)";
+		try(PreparedStatement pstmt = conn.prepareStatement(sql)){
+			//keyword 세팅
+			pstmt.setString(1, keyword);
+			pstmt.setString(2, keyword);
+			pstmt.setString(3, keyword);
+			pstmt.setString(4, keyword);
+			pstmt.setString(5, keyword);
+			pstmt.setString(6, keyword);
+			
+			//재직 상태 세팅
+			pstmt.setString(7, status);
+			pstmt.setString(8, status);
+			pstmt.setString(9, status);
+			List<AttendanceEmployeeDto> list = new ArrayList<>();
+			try(ResultSet rs = pstmt.executeQuery()){
+				while (rs.next()) {
+					AttendanceEmployeeDto dto = new AttendanceEmployeeDto();
+					dto.setEmployeeId(rs.getInt("EMPLOYEE_ID"));
+					dto.setEmpType(rs.getString("EMP_TYPE"));
+					dto.setEmpNo(rs.getString("EMP_NO"));
+					dto.setEmpNameKr(rs.getString("EMP_NAME_KR"));
+					dto.setDepartmentName(rs.getString("DEPARTMENT_NAME"));
+					dto.setJobPositionName(rs.getString("JOB_POSITION_NAME"));
+					list.add(dto);
+				}
+			}
+			return list;
+			
+		}
+				
 	}
 	
 	//일용직 사원 정보 전용 조회 메서드

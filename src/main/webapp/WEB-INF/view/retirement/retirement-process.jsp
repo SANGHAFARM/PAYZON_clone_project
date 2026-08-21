@@ -6,8 +6,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>사원 퇴직처리</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/retirement/retirement-process.css?v=20260815-3">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/retirement/retirement-process.css?v=20260820-1">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260821-1">
 </head>
 <body>
 <%@ include file="/WEB-INF/view/common/header.jspf" %>
@@ -19,8 +19,6 @@
             <h1>사원 퇴직처리</h1>
         </div>
     </header>
-	<c:if test="${not empty message}"><p class="form-message" role="status"><c:out value="${message}" /></p></c:if>
-
 	<%-- EMPLOYEE 중심 JOIN 결과와 퇴직정산 존재 여부를 함께 표시한다. --%>
     <section class="retirement-card">
         <div class="retirement-toolbar">
@@ -124,11 +122,11 @@
 
 </main>
 
-<c:if test="${not empty retirementPopupMessage}">
+<c:if test="${not empty retirementPopupMessage or not empty message}">
     <div class="retirement-alert" role="alertdialog" aria-modal="true" aria-labelledby="retirement-alert-message">
         <a class="retirement-alert__backdrop" href="${pageContext.request.contextPath}/retirement/process.do" aria-label="안내 닫기"></a>
         <div class="retirement-alert__panel">
-            <p id="retirement-alert-message"><c:out value="${retirementPopupMessage}" /></p>
+            <p id="retirement-alert-message"><c:out value="${not empty retirementPopupMessage ? retirementPopupMessage : message}" /></p>
             <a href="${pageContext.request.contextPath}/retirement/process.do">확인</a>
         </div>
     </div>

@@ -40,23 +40,63 @@ public class EmployeeSkillRecordService {
 
 	// [조회] 사원번호(empId)로 각 역량 및 인사기록 리스트를 조회
 	public List<EmployeeLicense> getLicenses(int empId) {
-		/* DB 조회 로직 생략 */ return null;
+		Connection conn = null;
+		try {
+			conn = ConnectionProvider.getConnection();
+			return licenseDao.selectByEmpId(conn, empId);
+		} catch (SQLException e) {
+			throw new RuntimeException("사원 자격/면허 조회 중 오류 발생", e);
+		} finally {
+			JdbcUtil.close(conn);
+		}
 	}
 
 	public List<EmployeeLanguage> getLanguages(int empId) {
-		return null;
+		Connection conn = null;
+		try {
+			conn = ConnectionProvider.getConnection();
+			return languageDao.selectByEmpId(conn, empId);
+		} catch (SQLException e) {
+			throw new RuntimeException("사원 어학능력 조회 중 오류 발생", e);
+		} finally {
+			JdbcUtil.close(conn);
+		}
 	}
 
 	public List<EmployeeTraining> getTrainings(int empId) {
-		return null;
+		Connection conn = null;
+		try {
+			conn = ConnectionProvider.getConnection();
+			return trainingDao.selectByEmpId(conn, empId);
+		} catch (SQLException e) {
+			throw new RuntimeException("사원 교육/훈련 조회 중 오류 발생", e);
+		} finally {
+			JdbcUtil.close(conn);
+		}
 	}
 
 	public List<EmployeeRewardDiscipline> getRewardPunishes(int empId) {
-		return null;
+		Connection conn = null;
+		try {
+			conn = ConnectionProvider.getConnection();
+			return rewardDao.selectByEmpId(conn, empId);
+		} catch (SQLException e) {
+			throw new RuntimeException("사원 상벌 조회 중 오류 발생", e);
+		} finally {
+			JdbcUtil.close(conn);
+		}
 	}
 
 	public List<EmployeeAppointment> getAppointments(int empId) {
-		return null;
+		Connection conn = null;
+		try {
+			conn = ConnectionProvider.getConnection();
+			return appointmentDao.selectByEmpId(conn, empId);
+		} catch (SQLException e) {
+			throw new RuntimeException("사원 발령 조회 중 오류 발생", e);
+		} finally {
+			JdbcUtil.close(conn);
+		}
 	}
 
 	// [통합 저장] 폼에서 넘어온 1:N 리스트 데이터를 하나의 트랜잭션으로 일괄 갱신

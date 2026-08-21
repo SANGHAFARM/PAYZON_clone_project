@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>퇴직급여명세서</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/retirement/retirement-payslip.css?v=20260816-1">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260821-1">
 </head>
 <body>
 <%@ include file="/WEB-INF/view/common/header.jspf" %>
@@ -58,7 +58,7 @@
                         <header class="payslip-document-title">
                             <div class="company-logo">
                                 <c:choose>
-                                    <c:when test="${not empty company.logoImgPath}"><img src="${company.logoImgPath}" alt="회사 로고"></c:when>
+                                    <c:when test="${not empty company.logoImgPath}"><img src="${pageContext.request.contextPath}${company.logoImgPath}" alt="회사 로고"></c:when>
                                     <c:otherwise><span>회사 로고</span></c:otherwise>
                                 </c:choose>
                             </div>
@@ -120,7 +120,7 @@
                         <footer class="payslip-document-footer">
                             <p>위 금액은 해당 사원의 퇴직금 정산액으로 정확히 영수함.</p>
                             <div class="document-date"><input name="issueYear" value="${issueYear}" maxlength="4">년 <input name="issueMonth" value="${issueMonth}" maxlength="2">월 <input name="issueDay" value="${issueDay}" maxlength="2">일</div>
-                            <div class="company-signature"><div><strong>${company.cmpnName}</strong><span>${company.ceoTitle} ${company.ceoName}</span></div><div class="stamp-box"><c:choose><c:when test="${not empty company.stampImgPath}"><img src="${company.stampImgPath}" alt="회사 직인"></c:when><c:otherwise><span>회사 직인을<br>넣어주세요.</span></c:otherwise></c:choose></div></div>
+                            <div class="company-signature"><div><strong>${company.cmpnName}</strong><span>${company.ceoTitle} ${company.ceoName}</span></div><div class="stamp-box"><c:choose><c:when test="${not empty company.stampImgPath}"><img src="${pageContext.request.contextPath}${company.stampImgPath}" alt="회사 직인"></c:when><c:otherwise><span>회사 직인을<br>넣어주세요.</span></c:otherwise></c:choose></div></div>
                             <table class="signature-table"><tbody><tr><td><div class="signature-party"><strong>근로자</strong><span>${selectedPayslip.employeeName}</span><em>인</em></div></td><td><div class="signature-party"><strong>사용자</strong><span>${company.ceoName}</span><em>인</em></div></td></tr></tbody></table>
                         </footer>
             </article>

@@ -84,10 +84,33 @@ public class PayItemSettingService {
 			conn = ConnectionProvider.getConnection();
 			conn.setAutoCommit(false); // 수동 커밋 모드 전환 처리
 
-			// [데이터 무결성 검증 1] 과세여부에 따른 비과세 속성 초기화
+			// 과세 구분에 따라 비과세 코드와 법정 한도액을 정규화한다.
 			if ("전체과세".equals(item.getTaxType())) {
 				item.setTaxFreeCode(null);
 				item.setTaxFreeLimit(0L);
+			} else if (!"delete".equals(action)) {
+				if ("DIRECT".equals(item.getTaxFreeCode())) {
+					String directName = item.getDirectTaxFreeName();
+					if (directName == null || directName.trim().isEmpty()) {
+						throw new IllegalArgumentException("직접입력 비과세명을 입력해 주세요.");
+					}
+					TaxFreeItem directItem = new TaxFreeItem();
+					directItem.setTaxFreeCode(taxFreeItemDao.selectNextUserCode(conn));
+					directItem.setLegalClause("직접입력");
+					directItem.setReportField("직접입력");
+					directItem.setTaxFreeName(directName.trim());
+					directItem.setDefaultLimit(item.getDirectTaxFreeLimit() == null ? 0L : item.getDirectTaxFreeLimit());
+					directItem.setPayStatementYn("N");
+					directItem.setIncomeCategory("비과세");
+					taxFreeItemDao.insert(conn, directItem);
+					item.setTaxFreeCode(directItem.getTaxFreeCode());
+				}
+
+				TaxFreeItem taxFreeItem = taxFreeItemDao.selectByCode(conn, item.getTaxFreeCode());
+				if (taxFreeItem == null) {
+					throw new IllegalArgumentException("비과세 소득 코드를 선택해 주세요.");
+				}
+				item.setTaxFreeLimit(taxFreeItem.getDefaultLimit());
 			}
 
 			// [데이터 무결성 검증 2] 근태연결 및 일괄지급 속성 자동 매핑 (스키마 CK_PAY_ITEM_METHOD_REL 제약 준수)[cite:
@@ -115,6 +138,9 @@ public class PayItemSettingService {
 		} catch (SQLException e) {
 			JdbcUtil.rollback(conn);
 			throw new RuntimeException("지급항목 액션 처리 중 오류 발생", e);
+		} catch (RuntimeException e) {
+			JdbcUtil.rollback(conn);
+			throw e;
 		} finally {
 			JdbcUtil.close(conn);
 		}
@@ -201,9 +227,29 @@ public class PayItemSettingService {
 		Connection conn = null;
 		try {
 			conn = ConnectionProvider.getConnection();
-			return taxFreeItemDao.selectAll(conn);
+			conn.setAutoCommit(false);
+			for (TaxFreeItem item : TaxFreeItemDefaults.create()) {
+				taxFreeItemDao.insertIfAbsent(conn, item);
+			}
+			List<TaxFreeItem> items = taxFreeItemDao.selectAll(conn);
+			conn.commit();
+			return items;
 		} catch (SQLException e) {
+			JdbcUtil.rollback(conn);
 			throw new RuntimeException("비과세 항목 목록 조회 중 오류 발생", e);
+		} finally {
+			JdbcUtil.close(conn);
+		}
+	}
+
+	/** 비과세 코드에 해당하는 법정 항목을 조회한다. */
+	public TaxFreeItem getTaxFreeItem(String taxFreeCode) {
+		Connection conn = null;
+		try {
+			conn = ConnectionProvider.getConnection();
+			return taxFreeItemDao.selectByCode(conn, taxFreeCode);
+		} catch (SQLException e) {
+			throw new RuntimeException("비과세 항목 조회 중 오류 발생", e);
 		} finally {
 			JdbcUtil.close(conn);
 		}

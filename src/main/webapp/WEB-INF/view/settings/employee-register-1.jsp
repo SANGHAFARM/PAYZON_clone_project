@@ -1,88 +1,698 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>기본환경설정 &gt; 사원등록 1</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/settings/employee-register.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>기본환경설정 &gt; ${employee.employeeId gt 0 ? '사원정보 수정' : '사원등록 1'}</title>
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/css/settings/employee-register.css?v=20260820-12">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260821-1">
 </head>
 <body>
-	<%@ include file="/WEB-INF/view/common/header.jspf" %>
+	<%@ include file="/WEB-INF/view/common/header.jspf"%>
 	<main class="page-content">
 		<div class="employee-page">
-			<c:set var="defaultDepartments" value="${fn:split('사장실,개발팀,콘텐츠팀,업무지원팀,디자인팀,관리팀,기획전략팀', ',')}" />
-			<c:set var="defaultPositions" value="${fn:split('이사,차장,사장,부장,과장,대리,주임,사원,실장', ',')}" />
-			<c:set var="employmentTypes" value="${fn:split('정규직,계약직,임시직,파견직,위촉직,일용직', ',')}" />
-			<c:set var="relations" value="${fn:split('배우자,아들,딸,부,모,형제,자매,장인,장모,시아버지,시어머니,조부,조모,손자,손녀', ',')}" />
-			<c:set var="schoolTypes" value="${fn:split('초등학교,중학교,고등학교,대학교,석사,박사', ',')}" />
+			<c:set var="defaultDepartments"
+				value="${fn:split('사장실,개발팀,콘텐츠팀,업무지원팀,디자인팀,관리팀,기획전략팀', ',')}" />
+			<c:set var="defaultPositions"
+				value="${fn:split('이사,차장,사장,부장,과장,대리,주임,사원,실장', ',')}" />
+			<c:set var="employmentTypes"
+				value="${fn:split('정규직,계약직,임시직,파견직,위촉직,일용직', ',')}" />
+			<c:set var="relations"
+				value="${fn:split('배우자,아들,딸,부,모,형제,자매,장인,장모,시아버지,시어머니,조부,조모,손자,손녀', ',')}" />
+			<c:set var="schoolTypes"
+				value="${fn:split('초등학교,중학교,고등학교,대학교,석사,박사', ',')}" />
 			<c:set var="schoolStates" value="${fn:split('졸업,수료,자퇴,재학중', ',')}" />
-			<c:set var="banks" value="${fn:split('국민은행,기업은행,농협중앙회,농협은행,산업은행,신한은행,스탠다드차타드은행,우리은행,외환은행,하나은행,한국씨티은행,경남은행,광주은행,지역농협,대구은행,부산은행,전북은행,제주은행,카카오뱅크,케이뱅크,토스뱅크,산림조합,상호저축은행,새마을금고,신용협동조합,수협중앙회,우체국', ',')}" />
+			<c:set var="banks"
+				value="${fn:split('국민은행,기업은행,농협중앙회,농협은행,산업은행,신한은행,스탠다드차타드은행,우리은행,외환은행,하나은행,한국씨티은행,경남은행,광주은행,지역농협,대구은행,부산은행,전북은행,제주은행,카카오뱅크,케이뱅크,토스뱅크,산림조합,상호저축은행,새마을금고,신용협동조합,수협중앙회,우체국', ',')}" />
 
-			<header class="page-heading"><div><p>기본환경설정</p><h1>사원등록</h1></div><p class="page-heading__notice"><strong>*</strong> 표시는 필수입력사항입니다.</p></header>
-			<c:if test="${not empty message}"><p class="form-message"><c:out value="${message}" /></p></c:if>
-
-			<form action="${pageContext.request.contextPath}/settings/register1.do" method="post" enctype="multipart/form-data">
-				<input type="hidden" name="empId" value="<c:out value='${employee.empId}' />">
+			<header class="page-heading">
+				<div>
+					<p>기본환경설정</p>
+					<h1>${employee.employeeId gt 0 ? '사원정보 수정' : '사원등록'}</h1>
+				</div>
+				<p class="page-heading__notice">
+					<strong>*</strong> 표시는 필수입력사항입니다.
+				</p>
+			</header>
+			<form
+				action="${pageContext.request.contextPath}/settings/register1.do"
+				method="post" enctype="multipart/form-data">
+				<input type="hidden" name="empId"
+					value="<c:out value='${employee.employeeId}' />">
+				<input type="hidden" name="dependentRowCount" value="${dependentRowCount}">
+				<input type="hidden" name="educationRowCount" value="${educationRowCount}">
+				<input type="hidden" name="careerRowCount" value="${careerRowCount}">
 				<div class="employee-layout">
 					<aside class="employee-summary">
-						<div class="photo-box"><c:choose><c:when test="${not empty employee.photoPath}"><img src="${pageContext.request.contextPath}<c:out value='${employee.photoPath}' />" alt="사원 사진"></c:when><c:otherwise><span>사진 대기</span></c:otherwise></c:choose></div>
-						<div class="summary-actions"><a href="#photo-upload-modal">등록</a><button type="submit" name="action" value="deletePhoto">삭제</button></div>
-						<dl><div><dt>사원번호</dt><dd><c:out value="${employee.empNo}" /></dd></div><div><dt>성명</dt><dd><c:out value="${employee.empNameKr}" /></dd></div><div><dt>부서</dt><dd><c:out value="${employee.deptName}" /></dd></div><div><dt>직위</dt><dd><c:out value="${employee.posName}" /></dd></div><div><dt>입사일</dt><dd><c:out value="${employee.joinDate}" /></dd></div></dl>
+						<div class="photo-box">
+							<c:choose>
+								<c:when test="${not empty employee.photoPath}">
+									<img
+										src="${pageContext.request.contextPath}<c:out value='${employee.photoPath}' />"
+										alt="사원 사진">
+								</c:when>
+								<c:otherwise>
+									<span>사진 대기</span>
+								</c:otherwise>
+							</c:choose>
+						</div>
+						<div class="summary-actions">
+							<a href="#photo-upload-modal">등록</a>
+							<input class="photo-preset-confirmed" type="radio" id="photoConfirmed01" name="photoPreset" value="01" ${draftPhotoPreset eq '01' ? 'checked' : ''}>
+							<input class="photo-preset-confirmed" type="radio" id="photoConfirmed02" name="photoPreset" value="02" ${draftPhotoPreset eq '02' ? 'checked' : ''}>
+							<input class="photo-preset-confirmed" type="radio" id="photoConfirmed03" name="photoPreset" value="03" ${draftPhotoPreset eq '03' ? 'checked' : ''}>
+							<input class="photo-preset-confirmed" type="radio" id="photoConfirmed04" name="photoPreset" value="04" ${draftPhotoPreset eq '04' ? 'checked' : ''}>
+							<input class="photo-preset-confirmed" type="radio" id="photoConfirmed05" name="photoPreset" value="05" ${draftPhotoPreset eq '05' ? 'checked' : ''}>
+							<input class="photo-preset-clear" type="radio" id="photoPresetNone" name="photoPreset" value="">
+							<label class="preview-photo-delete" for="photoPresetNone">삭제</label>
+							<c:choose>
+								<c:when test="${not empty employee.photoPath}"><button class="saved-photo-delete" type="submit" name="action" value="deletePhoto" formnovalidate>삭제</button></c:when>
+								<c:otherwise><span class="summary-action--disabled saved-photo-delete">삭제</span></c:otherwise>
+							</c:choose>
+						</div>
+						<dl>
+							<div>
+								<dt>사원번호</dt>
+								<dd>
+									<c:out value="${employee.empNo}" />
+								</dd>
+							</div>
+							<div>
+								<dt>성명</dt>
+								<dd>
+									<c:out value="${employee.empNameKr}" />
+								</dd>
+							</div>
+							<div>
+								<dt>부서</dt>
+								<dd>
+									<%-- 전체 부서 목록을 돌면서 현재 사원의 부서ID와 일치하는 부서명을 출력 --%>
+									<c:forEach var="dept" items="${departmentList}">
+										<c:if test="${dept.departmentId eq employee.departmentId}">
+											<c:out value="${dept.departmentName}" />
+										</c:if>
+									</c:forEach>
+								</dd>
+							</div>
+							<div>
+								<dt>직위</dt>
+								<dd>
+									<%-- 전체 직위 목록을 돌면서 현재 사원의 직위ID와 일치하는 직위명을 출력 --%>
+									<c:forEach var="pos" items="${positionList}">
+										<c:if test="${pos.jobPositionId eq employee.jobPositionId}">
+											<c:out value="${pos.jobPositionName}" />
+										</c:if>
+									</c:forEach>
+								</dd>
+							</div>
+							<div>
+								<dt>입사일</dt>
+								<dd>
+									<fmt:formatDate value="${employee.joinDate}"
+										pattern="yyyy/MM/dd" />
+								</dd>
+							</div>
+						</dl>
 						<nav class="section-shortcuts" aria-label="사원정보 바로가기">
-							<section><p class="shortcut-title"><span>사원정보</span><em>01</em></p><div class="section-links"><a href="#salary-insurance">급여/4대보험</a><a href="#dependents">부양가족</a><a href="#education">학력</a><a href="#career">경력</a><a href="#military">병역</a></div></section>
-							<section><p class="shortcut-title"><span>사원정보</span><em>02</em></p><div class="section-links"><a href="${pageContext.request.contextPath}/settings/register2.do?empId=<c:out value='${employee.empId}' />#license">자격/면허</a><a href="${pageContext.request.contextPath}/settings/register2.do?empId=<c:out value='${employee.empId}' />#training">교육/훈련</a><a href="${pageContext.request.contextPath}/settings/register2.do?empId=<c:out value='${employee.empId}' />#reward-punish">상벌</a><a href="${pageContext.request.contextPath}/settings/register2.do?empId=<c:out value='${employee.empId}' />#appointment">발령</a><a href="${pageContext.request.contextPath}/settings/register2.do?empId=<c:out value='${employee.empId}' />#recommendation">추천/신원보증</a><a href="${pageContext.request.contextPath}/settings/register2.do?empId=<c:out value='${employee.empId}' />#retirement">퇴직</a></div></section>
+							<section>
+								<p class="shortcut-title">
+									<span>사원정보</span><em>01</em>
+								</p>
+								<div class="section-links">
+									<a href="#salary-insurance">급여/4대보험</a><a href="#dependents">부양가족</a><a
+										href="#education">학력</a><a href="#career">경력</a><a
+										href="#military">병역</a>
+								</div>
+							</section>
+							<section>
+								<p class="shortcut-title">
+									<span>사원정보</span><em>02</em>
+								</p>
+								<div class="section-links">
+									<c:choose>
+										<%-- 사원 번호가 존재하고 0보다 큰 경우 (DB에 저장된 정상 사원) --%>
+										<c:when
+											test="${not empty employee.employeeId and employee.employeeId > 0}">
+											<a
+												href="${pageContext.request.contextPath}/settings/register2.do?empId=<c:out value='${employee.employeeId}' />#license">자격/면허</a>
+											<a
+												href="${pageContext.request.contextPath}/settings/register2.do?empId=<c:out value='${employee.employeeId}' />#training">교육/훈련</a>
+											<a
+												href="${pageContext.request.contextPath}/settings/register2.do?empId=<c:out value='${employee.employeeId}' />#reward-punish">상벌</a>
+											<a
+												href="${pageContext.request.contextPath}/settings/register2.do?empId=<c:out value='${employee.employeeId}' />#appointment">발령</a>
+											<a
+												href="${pageContext.request.contextPath}/settings/register2.do?empId=<c:out value='${employee.employeeId}' />#recommendation">추천/신원보증</a>
+											<a
+												href="${pageContext.request.contextPath}/settings/register2.do?empId=<c:out value='${employee.employeeId}' />#retirement">퇴직</a>
+										</c:when>
+										<%-- 사원 번호가 없는 경우 (신규 등록 중인 상태) --%>
+										<c:otherwise>
+											<a style="opacity: 0.5; cursor: not-allowed;"
+												title="기본 정보를 먼저 저장해 주세요.">자격/면허</a>
+											<a style="opacity: 0.5; cursor: not-allowed;"
+												title="기본 정보를 먼저 저장해 주세요.">교육/훈련</a>
+											<a style="opacity: 0.5; cursor: not-allowed;"
+												title="기본 정보를 먼저 저장해 주세요.">상벌</a>
+											<a style="opacity: 0.5; cursor: not-allowed;"
+												title="기본 정보를 먼저 저장해 주세요.">발령</a>
+											<a style="opacity: 0.5; cursor: not-allowed;"
+												title="기본 정보를 먼저 저장해 주세요.">추천/신원보증</a>
+											<a style="opacity: 0.5; cursor: not-allowed;"
+												title="기본 정보를 먼저 저장해 주세요.">퇴직</a>
+										</c:otherwise>
+									</c:choose>
+								</div>
+							</section>
 						</nav>
 					</aside>
 
 					<div class="employee-form">
-						<section class="form-card" id="basic-info"><h2>기본정보</h2><div class="form-grid">
-							<label class="field"><span>사원번호</span><input name="empNo" value="<c:out value='${employee.empNo}' />" maxlength="50"></label>
-							<label class="field"><span><b>*</b> 고용형태</span><select name="empType" required><option value="">선택해주세요.</option><c:forEach var="type" items="${employmentTypes}"><option value="${type}" ${type eq employee.empType ? 'selected' : ''}>${type}</option></c:forEach></select></label>
-							<label class="field"><span><b>*</b> 성명(한글)</span><input name="empNameKr" value="<c:out value='${employee.empNameKr}' />" required maxlength="50"></label>
-							<label class="field"><span>성명(영문)</span><input name="empNameEn" value="<c:out value='${employee.empNameEn}' />" maxlength="100"></label>
-							<label class="field"><span><b>*</b> 입사일</span><input type="date" name="joinDate" value="<c:out value='${employee.joinDate}' />" required></label>
-							<label class="field"><span>퇴사일</span><input type="date" name="retireDate" value="<c:out value='${employee.retireDate}' />" readonly></label>
-							<label class="field"><span>부서</span><select name="deptId"><option value="">선택해주세요.</option><c:choose><c:when test="${not empty departmentList}"><c:forEach var="dept" items="${departmentList}"><option value="${dept.deptId}" ${dept.deptId eq employee.deptId ? 'selected' : ''}><c:out value="${dept.deptName}" /></option></c:forEach></c:when><c:otherwise><c:forEach var="dept" items="${defaultDepartments}"><option value="${dept}">${dept}</option></c:forEach></c:otherwise></c:choose></select></label>
-							<label class="field"><span>직위</span><select name="posId"><option value="">선택해주세요.</option><c:choose><c:when test="${not empty positionList}"><c:forEach var="pos" items="${positionList}"><option value="${pos.posId}" ${pos.posId eq employee.posId ? 'selected' : ''}><c:out value="${pos.posName}" /></option></c:forEach></c:when><c:otherwise><c:forEach var="pos" items="${defaultPositions}"><option value="${pos}">${pos}</option></c:forEach></c:otherwise></c:choose></select></label>
-							<label class="field"><span><b>*</b> 내/외국인</span><select name="foreignYn" required><option value="">선택해주세요.</option><option value="N" ${employee.foreignYn eq 'N' ? 'selected' : ''}>내국인</option><option value="Y" ${employee.foreignYn eq 'Y' ? 'selected' : ''}>외국인</option></select></label>
-							<label class="field"><span>주민번호</span><input name="juminNo" value="<c:out value='${employee.juminNo}' />" maxlength="100"></label>
-							<div class="field field--wide"><span>주소</span><div class="address-row"><input name="zipCode" value="<c:out value='${employee.zipCode}' />" maxlength="10" placeholder="우편번호"><input name="address" value="<c:out value='${employee.address}' />" maxlength="500" placeholder="주소"></div></div>
-							<label class="field"><span>전화번호</span><input type="tel" name="telNo" value="<c:out value='${employee.telNo}' />" maxlength="30"></label>
-							<label class="field"><span>휴대폰</span><input type="tel" name="mobileNo" value="<c:out value='${employee.mobileNo}' />" maxlength="30"></label>
-							<label class="field"><span>이메일</span><input type="email" name="email" value="<c:out value='${employee.email}' />" maxlength="150"></label>
-							<label class="field"><span>SNS</span><input name="snsAddress" value="<c:out value='${employee.snsAddress}' />" maxlength="200"></label>
-							<label class="field field--wide"><span>기타사항</span><textarea name="memo" maxlength="1000"><c:out value="${employee.memo}" /></textarea></label>
-						</div></section>
+						<section class="form-card" id="basic-info">
+							<h2>기본정보</h2>
+							<div class="form-grid">
+								<label class="field"><span>사원번호</span><input
+									name="empNo" value="<c:out value='${not empty employee.empNo ? employee.empNo : anticipatedEmpNo}' />"
+									readonly></label> <label class="field"><span><b>*</b>
+										고용형태</span><select name="empType" required><option value="">선택해주세요.</option>
+										<c:forEach var="type" items="${employmentTypes}">
+											<option value="${type}"
+												${type eq employee.empType ? 'selected' : ''}>${type}</option>
+										</c:forEach></select></label> <label class="field"><span><b>*</b> 성명(한글)</span><input
+									name="empNameKr"
+									value="<c:out value='${employee.empNameKr}' />" required
+									maxlength="50"></label> <label class="field"><span>성명(영문)</span><input
+									name="empNameEn"
+									value="<c:out value='${employee.empNameEn}' />" maxlength="100"></label>
+								<label class="field"><span><b>*</b> 입사일</span><input
+									type="date" name="joinDate"
+									value="<fmt:formatDate value='${employee.joinDate}' pattern='yyyy-MM-dd' />"
+									required></label> <label class="field"><span>퇴사일</span><input
+									type="date"
+									value="<fmt:formatDate value='${employee.retireDate}' pattern='yyyy-MM-dd' />"
+									readonly></label> <label class="field"><span>부서</span><select
+									name="deptId"><option value="">선택해주세요.</option>
+										<c:choose>
+											<c:when test="${not empty departmentList}">
+												<c:forEach var="dept" items="${departmentList}">
+													<option value="${dept.departmentId}"
+														${dept.departmentId eq employee.departmentId ? 'selected' : ''}><c:out
+															value="${dept.departmentName}" /></option>
+												</c:forEach>
+											</c:when>
+										<c:otherwise>
+											<option value="" disabled>등록된 부서가 없습니다.</option>
+											</c:otherwise>
+										</c:choose></select></label> <label class="field"><span>직위</span><select
+									name="posId"><option value="">선택해주세요.</option>
+										<c:choose>
+											<c:when test="${not empty positionList}">
+												<c:forEach var="pos" items="${positionList}">
+													<option value="${pos.jobPositionId}"
+														${pos.jobPositionId eq employee.jobPositionId ? 'selected' : ''}><c:out
+															value="${pos.jobPositionName}" /></option>
+												</c:forEach>
+											</c:when>
+										<c:otherwise>
+											<option value="" disabled>등록된 직위가 없습니다.</option>
+											</c:otherwise>
+										</c:choose></select></label> <label class="field"><span><b>*</b> 내/외국인</span><select
+									name="foreignYn" required><option value="">선택해주세요.</option>
+										<option value="N"
+											${employee.foreignYn eq 'N' ? 'selected' : ''}>내국인</option>
+										<option value="Y"
+											${employee.foreignYn eq 'Y' ? 'selected' : ''}>외국인</option></select></label> <label
+									class="field"><span>주민번호</span><input name="juminNo"
+									value="<c:out value='${employee.juminNo}' />" maxlength="100"></label>
+								<div class="field field--wide">
+									<span>주소</span>
+									<div class="address-row">
+										<input name="zipCode"
+											value="<c:out value='${employee.zipCode}' />" maxlength="10"
+											placeholder="우편번호"><input name="address"
+											value="<c:out value='${employee.address}' />" maxlength="500"
+											placeholder="주소">
+									</div>
+								</div>
+								<label class="field"><span>전화번호</span><input type="tel"
+									name="telNo" value="<c:out value='${employee.telNo}' />"
+									maxlength="30"></label> <label class="field"><span>휴대폰</span><input
+									type="tel" name="mobileNo"
+									value="<c:out value='${employee.mobileNo}' />" maxlength="30"></label>
+								<label class="field"><span>이메일</span><input type="email"
+									name="email" value="<c:out value='${employee.email}' />"
+									maxlength="150"></label> <label class="field"><span>SNS</span><input
+									name="snsAddress"
+									value="<c:out value='${employee.snsAddress}' />"
+									maxlength="200"></label> <label class="field field--wide"><span>기타사항</span>
+									<textarea name="memo" maxlength="1000"><c:out
+											value="${employee.memo}" /></textarea></label>
+							</div>
+						</section>
 
 						<div class="part-divider">사원정보 1</div>
-						<section class="form-card" id="salary-insurance"><h2>급여/4대보험</h2><h3>급여</h3><div class="detail-rows">
-							<div class="detail-row detail-row--wide"><span><b>*</b> 4대보험</span><div class="option-line"><label><input type="checkbox" name="npYn" value="Y" ${empty employee.npYn or employee.npYn eq 'Y' ? 'checked' : ''}> 국민연금</label><label><input type="checkbox" name="hiYn" value="Y" ${empty employee.hiYn or employee.hiYn eq 'Y' ? 'checked' : ''}> 건강보험</label><label>감면 <select name="hiReduceRate"><option value="0">선택</option><option>10</option><option>30</option><option>50</option><option>60</option></select>%</label><label><input type="checkbox" name="ltciYn" value="Y" ${empty employee.ltciYn or employee.ltciYn eq 'Y' ? 'checked' : ''}> 노인장기요양보험 포함</label><label>감면 <select name="ltciReduceRate"><option value="0">선택</option><option>30</option><option>50</option><option>60</option></select>%</label><label><input type="checkbox" name="eiYn" value="Y" ${empty employee.eiYn or employee.eiYn eq 'Y' ? 'checked' : ''}> 고용보험</label></div></div>
-							<div class="detail-row detail-row--wide"><span><b>*</b> 갑근세</span><div class="option-line option-line--tax"><div class="tax-line"><label><input type="radio" name="incomeType" value="근로소득자" ${empty employee.incomeType or employee.incomeType eq '근로소득자' ? 'checked' : ''}> 근로소득자(근로소득간이세액표)</label><label>세액 <select name="incomeTaxRate"><option>80</option><option selected>100</option><option>120</option></select>%</label><label><input type="checkbox" name="youthTaxReduceYn" value="Y" ${employee.youthTaxReduceYn eq 'Y' ? 'checked' : ''}> 중소기업 청년 소득세 감면</label><select name="youthTaxRate"><option value="0">선택</option><option>50</option><option>70</option><option>90</option></select></div><div class="tax-line"><label><input type="radio" name="incomeType" value="사업소득자"> 사업소득자(3.3%)</label><label><input type="radio" name="incomeType" value="일용직"> 일용직(2.97%)</label><label><input type="radio" name="incomeType" value="기타소득자"> 기타소득자(8.8%)</label><label><input type="radio" name="incomeType" value="근로/사업소득자"> 근로/사업소득자</label><label><input type="radio" name="incomeType" value="면제"> 면제</label></div></div></div>
-							<div class="detail-row detail-row--wide"><span><b>*</b> 두루누리<br>사회보험 지원</span><div class="option-line"><label><input type="radio" name="durunuriRate" value="0" checked> 해당 없음</label><label><input type="radio" name="durunuriRate" value="80"> 신규가입자(80% 지원)</label><label><input type="radio" name="durunuriRate" value="90"> 신규가입자(90% 지원)</label></div></div>
-							<div class="detail-row"><span><b>*</b> 기본급/일급</span><label><input type="number" min="0" name="basicPay" value="<c:out value='${employee.basicPay}' />"> 원</label></div><div class="detail-row"><span>국민연금 기준소득월액</span><label><input type="number" min="0" name="npMonthlyBase" value="<c:out value='${employee.npMonthlyBase}' />"> 원</label></div><div class="detail-row"><span>건강보험 보수월액</span><label><input type="number" min="0" name="hiMonthlyBase" value="<c:out value='${employee.hiMonthlyBase}' />"> 원</label></div><div class="detail-row"><span>고용보험 보수월액</span><label><input type="number" min="0" name="eiMonthlyBase" value="<c:out value='${employee.eiMonthlyBase}' />"> 원</label></div>
-							<div class="detail-row detail-row--wide"><span>급여계좌</span><div class="account-row"><select name="bankName"><option value="">선택해주세요</option><c:forEach var="bank" items="${banks}"><option value="${bank}" ${bank eq employee.bankName ? 'selected' : ''}>${bank}</option></c:forEach></select><input name="accountNo" value="<c:out value='${employee.accountNo}' />" maxlength="100" placeholder="계좌번호"></div></div>
-						</div><h3>4대보험</h3><div class="table-wrap"><table><thead><tr><th>구분</th><th>기호번호</th><th>취득일</th><th>상실일</th></tr></thead><tbody><c:forEach var="insurance" items="${insuranceRows}"><tr><th>${insurance.insuranceType}</th><td><input name="insuranceNo" value="<c:out value='${insurance.insuranceNo}' />"></td><td><input type="date" name="insuranceStartDate" value="${insurance.startDate}"></td><td><input type="date" name="insuranceEndDate" value="${insurance.endDate}"></td></tr></c:forEach><c:if test="${empty insuranceRows}"><c:forEach var="type" items="${fn:split('국민연금,건강보험,고용보험,산재보험', ',')}"><tr><th>${type}</th><td><input name="insuranceNo"></td><td><input type="date" name="insuranceStartDate"></td><td><input type="date" name="insuranceEndDate"></td></tr></c:forEach></c:if></tbody></table></div></section>
+						<section class="form-card" id="salary-insurance">
+							<h2>급여/4대보험</h2>
+							<h3>급여</h3>
+							<div class="detail-rows">
+								<div class="detail-row detail-row--wide">
+									<span><b>*</b> 4대보험</span>
+									<div class="option-line">
+										<label><input type="checkbox" name="npYn" value="Y"
+											${empty employee.npYn or employee.npYn eq 'Y' ? 'checked' : ''}>
+											국민연금</label><label><input type="checkbox" name="hiYn"
+											value="Y"
+											${empty employee.hiYn or employee.hiYn eq 'Y' ? 'checked' : ''}>
+											건강보험</label><label>감면 <select name="hiReduceRate"><option
+													value="0">선택</option>
+												<option>10</option>
+												<option>30</option>
+												<option>50</option>
+												<option>60</option></select>%
+										</label><label><input type="checkbox" name="ltciYn" value="Y"
+											${empty employee.ltciYn or employee.ltciYn eq 'Y' ? 'checked' : ''}>
+											노인장기요양보험 포함</label><label>감면 <select name="ltciReduceRate"><option
+													value="0">선택</option>
+												<option>30</option>
+												<option>50</option>
+												<option>60</option></select>%
+										</label><label><input type="checkbox" name="eiYn" value="Y"
+											${empty employee.eiYn or employee.eiYn eq 'Y' ? 'checked' : ''}>
+											고용보험</label>
+									</div>
+								</div>
+								<div class="detail-row detail-row--wide">
+									<span><b>*</b> 갑근세</span>
+									<div class="option-line option-line--tax">
+										<div class="tax-line">
+											<label><input type="radio" name="incomeType"
+												value="근로소득자"
+												${empty employee.incomeType or employee.incomeType eq '근로소득자' ? 'checked' : ''}>
+												근로소득자(근로소득간이세액표)</label><label>세액 <select
+												name="incomeTaxRate"><option>80</option>
+													<option selected>100</option>
+													<option>120</option></select>%
+											</label><label><input type="checkbox" name="youthTaxReduceYn"
+												value="Y"
+												${employee.youthTaxReduceYn eq 'Y' ? 'checked' : ''}>
+												중소기업 청년 소득세 감면</label><select name="youthTaxRate"><option
+													value="0">선택</option>
+												<option>50</option>
+												<option>70</option>
+												<option>90</option></select>
+										</div>
+										<div class="tax-line">
+											<label><input type="radio" name="incomeType"
+												value="사업소득자"> 사업소득자(3.3%)</label><label><input
+												type="radio" name="incomeType" value="일용직">
+												일용직(2.97%)</label><label><input type="radio"
+												name="incomeType" value="기타소득자"> 기타소득자(8.8%)</label><label><input
+												type="radio" name="incomeType" value="근로/사업소득자">
+												근로/사업소득자</label><label><input type="radio" name="incomeType"
+												value="면제"> 면제</label>
+										</div>
+									</div>
+								</div>
+								<div class="detail-row detail-row--wide durunuri-setting">
+									<span><span class="durunuri-label-text"><b>*</b> 두루누리<br>사회보험 지원</span>
+										<label class="durunuri-separate"><input type="checkbox" name="durunuriSeparateYn" value="Y" ${employee.durunuriSeparateYn eq 'Y' ? 'checked' : ''}> 분리설정</label>
+									</span>
+									<div class="durunuri-options">
+										<div class="option-line">
+											<label><input type="radio" name="durunuriRate" value="0" ${empty employee.durunuriSeparateYn or employee.durunuriSeparateYn eq 'N' and employee.durunuriNpRate eq 0 ? 'checked' : ''}> 해당 없음</label>
+											<label><input type="radio" name="durunuriRate" value="80" ${employee.durunuriSeparateYn eq 'N' and employee.durunuriNpRate eq 80 ? 'checked' : ''}> 신규가입자(80% 지원)</label>
+											<label><input type="radio" name="durunuriRate" value="90" ${employee.durunuriSeparateYn eq 'N' and employee.durunuriNpRate eq 90 ? 'checked' : ''}> 신규가입자(90% 지원)</label>
+										</div>
+										<div class="durunuri-separate-fields">
+											<div class="option-line"><strong>국민연금</strong>
+												<label><input type="radio" name="durunuriNpRate" value="0" ${empty employee.durunuriNpRate or employee.durunuriNpRate eq 0 ? 'checked' : ''}> 해당 없음</label>
+												<label><input type="radio" name="durunuriNpRate" value="80" ${employee.durunuriNpRate eq 80 ? 'checked' : ''}> 80% 지원</label>
+												<label><input type="radio" name="durunuriNpRate" value="90" ${employee.durunuriNpRate eq 90 ? 'checked' : ''}> 90% 지원</label>
+											</div>
+											<div class="option-line"><strong>고용보험</strong>
+												<label><input type="radio" name="durunuriEiRate" value="0" ${empty employee.durunuriEiRate or employee.durunuriEiRate eq 0 ? 'checked' : ''}> 해당 없음</label>
+												<label><input type="radio" name="durunuriEiRate" value="80" ${employee.durunuriEiRate eq 80 ? 'checked' : ''}> 80% 지원</label>
+												<label><input type="radio" name="durunuriEiRate" value="90" ${employee.durunuriEiRate eq 90 ? 'checked' : ''}> 90% 지원</label>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="detail-row">
+									<span><b>*</b> 기본급/일급</span><label><input type="number"
+										min="0" name="basicPay" required
+										value="<c:out value='${employee.basicPay}' />"> 원</label>
+								</div>
+								<div class="detail-row">
+									<span>국민연금 기준소득월액</span><label><input type="number"
+										min="0" name="npMonthlyBase"
+										value="<c:out value='${employee.npMonthlyBase}' />"> 원</label>
+								</div>
+								<div class="detail-row">
+									<span>건강보험 보수월액</span><label><input type="number"
+										min="0" name="hiMonthlyBase"
+										value="<c:out value='${employee.hiMonthlyBase}' />"> 원</label>
+								</div>
+								<div class="detail-row">
+									<span>고용보험 보수월액</span><label><input type="number"
+										min="0" name="eiMonthlyBase"
+										value="<c:out value='${employee.eiMonthlyBase}' />"> 원</label>
+								</div>
+								<div class="detail-row detail-row--wide">
+									<span>급여계좌</span>
+									<div class="account-row">
+										<select name="bankName"><option value="">선택해주세요</option>
+											<c:forEach var="bank" items="${banks}">
+												<option value="${bank}"
+													${bank eq employee.bankName ? 'selected' : ''}>${bank}</option>
+											</c:forEach></select><input name="accountNo"
+											value="<c:out value='${employee.accountNo}' />"
+											maxlength="100" placeholder="계좌번호">
+									</div>
+								</div>
+							</div>
+							<h3>4대보험</h3>
+							<div class="table-wrap">
+								<table>
+									<thead>
+										<tr>
+											<th>구분</th>
+											<th>기호번호</th>
+											<th>취득일</th>
+											<th>상실일</th>
+										</tr>
+									</thead>
+									<tbody>
+										<c:forEach var="insurance" items="${insuranceRows}">
+											<tr>
+												<th>${insurance.insuranceType}</th>
+												<td><input name="insuranceNo"
+													value="<c:out value='${insurance.symbolNo}' />"></td>
+												<td><input type="date" name="insuranceStartDate"
+													value="<fmt:formatDate value='${insurance.acquireDate}' pattern='yyyy-MM-dd' />"></td>
+												<td><input type="date" name="insuranceEndDate"
+													value="<fmt:formatDate value='${insurance.lossDate}' pattern='yyyy-MM-dd' />"></td>
+											</tr>
+										</c:forEach>
+										<c:if test="${empty insuranceRows}">
+											<c:forEach var="type"
+												items="${fn:split('국민연금,건강보험,고용보험,산재보험', ',')}">
+												<tr>
+													<th>${type}</th>
+													<td><input name="insuranceNo"></td>
+													<td><input type="date" name="insuranceStartDate"></td>
+													<td><input type="date" name="insuranceEndDate"></td>
+												</tr>
+											</c:forEach>
+										</c:if>
+									</tbody>
+								</table>
+							</div>
+						</section>
 
-						<section class="form-card" id="dependents"><div class="card-title"><h2>부양가족</h2><div><button name="action" value="addDependent">추가하기</button><button name="action" value="deleteDependents">선택삭제</button></div></div><div class="table-wrap table-wrap--wide"><table class="dependent-table"><thead><tr><th>선택</th><th><b>*</b> 관계</th><th><b>*</b> 성명</th><th>구분</th><th>주민등록번호</th><th>장애여부</th><th>인적공제</th><th>건강보험</th><th>동거여부</th><th>갑근세</th><th>20세 이하 자녀</th></tr></thead><tbody><c:forEach begin="0" end="3" varStatus="row"><c:set var="dep" value="${dependents[row.index]}"/><tr><td><input type="checkbox" name="dependentDeleteIds" value="${dep.depId}"></td><td><select name="dependents[${row.index}].relation"><option value="">선택</option><c:forEach var="rel" items="${relations}"><option ${rel eq dep.relation ? 'selected' : ''}>${rel}</option></c:forEach></select></td><td><input name="dependents[${row.index}].depName" value="<c:out value='${dep.depName}' />"></td><td><select name="dependents[${row.index}].nationality"><option value="">선택</option><option ${dep.nationality eq '내국인' ? 'selected' : ''}>내국인</option><option ${dep.nationality eq '외국인' ? 'selected' : ''}>외국인</option></select></td><td><input name="dependents[${row.index}].juminNo" value="<c:out value='${dep.juminNo}' />"></td><td><input type="checkbox" name="dependents[${row.index}].disabledYn" value="Y" ${dep.disabledYn eq 'Y' ? 'checked' : ''}></td><td><input type="checkbox" name="dependents[${row.index}].deductionYn" value="Y" ${dep.deductionYn eq 'Y' ? 'checked' : ''}></td><td><input type="checkbox" name="dependents[${row.index}].healthYn" value="Y" ${dep.healthYn eq 'Y' ? 'checked' : ''}></td><td><input type="checkbox" name="dependents[${row.index}].cohabitYn" value="Y" ${dep.cohabitYn eq 'Y' ? 'checked' : ''}></td><td><input type="checkbox" name="dependents[${row.index}].incomeTaxYn" value="Y" ${dep.incomeTaxYn eq 'Y' ? 'checked' : ''}></td><td><input type="checkbox" name="dependents[${row.index}].childYn" value="Y" ${dep.childYn eq 'Y' ? 'checked' : ''}></td></tr></c:forEach></tbody></table></div></section>
+						<section class="form-card" id="dependents">
+							<div class="card-title">
+								<h2>부양가족</h2>
+								<div>
+									<button name="action" value="addDependent" formnovalidate>추가하기</button>
+									<button name="action" value="deleteDependents" formnovalidate>선택삭제</button>
+								</div>
+							</div>
+							<div class="table-wrap table-wrap--wide">
+								<table class="dependent-table">
+									<thead>
+										<tr>
+											<th>선택</th>
+											<th><b>*</b> 관계</th>
+											<th><b>*</b> 성명</th>
+											<th>구분</th>
+											<th>주민등록번호</th>
+											<th>장애여부</th>
+											<th>인적공제</th>
+											<th>건강보험</th>
+											<th>동거여부</th>
+											<th>갑근세</th>
+											<th>20세 이하 자녀</th>
+										</tr>
+									</thead>
+									<tbody>
+										<c:forEach begin="0" end="${dependentRowCount - 1}" varStatus="row">
+											<c:set var="dep" value="${dependents[row.index]}" />
+											<tr>
+												<td><input type="checkbox" name="dependentDeleteIds"
+													value="${dep.employeeDependentId}"></td>
+												<td><select name="dependents[${row.index}].relation"><option
+															value="">선택</option>
+														<c:forEach var="rel" items="${relations}">
+															<option ${rel eq dep.relation ? 'selected' : ''}>${rel}</option>
+														</c:forEach></select></td>
+												<td><input name="dependents[${row.index}].depName"
+													value="<c:out value='${dep.depName}' />"></td>
+												<td><select name="dependents[${row.index}].nationality"><option
+															value="">선택</option>
+														<option ${dep.nationalType eq '내국인' ? 'selected' : ''}>내국인</option>
+														<option ${dep.nationalType eq '외국인' ? 'selected' : ''}>외국인</option></select></td>
+												<td><input name="dependents[${row.index}].juminNo"
+													value="<c:out value='${dep.juminNo}' />"></td>
+												<td><input type="checkbox"
+													name="dependents[${row.index}].disabledYn" value="Y"
+													${dep.disabledYn eq 'Y' ? 'checked' : ''}></td>
+												<td><input type="checkbox"
+													name="dependents[${row.index}].deductionYn" value="Y"
+													${dep.basicDeductYn eq 'Y' ? 'checked' : ''}></td>
+												<td><input type="checkbox"
+													name="dependents[${row.index}].healthYn" value="Y"
+													${dep.healthInsYn eq 'Y' ? 'checked' : ''}></td>
+												<td><input type="checkbox"
+													name="dependents[${row.index}].cohabitYn" value="Y"
+													${dep.cohabitYn eq 'Y' ? 'checked' : ''}></td>
+												<td><input type="checkbox"
+													name="dependents[${row.index}].incomeTaxYn" value="Y"
+													${dep.incomeTaxYn eq 'Y' ? 'checked' : ''}></td>
+												<td><input type="checkbox"
+													name="dependents[${row.index}].childYn" value="Y"
+													${dep.childUnder20Yn eq 'Y' ? 'checked' : ''}></td>
+											</tr>
+										</c:forEach>
+									</tbody>
+								</table>
+							</div>
+						</section>
 
-						<section class="form-card" id="education"><div class="card-title"><h2>학력</h2><div><button name="action" value="addEducation">추가하기</button><button name="action" value="deleteEducations">선택삭제</button></div></div><div class="table-wrap"><table><thead><tr><th>선택</th><th>구분</th><th>입학년월</th><th>졸업년월</th><th>학교명</th><th>전공</th><th>이수</th></tr></thead><tbody><c:forEach begin="0" end="2" varStatus="row"><c:set var="edu" value="${educations[row.index]}"/><tr><td><input type="checkbox" name="educationDeleteIds" value="${edu.eduId}"></td><td><select name="educations[${row.index}].schoolType"><option value="">선택</option><c:forEach var="type" items="${schoolTypes}"><option ${type eq edu.schoolType ? 'selected' : ''}>${type}</option></c:forEach></select></td><td><input type="month" name="educations[${row.index}].admissionYm" value="${edu.admissionYm}"></td><td><input type="month" name="educations[${row.index}].graduationYm" value="${edu.graduationYm}"></td><td><input name="educations[${row.index}].schoolName" value="<c:out value='${edu.schoolName}' />"></td><td><input name="educations[${row.index}].major" value="<c:out value='${edu.major}' />"></td><td><select name="educations[${row.index}].completionStatus"><option value="">선택</option><c:forEach var="state" items="${schoolStates}"><option ${state eq edu.completionStatus ? 'selected' : ''}>${state}</option></c:forEach></select></td></tr></c:forEach></tbody></table></div></section>
+						<section class="form-card" id="education">
+							<div class="card-title">
+								<h2>학력</h2>
+								<div>
+									<button name="action" value="addEducation" formnovalidate>추가하기</button>
+									<button name="action" value="deleteEducations" formnovalidate>선택삭제</button>
+								</div>
+							</div>
+							<div class="table-wrap">
+								<table>
+									<thead>
+										<tr>
+											<th>선택</th>
+											<th>구분</th>
+											<th>입학년월</th>
+											<th>졸업년월</th>
+											<th>학교명</th>
+											<th>전공</th>
+											<th>이수</th>
+										</tr>
+									</thead>
+									<tbody>
+										<c:forEach begin="0" end="${educationRowCount - 1}" varStatus="row">
+											<c:set var="edu" value="${educations[row.index]}" />
+											<tr>
+												<td><input type="checkbox" name="educationDeleteIds"
+													value="${edu.employeeEducationId}"></td>
+												<td><select name="educations[${row.index}].schoolType"><option
+															value="">선택</option>
+														<c:forEach var="type" items="${schoolTypes}">
+															<option ${type eq edu.eduType ? 'selected' : ''}>${type}</option>
+														</c:forEach></select></td>
 
-						<section class="form-card" id="career"><div class="card-title"><h2>경력</h2><div><button name="action" value="addCareer">추가하기</button><button name="action" value="deleteCareers">선택삭제</button></div></div><div class="table-wrap"><table><thead><tr><th>선택</th><th>회사명</th><th>입사일자</th><th>퇴사일자</th><th>근무기간</th><th>최종직위</th><th>담당직무</th><th>퇴직사유</th></tr></thead><tbody><c:forEach begin="0" end="2" varStatus="row"><c:set var="career" value="${careers[row.index]}"/><tr><td><input type="checkbox" name="careerDeleteIds" value="${career.carId}"></td><td><input name="careers[${row.index}].companyName" value="<c:out value='${career.companyName}' />"></td><td><input type="date" name="careers[${row.index}].startDate" value="${career.startDate}"></td><td><input type="date" name="careers[${row.index}].endDate" value="${career.endDate}"></td><td><div class="duration"><input name="careers[${row.index}].years" value="${career.years}">년 <input name="careers[${row.index}].months" value="${career.months}">개월</div></td><td><input name="careers[${row.index}].lastPosition" value="<c:out value='${career.lastPosition}' />"></td><td><input name="careers[${row.index}].duty" value="<c:out value='${career.duty}' />"></td><td><input name="careers[${row.index}].retireReason" value="<c:out value='${career.retireReason}' />"></td></tr></c:forEach></tbody></table></div></section>
+												<td><input type="month"
+													name="educations[${row.index}].admissionYm"
+													value="${fn:length(edu.admissionYm) eq 6 ? fn:substring(edu.admissionYm, 0, 4) : ''}${fn:length(edu.admissionYm) eq 6 ? '-' : ''}${fn:length(edu.admissionYm) eq 6 ? fn:substring(edu.admissionYm, 4, 6) : edu.admissionYm}"></td>
 
-						<section class="form-card" id="military"><h2>병역</h2><div class="table-wrap"><table><thead><tr><th>병역구분</th><th>군별</th><th>복무기간(부터)</th><th>복무기간(까지)</th><th>최종계급</th><th>병과</th><th>미필사유</th></tr></thead><tbody><tr><td><select name="dischargeType"><option value="">선택</option><option value="군필" ${employee.dischargeType eq '군필' ? 'selected' : ''}>군필</option><option value="미필" ${employee.dischargeType eq '미필' ? 'selected' : ''}>미필</option></select></td><td><select name="milBranch"><option value="">선택</option><c:forEach var="branch" items="${fn:split('육군,해군,공군,상비군,면제,기타', ',')}"><option ${branch eq employee.milBranch ? 'selected' : ''}>${branch}</option></c:forEach></select></td><td><input type="date" name="milServiceStart" value="${employee.milServiceStart}"></td><td><input type="date" name="milServiceEnd" value="${employee.milServiceEnd}"></td><td><input name="milRank" value="<c:out value='${employee.milRank}' />"></td><td><input name="milSpecialty" value="<c:out value='${employee.milSpecialty}' />"></td><td><input name="milUnfinishedReason" value="<c:out value='${employee.milUnfinishedReason}' />"></td></tr></tbody></table></div></section>
+												<td><input type="month"
+													name="educations[${row.index}].graduationYm"
+													value="${fn:length(edu.gradYm) eq 6 ? fn:substring(edu.gradYm, 0, 4) : ''}${fn:length(edu.gradYm) eq 6 ? '-' : ''}${fn:length(edu.gradYm) eq 6 ? fn:substring(edu.gradYm, 4, 6) : edu.gradYm}"></td>
 
-						<div class="form-actions"><button class="button button--primary" name="action" value="save">저장하기</button><a class="button" href="${pageContext.request.contextPath}/settings/register1.do">취소하기</a><a class="button" href="${pageContext.request.contextPath}/employees/employees.do">리스트</a><a class="button" href="${pageContext.request.contextPath}/settings/register1.do">신규사원등록하기</a></div>
+												<td><input name="educations[${row.index}].schoolName"
+													value="<c:out value='${edu.schoolName}' />"></td>
+												<td><input name="educations[${row.index}].major"
+													value="<c:out value='${edu.majorName}' />"></td>
+												<td><select
+													name="educations[${row.index}].completionStatus"><option
+															value="">선택</option>
+														<c:forEach var="state" items="${schoolStates}">
+															<option ${state eq edu.completeType ? 'selected' : ''}>${state}</option>
+														</c:forEach></select></td>
+											</tr>
+										</c:forEach>
+									</tbody>
+								</table>
+							</div>
+						</section>
+
+						<section class="form-card" id="career">
+							<div class="card-title">
+								<h2>경력</h2>
+								<div>
+									<button name="action" value="addCareer" formnovalidate>추가하기</button>
+									<button name="action" value="deleteCareers" formnovalidate>선택삭제</button>
+								</div>
+							</div>
+							<div class="table-wrap">
+								<table>
+									<thead>
+										<tr>
+											<th>선택</th>
+											<th>회사명</th>
+											<th>입사일자</th>
+											<th>퇴사일자</th>
+											<th>근무기간</th>
+											<th>최종직위</th>
+											<th>담당직무</th>
+											<th>퇴직사유</th>
+										</tr>
+									</thead>
+									<tbody>
+										<c:forEach begin="0" end="${careerRowCount - 1}" varStatus="row">
+											<c:set var="career" value="${careers[row.index]}" />
+											<tr>
+												<td><input type="checkbox" name="careerDeleteIds"
+													value="${career.employeeCareerId}"></td>
+												<td><input name="careers[${row.index}].companyName"
+													value="<c:out value='${career.companyName}' />"></td>
+												<td><input type="date"
+													name="careers[${row.index}].startDate"
+													value="<fmt:formatDate value='${career.joinDate}' pattern='yyyy-MM-dd' />"></td>
+												<td><input type="date"
+													name="careers[${row.index}].endDate"
+													value="<fmt:formatDate value='${career.quitDate}' pattern='yyyy-MM-dd' />"></td>
+												<td><div class="duration">
+														<input value="${career.years}" readonly>년 <input
+															value="${career.months}" readonly>개월
+													</div></td>
+												<td><input name="careers[${row.index}].lastPosition"
+													value="<c:out value='${career.finalPosition}' />"></td>
+												<td><input name="careers[${row.index}].duty"
+													value="<c:out value='${career.duty}' />"></td>
+												<td><input name="careers[${row.index}].retireReason"
+													value="<c:out value='${career.quitReason}' />"></td>
+											</tr>
+										</c:forEach>
+									</tbody>
+								</table>
+							</div>
+						</section>
+
+						<section class="form-card" id="military">
+							<h2>병역</h2>
+							<div class="table-wrap">
+								<table>
+									<thead>
+										<tr>
+											<th>병역구분</th>
+											<th>군별</th>
+											<th>복무기간(부터)</th>
+											<th>복무기간(까지)</th>
+											<th>최종계급</th>
+											<th>병과</th>
+											<th>미필사유</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td><select name="dischargeType"><option
+														value="">선택</option>
+													<option value="군필"
+														${employee.dischargeType eq '군필' ? 'selected' : ''}>군필</option>
+													<option value="미필"
+														${employee.dischargeType eq '미필' ? 'selected' : ''}>미필</option></select></td>
+											<td><select name="milBranch"><option value="">선택</option>
+													<c:forEach var="branch"
+														items="${fn:split('육군,해군,공군,상비군,면제,기타', ',')}">
+														<option ${branch eq employee.milBranch ? 'selected' : ''}>${branch}</option>
+													</c:forEach></select></td>
+											<td><input type="date" name="milServiceStart"
+												value="<fmt:formatDate value='${employee.milServiceStart}' pattern='yyyy-MM-dd' />"></td>
+											<td><input type="date" name="milServiceEnd"
+												value="<fmt:formatDate value='${employee.milServiceEnd}' pattern='yyyy-MM-dd' />"></td>
+											<td><input name="milRank"
+												value="<c:out value='${employee.milRank}' />"></td>
+											<td><input name="milSpecialty"
+												value="<c:out value='${employee.milSpecialty}' />"></td>
+											<td><input name="milUnfinishedReason"
+												value="<c:out value='${employee.milUnfinishedReason}' />"></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</section>
+
+						<div class="form-actions">
+							<button class="button button--primary" name="action" value="save">저장하기</button>
+							<a class="button"
+								href="${pageContext.request.contextPath}/settings/register1.do">취소하기</a>
+							<c:choose>
+								<c:when test="${employee.employeeId gt 0}">
+									<a class="button button--step" href="${pageContext.request.contextPath}/settings/register2.do?empId=${employee.employeeId}">다음으로</a>
+								</c:when>
+								<c:otherwise>
+									<span class="button button--disabled" title="사원정보 1을 먼저 저장해 주세요.">다음으로</span>
+								</c:otherwise>
+							</c:choose>
+						</div>
 					</div>
 				</div>
 
-				<div id="photo-upload-modal" class="upload-modal" role="dialog" aria-modal="true" aria-labelledby="photo-upload-title"><a class="upload-modal__backdrop" href="#" aria-label="닫기"></a><div class="upload-modal__panel"><div class="upload-modal__title"><h2 id="photo-upload-title">이미지 등록하기</h2><a href="#" aria-label="닫기">×</a></div><div class="upload-modal__body"><input type="file" name="photoFile" accept="image/png,image/jpeg"><p>* 파일 용량 : <strong>1MB 미만</strong>이어야 합니다.<br>* 파일명 : <strong>영문 또는 숫자</strong>로 되어 있어야 합니다.</p></div><button class="upload-modal__confirm" name="action" value="savePhoto">확인</button></div></div>
+				<div id="photo-upload-modal" class="upload-modal" role="dialog"
+					aria-modal="true" aria-labelledby="photo-upload-title">
+					<a class="upload-modal__backdrop" href="#" aria-label="닫기"></a>
+					<div class="upload-modal__panel">
+						<div class="upload-modal__title">
+							<h2 id="photo-upload-title">이미지 등록하기</h2>
+							<a href="#" aria-label="닫기">×</a>
+						</div>
+						<div class="upload-modal__body">
+							<div class="photo-preset-grid">
+								<label><input type="radio" name="photoCandidate" value="01" ${draftPhotoPreset eq '01' ? 'checked' : ''}><img src="${pageContext.request.contextPath}/images/settings/employee-presets/employee-01.png" alt="예시 사원 사진 1"><span>사진 1</span></label>
+								<label><input type="radio" name="photoCandidate" value="02" ${draftPhotoPreset eq '02' ? 'checked' : ''}><img src="${pageContext.request.contextPath}/images/settings/employee-presets/employee-02.png" alt="예시 사원 사진 2"><span>사진 2</span></label>
+								<label><input type="radio" name="photoCandidate" value="03" ${draftPhotoPreset eq '03' ? 'checked' : ''}><img src="${pageContext.request.contextPath}/images/settings/employee-presets/employee-03.png" alt="예시 사원 사진 3"><span>사진 3</span></label>
+								<label><input type="radio" name="photoCandidate" value="04" ${draftPhotoPreset eq '04' ? 'checked' : ''}><img src="${pageContext.request.contextPath}/images/settings/employee-presets/employee-04.png" alt="예시 사원 사진 4"><span>사진 4</span></label>
+								<label><input type="radio" name="photoCandidate" value="05" ${draftPhotoPreset eq '05' ? 'checked' : ''}><img src="${pageContext.request.contextPath}/images/settings/employee-presets/employee-05.png" alt="예시 사원 사진 5"><span>사진 5</span></label>
+							</div>
+						</div>
+						<div class="photo-confirm-actions">
+							<span class="upload-modal__confirm photo-confirm-disabled">사진을 선택해 주세요.</span>
+							<button class="upload-modal__confirm photo-confirm" type="submit"
+								name="action" value="previewPhoto" formnovalidate>선택 완료</button>
+						</div>
+					</div>
+				</div>
 			</form>
 		</div>
 	</main>
-	<%@ include file="/WEB-INF/view/common/footer.jspf" %>
+	<c:if test="${not empty message}">
+		<c:url var="register1ReturnUrl" value="/settings/register1.do"><c:param name="dismissMessage" value="true" /><c:if test="${employee.employeeId gt 0}"><c:param name="empId" value="${employee.employeeId}" /></c:if></c:url>
+		<div class="employee-setting-alert" role="alertdialog" aria-modal="true" aria-labelledby="employee-setting-alert-message">
+			<a class="employee-setting-alert__backdrop" href="${register1ReturnUrl}" aria-label="확인"></a>
+			<div class="employee-setting-alert__panel">
+				<p id="employee-setting-alert-message"><c:out value="${message}" /></p>
+				<a href="${register1ReturnUrl}">확인</a>
+			</div>
+		</div>
+		<c:remove var="message" scope="session" />
+	</c:if>
+	<%@ include file="/WEB-INF/view/common/footer.jspf"%>
 </body>
 </html>

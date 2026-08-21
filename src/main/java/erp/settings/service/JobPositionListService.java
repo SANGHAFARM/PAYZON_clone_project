@@ -10,20 +10,17 @@ import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
 public class JobPositionListService {
-	JobPositionDao jobPositionDao = JobPositionDao.getInstance();
+	private JobPositionDao jobPositionDao = JobPositionDao.getInstance();
 	
-	public List<JobPosition> list(){
+	public List<JobPosition> list() {
 		Connection conn = null;
 		try {
 			conn = ConnectionProvider.getConnection();
-			conn.setAutoCommit(false);
+			// 단순 조회는 트랜잭션을 직접 제어하지 않는다.
 			return jobPositionDao.selectAll(conn);
-		}catch (SQLException e) {
-			e.printStackTrace();
-			JdbcUtil.rollback(conn);
-			throw new RuntimeException();
+		} catch (SQLException e) {
+			throw new RuntimeException("직위 목록 조회 중 오류가 발생했습니다.", e);
 		} catch (RuntimeException e) {
-			JdbcUtil.rollback(conn);
 			throw e;
 		} finally {
 			JdbcUtil.close(conn);

@@ -8,8 +8,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>급여명세서</title>
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/common.css">
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/payroll/payroll-payslip.css?v=20260815-2">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260821-1">
 </head>
 <body>
 	<%@ include file="/WEB-INF/view/common/header.jspf" %>
@@ -48,7 +48,7 @@
 			</aside>
 
 			<article class="payslip-document">
-				<header class="document-header"><div class="company-logo"><c:choose><c:when test="${not empty company.logoUrl}"><img src="${company.logoUrl}" alt="회사 로고"></c:when><c:otherwise><span>회사 로고</span></c:otherwise></c:choose></div><h2>급 여 명 세 서</h2></header>
+				<header class="document-header"><div class="company-logo"><c:choose><c:when test="${not empty company.logoUrl}"><img src="${pageContext.request.contextPath}${company.logoUrl}" alt="회사 로고"></c:when><c:otherwise><span>회사 로고</span></c:otherwise></c:choose></div><h2>급 여 명 세 서</h2></header>
 				<table class="employee-information"><tbody>
 				<tr><th>성명</th><td>${selectedEmployee.employeeName}</td><th>생년월일</th><td>${selectedEmployee.birthDate}</td></tr>
 				<tr><th>부서</th><td>${selectedEmployee.departmentName}</td><th>직급</th><td>${selectedEmployee.positionName}</td></tr>
@@ -68,7 +68,7 @@
 				</tbody></table></section>
 
 				<p class="closing-message">귀하의 노고에 감사드리며, 수고 많으셨습니다.</p>
-				<footer class="document-footer"><div class="approval-block"><div class="representative"><strong>${company.companyName}</strong><span>대표이사 ${company.representativeName}</span></div><div class="company-stamp"><c:choose><c:when test="${not empty company.stampUrl}"><img src="${company.stampUrl}" alt="회사 도장"></c:when><c:otherwise><span>회사 도장</span></c:otherwise></c:choose></div></div></footer>
+				<footer class="document-footer"><div class="approval-block"><div class="representative"><strong>${company.companyName}</strong><span>대표이사 ${company.representativeName}</span></div><div class="company-stamp"><c:choose><c:when test="${not empty company.stampUrl}"><img src="${pageContext.request.contextPath}${company.stampUrl}" alt="회사 도장"></c:when><c:otherwise><span>회사 도장</span></c:otherwise></c:choose></div></div></footer>
 			</article>
 		</section>
 	</main>

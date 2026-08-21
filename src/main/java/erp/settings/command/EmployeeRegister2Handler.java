@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 
 import erp.employees.model.Employee;
 import erp.employees.model.EmployeeAppointment;
@@ -44,40 +43,49 @@ public class EmployeeRegister2Handler implements CommandHandler {
 
 	// [GET] 사원정보 2 화면 렌더링 및 데이터 조회
 	private String processForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		String empIdStr = req.getParameter("empId");
+		int empId = parseEmployeeId(req.getParameter("empId"));
 
-		// 사원번호 파라미터 존재 여부 검증
-		if (empIdStr != null && !empIdStr.trim().isEmpty()) {
-			int empId = Integer.parseInt(empIdStr);
-
-			// 1. 사원 공통 기본정보 조회
-			Employee employee = registerService.getEmployeeBasicProfile(empId);
-
-			// 2. 역량 및 인사기록(1:N) 리스트 조회
-			List<EmployeeLicense> licenses = skillService.getLicenses(empId);
-			List<EmployeeLanguage> languages = skillService.getLanguages(empId);
-			List<EmployeeTraining> trainings = skillService.getTrainings(empId);
-			List<EmployeeRewardDiscipline> rewardPunishes = skillService.getRewardPunishes(empId);
-			List<EmployeeAppointment> appointments = skillService.getAppointments(empId);
-
-			// 3. 추천 및 신원보증 단건 조회
-			EmployeeRecommender recommender = guaranteeService.getRecommender(empId);
-			EmployeeSuretyInsurance suretyInsurance = guaranteeService.getSuretyInsurance(empId);
-			EmployeeGuarantor guarantor = guaranteeService.getGuarantor(empId);
-
-			// 4. 조회 데이터를 JSP 속성으로 바인딩
-			req.setAttribute("employee", employee);
-			req.setAttribute("licenses", licenses);
-			req.setAttribute("languages", languages);
-			req.setAttribute("trainings", trainings);
-			req.setAttribute("rewardPunishes", rewardPunishes);
-			req.setAttribute("appointments", appointments);
-			req.setAttribute("recommender", recommender);
-			req.setAttribute("suretyInsurance", suretyInsurance);
-			req.setAttribute("guarantor", guarantor);
+		// 1단계에서 저장된 사원만 사원정보 2 화면에 접근할 수 있다.
+		if (empId == 0) {
+			req.getSession().setAttribute("message", "사원 기본 정보가 없습니다. 1단계를 먼저 완료해 주세요.");
+			res.sendRedirect(req.getContextPath() + "/settings/register1.do");
+			return null;
 		}
 
-		// JSP 화면 포워딩 처리
+		// 1. 사원 공통 기본정보 조회
+		Employee employee = registerService.getEmployeeBasicProfile(empId);
+
+		// 파라미터는 넘어왔지만 DB에 해당 사원이 없는 경우 (잘못된 주소 조작)
+		if (employee == null) {
+			req.getSession().setAttribute("message", "존재하지 않는 사원입니다. 1단계를 먼저 완료해 주세요.");
+			res.sendRedirect(req.getContextPath() + "/settings/register1.do");
+			return null;
+		}
+
+		// 2. 역량 및 인사기록(1:N) 리스트 조회
+		List<EmployeeLicense> licenses = skillService.getLicenses(empId);
+		List<EmployeeLanguage> languages = skillService.getLanguages(empId);
+		List<EmployeeTraining> trainings = skillService.getTrainings(empId);
+		List<EmployeeRewardDiscipline> rewardPunishes = skillService.getRewardPunishes(empId);
+		List<EmployeeAppointment> appointments = skillService.getAppointments(empId);
+
+		// 3. 추천 및 신원보증 단건 조회
+		EmployeeRecommender recommender = guaranteeService.getRecommender(empId);
+		EmployeeSuretyInsurance suretyInsurance = guaranteeService.getSuretyInsurance(empId);
+		EmployeeGuarantor guarantor = guaranteeService.getGuarantor(empId);
+
+		// 4. 조회 데이터를 JSP 속성으로 바인딩
+		req.setAttribute("employee", employee);
+		req.setAttribute("licenses", licenses);
+		req.setAttribute("languages", languages);
+		req.setAttribute("trainings", trainings);
+		req.setAttribute("rewardPunishes", rewardPunishes);
+		req.setAttribute("appointments", appointments);
+		req.setAttribute("recommender", recommender);
+		req.setAttribute("suretyInsurance", suretyInsurance);
+		req.setAttribute("guarantor", guarantor);
+		bindRowCounts(req, licenses.size(), languages.size(), trainings.size(), rewardPunishes.size(), appointments.size());
+
 		return "/WEB-INF/view/settings/employee-register-2.jsp";
 	}
 
@@ -85,15 +93,32 @@ public class EmployeeRegister2Handler implements CommandHandler {
 	private String processAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		req.setCharacterEncoding("UTF-8");
 		String action = req.getParameter("action");
-		String empIdStr = req.getParameter("empId");
+		int empId = parseEmployeeId(req.getParameter("empId"));
 
-		// 신규 등록 방지를 위한 사원번호 임시 기본값 할당
-		int empId = (empIdStr != null && !empIdStr.isEmpty()) ? Integer.parseInt(empIdStr) : 100;
+		// 임의의 ID로 저장하지 않고, 1단계에서 실제로 생성된 사원만 처리한다.
+		if (empId == 0 || registerService.getEmployeeBasicProfile(empId) == null) {
+			req.getSession().setAttribute("message", "사원정보 1을 먼저 저장해 주세요.");
+			res.sendRedirect(req.getContextPath() + "/settings/register1.do");
+			return null;
+		}
 
 		try {
+			if (action != null && action.startsWith("add")) {
+				increaseRowCount(req, action);
+				res.sendRedirect(req.getContextPath() + "/settings/register2.do?empId=" + empId);
+				return null;
+			}
+
 			if ("save".equals(action)) {
 				// [1] 사원 기본정보 중 퇴직 관련 속성 업데이트
 				Employee employee = registerService.getEmployeeBasicProfile(empId);
+
+				if (employee == null) {
+					req.getSession().setAttribute("message", "사원 기본 정보가 존재하지 않습니다. 1단계를 먼저 완료해 주세요.");
+					res.sendRedirect(req.getContextPath() + "/settings/register1.do");
+					return null;
+				}
+
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 				employee.setRetireType(req.getParameter("retireType"));
@@ -102,7 +127,25 @@ public class EmployeeRegister2Handler implements CommandHandler {
 
 				String retireDateStr = req.getParameter("retireDate");
 				if (retireDateStr != null && !retireDateStr.trim().isEmpty()) {
-					employee.setRetireDate(sdf.parse(retireDateStr));
+					java.util.Date parsedRetireDate = sdf.parse(retireDateStr);
+
+					// 퇴사일이 입사일보다 빠른지 검사
+					if (parsedRetireDate.before(employee.getJoinDate())) {
+						// 에러 메시지를 세션에 담고
+						req.getSession().setAttribute("message",
+								"저장 실패: 퇴직일자는 입사일(" + sdf.format(employee.getJoinDate()) + ")보다 이전일 수 없습니다.");
+						// 저장을 중단한 뒤 현재 페이지로 돌려보냄
+						res.sendRedirect(req.getContextPath() + "/settings/register2.do?empId=" + empId);
+						return null;
+					}
+
+					// 검사를 무사히 통과했다면 날짜와 '퇴직' 상태를 세팅
+					employee.setRetireDate(parsedRetireDate);
+					employee.setStatus("퇴직");
+				} else {
+					// 날짜가 없으면 다시 '재직'으로 복구
+					employee.setRetireDate(null);
+					employee.setStatus("재직");
 				}
 				// 갱신된 퇴직 정보 데이터베이스 저장
 				registerService.saveEmployeeBasicInfo(employee);
@@ -128,9 +171,8 @@ public class EmployeeRegister2Handler implements CommandHandler {
 				req.getSession().setAttribute("message", "사원 정보(2)가 저장되었습니다.");
 
 			} else if ("savePhoto".equals(action)) {
-				// 프로필 사진 등록 로직
-				Part photoPart = req.getPart("photoFile");
-				photoService.uploadPhoto(empId, "/upload/emp/photo_" + empId + ".jpg");
+				// 서버 업로드 대신 프로젝트에 준비된 예시 사진 중 하나를 저장한다.
+				photoService.uploadPhoto(empId, getPresetPhotoPath(req.getParameter("photoPreset")));
 				req.getSession().setAttribute("message", "사진이 등록되었습니다.");
 
 			} else if ("deletePhoto".equals(action)) {
@@ -143,9 +185,9 @@ public class EmployeeRegister2Handler implements CommandHandler {
 				String[] deleteIds = req.getParameterValues("licenseDeleteIds");
 				if (deleteIds != null) {
 					List<Integer> idList = new ArrayList<>();
-					for (String id : deleteIds)
-						idList.add(Integer.parseInt(id));
-					skillService.deleteSelectedItems("license", idList);
+					for (String id : deleteIds) if (!isBlank(id)) idList.add(Integer.parseInt(id));
+					if (!idList.isEmpty()) skillService.deleteSelectedItems("license", idList);
+					decreaseRowCount(req, "licenseRowCount", 3, deleteIds.length);
 					req.getSession().setAttribute("message", "선택한 자격/면허가 삭제되었습니다.");
 				}
 
@@ -154,9 +196,9 @@ public class EmployeeRegister2Handler implements CommandHandler {
 				String[] deleteIds = req.getParameterValues("languageDeleteIds");
 				if (deleteIds != null) {
 					List<Integer> idList = new ArrayList<>();
-					for (String id : deleteIds)
-						idList.add(Integer.parseInt(id));
-					skillService.deleteSelectedItems("language", idList);
+					for (String id : deleteIds) if (!isBlank(id)) idList.add(Integer.parseInt(id));
+					if (!idList.isEmpty()) skillService.deleteSelectedItems("language", idList);
+					decreaseRowCount(req, "languageRowCount", 1, deleteIds.length);
 					req.getSession().setAttribute("message", "선택한 어학능력이 삭제되었습니다.");
 				}
 
@@ -165,9 +207,9 @@ public class EmployeeRegister2Handler implements CommandHandler {
 				String[] deleteIds = req.getParameterValues("trainingDeleteIds");
 				if (deleteIds != null) {
 					List<Integer> idList = new ArrayList<>();
-					for (String id : deleteIds)
-						idList.add(Integer.parseInt(id));
-					skillService.deleteSelectedItems("training", idList);
+					for (String id : deleteIds) if (!isBlank(id)) idList.add(Integer.parseInt(id));
+					if (!idList.isEmpty()) skillService.deleteSelectedItems("training", idList);
+					decreaseRowCount(req, "trainingRowCount", 2, deleteIds.length);
 					req.getSession().setAttribute("message", "선택한 교육/훈련이 삭제되었습니다.");
 				}
 
@@ -176,9 +218,9 @@ public class EmployeeRegister2Handler implements CommandHandler {
 				String[] deleteIds = req.getParameterValues("rewardDeleteIds");
 				if (deleteIds != null) {
 					List<Integer> idList = new ArrayList<>();
-					for (String id : deleteIds)
-						idList.add(Integer.parseInt(id));
-					skillService.deleteSelectedItems("reward", idList);
+					for (String id : deleteIds) if (!isBlank(id)) idList.add(Integer.parseInt(id));
+					if (!idList.isEmpty()) skillService.deleteSelectedItems("reward", idList);
+					decreaseRowCount(req, "rewardRowCount", 2, deleteIds.length);
 					req.getSession().setAttribute("message", "선택한 상벌 내역이 삭제되었습니다.");
 				}
 
@@ -187,9 +229,9 @@ public class EmployeeRegister2Handler implements CommandHandler {
 				String[] deleteIds = req.getParameterValues("appointmentDeleteIds");
 				if (deleteIds != null) {
 					List<Integer> idList = new ArrayList<>();
-					for (String id : deleteIds)
-						idList.add(Integer.parseInt(id));
-					skillService.deleteSelectedItems("appointment", idList);
+					for (String id : deleteIds) if (!isBlank(id)) idList.add(Integer.parseInt(id));
+					if (!idList.isEmpty()) skillService.deleteSelectedItems("appointment", idList);
+					decreaseRowCount(req, "appointmentRowCount", 2, deleteIds.length);
 					req.getSession().setAttribute("message", "선택한 인사발령 내역이 삭제되었습니다.");
 				}
 			}
@@ -204,13 +246,79 @@ public class EmployeeRegister2Handler implements CommandHandler {
 		return null;
 	}
 
+	private int parseEmployeeId(String value) {
+		try {
+			int employeeId = Integer.parseInt(value);
+			return employeeId > 0 ? employeeId : 0;
+		} catch (NumberFormatException e) {
+			return 0;
+		}
+	}
+
+	private String getPresetPhotoPath(String presetPhoto) {
+		if (presetPhoto == null || !presetPhoto.matches("0[1-5]")) {
+			throw new IllegalArgumentException("사용할 사원 사진을 선택해 주세요.");
+		}
+		return "/images/settings/employee-presets/employee-" + presetPhoto + ".png";
+	}
+
+	private boolean isBlank(String value) {
+		return value == null || value.trim().isEmpty();
+	}
+
+	private void bindRowCounts(HttpServletRequest req, int licenses, int languages, int trainings,
+			int rewards, int appointments) {
+		req.setAttribute("licenseRowCount", getRowCount(req, "licenseRowCount", Math.max(3, licenses)));
+		req.setAttribute("languageRowCount", getRowCount(req, "languageRowCount", Math.max(1, languages)));
+		req.setAttribute("trainingRowCount", getRowCount(req, "trainingRowCount", Math.max(2, trainings)));
+		req.setAttribute("rewardRowCount", getRowCount(req, "rewardRowCount", Math.max(2, rewards)));
+		req.setAttribute("appointmentRowCount", getRowCount(req, "appointmentRowCount", Math.max(2, appointments)));
+	}
+
+	private int getRowCount(HttpServletRequest req, String key, int defaultCount) {
+		Integer count = (Integer) req.getSession().getAttribute(key);
+		return count == null ? defaultCount : Math.max(defaultCount, Math.min(count, 20));
+	}
+
+	private void increaseRowCount(HttpServletRequest req, String action) {
+		String key;
+		int defaultCount;
+		if ("addLicense".equals(action)) {
+			key = "licenseRowCount"; defaultCount = 3;
+		} else if ("addLanguage".equals(action)) {
+			key = "languageRowCount"; defaultCount = 1;
+		} else if ("addTraining".equals(action)) {
+			key = "trainingRowCount"; defaultCount = 2;
+		} else if ("addRewardPunish".equals(action)) {
+			key = "rewardRowCount"; defaultCount = 2;
+		} else if ("addAppointment".equals(action)) {
+			key = "appointmentRowCount"; defaultCount = 2;
+		} else {
+			return;
+		}
+		req.getSession().setAttribute(key, Math.min(getRowCount(req, key, defaultCount) + 1, 20));
+	}
+
+	private void decreaseRowCount(HttpServletRequest req, String key, int defaultCount, int amount) {
+		int count = getRowCount(req, key, defaultCount);
+		req.getSession().setAttribute(key, Math.max(defaultCount, count - Math.max(amount, 0)));
+	}
+
+	private int parseRowCount(HttpServletRequest req, String name, int defaultCount) {
+		try {
+			return Math.max(defaultCount, Math.min(Integer.parseInt(req.getParameter(name)), 20));
+		} catch (Exception e) {
+			return defaultCount;
+		}
+	}
+
 	// [Helper] 자격 및 면허 폼 데이터 파싱
 	private List<EmployeeLicense> parseLicenses(HttpServletRequest req, int empId) throws Exception {
 		List<EmployeeLicense> list = new ArrayList<>();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		// 화면 0~2 루프 기준 반복 파싱
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < parseRowCount(req, "licenseRowCount", 3); i++) {
 			String licName = req.getParameter("licenses[" + i + "].licenseName");
 
 			if (licName != null && !licName.trim().isEmpty()) {
@@ -238,7 +346,7 @@ public class EmployeeRegister2Handler implements CommandHandler {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		// 화면 1줄 기준 반복 파싱
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < parseRowCount(req, "languageRowCount", 1); i++) {
 			String langName = req.getParameter("languages[" + i + "].languageName");
 
 			if (langName != null && !langName.trim().isEmpty()) {
@@ -268,7 +376,7 @@ public class EmployeeRegister2Handler implements CommandHandler {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		// 화면 0~1 루프 기준 반복 파싱
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < parseRowCount(req, "trainingRowCount", 2); i++) {
 			String trainName = req.getParameter("trainings[" + i + "].trainingName");
 
 			if (trainName != null && !trainName.trim().isEmpty()) {
@@ -286,6 +394,11 @@ public class EmployeeRegister2Handler implements CommandHandler {
 				String refundStr = req.getParameter("trainings[" + i + "].refundCost");
 				if (refundStr != null && !refundStr.trim().isEmpty()) {
 					training.setRefundCost(Long.parseLong(refundStr));
+				}
+
+				// 리스트에 넣기 전에 금액을 비교
+				if (training.getRefundCost() > training.getTrainCost()) {
+					throw new IllegalArgumentException("환급교육비가 교육비보다 클 수 없습니다. (교육명: " + trainName + ")");
 				}
 
 				String startDateStr = req.getParameter("trainings[" + i + "].startDate");
@@ -310,7 +423,7 @@ public class EmployeeRegister2Handler implements CommandHandler {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		// 화면 0~1 루프 기준 반복 파싱
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < parseRowCount(req, "rewardRowCount", 2); i++) {
 			String rpName = req.getParameter("rewardPunishes[" + i + "].rpName");
 			String rpType = req.getParameter("rewardPunishes[" + i + "].rpType");
 
@@ -340,7 +453,7 @@ public class EmployeeRegister2Handler implements CommandHandler {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		// 화면 0~1 루프 기준 반복 파싱
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < parseRowCount(req, "appointmentRowCount", 2); i++) {
 			String appType = req.getParameter("appointments[" + i + "].appointmentType");
 			String appDateStr = req.getParameter("appointments[" + i + "].appointmentDate");
 

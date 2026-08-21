@@ -1,4 +1,4 @@
-package erp.attendance.service;
+package erp.attendance.service.request;
 
 //일용직 근무기록/관리 탭에서 사용
 public class DailyWorkRecordRequest {

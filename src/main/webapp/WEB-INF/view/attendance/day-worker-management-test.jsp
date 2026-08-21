@@ -86,7 +86,7 @@
 									<td class="check-cell"><input type="checkbox"
 										name="employeeIds" value="${dayworker.employeeId}"
 										aria-label="${dayworker.empNameKr} 선택"
-										${not empty editId ? 'disabled' : '' }></td>
+										${not empty editId ? 'disabled' : '' } form="recordForm"></td>
 									<td><c:out value="${dayworker.empType}" /></td>
 									<td><c:out value="${dayworker.empNo}" /></td>
 									<td><c:out value="${dayworker.empNameKr}" /></td>
@@ -114,7 +114,6 @@
 						<input type="hidden" name="editId" value="${editId}">
 					</c:if>
 
-					<div id="hiddenEmployeeInputs"></div>
 
 					<h2>일용직 근무기록 입력</h2>
 					<div class="form-fields">
@@ -190,98 +189,101 @@
 	<!-- =========================================================== -->
 	<!--                         사원별 근무 기록                          -->
 	<!-- =========================================================== -->
-	<c:forEach var="employee" items="${dayWorkers}">
-		<div id="work-history-${employee.employeeId}" class="modal-overlay">
-			<section class="modal work-history-modal" role="dialog"
-				aria-modal="true"
-				aria-labelledby="history-title-${employee.employeeId}">
-				<header>
-					<h2 id="history-title-${employee.employeeId}">사원별 근무기록</h2>
-					<a href="#" aria-label="닫기">&times;</a>
-				</header>
-				<div class="modal-body">
-					<div class="record-summary">
-						<p>
-							성명 : <strong><c:out value="${employee.empNameKr}" /></strong> (
-							<c:out value="${employee.empNo}" />
-							) 부서 :
-							<c:out value="${employee.departmentName}" />
-							<%-- 							직위 :
-							<c:out value="${employee.positionName}" /> --%>
-						</p>
-						<form method="get">
-							<input type="hidden" name="employeeId"
-								value="${param.employeeId}">
-							<select name="year" aria-label="연도">
-								<c:forEach var="y" begin="2015" end="2026">
-									<option value="${y}"
-										${y eq (empty param.year ? 2026 : param.year) ? 'selected' : ''}>${y}년</option>
-								</c:forEach>
-							</select>
-							<select name="month" aria-label="월">
-								<c:forEach var="monthNo" begin="1" end="12">
-									<option value="${monthNo}"
-										${monthNo eq (empty param.month ? 8 : param.month) ? 'selected' : ''}>${monthNo}월</option>
-								</c:forEach>
-							</select>
-
-							<button type="submit">조회</button>
-						</form>
-					</div>
-					<table class="data-table">
-						<thead>
-							<tr>
-								<th>번호</th>
-								<th>근무일자</th>
-								<th>현장/프로젝트</th>
-								<th>일당</th>
-								<th>지급율</th>
-								<th>지급액</th>
-								<th>소득세</th>
-								<th>지방소득세</th>
-								<th>실지급액</th>
-								<th>수정/삭제</th>
-							</tr>
-						</thead>
-						<tbody>
-							<c:forEach var="record" items="${workRecords}" varStatus="status">
-								<tr>
-									<td><c:out value="${status.count }" /></td>
-									<td><c:out value="${record.workDate}" /></td>
-									<td><c:out value="${record.projectName}" /></td>
-									<td><c:out value="${record.dailyPay}" /></td>
-									<td><c:out value="${record.payRate}" /></td>
-									<td><c:out value="${record.grossPay}" /></td>
-									<td><c:out value="${record.incomeTax}" /></td>
-									<td><c:out value="${record.localIncomeTax}" /></td>
-									<td><c:out value="${record.actualPay}" /></td>
-									<td><a class="mini-button"
-										href="?editId=${record.dailyWorkRecordId}&employeeId=${param.employeeId}&workDate=${record.workDate}&projectId=${record.projectId }&dailyPay=${record.dailyPay }&payRate=${record.payRate }&incomeTax=${record.incomeTax }&localIncomeTax=${record.localIncomeTax }&actualPay=${record.actualPay }">수정</a>
-										<%-- <a class="mini-button mini-delete"	href="?deleteId=${record.dailyWorkRecordId}&employeeId=${param.employeeId}&year=${param.year}&month=${param.month}#work-history-${param.employeeId}">삭제</a> --%>
-										<form
-											action="${pageContext.request.contextPath}/attendance/day-worker-management.do"
-											method="post" style="display: inline;">
-											<input type="hidden" name="deleteId"
-												value="${record.dailyWorkRecordId}"> <input
-												type="hidden" name="employeeId" value="${param.employeeId}">
-											<input type="hidden" name="year" value="${param.year}">
-											<input type="hidden" name="month" value="${param.month}">
-											<button type="submit" class="mini-button mini-delete">삭제</button>
-										</form></td>
-								</tr>
-							</c:forEach>
-							<c:if test="${empty workRecords}">
-								<tr>
-									<td colspan="10" class="empty-row">등록된 근무기록이 없습니다.</td>
-								</tr>
-							</c:if>
-						</tbody>
-					</table>
+	<c:if test="${not empty employeeId and empty editId}">
+		<c:forEach var="dayworker" items="${dayWorkers}">
+			<c:if test="${dayworker.employeeId eq employeeId}">
+				<div id="work-history-${dayworker.employeeId}" class="modal-overlay">
+					<section class="modal work-history-modal" role="dialog"
+						aria-modal="true"
+						aria-labelledby="history-title-${dayworker.employeeId}">
+						<header>
+							<h2 id="history-title-${dayworker.employeeId}">사원별 근무기록</h2>
+							<a
+								href="${pageContext.request.contextPath}/attendance/day-worker-management.do"
+								aria-label="닫기">&times;</a>
+						</header>
+						<div class="modal-body">
+							<div class="record-summary">
+								<p>
+									성명 : <strong><c:out value="${dayworker.empNameKr}" /></strong>
+									(
+									<c:out value="${dayworker.empNo}" />
+									) 부서 :
+									<c:out value="${dayworker.departmentName}" />
+								</p>
+								<form method="get">
+									<input type="hidden" name="employeeId"
+										value="${dayworker.employeeId}">
+									<select name="year" aria-label="연도">
+										<c:forEach var="y" begin="2015" end="2026">
+											<option value="${y}" ${y eq year ? 'selected' : ''}>${y}년</option>
+										</c:forEach>
+									</select>
+									<select name="month" aria-label="월">
+										<c:forEach var="monthNo" begin="1" end="12">
+											<option value="${monthNo}"
+												${monthNo eq month ? 'selected' : ''}>${monthNo}월</option>
+										</c:forEach>
+									</select>
+									<button type="submit">조회</button>
+								</form>
+							</div>
+							<table class="data-table">
+								<thead>
+									<tr>
+										<th>번호</th>
+										<th>근무일자</th>
+										<th>현장/프로젝트</th>
+										<th>일당</th>
+										<th>지급율</th>
+										<th>지급액</th>
+										<th>소득세</th>
+										<th>지방소득세</th>
+										<th>실지급액</th>
+										<th>수정/삭제</th>
+									</tr>
+								</thead>
+								<tbody>
+									<c:forEach var="record" items="${workRecords}"
+										varStatus="status">
+										<tr>
+											<td><c:out value="${status.count }" /></td>
+											<td><c:out value="${record.workDate}" /></td>
+											<td><c:out value="${record.projectName}" /></td>
+											<td><c:out value="${record.dailyPay}" /></td>
+											<td><c:out value="${record.payRate}" /></td>
+											<td><c:out value="${record.grossPay}" /></td>
+											<td><c:out value="${record.incomeTax}" /></td>
+											<td><c:out value="${record.localIncomeTax}" /></td>
+											<td><c:out value="${record.actualPay}" /></td>
+											<td><a class="mini-button"
+												href="?editId=${record.dailyWorkRecordId}&employeeId=${dayworker.employeeId}&workDate=${record.workDate}&projectId=${record.projectId }&dailyPay=${record.dailyPay }&payRate=${record.payRate }&incomeTax=${record.incomeTax }&localIncomeTax=${record.localIncomeTax }&actualPay=${record.actualPay }">수정</a>
+												<form
+													action="${pageContext.request.contextPath}/attendance/day-worker-management.do"
+													method="post" style="display: inline;">
+													<input type="hidden" name="deleteId"
+														value="${record.dailyWorkRecordId}"> <input
+														type="hidden" name="employeeId"
+														value="${dayworker.employeeId}"> <input
+														type="hidden" name="year" value="${year}"> <input
+														type="hidden" name="month" value="${month}">
+													<button type="submit" class="mini-button mini-delete">삭제</button>
+												</form></td>
+										</tr>
+									</c:forEach>
+									<c:if test="${empty workRecords}">
+										<tr>
+											<td colspan="10" class="empty-row">등록된 근무기록이 없습니다.</td>
+										</tr>
+									</c:if>
+								</tbody>
+							</table>
+						</div>
+					</section>
 				</div>
-			</section>
-		</div>
-	</c:forEach>
-
+			</c:if>
+		</c:forEach>
+	</c:if>
 
 	<div id="project-manager" class="modal-overlay">
 		<section class="modal project-modal" role="dialog" aria-modal="true"
@@ -295,14 +297,15 @@
 			<div class="modal-body">
 				<ul class="project-list">
 					<c:forEach var="project" items="${projects}">
-						<li><span><c:out value="${project.projectName}" /></span><span
-							style="display: inline-flex; gap: 4px;"> <!-- 수정 링크 클릭 시 파라미터가 담겨 페이지가 새로고침되며 아래 폼에 값이 채워짐 -->
+						<li><span><c:out value="${project.projectName}" /></span> 
+						<span style="display: inline-flex; gap: 4px;"> <!-- 수정 링크 클릭 시 파라미터가 담겨 페이지가 새로고침되며 아래 폼에 값이 채워짐 -->
 								<a class="mini-button"
 								href="?projectId=${project.projectId}&projectName=${project.projectName}#project-manager">수정</a>
-
+								
+									
 								<!-- 삭제 폼 -->
 								<form
-									action="${pageContext.request.contextPath}/settings/project-manage.do#project-manager"
+									action="${pageContext.request.contextPath}/attendance/project-manage.do#project-manager"
 									method="post" style="display: inline; margin: 0;">
 									<input type="hidden" name="projectAction" value="delete">
 									<input type="hidden" name="projectId"
@@ -317,7 +320,7 @@
 				</ul>
 
 				<form class="project-add" method="post"
-					action="${pageContext.request.contextPath}/settings/project-manage.do#project-manager"
+					action="${pageContext.request.contextPath}/attendance/project-manage.do#project-manager"
 					style="display: flex; gap: 8px; align-items: center;">
 
 					<!-- 수정 모드일 때는 'edit', 아닐 때는 'add' -->
@@ -393,30 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
     dailyPayInput.addEventListener('input', calculateTaxes);
     payRateInput.addEventListener('input', calculateTaxes);
     
-    
- // --- 새로 추가하는 체크박스 연동 및 저장 버튼 제어 스크립트 ---
-    const saveBtn = document.getElementById('saveBtn');
-    
-    saveBtn.addEventListener('click', function() {
-        // 1. 테이블에서 체크된 사원들 가져오기
-        const checkedBoxes = document.querySelectorAll('input[name="employeeIds"]:checked');
-
-        // 3. 기존 hidden 인풋 초기화
-        const container = document.getElementById('hiddenEmployeeInputs');
-        container.innerHTML = '';
-        
-        // 4. 체크된 사원 ID들을 동적 hidden 인풋으로 폼에 주입
-        checkedBoxes.forEach(function(checkbox) {
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = 'employeeIds'; // 자바 컨트롤러에서 받을 배열 이름
-            hiddenInput.value = checkbox.value;
-            container.appendChild(hiddenInput);
-        });
-        
-        // 5. 폼 제출
-        document.getElementById('recordForm').submit();
-    });
+   
 });
 </script>
 	<%@ include file="/WEB-INF/view/common/footer.jspf"%>

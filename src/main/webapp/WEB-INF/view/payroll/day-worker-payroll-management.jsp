@@ -17,7 +17,7 @@
 	<link rel="stylesheet"
 		href="${pageContext.request.contextPath}/css/common/common.css">
 	<link rel="stylesheet"
-		href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
+		href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260821-1">
 	<link rel="stylesheet"
 		href="${pageContext.request.contextPath}/css/payroll/payroll-management.css">
 	<link rel="stylesheet"
@@ -420,7 +420,7 @@
 			</header>
 
 			<form method="get"
-				action="${pageContext.request.contextPath}/payroll/day-worker-management.do">
+				action="${pageContext.request.contextPath}/payroll/day-worker-management.do#employee-add">
 				<input type="hidden" name="paymentYear" value="${selectedYear}">
 				<input type="hidden" name="paymentMonth" value="${selectedMonth}">
 				<input type="hidden" name="paymentRound" value="${selectedRound}">
@@ -431,6 +431,7 @@
 				<div class="employee-search-row">
 					<input type="search"
 						name="employeeKeyword"
+						value="<c:out value='${param.employeeKeyword}' />"
 						placeholder="사원검색">
 
 					<button class="button button-primary" type="submit">
@@ -441,7 +442,7 @@
 						<select name="departmentId">
 							<option value="">부서별</option>
 							<c:forEach var="department" items="${departments}">
-								<option value="${department.departmentId}">
+								<option value="${department.departmentId}" ${param.departmentId eq department.departmentId ? 'selected' : ''}>
 									${department.departmentName}
 								</option>
 							</c:forEach>
@@ -513,7 +514,8 @@
 
 				<nav class="modal-pagination">
 					<c:if test="${employeePage gt 1}">
-						<a href="?paymentYear=${selectedYear}&amp;paymentMonth=${selectedMonth}&amp;paymentRound=${selectedRound}&amp;employeePage=${employeePage - 1}#employee-add">
+						<c:url var="previousDayWorkerEmployeePageUrl" value="/payroll/day-worker-management.do"><c:param name="paymentYear" value="${selectedYear}" /><c:param name="paymentMonth" value="${selectedMonth}" /><c:param name="paymentRound" value="${selectedRound}" /><c:param name="employeeKeyword" value="${param.employeeKeyword}" /><c:param name="departmentId" value="${param.departmentId}" /><c:param name="status" value="${param.status}" /><c:param name="employeePage" value="${employeePage - 1}" /></c:url>
+						<a href="${previousDayWorkerEmployeePageUrl}#employee-add">
 							‹ 이전
 						</a>
 					</c:if>
@@ -521,7 +523,8 @@
 					<span>${employeePage}</span>
 
 					<c:if test="${employeePage lt employeeTotalPages}">
-						<a href="?paymentYear=${selectedYear}&amp;paymentMonth=${selectedMonth}&amp;paymentRound=${selectedRound}&amp;employeePage=${employeePage + 1}#employee-add">
+						<c:url var="nextDayWorkerEmployeePageUrl" value="/payroll/day-worker-management.do"><c:param name="paymentYear" value="${selectedYear}" /><c:param name="paymentMonth" value="${selectedMonth}" /><c:param name="paymentRound" value="${selectedRound}" /><c:param name="employeeKeyword" value="${param.employeeKeyword}" /><c:param name="departmentId" value="${param.departmentId}" /><c:param name="status" value="${param.status}" /><c:param name="employeePage" value="${employeePage + 1}" /></c:url>
+						<a href="${nextDayWorkerEmployeePageUrl}#employee-add">
 							다음 ›
 						</a>
 					</c:if>

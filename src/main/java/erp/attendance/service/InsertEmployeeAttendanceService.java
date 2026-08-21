@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import erp.attendance.dao.EmployeeAttendanceDao;
 import erp.attendance.model.EmployeeAttendance;
+import erp.attendance.service.request.InsertEmployeeAttendanceRequest;
 import erp.settings.dao.AttendanceItemDao;
 import erp.settings.model.AttendanceItem;
 import jdbc.JdbcUtil;
@@ -31,7 +32,7 @@ public class InsertEmployeeAttendanceService {
             }
             
             int successCount = 0;
-            for (Integer empId : req.getEmpIds()) {
+            for (Integer empId : req.getEmployeeIds()) {
                 EmployeeAttendance record = toEmployeeAttendance(req, empId, attendanceItem);
                 int result = employeeAttendanceDao.insert(conn, record);
                 if (result == 0) {

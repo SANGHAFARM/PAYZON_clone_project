@@ -19,6 +19,9 @@ public class EmployeeCareer {
 	private String duty; // 담당직무
 	private String quitReason; // 퇴직사유
 
+	private Integer years; // 화면 출력용 근무기간(연) 변수
+	private Integer months; // 화면 출력용 근무기간(월) 변수
+
 	public EmployeeCareer() {
 	}
 
@@ -85,5 +88,21 @@ public class EmployeeCareer {
 
 	public void setQuitReason(String quitReason) {
 		this.quitReason = quitReason;
+	}
+
+	public Integer getYears() {
+		return years;
+	}
+
+	public void setYears(Integer years) {
+		this.years = years;
+	}
+
+	public Integer getMonths() {
+		return months;
+	}
+
+	public void setMonths(Integer months) {
+		this.months = months;
 	}
 }

@@ -31,58 +31,97 @@ public class EmployeeLeaveHandler implements CommandHandler {
 
 		try {
 			if ("save".equals(action)) {
-				// [저장 로직] 화면에 표시된 모든 행의 휴가일수 배열 추출
-				String[] allEmpLeaveIds = req.getParameterValues("allEmpLeaveIds");
-				String[] allEmployeeIds = req.getParameterValues("allEmployeeIds");
-				String[] leaveDays = req.getParameterValues("leaveDays");
+				// 1. 화면에서 체크박스에 체크한 사원들의 ID만 추출
+				String[] checkedEmployeeIds = req.getParameterValues("checkedEmpIds");
 
-				if (leaveDays != null && allEmployeeIds != null) {
+				if (checkedEmployeeIds != null) {
 					List<EmployeeLeaveBalance> balances = new ArrayList<>();
 
-					for (int i = 0; i < leaveDays.length; i++) {
+					// 2. 체크된 사원들의 ID만 추출
+					for (String empIdStr : checkedEmployeeIds) {
 						EmployeeLeaveBalance balance = new EmployeeLeaveBalance();
 						balance.setLeaveItemId(Integer.parseInt(leaveItemIdStr));
-						balance.setEmployeeId(Integer.parseInt(allEmployeeIds[i]));
-						balance.setTotalDays(Double.parseDouble(leaveDays[i]));
+						balance.setEmployeeId(Integer.parseInt(empIdStr));
 
-						// 기존 부여 내역이 있으면 기본키 세팅 (Update 유도), 없으면 0 유지 (Insert 유도)
-						if (allEmpLeaveIds != null && allEmpLeaveIds[i] != null && !allEmpLeaveIds[i].isEmpty()) {
-							balance.setEmployeeLeaveBalanceId(Integer.parseInt(allEmpLeaveIds[i]));
+						// 3. 해당 사원 번호가 꼬리표로 붙은 전용 '휴가일수'와 '휴가내역ID' 추출
+						String leaveDaysStr = req.getParameter("leaveDays_" + empIdStr);
+						String empLeaveIdStr = req.getParameter("empLeaveId_" + empIdStr);
+
+						if (leaveDaysStr != null && !leaveDaysStr.trim().isEmpty()) {
+							balance.setTotalDays(Double.parseDouble(leaveDaysStr));
+						}
+
+						// 기존 내역이 있으면 Update를 위해 세팅
+						if (empLeaveIdStr != null && !empLeaveIdStr.trim().isEmpty()) {
+							balance.setEmployeeLeaveBalanceId(Integer.parseInt(empLeaveIdStr));
 						}
 
 						balances.add(balance);
 					}
-					// 서비스로 일괄 트랜잭션 요청
+
+					// 4. 리스트에 담긴 '체크된 사원'들의 데이터만 일괄 저장
 					leaveBalanceService.saveLeaveBalances(balances);
-					req.getSession().setAttribute("message", "사원별 휴가일수가 저장되었습니다.");
+					req.getSession().setAttribute("message", "선택한 사원의 휴가일수가 저장되었습니다.");
+					req.getSession().setAttribute("messageReturnTarget", "employeeLeave");
 				}
+			} else if ("requestDelete".equals(action)) {
+				// 1. 화면에서 체크박스에 체크한 사원들의 ID(employeeId) 배열을 추출
+				String[] checkedEmployeeIds = req.getParameterValues("checkedEmpIds");
 
-			} else if ("delete".equals(action)) {
-				// [삭제 로직] 체크박스로 선택된 식별 번호 배열 파싱
-				String[] deleteIdsStr = req.getParameterValues("employeeLeaveIds");
-				if (deleteIdsStr != null) {
+				if (checkedEmployeeIds != null) {
 					List<Integer> deleteIds = new ArrayList<>();
-					for (String id : deleteIdsStr) {
-						deleteIds.add(Integer.parseInt(id));
-					}
-					// 서비스로 일괄 삭제 트랜잭션 요청
-					leaveBalanceService.deleteLeaveBalances(deleteIds);
-					req.getSession().setAttribute("message", "선택된 사원의 휴가 내역이 초기화되었습니다.");
-				}
 
+					// 2. 체크된 사원 번호들을 하나씩 돌면서 확인
+					for (String empIdStr : checkedEmployeeIds) {
+						// 3. 해당 사원의 꼬리표가 붙은 '휴가내역 ID(empLeaveId)'를 숨겨진 태그에서 추출
+						String empLeaveIdStr = req.getParameter("empLeaveId_" + empIdStr);
+
+						// 4. 기존에 저장된 휴가 내역이 있는(DB에 존재하는) 경우에만 삭제 목록에 추가
+						if (empLeaveIdStr != null && !empLeaveIdStr.trim().isEmpty()) {
+							deleteIds.add(Integer.parseInt(empLeaveIdStr));
+						}
+					}
+
+					if (!deleteIds.isEmpty()) {
+						req.getSession().setAttribute("employeeLeaveDeleteIds", deleteIds);
+						req.getSession().setAttribute("employeeLeaveDeleteCount", deleteIds.size());
+					}
+				}
+			} else if ("confirmDelete".equals(action)) {
+				@SuppressWarnings("unchecked")
+				List<Integer> deleteIds = (List<Integer>) req.getSession().getAttribute("employeeLeaveDeleteIds");
+				if (deleteIds != null && !deleteIds.isEmpty()) {
+					leaveBalanceService.deleteLeaveBalances(deleteIds);
+					req.getSession().setAttribute("message", "선택한 사원의 휴가일수가 삭제되었습니다.");
+					req.getSession().setAttribute("messageReturnTarget", "employeeLeave");
+				}
+				req.getSession().removeAttribute("employeeLeaveDeleteIds");
+				req.getSession().removeAttribute("employeeLeaveDeleteCount");
 			} else if ("search".equals(action) || "showAll".equals(action)) {
-				// 검색 또는 전체보기의 경우 별도 트랜잭션 없이 GET 파라미터를 달고 리다이렉트 처리
+				// 1. 파라미터를 추출 (전체보기일 경우 빈 칸으로 초기화)
 				String keyword = "search".equals(action) ? req.getParameter("keyword") : "";
 				String status = "search".equals(action) ? req.getParameter("status") : "";
 
+				// Null 방어
+				if (keyword == null)
+					keyword = "";
+				if (status == null)
+					status = "";
+
+				// 2. URL에 UTF-8로 인코딩
+				String encodedKeyword = java.net.URLEncoder.encode(keyword, "UTF-8");
+				String encodedStatus = java.net.URLEncoder.encode(status, "UTF-8");
+
+				// 3. 인코딩된 안전한 문자로 리다이렉트
 				res.sendRedirect(req.getContextPath() + "/settings/attendance.do?leaveItemId=" + leaveItemIdStr
-						+ "&keyword=" + keyword + "&status=" + status + "#employee-leave-modal");
+						+ "&keyword=" + encodedKeyword + "&status=" + encodedStatus + "#employee-leave-modal");
 				return null;
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			req.getSession().setAttribute("message", "오류 발생: " + e.getMessage());
+			req.getSession().setAttribute("messageReturnTarget", "employeeLeave");
 		}
 
 		res.sendRedirect(req.getContextPath() + "/settings/attendance.do?leaveItemId=" + leaveItemIdStr

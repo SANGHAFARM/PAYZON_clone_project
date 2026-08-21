@@ -80,11 +80,11 @@ public class PayrollManagementDao {
 				+ "WHERE PE.PAYROLL_RUN_ID = ? "
 				+ "GROUP BY E.EMPLOYEE_ID, E.EMP_TYPE, E.EMP_NO, E.EMP_NAME_KR, D.DEPARTMENT_NAME, J.JOB_POSITION_NAME, E.STATUS "
 				+ "ORDER BY E.EMP_NAME_KR";
-		return selectEmployees(conn, sql, runId, null, 0, 0);
+		return selectEmployees(conn, sql, runId, null, null, null, null, 0, 0);
 	}
 
 	public List<PayrollManagementEmployee> selectAvailableEmployees(Connection conn, int runId, String keyword,
-			int page, int size) throws SQLException {
+			Integer departmentId, Integer positionId, String status, int page, int size) throws SQLException {
 		String sql = "SELECT * FROM (SELECT A.*, ROWNUM RNUM FROM ("
 				+ "SELECT E.EMPLOYEE_ID, E.EMP_TYPE, E.EMP_NO, E.EMP_NAME_KR, "
 				+ "NVL(D.DEPARTMENT_NAME, '-') DEPARTMENT_NAME, NVL(J.JOB_POSITION_NAME, '-') JOB_POSITION_NAME, E.STATUS, "
@@ -93,17 +93,28 @@ public class PayrollManagementDao {
 				+ "LEFT JOIN JOB_POSITION J ON J.JOB_POSITION_ID = E.JOB_POSITION_ID "
 				+ "WHERE NOT EXISTS (SELECT 1 FROM PAYROLL_EMPLOYEE PE WHERE PE.PAYROLL_RUN_ID = ? AND PE.EMPLOYEE_ID = E.EMPLOYEE_ID) "
 				+ "AND (? IS NULL OR E.EMP_NAME_KR LIKE '%' || ? || '%' OR E.EMP_NO LIKE '%' || ? || '%') "
+				+ "AND (? IS NULL OR E.DEPARTMENT_ID = ?) AND (? IS NULL OR E.JOB_POSITION_ID = ?) "
+				+ "AND (? IS NULL OR E.STATUS = ?) "
 				+ "ORDER BY E.EMP_NAME_KR) A WHERE ROWNUM <= ?) WHERE RNUM >= ?";
-		return selectEmployees(conn, sql, runId, keyword, page, size);
+		return selectEmployees(conn, sql, runId, keyword, departmentId, positionId, status, page, size);
 	}
 
-	public int countAvailableEmployees(Connection conn, int runId, String keyword) throws SQLException {
+	public int countAvailableEmployees(Connection conn, int runId, String keyword, Integer departmentId,
+			Integer positionId, String status) throws SQLException {
 		String sql = "SELECT COUNT(*) FROM EMPLOYEE E WHERE NOT EXISTS "
 				+ "(SELECT 1 FROM PAYROLL_EMPLOYEE PE WHERE PE.PAYROLL_RUN_ID = ? AND PE.EMPLOYEE_ID = E.EMPLOYEE_ID) "
-				+ "AND (? IS NULL OR E.EMP_NAME_KR LIKE '%' || ? || '%' OR E.EMP_NO LIKE '%' || ? || '%')";
+				+ "AND (? IS NULL OR E.EMP_NAME_KR LIKE '%' || ? || '%' OR E.EMP_NO LIKE '%' || ? || '%') "
+				+ "AND (? IS NULL OR E.DEPARTMENT_ID = ?) AND (? IS NULL OR E.JOB_POSITION_ID = ?) "
+				+ "AND (? IS NULL OR E.STATUS = ?)";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, runId);
 			setKeyword(pstmt, 2, keyword);
+			setNullableInteger(pstmt, 5, departmentId);
+			setNullableInteger(pstmt, 6, departmentId);
+			setNullableInteger(pstmt, 7, positionId);
+			setNullableInteger(pstmt, 8, positionId);
+			pstmt.setString(9, emptyToNull(status));
+			pstmt.setString(10, emptyToNull(status));
 			try (ResultSet rs = pstmt.executeQuery()) {
 				rs.next();
 				return rs.getInt(1);
@@ -113,8 +124,16 @@ public class PayrollManagementDao {
 
 	public List<PayrollManagementItem> selectPayItems(Connection conn, Integer payrollEmployeeId) throws SQLException {
 		String sql = "SELECT P.PAY_ITEM_ID ITEM_CODE, P.PAY_NAME ITEM_NAME, P.TAX_TYPE, P.CALC_METHOD, "
-				+ "NVL(E.AMOUNT, 0) AMOUNT FROM PAY_ITEM P LEFT JOIN PAYROLL_ENTRY E "
-				+ "ON E.PAY_ITEM_ID = P.PAY_ITEM_ID AND E.PAYROLL_EMPLOYEE_ID = ? "
+				+ "CASE WHEN PE.PAYROLL_EMPLOYEE_ID IS NULL THEN 0 "
+				+ "WHEN E.PAYROLL_ENTRY_ID IS NOT NULL THEN NVL(E.AMOUNT, 0) "
+				+ "WHEN P.PAY_NAME = '기본급' THEN NVL(EMP.BASIC_PAY, 0) "
+				+ "WHEN P.PAY_METHOD = '일괄지급' THEN NVL(P.BULK_PAY_AMOUNT, NVL(P.TAX_FREE_LIMIT, 0)) "
+				+ "ELSE 0 END AMOUNT "
+				+ "FROM PAY_ITEM P "
+				+ "LEFT JOIN PAYROLL_EMPLOYEE PE ON PE.PAYROLL_EMPLOYEE_ID = ? "
+				+ "LEFT JOIN EMPLOYEE EMP ON EMP.EMPLOYEE_ID = PE.EMPLOYEE_ID "
+				+ "LEFT JOIN PAYROLL_ENTRY E ON E.PAY_ITEM_ID = P.PAY_ITEM_ID "
+				+ "AND E.PAYROLL_EMPLOYEE_ID = PE.PAYROLL_EMPLOYEE_ID "
 				+ "WHERE P.USE_YN = 'Y' ORDER BY P.PAY_ITEM_ID";
 		return selectItems(conn, sql, payrollEmployeeId, true);
 	}
@@ -311,7 +330,8 @@ public class PayrollManagementDao {
 	}
 
 	private List<PayrollManagementEmployee> selectEmployees(Connection conn, String sql, int runId,
-			String keyword, int page, int size) throws SQLException {
+			String keyword, Integer departmentId, Integer positionId, String status, int page, int size)
+			throws SQLException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
@@ -319,8 +339,14 @@ public class PayrollManagementDao {
 			pstmt.setInt(1, runId);
 			if (size > 0) {
 				setKeyword(pstmt, 2, keyword);
-				pstmt.setInt(5, page * size);
-				pstmt.setInt(6, (page - 1) * size + 1);
+				setNullableInteger(pstmt, 5, departmentId);
+				setNullableInteger(pstmt, 6, departmentId);
+				setNullableInteger(pstmt, 7, positionId);
+				setNullableInteger(pstmt, 8, positionId);
+				pstmt.setString(9, emptyToNull(status));
+				pstmt.setString(10, emptyToNull(status));
+				pstmt.setInt(11, page * size);
+				pstmt.setInt(12, (page - 1) * size + 1);
 			}
 			rs = pstmt.executeQuery();
 			List<PayrollManagementEmployee> result = new ArrayList<>();
@@ -369,10 +395,19 @@ public class PayrollManagementDao {
 	}
 
 	private void setKeyword(PreparedStatement pstmt, int index, String keyword) throws SQLException {
-		String value = keyword == null || keyword.trim().isEmpty() ? null : keyword.trim();
+		String value = emptyToNull(keyword);
 		pstmt.setString(index, value);
 		pstmt.setString(index + 1, value);
 		pstmt.setString(index + 2, value);
+	}
+
+	private void setNullableInteger(PreparedStatement pstmt, int index, Integer value) throws SQLException {
+		if (value == null) pstmt.setNull(index, java.sql.Types.NUMERIC);
+		else pstmt.setInt(index, value);
+	}
+
+	private String emptyToNull(String value) {
+		return value == null || value.trim().isEmpty() ? null : value.trim();
 	}
 
 	private PayrollRun makeRun(ResultSet rs) throws SQLException {

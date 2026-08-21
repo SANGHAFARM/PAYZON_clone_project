@@ -2,6 +2,7 @@ package erp.employees.service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import erp.employees.dao.EmployeeGuarantorDao;
 import erp.employees.dao.EmployeeRecommenderDao;
@@ -31,15 +32,42 @@ public class EmployeeGuaranteeService {
 	private EmployeeGuarantorDao guarantorDao = EmployeeGuarantorDao.getInstance();
 
 	public EmployeeRecommender getRecommender(int empId) {
-		return null;
+		Connection conn = null;
+		try {
+			conn = ConnectionProvider.getConnection();
+			List<EmployeeRecommender> rows = recommenderDao.selectByEmpId(conn, empId);
+			return rows.isEmpty() ? null : rows.get(0);
+		} catch (SQLException e) {
+			throw new RuntimeException("사원 추천인 조회 중 오류 발생", e);
+		} finally {
+			JdbcUtil.close(conn);
+		}
 	}
 
 	public EmployeeSuretyInsurance getSuretyInsurance(int empId) {
-		return null;
+		Connection conn = null;
+		try {
+			conn = ConnectionProvider.getConnection();
+			List<EmployeeSuretyInsurance> rows = suretyInsuranceDao.selectByEmpId(conn, empId);
+			return rows.isEmpty() ? null : rows.get(0);
+		} catch (SQLException e) {
+			throw new RuntimeException("사원 보증보험 조회 중 오류 발생", e);
+		} finally {
+			JdbcUtil.close(conn);
+		}
 	}
 
 	public EmployeeGuarantor getGuarantor(int empId) {
-		return null;
+		Connection conn = null;
+		try {
+			conn = ConnectionProvider.getConnection();
+			List<EmployeeGuarantor> rows = guarantorDao.selectByEmpId(conn, empId);
+			return rows.isEmpty() ? null : rows.get(0);
+		} catch (SQLException e) {
+			throw new RuntimeException("사원 신원보증인 조회 중 오류 발생", e);
+		} finally {
+			JdbcUtil.close(conn);
+		}
 	}
 
 	// [통합 저장] 추천 및 신원보증 내역을 일괄 갱신합니다. v5 스키마 기준 단일 행 데이터들을 처리

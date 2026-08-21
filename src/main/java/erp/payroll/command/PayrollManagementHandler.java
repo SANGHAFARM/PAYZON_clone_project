@@ -1,6 +1,7 @@
 package erp.payroll.command;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,14 +55,16 @@ public class PayrollManagementHandler implements CommandHandler {
 
 		PayrollManagementPage page = managementService.getPage(year, twoDigits(month), twoDigits(sequence),
 				incomeType, integerValue(req.getParameter("employeeId")), req.getParameter("employeeKeyword"),
-				employeePage);
+				integerValue(req.getParameter("departmentId")), integerValue(req.getParameter("positionId")),
+				normalizeStatus(req.getParameter("status")), employeePage);
 		setPageAttributes(req, page, year, month, sequence, incomeMode, employeePage);
 		return VIEW;
 	}
 
 	private String processAddEmployees(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		if ("search".equals(req.getParameter("action"))) {
-			return processForm(req, res);
+			redirectEmployeeSearch(req, res);
+			return null;
 		}
 		PayrollRun run = makeRun(req);
 		managementService.addEmployees(run, intValues(req.getParameterValues("employeeIds")));
@@ -289,6 +292,20 @@ public class PayrollManagementHandler implements CommandHandler {
 		res.sendRedirect(location);
 	}
 
+	// 검색 후에도 사원선택 팝업이 열린 결과 화면으로 이동한다.
+	private void redirectEmployeeSearch(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		String location = req.getContextPath() + "/payroll/management.do?paymentYear="
+				+ req.getParameter("paymentYear") + "&paymentMonth=" + req.getParameter("paymentMonth")
+				+ "&paymentRound=" + req.getParameter("paymentRound") + "&incomeType="
+				+ value(req.getParameter("incomeType"), "general") + "&employeeKeyword="
+				+ URLEncoder.encode(value(req.getParameter("employeeKeyword"), ""), "UTF-8")
+				+ "&departmentId=" + value(req.getParameter("departmentId"), "")
+				+ "&positionId=" + value(req.getParameter("positionId"), "")
+				+ "&status=" + URLEncoder.encode(value(req.getParameter("status"), ""), "UTF-8")
+				+ "#employee-add";
+		res.sendRedirect(location);
+	}
+
 	private int[] intValues(String[] values) {
 		if (values == null) {
 			return new int[0];
@@ -298,6 +315,12 @@ public class PayrollManagementHandler implements CommandHandler {
 			result[i] = intValue(values[i], 0);
 		}
 		return result;
+	}
+
+	private String normalizeStatus(String status) {
+		if ("WORK".equals(status)) return "재직";
+		if ("RETIRED".equals(status)) return "퇴직";
+		return value(status, "");
 	}
 
 	private Integer integerValue(String value) {

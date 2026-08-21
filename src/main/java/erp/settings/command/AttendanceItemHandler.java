@@ -24,11 +24,21 @@ public class AttendanceItemHandler implements CommandHandler {
 	private String processAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		req.setCharacterEncoding("UTF-8");
 		String action = req.getParameter("action");
+		String idStr = req.getParameter("attendItemId");
+
+		if ("requestDelete".equals(action)) {
+			if (idStr != null && !idStr.isEmpty()) {
+				res.sendRedirect(req.getContextPath() + "/settings/attendance.do?deleteType=attendance&deleteId="
+						+ idStr + "#attendance-item-settings");
+			} else {
+				res.sendRedirect(req.getContextPath() + "/settings/attendance.do#attendance-item-settings");
+			}
+			return null;
+		}
 
 		try {
 			AttendanceItem item = new AttendanceItem();
 
-			String idStr = req.getParameter("attendItemId");
 			if (idStr != null && !idStr.isEmpty()) {
 				item.setAttendanceItemId(Integer.parseInt(idStr));
 			}
@@ -51,8 +61,12 @@ public class AttendanceItemHandler implements CommandHandler {
 
 			// 내용 지우기 액션 외에는 서비스 로직 호출
 			if (!"clear".equals(action)) {
-				settingService.processAttendItemAction(item, action);
-				req.getSession().setAttribute("message", "근태항목 설정이 완료되었습니다.");
+				String serviceAction = "confirmDelete".equals(action) ? "delete" : action;
+				settingService.processAttendItemAction(item, serviceAction);
+				String message = "insert".equals(serviceAction) ? "근태항목이 추가되었습니다."
+						: "update".equals(serviceAction) ? "근태항목이 수정되었습니다."
+						: "근태항목이 삭제되었습니다.";
+				req.getSession().setAttribute("message", message);
 			}
 
 		} catch (Exception e) {
@@ -68,7 +82,7 @@ public class AttendanceItemHandler implements CommandHandler {
 			}
 		}
 
-		res.sendRedirect(req.getContextPath() + "/settings/attendance.do");
+		res.sendRedirect(req.getContextPath() + "/settings/attendance.do#attendance-item-settings");
 		return null;
 	}
 }

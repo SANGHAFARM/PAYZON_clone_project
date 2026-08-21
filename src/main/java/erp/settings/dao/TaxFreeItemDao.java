@@ -53,7 +53,8 @@ public class TaxFreeItemDao {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			String sql = "SELECT * FROM TAX_FREE_ITEM ORDER BY TAX_FREE_CODE ASC";
+			String sql = "SELECT * FROM TAX_FREE_ITEM "
+					+ "ORDER BY CASE WHEN INCOME_CATEGORY = '비과세' THEN 1 ELSE 2 END, TAX_FREE_CODE ASC";
 
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
@@ -66,6 +67,47 @@ public class TaxFreeItemDao {
 		} finally {
 			JdbcUtil.close(rs);
 			JdbcUtil.close(pstmt);
+		}
+	}
+
+	// 비과세 코드를 기준으로 법정 항목과 기본 한도액을 조회
+	public TaxFreeItem selectByCode(Connection conn, String taxFreeCode) throws SQLException {
+		String sql = "SELECT * FROM TAX_FREE_ITEM WHERE TAX_FREE_CODE = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, taxFreeCode);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				return rs.next() ? makeItemFromResultSet(rs) : null;
+			}
+		}
+	}
+
+	// 기본 법정 코드가 없는 경우에만 마스터 목록에 추가한다.
+	public void insertIfAbsent(Connection conn, TaxFreeItem item) throws SQLException {
+		String sql = "MERGE INTO TAX_FREE_ITEM T USING (SELECT ? TAX_FREE_CODE FROM DUAL) S "
+				+ "ON (T.TAX_FREE_CODE = S.TAX_FREE_CODE) WHEN NOT MATCHED THEN INSERT "
+				+ "(TAX_FREE_CODE, LEGAL_CLAUSE, REPORT_FIELD, TAX_FREE_NAME, DEFAULT_LIMIT, PAY_STATEMENT_YN, INCOME_CATEGORY) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, item.getTaxFreeCode());
+			pstmt.setString(2, item.getTaxFreeCode());
+			pstmt.setString(3, item.getLegalClause());
+			pstmt.setString(4, item.getReportField());
+			pstmt.setString(5, item.getTaxFreeName());
+			pstmt.setLong(6, item.getDefaultLimit());
+			pstmt.setString(7, item.getPayStatementYn());
+			pstmt.setString(8, item.getIncomeCategory());
+			pstmt.executeUpdate();
+		}
+	}
+
+	// 사용자 정의 코드의 다음 번호를 발급한다.
+	public String selectNextUserCode(Connection conn) throws SQLException {
+		String sql = "SELECT 'U' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(TAX_FREE_CODE, 2))), 0) + 1, 5, '0') "
+				+ "FROM TAX_FREE_ITEM WHERE REGEXP_LIKE(TAX_FREE_CODE, '^U[0-9]{5}$')";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql);
+				ResultSet rs = pstmt.executeQuery()) {
+			rs.next();
+			return rs.getString(1);
 		}
 	}
 
