@@ -94,6 +94,26 @@ public class LeaveItemDao {
 			JdbcUtil.close(pstmt);
 		}
 	}
+	
+	//근태관리 - 휴가조회 항목에서 사용할 사용가능한 휴가 목록 조회
+	public List<LeaveItem> selectUsableLeaveLists(Connection conn) throws SQLException{
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			String sql = "SELECT * FROM LEAVE_ITEM WHERE USE_YN = \'Y\' ORDER BY LEAVE_ITEM_ID ASC";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			
+			List<LeaveItem> result = new ArrayList<>();
+			while (rs.next()) {
+				result.add(makeLeaveItemFromResultSet(rs));
+			}
+			return result;
+		} finally {
+			JdbcUtil.close(rs);
+			JdbcUtil.close(pstmt);
+		}
+	}
 
 	// 휴가항목 수정
 	public int update(Connection conn, LeaveItem item) throws SQLException {
