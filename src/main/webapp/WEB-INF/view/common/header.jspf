@@ -165,10 +165,10 @@
 						href="${pageContext.request.contextPath}/payroll-stats/monthly.do">월별
 							전체급여 통계</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=annual-personal">연도별
+						href="${pageContext.request.contextPath}/payroll-stats/annual-personal.do">연도별
 							개인연봉 통계</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=monthly-personal">월별
+						href="${pageContext.request.contextPath}/payroll-stats/monthly-personal.do">월별
 							개인급여 통계</a></li>
 					<li><a class="dropdown-menu__link"
 						href="${pageContext.request.contextPath}/payroll-stats/composition.do">급여항목
