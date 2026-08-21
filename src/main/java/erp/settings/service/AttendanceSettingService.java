@@ -71,7 +71,23 @@ public class AttendanceSettingService {
 			JdbcUtil.close(conn);
 		}
 	}
-
+	
+	/**
+	 * [조회] 사용가능한 휴가항목 전체 리스트 조회
+	 *
+	 * @return 사용가능한 휴가항목 목록 반환
+	 */
+	public List<LeaveItem> getUsableLeaveItems(){
+		Connection conn = null;
+		try {
+			conn = ConnectionProvider.getConnection();
+			return leaveItemDao.selectUsableLeaveLists(conn);
+		} catch (SQLException e) {
+			throw new RuntimeException("사용가능한 휴가항목 조회 중 오류 발생", e);
+		} finally {
+			JdbcUtil.close(conn);
+		}
+	}
 	/**
 	 * [통합저장] 휴가항목 삽입, 수정, 삭제 트랜잭션 분기 처리
 	 *

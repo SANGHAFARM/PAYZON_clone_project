@@ -126,7 +126,7 @@
 					<li><a class="dropdown-menu__link"
 						href="${pageContext.request.contextPath}/attendance/attendance-inquiry.do">근태조회</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/example.do?menu=leave-search">휴가조회</a></li>
+						href="${pageContext.request.contextPath}/attendance/leave-inquiry.do">휴가조회</a></li>
 					<li><a class="dropdown-menu__link"
 						href="${pageContext.request.contextPath}/attendance/day-worker-management.do">일용직
 							근무기록/관리</a></li>
