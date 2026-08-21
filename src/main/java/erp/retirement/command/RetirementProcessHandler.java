@@ -30,9 +30,8 @@ public class RetirementProcessHandler implements CommandHandler {
 	}
 
 	private String processList(HttpServletRequest req) {
-		String mode = trim(req.getParameter("mode"));
 		String keyword = trim(req.getParameter("keyword"));
-		if ("search".equals(mode) && keyword.length() < 2) {
+		if (req.getParameterMap().containsKey("keyword") && !keyword.isEmpty() && keyword.length() < 2) {
 			req.setAttribute("retirementPopupMessage", "검색어를 2자 이상 입력해주세요");
 		}
 		EmployeeSearchCondition condition = createCondition(req);
@@ -76,15 +75,14 @@ public class RetirementProcessHandler implements CommandHandler {
 
 	private EmployeeSearchCondition createCondition(HttpServletRequest req) {
 		EmployeeSearchCondition condition = new EmployeeSearchCondition();
-		String mode = trim(req.getParameter("mode"));
-		String target = "search".equals(mode) ? req.getParameter("searchTarget") : "all";
-		String keyword = "search".equals(mode) && trim(req.getParameter("keyword")).length() >= 2
+		String target = req.getParameter("searchTarget");
+		String keyword = trim(req.getParameter("keyword")).length() >= 2
 				? trim(req.getParameter("keyword")) : "";
 		condition.setSearchTarget("employeeNo".equals(target) ? "EMPLOYEE_NO"
 				: "department".equals(target) ? "DEPARTMENT" : "name".equals(target) ? "NAME" : "ALL");
 		condition.setKeyword(keyword);
 		condition.setEmploymentType("");
-		String status = "status".equals(mode) ? req.getParameter("status") : "";
+		String status = req.getParameter("status");
 		condition.setStatus("ACTIVE".equals(status) ? "WORK" : "RETIRED".equals(status) ? "RETIRED" : "");
 		condition.setPage(Math.max(1, intValue(req.getParameter("page"), 1)));
 		condition.setPageSize(30);

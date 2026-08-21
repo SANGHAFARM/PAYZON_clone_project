@@ -147,6 +147,16 @@ public class RetirementBenefitService {
 		}
 	}
 
+	// 사원정보 화면에서 표시할 가장 최근 퇴직급여 정산 결과를 조회한다.
+	public RetirementBenefitForm getLatestBenefit(int employeeId) {
+		try (Connection conn = ConnectionProvider.getConnection()) {
+			List<RetirementCalculation> calculations = calculationDao.selectByEmpId(conn, employeeId);
+			return calculations.isEmpty() ? null : fromModel(calculations.get(0));
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public RetirementBenefitForm prepareNew(int employeeId) {
 		try (Connection conn = ConnectionProvider.getConnection()) {
 			Employee employee = employeeDao.selectById(conn, employeeId);

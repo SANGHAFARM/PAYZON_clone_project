@@ -89,9 +89,14 @@ public class RetirementBenefitHandler implements CommandHandler {
 			if (!draftEmployeeIds.isEmpty()) {
 				// 선택한 임시 사원만 목록에서 제거하고 나머지는 그대로 유지한다.
 				Integer activeEmployeeId = parseInt(req.getParameter("activeEmployeeId"));
-				if (activeEmployeeId != null) {
-					draftEmployeeIds.remove(activeEmployeeId);
+				if (activeEmployeeId == null || !draftEmployeeIds.contains(activeEmployeeId)) {
+					// 선택된 행이 없으면 목록을 변경하지 않는다.
+					req.setAttribute("draftEmployeeIds", draftEmployeeIds);
+					return showPage(req, null);
 				}
+				draftEmployeeIds.remove(activeEmployeeId);
+				// 마지막 임시 행을 삭제해도 요청에 남은 계산ID로 저장 목록을 불러오지 않는다.
+				req.setAttribute("draftMutation", Boolean.TRUE);
 				req.setAttribute("draftEmployeeIds", draftEmployeeIds);
 				return showPage(req, null);
 			}
@@ -166,6 +171,7 @@ public class RetirementBenefitHandler implements CommandHandler {
 	}
 
 	private String showPage(HttpServletRequest req, RetirementBenefitForm override) {
+		boolean draftMutation = Boolean.TRUE.equals(req.getAttribute("draftMutation"));
 		boolean employeeSearchRequest = req.getRequestURI().endsWith("/employee-search.do");
 		String employeeKeyword = req.getParameter("employeeKeyword");
 		// 사원 검색어는 공백을 제외하고 두 글자 이상 입력해야 한다.
@@ -176,7 +182,7 @@ public class RetirementBenefitHandler implements CommandHandler {
 		}
 		Integer requestedYear = parseInt(req.getParameter("paymentYear"));
 		int year = requestedYear == null ? LocalDate.now().getYear() : requestedYear;
-		Integer calculationId = parseInt(req.getParameter("calculationId"));
+		Integer calculationId = draftMutation ? null : parseInt(req.getParameter("calculationId"));
 		BenefitPageData data = service.getPage(year, calculationId,
 				employeeKeyword, parseInt(req.getParameter("departmentId")));
 		@SuppressWarnings("unchecked")
@@ -189,7 +195,7 @@ public class RetirementBenefitHandler implements CommandHandler {
 		req.setAttribute("selectedYear", year);
 		boolean newRequest = req.getRequestURI().endsWith("/new.do");
 		// 신규 정산 임시 목록이 있으면 DB에 저장된 전체 목록을 섞지 않는다.
-		boolean loadList = !newRequest && draftEmployeeIds.isEmpty()
+		boolean loadList = !draftMutation && !newRequest && draftEmployeeIds.isEmpty()
 				&& ("list".equals(req.getParameter("mode"))
 				|| calculationId != null || req.getParameter("result") != null
 				|| override != null);
