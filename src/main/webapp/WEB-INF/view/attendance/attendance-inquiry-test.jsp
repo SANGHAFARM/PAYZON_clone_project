@@ -1,7 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<c:set var="viewMode"
-	value="${empty param.viewMode ? 'MONTH' : param.viewMode}" />
+<c:set var="view" value="${empty param.view ? 'MONTH' : param.view}" />
 <c:set var="currentPageUrl" value="${pageContext.request.requestURI}" />
 <c:set var="monthDayCount" value="31" />
 <c:if test="${not empty daysInMonth}">
@@ -29,19 +28,19 @@
 		</header>
 		<section class="inquiry-card">
 			<nav class="inquiry-tabs">
-				<a class="${viewMode eq 'MONTH' ? 'is-active' : ''}"
-					href="${pageContext.request.contextPath}/attendance/attendance-inquiry.do?viewMode=MONTH">월별
-					조회</a> <a class="${viewMode eq 'DETAIL' ? 'is-active' : ''}"
-					href="${pageContext.request.contextPath}/attendance/attendance-inquiry.do?viewMode=DETAIL">상세
+				<a class="${view eq 'MONTH' ? 'is-active' : ''}"
+					href="${pageContext.request.contextPath}/attendance/attendance-inquiry.do?view=MONTH">월별
+					조회</a> <a class="${view eq 'DETAIL' ? 'is-active' : ''}"
+					href="${pageContext.request.contextPath}/attendance/attendance-inquiry.do?view=DETAIL">상세
 					조회</a>
 			</nav>
 
 			<c:choose>
-				<c:when test="${viewMode eq 'MONTH'}">
+				<c:when test="${view eq 'MONTH'}">
 					<form class="month-search"
 						action="${pageContext.request.contextPath}/attendance/attendance-inquiry.do"
 						method="get">
-						<input type="hidden" name="viewMode" value="MONTH"> <select
+						<input type="hidden" name="view" value="MONTH"> <select
 							name="year" aria-label="조회 연도">
 							<option value="">연도 선택</option>
 							<%-- items를 지우고 begin, end만 쓰면 2015부터 2030까지 숫자가 차례대로 들어갑니다 --%>
@@ -102,8 +101,8 @@
 							</thead>
 							<tbody>
 								<c:forEach var="employee" items="${monthlyEmployees}">
-									<%-- 									<c:set var="detailUrl"
-										value="${currentPageUrl}?viewMode=DETAIL&amp;employeeId=${employee.employeeId}&amp;startDate=${searchStartDate}&amp;endDate=${searchEndDate}" /> --%>
+									<c:set var="detailUrl"
+										value="${pageContext.request.contextPath}/attendance/attendance-inquiry.do?view=DETAIL&amp;empNameKr=${employee.empNameKr}&amp;useName=Y&amp;usePeriod=Y&amp;year=${year}&amp;month=${month}" />
 									<tr>
 										<td><a href="${detailUrl}"><c:out
 													value="${employee.empType}" /></a></td>
@@ -158,17 +157,17 @@
 				<c:otherwise>
 					<div class="detail-layout">
 						<form class="detail-search"
-							action="${pageContext.request.contextPath}/attendance/attendance-inquiry.do?viewMode=DETAIL"
+							action="${pageContext.request.contextPath}/attendance/attendance-inquiry.do?view=DETAIL"
 							method="get">
-							<input type="hidden" name="viewMode" value="DETAIL"> <label>
+							<input type="hidden" name="view" value="DETAIL"> <label>
 								<input type="checkbox" name="useInputDate" value="Y"
 								${param.useInputDate eq 'Y' ? 'checked' : ''}> <span>입력일자</span>
 								<input type="date" name="inputDate" value="${param.inputDate}">
 							</label> <label> <input type="checkbox" name="usePeriod"
 								value="Y" ${param.usePeriod eq 'Y' ? 'checked' : ''}> <span>근태기간</span>
 								<span class="detail-period"> <input type="date"
-									name="startDate" value="${param.startDate}"><i>~</i> <input
-									type="date" name="endDate" value="${param.endDate}">
+									name="startDate" value="${startDateStr}"> <i>~</i> <input
+									type="date" name="endDate" value="${endDateStr}">
 							</span>
 							</label> <label> <input type="checkbox" name="useDepartment"
 								value="Y" ${param.useDepartment eq 'Y' ? 'checked' : ''}>
@@ -221,7 +220,7 @@
 							<div class="detail-actions">
 								<button type="submit">검색</button>
 								<a
-									href="${pageContext.request.contextPath}/attendance/attendance-inquiry.do?viewMode=DETAIL">전체보기</a>
+									href="${pageContext.request.contextPath}/attendance/attendance-inquiry.do?view=DETAIL">전체보기</a>
 							</div>
 						</form>
 
