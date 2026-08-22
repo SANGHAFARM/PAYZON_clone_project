@@ -2,7 +2,10 @@ package erp.settings.service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import erp.settings.dao.DeductItemDao;
 import erp.settings.dao.PayItemDao;
@@ -15,6 +18,11 @@ import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
 public class PayItemSettingService {
+	private static final Set<String> REQUIRED_PAY_ITEM_NAMES =
+			new HashSet<>(Arrays.asList("기본급"));
+	private static final Set<String> REQUIRED_DEDUCT_ITEM_NAMES =
+			new HashSet<>(Arrays.asList("국민연금", "건강보험", "장기요양보험",
+					"노인장기요양보험", "고용보험", "소득세", "지방소득세"));
 
 	// 싱글톤 인스턴스 생성
 	private static PayItemSettingService instance = new PayItemSettingService();
@@ -32,6 +40,76 @@ public class PayItemSettingService {
 	private PayItemDao payItemDao = PayItemDao.getInstance();
 	private DeductItemDao deductItemDao = DeductItemDao.getInstance();
 	private TaxFreeItemDao taxFreeItemDao = TaxFreeItemDao.getInstance();
+
+	/**
+	 * 서버 시작 시 급여 계산에 필요한 기준 항목이 없을 때만 생성한다.
+	 */
+	public void initializeRequiredItems() {
+		Connection conn = null;
+		try {
+			conn = ConnectionProvider.getConnection();
+			conn.setAutoCommit(false);
+
+			Set<String> payNames = new HashSet<>();
+			for (PayItem item : payItemDao.selectAll(conn)) {
+				payNames.add(item.getPayName());
+			}
+			if (!payNames.contains("기본급")) {
+				payItemDao.insert(conn, createRequiredPayItem());
+			}
+
+			Set<String> deductNames = new HashSet<>();
+			for (DeductItem item : deductItemDao.selectAll(conn)) {
+				deductNames.add(item.getDeductName());
+			}
+			for (DeductItem item : createRequiredDeductItems()) {
+				if (!deductNames.contains(item.getDeductName())) {
+					deductItemDao.insert(conn, item);
+				}
+			}
+
+			conn.commit();
+		} catch (SQLException e) {
+			JdbcUtil.rollback(conn);
+			throw new RuntimeException("필수 급여항목 초기화 중 오류 발생", e);
+		} catch (RuntimeException e) {
+			JdbcUtil.rollback(conn);
+			throw e;
+		} finally {
+			JdbcUtil.close(conn);
+		}
+	}
+
+	private PayItem createRequiredPayItem() {
+		PayItem item = new PayItem();
+		item.setPayName("기본급");
+		item.setTaxType("전체과세");
+		item.setTaxFreeLimit(0L);
+		item.setCalcMethod("사원 기본급");
+		item.setRoundUnit(10);
+		item.setUseYn("Y");
+		return item;
+	}
+
+	private List<DeductItem> createRequiredDeductItems() {
+		return Arrays.asList(
+				createRequiredDeductItem("국민연금", "기준소득월액 × 4.5%", "사원부담분"),
+				createRequiredDeductItem("건강보험", "보수월액 × 3.545%", "사원부담분"),
+				createRequiredDeductItem("장기요양보험", "건강보험료 × 장기요양보험요율", "사원부담분"),
+				createRequiredDeductItem("고용보험", "보수월액 × 0.9%", "사원부담분"),
+				createRequiredDeductItem("소득세", "근로소득 간이세액표", "급여소득세"),
+				createRequiredDeductItem("지방소득세", "소득세 × 10%", "지방소득세"));
+	}
+
+	private DeductItem createRequiredDeductItem(String name, String calcMethod, String note) {
+		DeductItem item = new DeductItem();
+		item.setDeductName(name);
+		item.setCalcMethod(calcMethod);
+		item.setRoundUnit(10);
+		item.setNote(note);
+		item.setUseYn("Y");
+		return item;
+	}
 
 	// ==========================================
 	// 1. 지급항목(PAY_ITEM) 관련 로직
@@ -72,6 +150,12 @@ public class PayItemSettingService {
 		}
 	}
 
+	// 삭제 확인창을 열기 전에 필수 지급항목인지 확인한다.
+	public boolean isRequiredPayItem(int payItemId) {
+		PayItem item = getPayItem(payItemId);
+		return item != null && REQUIRED_PAY_ITEM_NAMES.contains(item.getPayName());
+	}
+
 	/**
 	 * 지급항목 삽입, 수정, 삭제 트랜잭션 분기 및 무결성 검증 처리
 	 *
@@ -83,6 +167,14 @@ public class PayItemSettingService {
 		try {
 			conn = ConnectionProvider.getConnection();
 			conn.setAutoCommit(false); // 수동 커밋 모드 전환 처리
+
+			// 기본급은 급여 자동 산정에 필요한 기준 항목이므로 이름 변경과 삭제를 막는다.
+			if ("update".equals(action) || "delete".equals(action)) {
+				PayItem savedItem = payItemDao.selectById(conn, item.getPayItemId());
+				if (savedItem != null && REQUIRED_PAY_ITEM_NAMES.contains(savedItem.getPayName())) {
+					throw new IllegalArgumentException("必須支給項目は修正または削除できません。");
+				}
+			}
 
 			// 과세 구분에 따라 비과세 코드와 법정 한도액을 정규화한다.
 			if ("전체과세".equals(item.getTaxType())) {
@@ -185,6 +277,12 @@ public class PayItemSettingService {
 		}
 	}
 
+	// 삭제 확인창을 열기 전에 필수 공제항목인지 확인한다.
+	public boolean isRequiredDeductItem(int deductItemId) {
+		DeductItem item = getDeductItem(deductItemId);
+		return item != null && REQUIRED_DEDUCT_ITEM_NAMES.contains(item.getDeductName());
+	}
+
 	/**
 	 * 공제항목 삽입, 수정, 삭제 트랜잭션 분기 처리
 	 *
@@ -196,6 +294,14 @@ public class PayItemSettingService {
 		try {
 			conn = ConnectionProvider.getConnection();
 			conn.setAutoCommit(false); // 수동 커밋 모드 전환 처리
+
+			// 법정 공제 항목은 계산 로직이 이름을 기준으로 사용하므로 변경과 삭제를 막는다.
+			if ("update".equals(action) || "delete".equals(action)) {
+				DeductItem savedItem = deductItemDao.selectById(conn, item.getDeductItemId());
+				if (savedItem != null && REQUIRED_DEDUCT_ITEM_NAMES.contains(savedItem.getDeductName())) {
+					throw new IllegalArgumentException("必須控除項目は修正または削除できません。");
+				}
+			}
 
 			if ("insert".equals(action)) {
 				deductItemDao.insert(conn, item);
@@ -209,6 +315,9 @@ public class PayItemSettingService {
 		} catch (SQLException e) {
 			JdbcUtil.rollback(conn);
 			throw new RuntimeException("공제항목 액션 처리 중 오류 발생", e);
+		} catch (RuntimeException e) {
+			JdbcUtil.rollback(conn);
+			throw e;
 		} finally {
 			JdbcUtil.close(conn);
 		}

@@ -185,7 +185,7 @@
 										<c:forEach var="type" items="${employmentTypes}">
 											<option value="${type}"
 											${type eq employee.empType ? 'selected' : ''}><c:choose><c:when test="${type eq '정규직'}">正社員</c:when><c:when test="${type eq '계약직'}">契約社員</c:when><c:when test="${type eq '임시직'}">臨時社員</c:when><c:when test="${type eq '파견직'}">派遣社員</c:when><c:when test="${type eq '위촉직'}">委嘱社員</c:when><c:when test="${type eq '일용직'}">日雇い</c:when><c:otherwise><c:out value="${type}" /></c:otherwise></c:choose></option>
-										</c:forEach></select></label> <label class="field"><span><b>*</b> 氏名（韓国語）</span><input
+										</c:forEach></select></label> <label class="field"><span><b>*</b> 氏名</span><input
 									name="empNameKr"
 									value="<c:out value='${employee.empNameKr}' />" required
 									maxlength="50"></label> <label class="field"><span>氏名（英語）</span><input

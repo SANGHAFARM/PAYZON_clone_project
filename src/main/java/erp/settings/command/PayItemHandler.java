@@ -90,6 +90,20 @@ public class PayItemHandler implements CommandHandler {
 		req.setCharacterEncoding("UTF-8");
 		String action = req.getParameter("action");
 		if ("requestDelete".equals(action)) {
+			String payItemIdValue = req.getParameter("payItemId");
+			if (payItemIdValue == null || payItemIdValue.trim().isEmpty()) {
+				req.getSession().setAttribute("message", "削除する支給項目を選択してください。");
+				req.getSession().setAttribute("messageAnchor", "#payment-settings");
+				res.sendRedirect(req.getContextPath() + "/settings/pay-item.do#payment-settings");
+				return null;
+			}
+			int payItemId = Integer.parseInt(payItemIdValue);
+			if (payService.isRequiredPayItem(payItemId)) {
+				req.getSession().setAttribute("message", "必須支給項目は修正または削除できません。");
+				req.getSession().setAttribute("messageAnchor", "#payment-settings");
+				res.sendRedirect(req.getContextPath() + "/settings/pay-item.do#payment-settings");
+				return null;
+			}
 			req.getSession().setAttribute("deleteItemType", "PAY");
 			req.getSession().setAttribute("deleteItemId", req.getParameter("payItemId"));
 			res.sendRedirect(req.getContextPath() + "/settings/pay-item.do#payment-settings");
@@ -108,7 +122,9 @@ public class PayItemHandler implements CommandHandler {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			req.getSession().setAttribute("message", "오류 발생: " + e.getMessage());
+			String message = e instanceof IllegalArgumentException
+					? e.getMessage() : "エラー: " + e.getMessage();
+			req.getSession().setAttribute("message", message);
 			req.getSession().setAttribute("messageAnchor", "#payment-settings");
 		}
 

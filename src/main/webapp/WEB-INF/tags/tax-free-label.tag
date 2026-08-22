@@ -19,6 +19,7 @@
 		<c:set var="legal" value="${fn:replace(legal, '소법', '所得税法')}" />
 		<c:set var="legal" value="${fn:replace(legal, '소령', '所得税法施行令')}" />
 		<c:set var="legal" value="${fn:replace(legal, '조세조약', '租税条約')}" />
+		<c:set var="legal" value="${fn:replace(legal, '의', 'の')}" />
 		<c:set var="legal" value="${fn:replace(legal, ' 가', ' イ')}" />
 		<c:set var="legal" value="${fn:replace(legal, ' 나', ' ロ')}" />
 		<c:set var="legal" value="${fn:replace(legal, ' 다', ' ハ')}" />
@@ -77,12 +78,12 @@
 			<c:when test="${code eq 'J10'}">元大統領礼遇法に基づく年金</c:when>
 			<c:when test="${code eq 'K01'}">海外駐屯軍人等が受ける給与</c:when>
 			<c:when test="${code eq 'L01'}">従軍中に戦死した軍人等の当該課税期間の所得</c:when>
-			<c:when test="${code eq 'M01'}">国外勤務所得（月100万ウォン限度）</c:when>
-			<c:when test="${code eq 'M02'}">国外勤務所得（月300万ウォン限度）</c:when>
+			<c:when test="${code eq 'M01'}">国外勤務所得（月100万円限度）</c:when>
+			<c:when test="${code eq 'M02'}">国外勤務所得（月300万円限度）</c:when>
 			<c:when test="${code eq 'M03'}">国外勤務所得</c:when>
 			<c:when test="${code eq 'N01'}">国民健康保険法等に基づく事業主負担金</c:when>
 			<c:when test="${code eq 'O01'}">生産職従事者等の深夜勤務手当等</c:when>
-			<c:when test="${code eq 'P01'}">非課税食事手当（月20万ウォン以下）</c:when>
+			<c:when test="${code eq 'P01'}">非課税食事手当（月20万円以下）</c:when>
 			<c:when test="${code eq 'P02'}">現物給食</c:when>
 			<c:when test="${code eq 'Q01'}">出産・6歳以下の子どもの保育関連所得</c:when>
 			<c:when test="${code eq 'R01'}">国軍捕虜が受ける報酬等</c:when>

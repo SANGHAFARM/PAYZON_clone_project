@@ -25,6 +25,20 @@ public class DeductItemHandler implements CommandHandler {
 		req.setCharacterEncoding("UTF-8");
 		String action = req.getParameter("action");
 		if ("requestDelete".equals(action)) {
+			String deductItemIdValue = req.getParameter("deductItemId");
+			if (deductItemIdValue == null || deductItemIdValue.trim().isEmpty()) {
+				req.getSession().setAttribute("message", "削除する控除項目を選択してください。");
+				req.getSession().setAttribute("messageAnchor", "#deduction-settings");
+				res.sendRedirect(req.getContextPath() + "/settings/pay-item.do#deduction-settings");
+				return null;
+			}
+			int deductItemId = Integer.parseInt(deductItemIdValue);
+			if (payService.isRequiredDeductItem(deductItemId)) {
+				req.getSession().setAttribute("message", "必須控除項目は修正または削除できません。");
+				req.getSession().setAttribute("messageAnchor", "#deduction-settings");
+				res.sendRedirect(req.getContextPath() + "/settings/pay-item.do#deduction-settings");
+				return null;
+			}
 			req.getSession().setAttribute("deleteItemType", "DEDUCT");
 			req.getSession().setAttribute("deleteItemId", req.getParameter("deductItemId"));
 			res.sendRedirect(req.getContextPath() + "/settings/pay-item.do#deduction-settings");
@@ -61,7 +75,9 @@ public class DeductItemHandler implements CommandHandler {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			req.getSession().setAttribute("message", "오류 발생: " + e.getMessage());
+			String message = e instanceof IllegalArgumentException
+					? e.getMessage() : "エラー: " + e.getMessage();
+			req.getSession().setAttribute("message", message);
 			req.getSession().setAttribute("messageAnchor", "#deduction-settings");
 		}
 

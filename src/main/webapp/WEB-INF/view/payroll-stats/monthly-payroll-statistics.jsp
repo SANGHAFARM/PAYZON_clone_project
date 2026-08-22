@@ -129,7 +129,7 @@
 							<strong>${stat.month}月</strong>
 							<div class="annual-chart__tooltip" role="tooltip">
 								<b>${stat.month}月</b>
-								<span><i class="tooltip-dot tooltip-dot--pay"></i>給与総額（千ウォン） <em>${stat.totalPayrollText}</em></span>
+								<span><i class="tooltip-dot tooltip-dot--pay"></i>給与総額（千円） <em>${stat.totalPayrollText}</em></span>
 								<span><i class="tooltip-dot tooltip-dot--people"></i>人数（人） <em>${stat.headcountText}</em></span>
 							</div>
 						</div>
@@ -151,7 +151,7 @@
 					</thead>
 					<tbody>
 						<tr class="statistics-table__main-row">
-							<th scope="row">給与総額（千ウォン）</th>
+							<th scope="row">給与総額（千円）</th>
 							<c:forEach var="stat" items="${monthlyStats}"><td>${stat.totalPayrollText}</td></c:forEach>
 							<td class="statistics-total">${totalPayrollYearText}</td>
 						</tr>

@@ -254,7 +254,7 @@
 									<dt>一日あたり</dt>
 									<dd>
 										<c:out value="${work.dailyPay}" />
-										ウォン
+										円
 									</dd>
 								</div>
 								<div class="money">
@@ -267,21 +267,21 @@
 									<dt>所得税</dt>
 									<dd>
 										<c:out value="${work.incomeTax}" />
-										ウォン
+										円
 									</dd>
 								</div>
 								<div class="money">
 									<dt>地方所得税</dt>
 									<dd>
 										<c:out value="${work.localIncomeTax}" />
-										ウォン
+										円
 									</dd>
 								</div>
 								<div class="money total">
 									<dt>差引支給額</dt>
 									<dd>
 										<c:out value="${work.actualPay}" />
-										ウォン
+										円
 									</dd>
 								</div>
 							</dl>

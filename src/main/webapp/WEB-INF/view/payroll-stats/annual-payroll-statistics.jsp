@@ -127,14 +127,14 @@
 								<div class="annual-chart__item" tabindex="0">
 									<div class="annual-chart__plot">
 										<div class="annual-chart__bar annual-chart__bar--pay"
-											style="height:${stat.payrollBarRate}%" title="全給与額 ${stat.totalPayrollText}千ウォン"></div>
+											style="height:${stat.payrollBarRate}%" title="全給与額 ${stat.totalPayrollText}千円"></div>
 										<div class="annual-chart__bar annual-chart__bar--people"
 											style="height:${stat.headcountBarRate}%" title="人員${stat.headcountText}名"></div>
 									</div>
 									<strong>${stat.year}</strong>
 									<div class="annual-chart__tooltip" role="tooltip">
 										<b>${stat.year}年</b>
-										<span><i class="tooltip-dot tooltip-dot--pay"></i>給与総額（千ウォン） <em>${stat.totalPayrollText}</em></span>
+										<span><i class="tooltip-dot tooltip-dot--pay"></i>給与総額（千円） <em>${stat.totalPayrollText}</em></span>
 										<span><i class="tooltip-dot tooltip-dot--people"></i>人数（人） <em>${stat.headcountText}</em></span>
 									</div>
 								</div>
@@ -155,7 +155,7 @@
 							</thead>
 							<tbody>
 								<tr class="statistics-table__main-row">
-									<th scope="row">給与総額（千ウォン）</th>
+									<th scope="row">給与総額（千円）</th>
 									<c:forEach var="stat" items="${annualStats}">
 										<td>${stat.totalPayrollText}</td>
 									</c:forEach>

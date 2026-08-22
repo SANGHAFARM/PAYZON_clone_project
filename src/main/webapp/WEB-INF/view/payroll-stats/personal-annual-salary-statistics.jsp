@@ -64,8 +64,8 @@
 							<strong>${stat.year}</strong>
 							<div class="annual-chart__tooltip" role="tooltip">
 								<b>${stat.year}年・${selectedEmployeeName}</b>
-								<span><i class="tooltip-dot tooltip-dot--net"></i>差引支給額（千ウォン） <em>${stat.netSalaryText}</em></span>
-								<span><i class="tooltip-dot tooltip-dot--deduction"></i>控除金額（千ウォン） <em>${stat.deductionText}</em></span>
+								<span><i class="tooltip-dot tooltip-dot--net"></i>差引支給額（千円） <em>${stat.netSalaryText}</em></span>
+								<span><i class="tooltip-dot tooltip-dot--deduction"></i>控除金額（千円） <em>${stat.deductionText}</em></span>
 							</div>
 						</div>
 					</c:forEach>
@@ -77,10 +77,10 @@
 					<caption> ${selectedEmployeeName}社員の最近10カ年の個人年俸の現状</caption>
 					<thead><tr><th scope="col">区分</th><c:forEach var="stat" items="${salaryStats}"><th scope="col">${stat.year}年</th></c:forEach></tr></thead>
 					<tbody>
-						<tr class="statistics-table__main-row"><th scope="row">年収額（千ウォン）</th><c:forEach var="stat" items="${salaryStats}"><td>${stat.annualSalaryText}</td></c:forEach></tr>
+						<tr class="statistics-table__main-row"><th scope="row">年収額（千円）</th><c:forEach var="stat" items="${salaryStats}"><td>${stat.annualSalaryText}</td></c:forEach></tr>
 						<tr class="statistics-table__rate-row"><th scope="row">└増加率</th><c:forEach var="stat" items="${salaryStats}"><td class="${stat.salaryGrowth gt 0 ? 'rate-up' : stat.salaryGrowth lt 0 ? 'rate-down' : ''}">${stat.salaryGrowthText}</td></c:forEach></tr>
-						<tr><th scope="row">控除金額（千ウォン）</th><c:forEach var="stat" items="${salaryStats}"><td>${stat.deductionText}</td></c:forEach></tr>
-						<tr class="statistics-table__main-row"><th scope="row">差引支給額（千ウォン）</th><c:forEach var="stat" items="${salaryStats}"><td>${stat.netSalaryText}</td></c:forEach></tr>
+						<tr><th scope="row">控除金額（千円）</th><c:forEach var="stat" items="${salaryStats}"><td>${stat.deductionText}</td></c:forEach></tr>
+						<tr class="statistics-table__main-row"><th scope="row">差引支給額（千円）</th><c:forEach var="stat" items="${salaryStats}"><td>${stat.netSalaryText}</td></c:forEach></tr>
 					</tbody>
 				</table>
 			</div>

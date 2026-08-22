@@ -64,10 +64,10 @@
 												</c:if></td>
 											<td class="number"><c:if
 													test="${not empty item.taxFreeLimit}">
-													<c:out value="${item.taxFreeLimit}" />ウォン</c:if></td>
+													<c:out value="${item.taxFreeLimit}" />円</c:if></td>
 											<td><c:out value="${item.roundUnit}" /></td>
 											<td><c:choose>
-												<c:when test="${item.payMethod eq '일괄지급'}">一括支給<c:if test="${not empty item.bulkPayAmount}">_<fmt:formatNumber value="${item.bulkPayAmount}" pattern="#,##0" />ウォン</c:if></c:when>
+												<c:when test="${item.payMethod eq '일괄지급'}">一括支給<c:if test="${not empty item.bulkPayAmount}">_<fmt:formatNumber value="${item.bulkPayAmount}" pattern="#,##0" />円</c:if></c:when>
 												<c:when test="${not empty item.attendName}"><ui:code-label value="${item.attendName}" /></c:when>
 											</c:choose></td>
 											<td><span
@@ -92,10 +92,19 @@
 						<input type="hidden" name="taxFreeCode"
 							value="<c:out value='${selectedPaymentItem.taxFreeCode}' />">
 						<h3>支給項目情報</h3>
-						<label class="editor-field"><span>支給項目</span><input
-							name="payName" maxlength="50"
-							value="<c:out value='${selectedPaymentItem.payName}' />"
-							placeholder="お支払い項目を入力してください" required></label>
+						<label class="editor-field"><span>支給項目</span>
+							<c:choose>
+								<c:when test="${selectedPaymentItem.payName eq '기본급'}">
+									<input type="hidden" name="payName" value="기본급">
+									<input value="基本給" readonly>
+								</c:when>
+								<c:otherwise>
+									<input name="payName" maxlength="50"
+										value="<c:out value='${selectedPaymentItem.payName}' />"
+										placeholder="お支払い項目を入力してください" required>
+								</c:otherwise>
+							</c:choose>
+						</label>
 						<div class="editor-field">
 							<span>課税可</span>
 							<div class="radio-line">
@@ -119,7 +128,7 @@
 								限度額</span>
 						<div class="amount-input">
 								<input name="taxFreeLimit" inputmode="numeric" readonly
-									value="<c:out value='${selectedPaymentItem.taxFreeLimit}' />"><i>ウォン</i>
+									value="<c:out value='${selectedPaymentItem.taxFreeLimit}' />"><i>円</i>
 							</div></label>
 						<label class="editor-field tax-free-field direct-tax-free-field"><span>非課税名直接入力</span><input
 							name="directTaxFreeName" maxlength="300"
@@ -127,7 +136,7 @@
 							placeholder="非課税名を入力してください"></label>
 						<label class="editor-field tax-free-field direct-tax-free-field"><span>非課税限度額</span>
 							<div class="amount-input"><input name="directTaxFreeLimit" type="number" min="0" inputmode="numeric"
-								value="<c:out value='${selectedPaymentItem.directTaxFreeLimit}' />"><i>ウォン</i></div></label>
+								value="<c:out value='${selectedPaymentItem.directTaxFreeLimit}' />"><i>円</i></div></label>
 						<label class="editor-field"><span>計算方法</span><input
 							name="calcMethod"
 							value="<c:out value='${selectedPaymentItem.calcMethod}' />"
@@ -135,13 +144,13 @@
 							name="roundUnit"><option value="0"
 									${empty selectedPaymentItem.roundUnit or selectedPaymentItem.roundUnit eq '0' ? 'selected' : ''}>なし</option>
 								<option value="1"
-									${selectedPaymentItem.roundUnit eq '1' ? 'selected' : ''}>1ウォン
+									${selectedPaymentItem.roundUnit eq '1' ? 'selected' : ''}>1円
 									単位</option>
 								<option value="10"
-									${selectedPaymentItem.roundUnit eq '10' ? 'selected' : ''}>10ウォン
+									${selectedPaymentItem.roundUnit eq '10' ? 'selected' : ''}>10円
 									単位</option>
 								<option value="100"
-									${selectedPaymentItem.roundUnit eq '100' ? 'selected' : ''}>100ウォン
+									${selectedPaymentItem.roundUnit eq '100' ? 'selected' : ''}>100円
 									単位</option></select></label> <label class="editor-field"><span>勤怠連携/一括支給</span><select
 							name="linkAttendId"><option value="">選択してください。</option>
 								<c:forEach var="attend" items="${attendItems}">
@@ -154,7 +163,7 @@
 						<label class="editor-field batch-amount-field"><span>一括支払額</span>
 						<div class="amount-input">
 								<input name="bulkPayAmount" inputmode="numeric"
-									value="<c:out value='${selectedPaymentItem.bulkPayAmount}' />"><i>ウォン</i>
+									value="<c:out value='${selectedPaymentItem.bulkPayAmount}' />"><i>円</i>
 							</div></label>
 						<div class="editor-field">
 							<span>使用可</span>
@@ -226,23 +235,30 @@
 						<input type="hidden" name="deductItemId"
 							value="<c:out value='${selectedDeductionItem.deductItemId}' />">
 					<h3>控除項目情報</h3>
-						<label class="editor-field"><span>控除項目</span><input
-							name="deductName" maxlength="50"
-							value="<c:out value='${selectedDeductionItem.deductName}' />"
-							placeholder="控除項目を入力してください" required></label> <label
+						<label class="editor-field"><span>控除項目</span>
+							<c:choose>
+								<c:when test="${selectedDeductionItem.deductName eq '국민연금'}"><input type="hidden" name="deductName" value="국민연금"><input value="国民年金" readonly></c:when>
+								<c:when test="${selectedDeductionItem.deductName eq '건강보험'}"><input type="hidden" name="deductName" value="건강보험"><input value="健康保険" readonly></c:when>
+								<c:when test="${selectedDeductionItem.deductName eq '장기요양보험' or selectedDeductionItem.deductName eq '노인장기요양보험'}"><input type="hidden" name="deductName" value="<c:out value='${selectedDeductionItem.deductName}' />"><input value="介護保険" readonly></c:when>
+								<c:when test="${selectedDeductionItem.deductName eq '고용보험'}"><input type="hidden" name="deductName" value="고용보험"><input value="雇用保険" readonly></c:when>
+								<c:when test="${selectedDeductionItem.deductName eq '소득세'}"><input type="hidden" name="deductName" value="소득세"><input value="所得税" readonly></c:when>
+								<c:when test="${selectedDeductionItem.deductName eq '지방소득세'}"><input type="hidden" name="deductName" value="지방소득세"><input value="地方所得税" readonly></c:when>
+								<c:otherwise><input name="deductName" maxlength="50" value="<c:out value='${selectedDeductionItem.deductName}' />" placeholder="控除項目を入力してください" required></c:otherwise>
+							</c:choose>
+						</label> <label
 							class="editor-field"><span>計算方法</span><input
 							name="calcMethod"
 							value="<c:out value='${selectedDeductionItem.calcMethod}' />"
 							placeholder="計算方法を入力してください"></label> <label class="editor-field"><span>端数処理単位</span><select
 							name="roundUnit"><option value="0">なし</option>
 								<option value="1"
-									${selectedDeductionItem.roundUnit eq '1' ? 'selected' : ''}>1ウォン
+									${selectedDeductionItem.roundUnit eq '1' ? 'selected' : ''}>1円
 									単位</option>
 								<option value="10"
-									${selectedDeductionItem.roundUnit eq '10' ? 'selected' : ''}>10ウォン
+									${selectedDeductionItem.roundUnit eq '10' ? 'selected' : ''}>10円
 									単位</option>
 								<option value="100"
-									${selectedDeductionItem.roundUnit eq '100' ? 'selected' : ''}>100ウォン
+									${selectedDeductionItem.roundUnit eq '100' ? 'selected' : ''}>100円
 									単位</option></select></label> <label class="editor-field"><span>備考</span><input
 							name="note"
 							value="<c:out value='${selectedDeductionItem.note}' />"></label>
@@ -306,7 +322,7 @@
 										<td><c:out value="${tax.taxFreeCode}" /></td>
 										<td><ui:code-label value="${tax.reportField}" /></td>
 										<td><ui:tax-free-label code="${tax.taxFreeCode}" field="name" value="${tax.taxFreeName}" /></td>
-										<td><c:choose><c:when test="${not empty tax.defaultLimit}"><fmt:formatNumber value="${tax.defaultLimit}" pattern="#,##0" />ウォン</c:when><c:otherwise>-</c:otherwise></c:choose></td>
+										<td><c:choose><c:when test="${not empty tax.defaultLimit}"><fmt:formatNumber value="${tax.defaultLimit}" pattern="#,##0" />円</c:when><c:otherwise>-</c:otherwise></c:choose></td>
 										<td><span class="statement-mark statement-mark--${tax.payStatementYn eq 'Y' ? 'yes' : 'no'}">${tax.payStatementYn eq 'Y' ? '○' : '×'}</span></td>
 										<td><button type="submit" form="payment-editor-form" formmethod="get" formnovalidate
 											formaction="${pageContext.request.contextPath}/settings/pay-item.do#payment-settings"

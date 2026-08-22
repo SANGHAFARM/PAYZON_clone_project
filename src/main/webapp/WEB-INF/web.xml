@@ -13,6 +13,9 @@
 	<listener>
 		<listener-class>jdbc.DBCPInitListener</listener-class>
 	</listener>
+	<listener>
+		<listener-class>erp.settings.listener.RequiredPayItemInitListener</listener-class>
+	</listener>
 
 	<!-- 컨텍스트 파라미터(Context Parameter) 설정 -->
 	<!-- 애플리케이션 전체에서 전역적으로 공유해서 사용할 설정값을 정의 -->

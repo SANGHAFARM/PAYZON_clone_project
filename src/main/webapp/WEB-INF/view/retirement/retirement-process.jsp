@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
 <!DOCTYPE html>
 <html lang="ja-JP">
@@ -54,7 +55,7 @@
                 <thead>
                 <tr>
                     <th>番号</th><th>ステータス</th><th>社員番号</th><th>氏名</th><th>部署</th><th>役職</th>
-                    <th>入社日</th><th>退職日</th><th>勤続研修</th><th>中間決済</th><th>退職精算</th>
+                    <th>入社日</th><th>退職日</th><th>勤続年数</th><th>中間決済</th><th>退職精算</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -69,7 +70,7 @@
                         <td><a href="#retirement-${employee.employeeId}">${employee.positionName}</a></td>
                         <td><a href="#retirement-${employee.employeeId}">${employee.joinDate}</a></td>
                         <td><a href="#retirement-${employee.employeeId}">${employee.retirementDate}</a></td>
-                        <td><a href="#retirement-${employee.employeeId}">${employee.serviceYears}</a></td>
+                        <td><a href="#retirement-${employee.employeeId}">${fn:replace(employee.serviceYears, '년', '年')}</a></td>
                         <td><a href="#retirement-${employee.employeeId}">${employee.interimSettlement ? '○' : '×'}</a></td>
                         <td><a href="#retirement-${employee.employeeId}">${employee.retirementSettlement ? '○' : '×'}</a></td>
                     </tr>

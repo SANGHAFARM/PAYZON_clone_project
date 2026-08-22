@@ -134,7 +134,7 @@
 
 						</label> <label> <span>一日あたり</span> <span class="amount-control">
 								<input type="number" id="dailyPay" name="dailyPay" min="0"
-								value="${dailyPay}" placeholder="日給を入力してください"> <em>ウォン</em>
+								value="${dailyPay}" placeholder="日給を入力してください"> <em>円</em>
 						</span></label> <label> <span>支払い率</span> <input type="number"
 							id="payRate" name="payRate" min="0" step="0.1"
 							value="${empty editId ? 1.0 : payRate}"></label> <label
@@ -142,17 +142,17 @@
 							class="amount-control"> <input type="text" id="incomeTax"
 								name="incomeTax"
 								value="${empty editId ? calculatedIncomeTax : incomeTax}"
-								placeholder="自動計算されます" readonly> <em>ウォン</em></span></label> <label
+								placeholder="自動計算されます" readonly> <em>円</em></span></label> <label
 							class="calculated"> <span>地方所得税</span> <span
 							class="amount-control"> <input type="text"
 								id="localIncomeTax" name="localIncomeTax"
 								value="${empty editId ? calculatedLocalIncomeTax : localIncomeTax}"
-								placeholder="自動計算されます" readonly> <em>ウォン</em></span></label> <label
+								placeholder="自動計算されます" readonly> <em>円</em></span></label> <label
 							class="calculated"><span>差引支給額</span><span
 							class="amount-control"> <input type="text" id="actualPay"
 								name="actualPay"
 								value="${empty editId ? calculatedActualPay : actualPay}"
-								placeholder="自動計算されます" readonly><em>ウォン</em></span> </label>
+								placeholder="自動計算されます" readonly><em>円</em></span> </label>
 					</div>
 					<div class="form-actions">
 
@@ -376,13 +376,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // 総支払額（1日あたり*支払率）
         const totalPay = dailyPay * payRate;
 
-        // 非課税15万ウォン控除後2.7%適用
+        // 非課税15万円控除後2.7%適用
         let taxableAmount = totalPay - 150000;
         if (taxableAmount c 0) taxableAmount = 0;
 
         let incomeTax = 0;
         if (totalPay > 150000) {
-            incomeTax = Math.floor(taxableAmount * 0.027 / 10) * 10; // 10ウォン未満の切り捨て
+            incomeTax = Math.floor(taxableAmount * 0.027 / 10) * 10; // 10円未満の切り捨て
         }
 
         let localIncomeTax = Math.floor(incomeTax * 0.1 / 10) * 10;

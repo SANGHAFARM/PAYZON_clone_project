@@ -30,7 +30,7 @@
 				<dl>
 					<div><dt>在職社員</dt><dd><fmt:formatNumber value="${dashboard.employeeSummary.workingCount}" />人</dd></div>
 					<div><dt>最近の給与支給人数</dt><dd><fmt:formatNumber value="${empty dashboard.latestPayroll ? 0 : dashboard.latestPayroll.employeeCount}" />人</dd></div>
-					<div><dt>最近の差引支給額</dt><dd><fmt:formatNumber value="${empty dashboard.latestPayroll ? 0 : dashboard.latestPayroll.netPayment}" />ウォン</dd></div>
+					<div><dt>最近の差引支給額</dt><dd><fmt:formatNumber value="${empty dashboard.latestPayroll ? 0 : dashboard.latestPayroll.netPayment}" />円</dd></div>
 				</dl>
 			</div>
 		</section>
