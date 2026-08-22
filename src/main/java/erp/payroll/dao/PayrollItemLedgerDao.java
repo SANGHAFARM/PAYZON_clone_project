@@ -13,8 +13,14 @@ import erp.payroll.dto.PayrollItemLedgerPage.PayrollItemLedgerOption;
 import erp.payroll.dto.PayrollItemLedgerPage.PayrollItemLedgerRow;
 
 // 지급·공제 항목별 사원 금액을 조회한다.
+// 급여항목Ledger 데이터를 데이터베이스에서 조회하고 저장·수정·삭제한다.
+// 給与項目Ledgerデータをデータベースから照会し、登録・更新・削除する。
 public class PayrollItemLedgerDao {
 
+	// 조회 조건에 맞는 항목 목록 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う項目一覧データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<PayrollItemLedgerOption> selectItems(Connection conn) throws SQLException {
 		String sql = "SELECT ITEM_CODE, ITEM_NAME FROM ("
 				+ "SELECT 'P' || PAY_ITEM_ID ITEM_CODE, PAY_NAME ITEM_NAME, 1 ITEM_TYPE, PAY_ITEM_ID ITEM_ID "
@@ -31,6 +37,10 @@ public class PayrollItemLedgerDao {
 		}
 	}
 
+	// 조회 조건에 맞는 행 목록 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う行一覧データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<PayrollItemLedgerRow> selectRows(Connection conn, String startMonth, String endMonth,
 			String itemCode, List<String> months) throws SQLException {
 		boolean paymentItem = itemCode.startsWith("P");
@@ -71,6 +81,10 @@ public class PayrollItemLedgerDao {
 		}
 	}
 
+	// 조회값과 입력값을 조합하여 행 데이터 처리 데이터를 구성한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 照会値と入力値を組み合わせて行データの処理データを構成する。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	private PayrollItemLedgerRow makeRow(ResultSet rs, int monthCount) throws SQLException {
 		PayrollItemLedgerRow row = new PayrollItemLedgerRow();
 		row.setEmployeeId(rs.getInt("EMPLOYEE_ID"));

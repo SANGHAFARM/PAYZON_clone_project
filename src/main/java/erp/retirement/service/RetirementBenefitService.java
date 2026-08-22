@@ -31,6 +31,8 @@ import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
 // 퇴직급여 조회, 계산, 저장과 삭제를 처리한다.
+// 퇴직급여정산 업무 규칙과 데이터 변경 트랜잭션을 처리한다.
+// 退職給与精算の業務ルールとデータ変更トランザクションを処理する。
 public class RetirementBenefitService {
 
 	private final RetirementCalculationDao calculationDao = RetirementCalculationDao.getInstance();
@@ -41,6 +43,10 @@ public class RetirementBenefitService {
 	private final RetirementBenefitQueryDao benefitQueryDao = new RetirementBenefitQueryDao();
 
 	// 정산 종료일 이전 최근 3개월의 급여를 불러온다.
+	// 퇴직급여정산 처리에 필요한 최근급여상세내역 목록 데이터를 조회하여 반환한다.
+	// 조회 전용 Connection으로 관련 DAO 결과를 조합하며 데이터 변경이 없으므로 별도의 commit이나 rollback을 수행하지 않는다.
+	// 退職給与精算処理に必要な直近給与明細一覧データを照会して返す。
+	// 照会専用Connectionで関連DAOの結果を組み合わせ、データ変更がないため個別のcommitやrollbackは実行しない。
 	public void loadRecentSalaryEntries(RetirementBenefitForm form) {
 		if (form.getEndDate() == null || form.getEndDate().trim().isEmpty()) {
 			throw new IllegalArgumentException("정산 종료일을 입력하세요.");
@@ -55,6 +61,10 @@ public class RetirementBenefitService {
 		}
 	}
 
+	// 퇴직급여정산 처리에 필요한 지급연도 목록를 조회하거나 계산하여 반환한다.
+	// 호출자가 전달한 조회조건을 적용하고 결과가 없을 때도 빈 값이나 빈 목록을 안전하게 반환한다.
+	// 退職給与精算処理に必要な支給年度一覧を照会または計算して返す。
+	// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
 	public List<Integer> getPaymentYears() {
 		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 		List<Integer> years = new ArrayList<>();
@@ -64,6 +74,10 @@ public class RetirementBenefitService {
 		return years;
 	}
 
+	// 요청 조건에 맞는 퇴직급여정산 화면 데이터를 구성하여 반환한다.
+	// 호출자가 전달한 조회조건을 적용하고 결과가 없을 때도 빈 값이나 빈 목록을 안전하게 반환한다.
+	// リクエスト条件に合う退職給与精算の画面データを構成して返す。
+	// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
 	public BenefitPageData getPage(int year, Integer calculationId, String keyword,
 			Integer departmentId) {
 		try (Connection conn = ConnectionProvider.getConnection()) {
@@ -87,6 +101,10 @@ public class RetirementBenefitService {
 		}
 	}
 
+	// 퇴직급여정산 처리에 사용할 사원검색조건 데이터나 객체를 생성한다.
+	// 하나의 Connection에서 자동 커밋을 해제하고 관련 DAO 작업을 묶어 성공 시 commit, 실패 시 rollback한다.
+	// 退職給与精算処理で使用する社員検索条件データまたはオブジェクトを生成する。
+	// 一つのConnectionで自動コミットを無効化して関連DAO処理をまとめ、成功時はcommit、失敗時はrollbackする。
 	private EmployeeSearchCondition createEmployeeCondition(String keyword, Integer departmentId) {
 		EmployeeSearchCondition condition = new EmployeeSearchCondition();
 		condition.setSearchTarget("ALL");
@@ -100,6 +118,10 @@ public class RetirementBenefitService {
 	}
 
 	// 저장된 정산이 있으면 최근 내역을 불러오고, 없으면 신규 정산 화면을 준비한다.
+	// 조회값과 입력값을 조합하여 입력·관리 처리 데이터를 구성한다.
+	// 여러 DAO와 입력값을 조합해 화면 또는 다음 업무 단계에서 바로 사용할 수 있는 결과 객체를 만든다.
+	// 照会値と入力値を組み合わせて入力・管理の処理データを構成する。
+	// 複数のDAO結果と入力値を組み合わせ、画面または次の業務段階で直ちに使用できる結果オブジェクトを作成する。
 	public RetirementBenefitForm prepareForManagement(int employeeId) {
 		try (Connection conn = ConnectionProvider.getConnection()) {
 			List<RetirementCalculation> calculations = calculationDao.selectByEmpId(conn, employeeId);
@@ -119,6 +141,10 @@ public class RetirementBenefitService {
 	}
 
 	// 신규 정산 목록에 이미 추가한 사원을 검색 조건과 관계없이 다시 조회한다.
+	// 퇴직급여정산 처리에 필요한 사원를 조회하거나 계산하여 반환한다.
+	// 호출자가 전달한 조회조건을 적용하고 결과가 없을 때도 빈 값이나 빈 목록을 안전하게 반환한다.
+	// 退職給与精算処理に必要な社員を照会または計算して返す。
+	// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
 	public List<EmployeeListItem> getEmployees(List<Integer> employeeIds) {
 		try (Connection conn = ConnectionProvider.getConnection()) {
 			EmployeeSearchCondition condition = createEmployeeCondition("", null);
@@ -132,6 +158,10 @@ public class RetirementBenefitService {
 	}
 
 	// 임시 목록에 담긴 사원별 최근 정산을 상단 목록 표시용으로 조회한다.
+	// 퇴직급여정산 처리에 필요한 최근퇴직급여 목록를 조회하거나 계산하여 반환한다.
+	// 호출자가 전달한 조회조건을 적용하고 결과가 없을 때도 빈 값이나 빈 목록을 안전하게 반환한다.
+	// 退職給与精算処理に必要な最新退職給与一覧を照会または計算して返す。
+	// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
 	public Map<Integer, RetirementBenefitForm> getLatestBenefits(List<Integer> employeeIds) {
 		try (Connection conn = ConnectionProvider.getConnection()) {
 			Map<Integer, RetirementBenefitForm> benefits = new HashMap<>();
@@ -148,6 +178,10 @@ public class RetirementBenefitService {
 	}
 
 	// 사원정보 화면에서 표시할 가장 최근 퇴직급여 정산 결과를 조회한다.
+	// 퇴직급여정산 처리에 필요한 최근정산를 조회하거나 계산하여 반환한다.
+	// 호출자가 전달한 조회조건을 적용하고 결과가 없을 때도 빈 값이나 빈 목록을 안전하게 반환한다.
+	// 退職給与精算処理に必要な最新精算を照会または計算して返す。
+	// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
 	public RetirementBenefitForm getLatestBenefit(int employeeId) {
 		try (Connection conn = ConnectionProvider.getConnection()) {
 			List<RetirementCalculation> calculations = calculationDao.selectByEmpId(conn, employeeId);
@@ -157,6 +191,10 @@ public class RetirementBenefitService {
 		}
 	}
 
+	// 조회값과 입력값을 조합하여 신규 처리 데이터를 구성한다.
+	// 여러 DAO와 입력값을 조합해 화면 또는 다음 업무 단계에서 바로 사용할 수 있는 결과 객체를 만든다.
+	// 照会値と入力値を組み合わせて新規の処理データを構成する。
+	// 複数のDAO結果と入力値を組み合わせ、画面または次の業務段階で直ちに使用できる結果オブジェクトを作成する。
 	public RetirementBenefitForm prepareNew(int employeeId) {
 		try (Connection conn = ConnectionProvider.getConnection()) {
 			Employee employee = employeeDao.selectById(conn, employeeId);
@@ -168,6 +206,7 @@ public class RetirementBenefitService {
 			RetirementBenefitForm form = new RetirementBenefitForm();
 			form.setEmployeeId(employeeId);
 			// 재직 사원은 중간정산, 퇴직 사원은 퇴직정산으로 고정한다.
+			// 社員の識別情報と在職・雇用・所属条件を確認し、対象社員データへ反映する。
 			form.setSettlementType("퇴직".equals(employee.getStatus()) ? "RETIREMENT" : "INTERIM");
 			if (employee.getJoinDate() != null) {
 				form.setStartDate(dateFormat.format(employee.getJoinDate()));
@@ -176,6 +215,7 @@ public class RetirementBenefitService {
 				form.setEndDate(dateFormat.format(employee.getRetireDate()));
 			}
 			// 선택한 사원의 재직기간을 신규 정산 화면에 바로 표시한다.
+			// 画面表示に必要なデータとメッセージをrequestまたはsessionへ保存し、JSPへ引き渡す。
 			if (form.getStartDate() != null && form.getEndDate() != null) {
 				LocalDate startDate = LocalDate.parse(form.getStartDate());
 				LocalDate endDate = LocalDate.parse(form.getEndDate());
@@ -190,6 +230,10 @@ public class RetirementBenefitService {
 		}
 	}
 
+	// 조회된 금액과 업무 규칙을 이용해 퇴직급여정산 계산 결과를 생성한다.
+	// 입력금액과 기간·요율·절사단위를 적용하고 계산 중 발생할 수 있는 NULL이나 음수 결과를 안전하게 보정한다.
+	// 照会した金額と業務ルールを使用して退職給与精算の計算結果を生成する。
+	// 入力金額と期間・料率・端数処理単位を適用し、計算中に発生し得るNULLや負数結果を安全に補正する。
 	public void calculate(RetirementBenefitForm form) {
 		validateCalculation(form);
 
@@ -205,6 +249,10 @@ public class RetirementBenefitService {
 		calculatePayment(form, serviceDays);
 	}
 
+	// 계산 입력값과 업무 처리 가능 여부를 검증한다.
+	// 필수값과 상태 조합을 확인해 잘못된 데이터가 DAO 또는 후속 계산으로 전달되지 않도록 차단한다.
+	// 計算の入力値と業務処理の可否を検証する。
+	// 必須値と状態の組み合わせを確認し、不正データがDAOまたは後続計算へ渡らないよう遮断する。
 	private void validateCalculation(RetirementBenefitForm form) {
 		if (!"RETIREMENT".equals(form.getSettlementType())
 				&& !"INTERIM".equals(form.getSettlementType())) {
@@ -232,6 +280,10 @@ public class RetirementBenefitService {
 		}
 	}
 
+	// 조회된 금액과 업무 규칙을 이용해 임금 계산 결과를 생성한다.
+	// 입력금액과 기간·요율·절사단위를 적용하고 계산 중 발생할 수 있는 NULL이나 음수 결과를 안전하게 보정한다.
+	// 照会した金額と業務ルールを使用して賃金の計算結果を生成する。
+	// 入力金額と期間・料率・端数処理単位を適用し、計算中に発生し得るNULLや負数結果を安全に補正する。
 	private void calculateWage(RetirementBenefitForm form) {
 		long salaryTotal = 0;
 		long salaryDays = 0;
@@ -243,6 +295,7 @@ public class RetirementBenefitService {
 				salaryDays += entry.getCalcDays() == null ? 0 : Math.round(entry.getCalcDays());
 			} else {
 				// 최근 1년 기타소득 중 평균임금 산정에 반영할 3개월분을 환산한다.
+				// 基準日と期間の境界を確認し、照会・計算に使用できる日付形式へ変換する。
 				long threeMonthAmount = Math.max(0, entry.getAmount()) * 3 / 12;
 				entry.setThreeMonthAmount(threeMonthAmount);
 				otherIncomeTotal += threeMonthAmount;
@@ -254,9 +307,14 @@ public class RetirementBenefitService {
 		form.setThreeMonthTotal(salaryTotal + otherIncomeTotal);
 		form.setDailyAverage(salaryDays == 0 ? 0 : form.getThreeMonthTotal() / salaryDays);
 		// 별도 통상임금 자료가 없으므로 프로젝트에서는 산정된 평균임금을 기준임금으로 사용한다.
+		// 支給額・控除額・期間値を業務基準に従って計算し、合計と最終金額へ反映する。
 		form.setDailyOrdinary(form.getDailyAverage());
 	}
 
+	// 조회된 금액과 업무 규칙을 이용해 지급 계산 결과를 생성한다.
+	// 입력금액과 기간·요율·절사단위를 적용하고 계산 중 발생할 수 있는 NULL이나 음수 결과를 안전하게 보정한다.
+	// 照会した金額と業務ルールを使用して支給の計算結果を生成する。
+	// 入力金額と期間・料率・端数処理単位を適用し、計算中に発生し得るNULLや負数結果を安全に補正する。
 	private void calculatePayment(RetirementBenefitForm form, int serviceDays) {
 		long dailyBase = Math.max(form.getDailyAverage(), form.getDailyOrdinary());
 		long retirementIncome = Math.round(dailyBase * 30.0 * serviceDays / 365.0)
@@ -265,6 +323,7 @@ public class RetirementBenefitService {
 		int serviceYears = Math.max(1, (int) Math.ceil(serviceDays / 365.0));
 
 		// 퇴직소득세는 근속연수공제와 환산급여공제를 차례로 적용해 계산한다.
+		// 支給額・控除額・期間値を業務基準に従って計算し、合計と最終金額へ反映する。
 		long serviceDeduction = calculateServiceDeduction(serviceYears);
 		long convertedPay = Math.max(0, taxablePayment - serviceDeduction) * 12 / serviceYears;
 		long taxBase = Math.max(0, convertedPay - calculateConvertedPayDeduction(convertedPay));
@@ -292,10 +351,15 @@ public class RetirementBenefitService {
 		form.setOtherDeduction(0);
 		form.setWithholdingTax(withholdingTax);
 		// 연금계좌 이체액은 현금 수령액에서 제외하되 퇴직급여 자체에는 포함한다.
+		// 支給額・控除額・期間値を業務基準に従って計算し、合計と最終金額へ反映する。
 		form.setNetPayment(Math.max(0, retirementIncome - Math.min(retirementIncome, deferralAmount)
 				- withholdingTax));
 	}
 
+	// 조회된 금액과 업무 규칙을 이용해 근속공제 계산 결과를 생성한다.
+	// 입력금액과 기간·요율·절사단위를 적용하고 계산 중 발생할 수 있는 NULL이나 음수 결과를 안전하게 보정한다.
+	// 照会した金額と業務ルールを使用して勤続控除の計算結果を生成する。
+	// 入力金額と期間・料率・端数処理単位を適用し、計算中に発生し得るNULLや負数結果を安全に補正する。
 	private long calculateServiceDeduction(int serviceYears) {
 		if (serviceYears <= 5) {
 			return serviceYears * 1000000L;
@@ -309,6 +373,10 @@ public class RetirementBenefitService {
 		return 40000000L + (serviceYears - 20) * 3000000L;
 	}
 
+	// 조회된 금액과 업무 규칙을 이용해 환산지급공제 계산 결과를 생성한다.
+	// 입력금액과 기간·요율·절사단위를 적용하고 계산 중 발생할 수 있는 NULL이나 음수 결과를 안전하게 보정한다.
+	// 照会した金額と業務ルールを使用して換算支給控除の計算結果を生成する。
+	// 入力金額と期間・料率・端数処理単位を適用し、計算中に発生し得るNULLや負数結果を安全に補正する。
 	private long calculateConvertedPayDeduction(long convertedPay) {
 		if (convertedPay <= 8000000L) {
 			return convertedPay;
@@ -325,6 +393,10 @@ public class RetirementBenefitService {
 		return 151700000L + Math.round((convertedPay - 300000000L) * 0.35);
 	}
 
+	// 조회된 금액과 업무 규칙을 이용해 누진세금 계산 결과를 생성한다.
+	// 입력금액과 기간·요율·절사단위를 적용하고 계산 중 발생할 수 있는 NULL이나 음수 결과를 안전하게 보정한다.
+	// 照会した金額と業務ルールを使用して累進税金の計算結果を生成する。
+	// 入力金額と期間・料率・端数処理単位を適用し、計算中に発生し得るNULLや負数結果を安全に補正する。
 	private long calculateProgressiveTax(long taxBase) {
 		if (taxBase <= 14000000L) return Math.round(taxBase * 0.06);
 		if (taxBase <= 50000000L) return Math.round(taxBase * 0.15 - 1260000L);
@@ -336,6 +408,10 @@ public class RetirementBenefitService {
 		return Math.round(taxBase * 0.45 - 65940000L);
 	}
 
+	// 퇴직급여정산 처리에 필요한 과세이연금액를 조회하거나 계산하여 반환한다.
+	// 호출자가 전달한 조회조건을 적용하고 결과가 없을 때도 빈 값이나 빈 목록을 안전하게 반환한다.
+	// 退職給与精算処理に必要な課税繰延金額を照会または計算して返す。
+	// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
 	private long getDeferralAmount(RetirementBenefitForm form) {
 		long total = 0;
 		for (RetirementTaxDeferral deferral : form.getTaxDeferrals()) {
@@ -344,10 +420,18 @@ public class RetirementBenefitService {
 		return total;
 	}
 
+	// 보험료와 세액 계산 결과를 지정된 절사단위에 맞춰 내림 처리한다.
+	// 입력금액과 기간·요율·절사단위를 적용하고 계산 중 발생할 수 있는 NULL이나 음수 결과를 안전하게 보정한다.
+	// 保険料と税額の計算結果を指定された端数処理単位に合わせて切り捨てる。
+	// 入力金額と期間・料率・端数処理単位を適用し、計算中に発生し得るNULLや負数結果を安全に補正する。
 	private long floorToTen(long amount) {
 		return Math.max(0, amount / 10 * 10);
 	}
 
+	// 입력값을 검증한 후 퇴직급여정산 데이터를 트랜잭션으로 저장하거나 수정한다.
+	// 하나의 Connection에서 자동 커밋을 해제하고 관련 DAO 작업을 묶어 성공 시 commit, 실패 시 rollback한다.
+	// 入力値を検証した後、退職給与精算データをトランザクションで登録または更新する。
+	// 一つのConnectionで自動コミットを無効化して関連DAO処理をまとめ、成功時はcommit、失敗時はrollbackする。
 	public int save(RetirementBenefitForm form) {
 		calculate(form);
 		validatePayment(form);
@@ -379,6 +463,10 @@ public class RetirementBenefitService {
 		}
 	}
 
+	// 지급 입력값과 업무 처리 가능 여부를 검증한다.
+	// 필수값과 상태 조합을 확인해 잘못된 데이터가 DAO 또는 후속 계산으로 전달되지 않도록 차단한다.
+	// 支給の入力値と業務処理の可否を検証する。
+	// 必須値と状態の組み合わせを確認し、不正データがDAOまたは後続計算へ渡らないよう遮断する。
 	private void validatePayment(RetirementBenefitForm form) {
 		if (form.getPaymentMethod() == null || form.getPaymentMethod().trim().isEmpty()
 				|| form.getPaymentDate() == null || form.getPaymentDate().trim().isEmpty()) {
@@ -386,6 +474,10 @@ public class RetirementBenefitService {
 		}
 	}
 
+	// 퇴직급여정산 처리에 사용할 소득상세내역 목록 데이터나 객체를 생성한다.
+	// 하나의 Connection에서 자동 커밋을 해제하고 관련 DAO 작업을 묶어 성공 시 commit, 실패 시 rollback한다.
+	// 退職給与精算処理で使用する所得明細一覧データまたはオブジェクトを生成する。
+	// 一つのConnectionで自動コミットを無効化して関連DAO処理をまとめ、成功時はcommit、失敗時はrollbackする。
 	private void insertIncomeEntries(Connection conn, int calculationId,
 			List<RetirementIncomeEntry> entries) throws SQLException {
 		for (RetirementIncomeEntry entry : entries) {
@@ -394,6 +486,10 @@ public class RetirementBenefitService {
 		}
 	}
 
+	// 퇴직급여정산 처리에 사용할 세금과세이연 목록 데이터나 객체를 생성한다.
+	// 하나의 Connection에서 자동 커밋을 해제하고 관련 DAO 작업을 묶어 성공 시 commit, 실패 시 rollback한다.
+	// 退職給与精算処理で使用する税金課税繰延一覧データまたはオブジェクトを生成する。
+	// 一つのConnectionで自動コミットを無効化して関連DAO処理をまとめ、成功時はcommit、失敗時はrollbackする。
 	private void insertTaxDeferrals(Connection conn, int calculationId,
 			List<RetirementTaxDeferral> deferrals) throws SQLException {
 		for (RetirementTaxDeferral deferral : deferrals) {
@@ -402,6 +498,10 @@ public class RetirementBenefitService {
 		}
 	}
 
+	// 선택되거나 식별된 퇴직급여정산 데이터를 삭제하고 관련 상태를 정리한다.
+	// 하나의 Connection에서 자동 커밋을 해제하고 관련 DAO 작업을 묶어 성공 시 commit, 실패 시 rollback한다.
+	// 選択または識別された退職給与精算データを削除し、関連状態を整理する。
+	// 一つのConnectionで自動コミットを無効化して関連DAO処理をまとめ、成功時はcommit、失敗時はrollbackする。
 	public void delete(Integer calculationId, boolean deleteAll, Integer paymentYear) {
 		Connection conn = null;
 		try {
@@ -427,6 +527,10 @@ public class RetirementBenefitService {
 		}
 	}
 
+	// 입력 데이터를 도메인 데이터 처리에 필요한 형식으로 변환한다.
+	// 여러 DAO와 입력값을 조합해 화면 또는 다음 업무 단계에서 바로 사용할 수 있는 결과 객체를 만든다.
+	// 入力データをドメインデータ処理に必要な形式へ変換する。
+	// 複数のDAO結果と入力値を組み合わせ、画面または次の業務段階で直ちに使用できる結果オブジェクトを作成する。
 	private RetirementCalculation toModel(RetirementBenefitForm form, int calculationId)
 			throws SQLException {
 		RetirementCalculation calculation = new RetirementCalculation();
@@ -471,6 +575,10 @@ public class RetirementBenefitService {
 		return calculation;
 	}
 
+	// 입력 데이터를 도메인 데이터 처리에 필요한 형식으로 변환한다.
+	// 여러 DAO와 입력값을 조합해 화면 또는 다음 업무 단계에서 바로 사용할 수 있는 결과 객체를 만든다.
+	// 入力データをドメインデータ処理に必要な形式へ変換する。
+	// 複数のDAO結果と入力値を組み合わせ、画面または次の業務段階で直ちに使用できる結果オブジェクトを作成する。
 	private RetirementBenefitForm fromModel(RetirementCalculation calculation) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		RetirementBenefitForm form = new RetirementBenefitForm();
@@ -512,18 +620,34 @@ public class RetirementBenefitService {
 		private List<Department> departments;
 		private RetirementBenefitForm form;
 
+		// 퇴직급여정산 처리에 필요한 퇴직급여 목록를 조회하거나 계산하여 반환한다.
+		// 호출자가 전달한 조회조건을 적용하고 결과가 없을 때도 빈 값이나 빈 목록을 안전하게 반환한다.
+		// 退職給与精算処理に必要な退職給与一覧を照会または計算して返す。
+		// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
 		public List<RetirementBenefitListItem> getBenefits() {
 			return benefits;
 		}
 
+		// 퇴직급여정산 처리에 필요한 사원를 조회하거나 계산하여 반환한다.
+		// 호출자가 전달한 조회조건을 적용하고 결과가 없을 때도 빈 값이나 빈 목록을 안전하게 반환한다.
+		// 退職給与精算処理に必要な社員を照会または計算して返す。
+		// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
 		public List<EmployeeListItem> getEmployees() {
 			return employees;
 		}
 
+		// 퇴직급여정산 처리에 필요한 부서 목록를 조회하거나 계산하여 반환한다.
+		// 호출자가 전달한 조회조건을 적용하고 결과가 없을 때도 빈 값이나 빈 목록을 안전하게 반환한다.
+		// 退職給与精算処理に必要な部署一覧を照会または計算して返す。
+		// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
 		public List<Department> getDepartments() {
 			return departments;
 		}
 
+		// 요청 조건에 맞는 퇴직급여정산 입력화면를 구성하여 반환한다.
+		// 호출자가 전달한 조회조건을 적용하고 결과가 없을 때도 빈 값이나 빈 목록을 안전하게 반환한다.
+		// リクエスト条件に合う退職給与精算の入力画面を構成して返す。
+		// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
 		public RetirementBenefitForm getForm() {
 			return form;
 		}

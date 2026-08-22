@@ -67,9 +67,7 @@
 .work-detail-modal .money{background:#fffdf0}
 .work-detail-modal .total dd{color:#173f64;font-size:15px;font-weight:700}
 @media(max-width:1050px){.day-worker-inquiry-page{width:calc(100% - 24px)}
-.detail-layout{grid-template-columns:1fr}
-.detail-filter{width:100%;display:grid;grid-template-columns:repeat(2,1fr);gap:0 14px}
-.filter-actions{grid-column:1/-1}
+    .detail-layout{grid-template-columns:1fr}
+    .detail-filter{width:100%;display:grid;grid-template-columns:repeat(2,1fr);gap:0 14px}
+    .filter-actions{grid-column:1/-1}
 }
-
-

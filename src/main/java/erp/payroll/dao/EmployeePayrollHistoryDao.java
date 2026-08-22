@@ -11,6 +11,8 @@ import erp.payroll.dto.EmployeePayrollHistoryPage.EmployeePayrollHistoryEmployee
 import erp.payroll.dto.EmployeePayrollHistoryPage.EmployeePayrollHistoryItem;
 
 // 사원과 월별 급여 지급 내역을 조회한다.
+// 사원급여이력 데이터를 데이터베이스에서 조회하고 저장·수정·삭제한다.
+// 社員給与履歴データをデータベースから照会し、登録・更新・削除する。
 public class EmployeePayrollHistoryDao {
 
 	private static final String HISTORY_SQL =
@@ -44,6 +46,10 @@ public class EmployeePayrollHistoryDao {
 			+ "JOIN EMPLOYEE E ON E.EMPLOYEE_ID = PE.EMPLOYEE_ID "
 			+ "WHERE PE.EMPLOYEE_ID = ? AND R.PAY_YEAR || R.PAY_MONTH BETWEEN ? AND ? ";
 
+	// 조회 조건에 맞는 사원 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う社員データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<EmployeePayrollHistoryEmployee> selectEmployees(Connection conn, String keyword,
 			Integer departmentId, String status) throws SQLException {
 		String sql = "SELECT E.EMPLOYEE_ID, E.EMP_TYPE, E.EMP_NO, E.EMP_NAME_KR, "
@@ -81,6 +87,10 @@ public class EmployeePayrollHistoryDao {
 		}
 	}
 
+	// 조회 조건에 맞는 사원 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う社員データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public EmployeePayrollHistoryEmployee selectEmployee(Connection conn, int employeeId) throws SQLException {
 		String sql = "SELECT E.EMPLOYEE_ID, E.EMP_TYPE, E.EMP_NO, E.EMP_NAME_KR, "
 				+ "NVL(D.DEPARTMENT_NAME, '-') DEPARTMENT_NAME, NVL(J.JOB_POSITION_NAME, '-') POSITION_NAME, "
@@ -95,6 +105,10 @@ public class EmployeePayrollHistoryDao {
 		}
 	}
 
+	// 조회 조건에 맞는 이력 목록 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う履歴一覧データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<EmployeePayrollHistoryItem> selectHistories(Connection conn, int employeeId,
 			String startMonth, String endMonth) throws SQLException {
 		try (PreparedStatement pstmt = conn.prepareStatement(HISTORY_SQL +
@@ -112,6 +126,10 @@ public class EmployeePayrollHistoryDao {
 		}
 	}
 
+	// 조회값과 입력값을 조합하여 사원 처리 데이터를 구성한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 照会値と入力値を組み合わせて社員の処理データを構成する。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	private EmployeePayrollHistoryEmployee makeEmployee(ResultSet rs) throws SQLException {
 		EmployeePayrollHistoryEmployee employee = new EmployeePayrollHistoryEmployee();
 		employee.setEmployeeId(rs.getInt("EMPLOYEE_ID"));
@@ -124,6 +142,10 @@ public class EmployeePayrollHistoryDao {
 		return employee;
 	}
 
+	// 조회값과 입력값을 조합하여 이력 처리 데이터를 구성한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 照会値と入力値を組み合わせて履歴の処理データを構成する。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	private EmployeePayrollHistoryItem makeHistory(ResultSet rs) throws SQLException {
 		EmployeePayrollHistoryItem item = new EmployeePayrollHistoryItem();
 		item.setPaymentMonth(rs.getString("PAY_YEAR") + "-" + rs.getString("PAY_MONTH"));
@@ -141,6 +163,10 @@ public class EmployeePayrollHistoryDao {
 		return item;
 	}
 
+	// 요청 문자열을 정리하고 빈 값To빈 값 처리에 필요한 안전한 값으로 변환한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// リクエスト文字列を整え、空値To空値処理に必要な安全な値へ変換する。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	private String emptyToNull(String value) {
 		return value == null || value.trim().isEmpty() ? null : value.trim();
 	}

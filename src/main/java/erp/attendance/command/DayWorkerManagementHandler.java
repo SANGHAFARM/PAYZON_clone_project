@@ -29,6 +29,8 @@ import erp.employees.dto.DayWorkerDto;
 import jdbc.connection.ConnectionProvider;
 import mvc.command.CommandHandler;
 
+// 일용직근로자입력·관리 화면의 HTTP 요청을 구분하고 적절한 서비스 호출과 화면 이동을 담당한다.
+// 日雇い労働者入力・管理画面のHTTPリクエストを判別し、適切なサービス呼び出しと画面遷移を担当する。
 public class DayWorkerManagementHandler implements CommandHandler {
 	private static final String FORM_VIEW = "/WEB-INF/view/attendance/day-worker-management.jsp";
 	private static final String SUCCESS_VIEW = "";
@@ -37,6 +39,10 @@ public class DayWorkerManagementHandler implements CommandHandler {
 	DailyWorkInsertService insertService = new DailyWorkInsertService();
 	DailyWorkUpdateService updateService = new DailyWorkUpdateService();
 
+	// 요청 방식과 작업 구분을 확인하여 일용직근로자입력·관리 조회·저장 작업을 적절한 처리로 연결한다.
+	// 요청 파라미터를 검증해 Service에 전달하고 처리 결과를 request 또는 session에 저장한 뒤 JSP 포워드나 리다이렉트 경로를 결정한다.
+	// リクエスト方式と処理区分を確認し、日雇い労働者入力・管理の照会・保存処理へ適切に振り分ける。
+	// リクエストパラメーターを検証してServiceへ渡し、処理結果をrequestまたはsessionへ保存した後、JSPフォワードまたはリダイレクト先を決定する。
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		if (req.getMethod().equalsIgnoreCase("GET")) {
 			return processForm(req, res);
@@ -48,9 +54,14 @@ public class DayWorkerManagementHandler implements CommandHandler {
 		}
 	}
 
+	// 일용직근로자입력·관리 화면에 필요한 데이터를 조회하여 request에 저장하고 JSP 경로를 반환한다.
+	// 요청 파라미터를 검증해 Service에 전달하고 처리 결과를 request 또는 session에 저장한 뒤 JSP 포워드나 리다이렉트 경로를 결정한다.
+	// 日雇い労働者入力・管理画面に必要なデータを照会してrequestへ保存し、JSPパスを返す。
+	// リクエストパラメーターを検証してServiceへ渡し、処理結果をrequestまたはsessionへ保存した後、JSPフォワードまたはリダイレクト先を決定する。
 	private String processForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
 		// 사원별 근무기록 기능인지 확인
+		// 入力条件と必須値を検証し、不正なデータが後続処理へ渡らないようにする。
 		String employeeId = req.getParameter("employeeId");
 		if (employeeId != null) {
 
@@ -107,6 +118,10 @@ public class DayWorkerManagementHandler implements CommandHandler {
 
 	}
 
+	// 일용직근로자입력·관리 입력 요청을 검증한 뒤 서비스에 저장을 위임하고 처리 결과를 전달한다.
+	// 요청 파라미터를 검증해 Service에 전달하고 처리 결과를 request 또는 session에 저장한 뒤 JSP 포워드나 리다이렉트 경로를 결정한다.
+	// 日雇い労働者入力・管理の入力リクエストを検証し、サービスへ保存を委譲して処理結果を渡す。
+	// リクエストパラメーターを検証してServiceへ渡し、処理結果をrequestまたはsessionへ保存した後、JSPフォワードまたはリダイレクト先を決定する。
 	private String processSubmit(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String deleteId = req.getParameter("deleteId");
 		if (deleteId != null) {
@@ -114,6 +129,7 @@ public class DayWorkerManagementHandler implements CommandHandler {
 			int no = Integer.parseInt(deleteId);
 			dailyWorkDeleteService.delete(no);
 			// 삭제 후 파라미터를유지한 채 원래 페이지로 리다이렉트 (모달 앵커 포함)
+			// リクエストから入力値を取得し、空白除去と形式変換を行って業務処理へ渡す。
 			String empId = req.getParameter("employeeId");
 			String year = req.getParameter("year");
 			String month = req.getParameter("month");
@@ -143,6 +159,10 @@ public class DayWorkerManagementHandler implements CommandHandler {
 		return processForm(req, res);
 	}
 
+	// 일용직근로자입력·관리 처리에 사용할 일용직근무Update요청정보 데이터나 객체를 생성한다.
+	// 화면에서 전달된 값과 현재 조회조건을 유지하면서 필요한 request 속성 또는 이동 URL을 구성한다.
+	// 日雇い労働者入力・管理処理で使用する日雇い勤務Updateリクエスト情報データまたはオブジェクトを生成する。
+	// 画面から渡された値と現在の検索条件を維持しながら、必要なrequest属性または遷移URLを構成する。
 	private DailyWorkUpdateRequest createDailyWorkUpdateRequest(HttpServletRequest req, Map<String, Boolean> errors) {
 		DailyWorkUpdateRequest request = new DailyWorkUpdateRequest();
 		request.setDailyWorkRecordId(Integer.parseInt(req.getParameter("editId")));
@@ -179,12 +199,18 @@ public class DayWorkerManagementHandler implements CommandHandler {
 		return request;
 	}
 
+	// 일용직근로자입력·관리 처리에 사용할 일용직근무Insert요청정보 데이터나 객체를 생성한다.
+	// 화면에서 전달된 값과 현재 조회조건을 유지하면서 필요한 request 속성 또는 이동 URL을 구성한다.
+	// 日雇い労働者入力・管理処理で使用する日雇い勤務Insertリクエスト情報データまたはオブジェクトを生成する。
+	// 画面から渡された値と現在の検索条件を維持しながら、必要なrequest属性または遷移URLを構成する。
 	private DailyWorkInsertRequest createDailyWorkInsertRequest(HttpServletRequest req, Map<String, Boolean> errors) {
 		DailyWorkInsertRequest request = new DailyWorkInsertRequest();
 		// 사원id 목록을 문자열 배열로 받기
+		// 社員の識別情報と在職・雇用・所属条件を確認し、対象社員データへ反映する。
 		String[] employeeIdsStr = req.getParameterValues("employeeIds");
 
 		// 문자열 배열을 List<Integer>로 변환
+		// 画面から送信された繰り返し入力値を型変換し、保存可能なオブジェクト一覧として構成する。
 		List<Integer> employeeIds = new ArrayList<>();
 		if (employeeIdsStr != null) {
 			for (String idStr : employeeIdsStr) {

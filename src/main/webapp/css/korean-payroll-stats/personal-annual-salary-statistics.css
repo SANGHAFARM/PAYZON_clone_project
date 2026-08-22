@@ -1,229 +1,229 @@
 .personal-search-bar .search-bar__controls {
-	width: 100%;
-	justify-content: flex-end;
+    width: 100%;
+    justify-content: flex-end;
 }
 
 .employee-name-field {
-	width: 150px;
-	height: 36px;
-	padding: 0 10px;
-	border: 1px solid #c5d4e5;
-	border-radius: 4px;
-	background: #fff;
-	color: #17324d;
-	font-family: inherit;
+    width: 150px;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid #c5d4e5;
+    border-radius: 4px;
+    background: #fff;
+    color: #17324d;
+    font-family: inherit;
 }
 
 .employee-select-link,
 .employee-modal__actions .ui-button {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
 }
 
 .ui-button--outline {
-	color: #1768aa;
-	background: #fff;
+    color: #1768aa;
+    background: #fff;
 }
 
 .ui-button--secondary {
-	border-color: #98a3ae;
-	color: #fff;
-	background: #9da7b1;
+    border-color: #98a3ae;
+    color: #fff;
+    background: #9da7b1;
 }
 
 .net-legend,
 .deduction-legend {
-	display: inline-block;
-	width: 10px;
-	height: 10px;
-	border-radius: 2px;
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
 }
 
 .net-legend {
-	background: #9aadd8;
+    background: #9aadd8;
 }
 
 .deduction-legend {
-	background: #f2a184;
+    background: #f2a184;
 }
 
 .salary-chart__plot {
-	position: relative;
+    position: relative;
 }
 
 .salary-chart__stack {
-	display: flex;
-	width: 58px;
-	min-height: 2px;
-	flex-direction: column;
-	justify-content: flex-end;
-	overflow: visible;
-	border-radius: 3px 3px 0 0;
+    display: flex;
+    width: 58px;
+    min-height: 2px;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: visible;
+    border-radius: 3px 3px 0 0;
 }
 
 .salary-chart__net,
 .salary-chart__deduction {
-	position: relative;
-	width: 100%;
-	min-height: 20px;
+    position: relative;
+    width: 100%;
+    min-height: 20px;
 }
 
 .salary-chart__net {
-	border-radius: 3px 3px 0 0;
-	background: #9aadd8;
+    border-radius: 3px 3px 0 0;
+    background: #9aadd8;
 }
 
 .salary-chart__deduction {
-	background: #f2a184;
+    background: #f2a184;
 }
 
 .salary-chart__net span,
 .salary-chart__deduction span {
-	position: absolute;
-	left: 50%;
-	color: #17324d;
-	font-size: 10px;
-	font-weight: 600;
-	white-space: nowrap;
-	transform: translateX(-50%);
+    position: absolute;
+    left: 50%;
+    color: #17324d;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+    transform: translateX(-50%);
 }
 
 .salary-chart__net span {
-	top: 50%;
-	transform: translate(-50%, -50%);
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .salary-chart__deduction span {
-	top: 50%;
-	transform: translate(-50%, -50%);
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .tooltip-dot--deduction { background: #e7606a; }
 .tooltip-dot--net { background: #9aadd8; }
 
 .personal-salary-table tr:nth-child(3) th {
-	color: #d85260;
+    color: #d85260;
 }
 
 .css-modal {
-	position: fixed;
-	z-index: 3000;
-	inset: 0;
-	display: none;
-	align-items: center;
-	justify-content: center;
+    position: fixed;
+    z-index: 3000;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
 }
 
 .css-modal:target {
-	display: flex;
+    display: flex;
 }
 
 .css-modal__backdrop {
-	position: absolute;
-	inset: 0;
-	background: rgba(0, 0, 0, .55);
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, .55);
 }
 
 .css-modal__dialog {
-	position: relative;
-	z-index: 1;
-	width: 680px;
-	padding: 0 20px 20px;
-	border-radius: 9px;
-	background: #fff;
-	box-shadow: 0 12px 32px rgba(0, 0, 0, .3);
-	font-family: "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
-	font-size: 12px;
+    position: relative;
+    z-index: 1;
+    width: 680px;
+    padding: 0 20px 20px;
+    border-radius: 9px;
+    background: #fff;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .3);
+    font-family: "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
+    font-size: 12px;
 }
 
 .css-modal__header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	height: 64px;
-	border-bottom: 1px solid #d5dce5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    border-bottom: 1px solid #d5dce5;
 }
 
 .css-modal__header h2 {
-	margin: 0;
-	color: #4e555d;
-	font-size: 20px;
+    margin: 0;
+    color: #4e555d;
+    font-size: 20px;
 }
 
 .css-modal__close {
-	color: #7c8791;
-	font-size: 25px;
-	text-decoration: none;
+    color: #7c8791;
+    font-size: 25px;
+    text-decoration: none;
 }
 
 .employee-modal__search {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	padding: 16px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 0 10px;
 }
 
 .employee-modal__search input {
-	box-sizing: border-box;
-	width: 190px;
-	height: 36px !important;
-	min-height: 36px;
-	padding: 0 10px;
+    box-sizing: border-box;
+    width: 190px;
+    height: 36px !important;
+    min-height: 36px;
+    padding: 0 10px;
 }
 
 .employee-modal__search input,
 .employee-modal__search select {
-	border: 1px solid #c5d4e5;
-	border-radius: 4px;
-	background: #fff;
+    border: 1px solid #c5d4e5;
+    border-radius: 4px;
+    background: #fff;
 }
 
 .employee-modal__search .ui-button {
-	height: 36px;
+    height: 36px;
 }
 
 .employee-modal__table-wrap {
-	min-height: 0;
-	border: 1px solid #cbd8e5;
+    min-height: 0;
+    border: 1px solid #cbd8e5;
 }
 
 .employee-modal__table {
-	width: 100%;
-	border-collapse: collapse;
-	table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
 }
 
 .employee-modal__table th,
 .employee-modal__table td {
-	height: 36px;
-	padding: 5px 7px;
-	border-right: 1px solid #cbd8e5;
-	border-bottom: 1px solid #cbd8e5;
-	text-align: center;
+    height: 36px;
+    padding: 5px 7px;
+    border-right: 1px solid #cbd8e5;
+    border-bottom: 1px solid #cbd8e5;
+    text-align: center;
 }
 
 .employee-modal__table th {
-	background: #eaf2f8;
-	color: #173f65;
+    background: #eaf2f8;
+    color: #173f65;
 }
 
 .employee-modal__table th:first-child {
-	width: 52px;
+    width: 52px;
 }
 
 .employee-modal__actions {
-	display: flex;
-	justify-content: center;
-	gap: 10px;
-	padding-top: 16px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding-top: 16px;
 }
 
 .employee-modal__actions .ui-button {
-	box-sizing: border-box;
-	width: 120px;
-	min-width: 120px;
-	height: 36px;
-	padding: 0 12px;
+    box-sizing: border-box;
+    width: 120px;
+    min-width: 120px;
+    height: 36px;
+    padding: 0 12px;
 }

@@ -13,8 +13,14 @@ import erp.payroll.dto.PayrollRegisterPage.PayrollRegisterItem;
 import jdbc.JdbcUtil;
 
 // 급여대장 목록과 상세 집계를 조회한다.
+// 급여등록 데이터를 데이터베이스에서 조회하고 저장·수정·삭제한다.
+// 給与登録データをデータベースから照会し、登録・更新・削除する。
 public class PayrollRegisterDao {
 
+	// 조회 조건에 맞는 급여 회차 목록 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う給与回次一覧データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public int countRuns(Connection conn, String year) throws SQLException {
 		String sql = "SELECT COUNT(*) FROM PAYROLL_RUN WHERE PAY_YEAR = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -26,6 +32,10 @@ public class PayrollRegisterDao {
 		}
 	}
 
+	// 조회 조건에 맞는 급여 회차 목록 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う給与回次一覧データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<PayrollRegisterItem> selectRuns(Connection conn, String year, int startRow, int size)
 			throws SQLException {
 		String payTotal = "CASE WHEN R.INCOME_TYPE = '2' THEN NVL((SELECT SUM(W.DAILY_PAY) "
@@ -63,6 +73,10 @@ public class PayrollRegisterDao {
 		}
 	}
 
+	// 조회 조건에 맞는 급여 회차By식별번호 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う給与回次By識別番号データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public PayrollRegisterItem selectRunById(Connection conn, int runId) throws SQLException {
 		String sql = "SELECT R.PAYROLL_RUN_ID, R.PAY_YEAR, R.PAY_MONTH, R.PAY_SEQ, R.CALC_START_DATE, "
 				+ "R.CALC_END_DATE, R.PAY_DATE, R.INCOME_TYPE, "
@@ -85,6 +99,10 @@ public class PayrollRegisterDao {
 		}
 	}
 
+	// 조회 조건에 맞는 지급표시항목 목록 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う支給表示項目一覧データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<PayrollRegisterColumn> selectPayColumns(Connection conn, int runId) throws SQLException {
 		String sql = "SELECT DISTINCT P.PAY_ITEM_ID ITEM_ID, P.PAY_NAME ITEM_NAME FROM PAYROLL_EMPLOYEE PE "
 				+ "JOIN PAYROLL_ENTRY E ON E.PAYROLL_EMPLOYEE_ID = PE.PAYROLL_EMPLOYEE_ID "
@@ -93,6 +111,10 @@ public class PayrollRegisterDao {
 		return selectColumns(conn, sql, runId);
 	}
 
+	// 조회 조건에 맞는 공제표시항목 목록 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う控除表示項目一覧データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<PayrollRegisterColumn> selectDeductColumns(Connection conn, int runId) throws SQLException {
 		String sql = "SELECT DISTINCT D.DEDUCT_ITEM_ID ITEM_ID, D.DEDUCT_NAME ITEM_NAME FROM PAYROLL_EMPLOYEE PE "
 				+ "JOIN PAYROLL_ENTRY E ON E.PAYROLL_EMPLOYEE_ID = PE.PAYROLL_EMPLOYEE_ID "
@@ -101,6 +123,10 @@ public class PayrollRegisterDao {
 		return selectColumns(conn, sql, runId);
 	}
 
+	// 조회 조건에 맞는 사원 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う社員データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<PayrollRegisterEmployee> selectEmployees(Connection conn, int runId, String employmentType,
 			Integer departmentId) throws SQLException {
 		String sql = "SELECT E.EMPLOYEE_ID, E.EMP_TYPE, E.EMP_NAME_KR, NVL(D.DEPARTMENT_NAME, '-') DEPARTMENT_NAME, "
@@ -137,6 +163,10 @@ public class PayrollRegisterDao {
 		}
 	}
 
+	// 누락된 상세내역금액 목록 값을 기본값으로 채워 화면 계산과 합계 처리를 안정화한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 不足している明細金額一覧の値を初期値で補い、画面計算と合計処理を安定させる。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	public void fillEntryAmounts(Connection conn, int runId, List<PayrollRegisterEmployee> employees)
 			throws SQLException {
 		String sql = "SELECT PE.EMPLOYEE_ID, E.PAY_ITEM_ID, E.DEDUCT_ITEM_ID, E.AMOUNT "
@@ -163,6 +193,10 @@ public class PayrollRegisterDao {
 		}
 	}
 
+	// 누락된 일용직지급내역 값을 기본값으로 채워 화면 계산과 합계 처리를 안정화한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 不足している日雇い支給明細の値を初期値で補い、画面計算と合計処理を安定させる。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	public void fillDailyPayments(Connection conn, int runId, List<PayrollRegisterEmployee> employees)
 			throws SQLException {
 		String sql = "SELECT PE.EMPLOYEE_ID, NVL(SUM(W.DAILY_PAY), 0) AMOUNT FROM PAYROLL_EMPLOYEE PE "
@@ -183,6 +217,10 @@ public class PayrollRegisterDao {
 		}
 	}
 
+	// 선택되거나 식별된 급여 회차 데이터를 삭제하고 관련 상태를 정리한다.
+	// 전달받은 Connection 안에서 SQL 매개변수를 바인딩해 실행하며 commit과 rollback은 호출한 Service가 제어한다.
+	// 選択または識別された給与回次データを削除し、関連状態を整理する。
+	// 受け取ったConnection内でSQLパラメーターをバインドして実行し、commitとrollbackは呼び出し元のServiceが制御する。
 	public void deleteRun(Connection conn, int runId) throws SQLException {
 		try (PreparedStatement pstmt = conn.prepareStatement("DELETE FROM PAYROLL_RUN WHERE PAYROLL_RUN_ID = ?")) {
 			pstmt.setInt(1, runId);
@@ -190,6 +228,10 @@ public class PayrollRegisterDao {
 		}
 	}
 
+	// 조회 조건에 맞는 표시항목 목록 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う表示項目一覧データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	private List<PayrollRegisterColumn> selectColumns(Connection conn, String sql, int runId) throws SQLException {
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, runId);
@@ -203,6 +245,10 @@ public class PayrollRegisterDao {
 		}
 	}
 
+	// 조회 조건에 맞는 사원 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う社員データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	private PayrollRegisterEmployee findEmployee(List<PayrollRegisterEmployee> employees, int employeeId) {
 		for (PayrollRegisterEmployee employee : employees) {
 			if (employee.getEmployeeId() == employeeId) {
@@ -212,6 +258,10 @@ public class PayrollRegisterDao {
 		return null;
 	}
 
+	// 조회값과 입력값을 조합하여 등록 처리 데이터를 구성한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 照会値と入力値を組み合わせて登録の処理データを構成する。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	private PayrollRegisterItem makeRegister(ResultSet rs) throws SQLException {
 		PayrollRegisterItem item = new PayrollRegisterItem();
 		item.setRegisterId(rs.getInt("PAYROLL_RUN_ID"));
@@ -230,6 +280,10 @@ public class PayrollRegisterDao {
 		return item;
 	}
 
+	// 급여등록 처리에 필요한 소득명칭를 조회하거나 계산하여 반환한다.
+	// 호출자가 전달한 조회조건을 적용하고 결과가 없을 때도 빈 값이나 빈 목록을 안전하게 반환한다.
+	// 給与登録処理に必要な所得名称を照会または計算して返す。
+	// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
 	private String getIncomeName(String incomeType) {
 		if ("0".equals(incomeType)) {
 			return "일반";

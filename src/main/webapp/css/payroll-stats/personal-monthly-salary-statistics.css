@@ -1,26 +1,26 @@
 .personal-monthly-chart {
-	grid-template-columns: repeat(12, minmax(58px, 1fr));
+    grid-template-columns: repeat(12, minmax(58px, 1fr));
 }
 
 .personal-monthly-chart .salary-chart__stack {
-	width: 52px;
+    width: 52px;
 }
 
 .personal-monthly-table {
-	min-width: 1180px;
+    min-width: 1180px;
 }
 
 .personal-monthly-table thead th:first-child,
 .personal-monthly-table tbody th {
-	width: 165px;
+    width: 165px;
 }
 
 .personal-monthly-table th:not(:first-child),
 .personal-monthly-table td:not(:first-child) {
-	width: 78px;
+    width: 78px;
 }
 
 .personal-monthly-table .statistics-total {
-	background: #fffced;
-	font-weight: 700;
+    background: #fffced;
+    font-weight: 700;
 }
