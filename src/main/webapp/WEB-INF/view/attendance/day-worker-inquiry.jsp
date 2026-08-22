@@ -1,11 +1,12 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja-JP">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>근태관리 &gt; 일용직 근무조회</title>
+<title>勤怠管理>日雇い勤務照会</title>
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/attendance/day-worker-inquiry.css">
 <link rel="stylesheet"
@@ -17,21 +18,21 @@
 	<main class="page-content day-worker-inquiry-page">
 		<header class="page-heading">
 			<div>
-				<p>근태관리</p>
-				<h1>일용직 근무조회</h1>
+				<p>勤怠管理</p>
+				<h1>日雇い勤務照会</h1>
 			</div>
 		</header>
 
 		<section class="inquiry-card">
-			<nav class="view-tabs" aria-label="조회 구분">
+			<nav class="view-tabs" aria-label="照会区分">
 				<a
 					class="${empty param.view or param.view eq 'month' ? 'is-active' : ''}"
-					href="?view=month">월별 조회</a> <a
+					href="?view=month">月別照会</a> <a
 					class="${param.view eq 'detail' ? 'is-active' : ''}"
-					href="?view=detail">상세 조회</a>
+					href="?view=detail">詳細ビュー</a>
 			</nav>
 			<!-- =================================== -->
-			<!-- =========      상세 조회    =========== -->
+			<!-- =========詳細検索=========== -->
 			<!-- =================================== -->
 			<c:choose>
 				<c:when test="${param.view eq 'detail'}">
@@ -40,26 +41,26 @@
 							<input type="hidden" name="view" value="detail">
 							<div class="filter-field">
 
-								<span>근무일자</span>
+								<span>労働日</span>
 								<div class="date-range">
-									<input type="date" id="startDate" name="startDate"
-										value="${startDate}"><i>~</i><input type="date"
+									<input type="date" lang="ja-JP" id="startDate" name="startDate"
+										value="${startDate}"><i>~</i><input type="date" lang="ja-JP"
 										id="endDate" name="endDate" value="${endDate}">
 								</div>
 							</div>
-							<label class="filter-field"><span>성명</span><input
+							<label class="filter-field"><span>氏名</span><input
 								name="empNameKr" value="<c:out value='${param.empNameKr}' />"
-								placeholder="성명을 입력하세요."></label> <label class="filter-field"><span>부서</span>
+								placeholder="氏名を入力してください。"></label> <label class="filter-field"><span>部署</span>
 								<select name="departmentId">
-									<option value="">전체 부서</option>
+									<option value="">全体部署</option>
 									<c:forEach var="department" items="${departments}">
 										<option value="${department.departmentId}"
 											${param.departmentId eq department.departmentId ? 'selected' : ''}><c:out
 												value="${department.departmentName}" /></option>
 									</c:forEach>
-							</select></label> <label class="filter-field"><span>현장/프로젝트</span> <select
+							</select></label> <label class="filter-field"><span>現場/プロジェクト</span> <select
 								name="projectId">
-									<option value="">전체 현장/프로젝트</option>
+									<option value="">全現場/プロジェクト</option>
 									<c:forEach var="project" items="${projects}">
 										<option value="${project.projectId}"
 											${param.projectId eq project.projectId ? 'selected' : ''}><c:out
@@ -67,8 +68,8 @@
 									</c:forEach>
 							</select></label>
 							<div class="filter-actions">
-								<button type="submit">검색</button>
-								<a href="?view=detail">전체보기</a>
+								<button type="submit">検索</button>
+								<a href="?view=detail">全体を見る</a>
 							</div>
 						</form>
 
@@ -76,16 +77,16 @@
 							<table class="detail-table">
 								<thead>
 									<tr>
-										<th>근무일자</th>
-										<th>사원번호</th>
-										<th>성명</th>
-										<th>부서</th>
-										<th>현장/프로젝트</th>
-										<th>일당</th>
-										<th>지급율</th>
-										<th>소득세</th>
-										<th>지방소득세</th>
-										<th>실지급액</th>
+										<th>労働日</th>
+										<th>社員番号</th>
+										<th>氏名</th>
+										<th>部署</th>
+										<th>現場/プロジェクト</th>
+										<th>一日あたり</th>
+										<th>支払い率</th>
+										<th>所得税</th>
+										<th>地方所得税</th>
+										<th>差引支給額</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -108,7 +109,7 @@
 									</c:forEach>
 									<c:if test="${empty dailyWorkDetail}">
 										<tr>
-											<td colspan="12" class="empty-row">조회된 일용직 근무내역이 없습니다.</td>
+											<td colspan="12" class="empty-row">照会された日雇い勤務履歴はありません。</td>
 										</tr>
 									</c:if>
 								</tbody>
@@ -118,31 +119,31 @@
 				</c:when>
 
 				<%--=========================== --%>
-				<%--========   월별 조회  ======== --%>
+				<%--========毎月の照会======== --%>
 				<%--=========================== --%>
 				<c:otherwise>
 					<form class="month-filter" method="get">
 						<input type="hidden" name="view" value="month"> <select
-							name="year" aria-label="연도">
+							name="year" aria-label="年">
 							<c:forEach var="y" begin="2015" end="2026">
 								<option value="${y}"
-									${y eq (empty param.year ? 2026 : param.year) ? 'selected' : ''}>${y}년</option>
+									${y eq (empty param.year ? 2026 : param.year) ? 'selected' : ''}>${y}年</option>
 							</c:forEach>
-						</select> <select name="month" aria-label="월">
+						</select> <select name="month" aria-label="月">
 							<c:forEach var="monthNo" begin="1" end="12">
 								<option value="${monthNo}"
-									${monthNo eq (empty param.month ? 8 : param.month) ? 'selected' : ''}>${monthNo}월</option>
+									${monthNo eq (empty param.month ? 8 : param.month) ? 'selected' : ''}>${monthNo}月</option>
 							</c:forEach>
-						</select> <select name="departmentId" aria-label="부서">
-							<option value="">전체 부서</option>
+						</select> <select name="departmentId" aria-label="部署">
+							<option value="">全体部署</option>
 							<c:forEach var="department" items="${departments}">
 								<option value="${department.departmentId}"
 									${param.departmentId eq department.departmentId ? 'selected' : ''}>
 									<c:out value="${department.departmentName}" />
 								</option>
 							</c:forEach>
-						</select> <select name="jobPositionId" aria-label="직위">
-							<option value="">전체 직위</option>
+						</select> <select name="jobPositionId" aria-label="役職">
+							<option value="">全役職</option>
 							<c:forEach var="jobPosition" items="${jobPositions}">
 								<option value="${jobPosition.jobPositionId}"
 									${param.jobPositionId eq jobPosition.jobPositionId ? 'selected' : ''}>
@@ -150,35 +151,35 @@
 								</option>
 							</c:forEach>
 						</select>
-						<button type="submit">검색</button>
-						<a href="?view=month">전체보기</a>
+						<button type="submit">検索</button>
+						<a href="?view=month">全体を見る</a>
 					</form>
 
-					<!-- 월별 조회 목록 -->
+					<!-- 月別検索リスト -->
 					<div class="month-table-wrap">
 						<table class="month-table">
 							<thead>
 								<tr>
-									<th>구분</th>
-									<th>사원번호</th>
-									<th>성명</th>
-									<th>부서</th>
-									<th class="days-heading"><span>근무일자</span>
+									<th>区分</th>
+									<th>社員番号</th>
+									<th>氏名</th>
+									<th>部署</th>
+									<th class="days-heading"><span>労働日</span>
 										<div>
 											<c:forEach var="dayNo" begin="1" end="31">
 												<b>${dayNo}</b>
 											</c:forEach>
 										</div></th>
-									<th>합계</th>
-									<th>소득세</th>
-									<th>지방소득세</th>
-									<th>실지급합계</th>
+									<th>合計</th>
+									<th>所得税</th>
+									<th>地方所得税</th>
+									<th>実際の給与合計</th>
 								</tr>
 							</thead>
 							<tbody>
 								<c:forEach var="employee" items="${dailyWorkList}">
 									<tr>
-										<td><c:out value="${employee.empType}" /></td>
+										<td><ui:code-label value="${employee.empType}" /></td>
 										<td><c:out value="${employee.empNo}" /></td>
 										<td><c:out value="${employee.empNameKr}" /></td>
 										<td><c:out value="${employee.departmentName}" /></td>
@@ -187,7 +188,7 @@
 												<c:set var="work" value="${employee.workDayMap[dayNo]}" />
 												<span><c:if test="${not empty work}">
 														<a href="#work-detail-${work.dailyWorkRecordId}"
-															aria-label="${dayNo}일 근무기록">●</a>
+															aria-label="${dayNo}日勤務記録">●</a>
 													</c:if></span>
 											</c:forEach></td>
 										<td class="amount"><c:out value="${employee.totalDays}" /></td>
@@ -201,7 +202,7 @@
 								</c:forEach>
 								<c:if test="${empty dailyWorkList}">
 									<tr>
-										<td colspan="9" class="empty-row">조회된 일용직 월별 근무내역이 없습니다.</td>
+										<td colspan="9" class="empty-row">照会された日雇いの毎月の勤務履歴はありません。</td>
 									</tr>
 								</c:if>
 							</tbody>
@@ -212,7 +213,7 @@
 		</section>
 	</main>
 
-	<%-- 일용직 근무 현황 --%>
+	<%-- 日雇い勤務状況 --%>
 	<c:forEach var="employee" items="${dailyWorkList}">
 		<c:if test="${not empty employee.workDayMap}">
 			<c:forEach var="entry" items="${employee.workDayMap}">
@@ -223,64 +224,64 @@
 						aria-modal="true"
 						aria-labelledby="work-title-${work.dailyWorkRecordId}">
 						<header>
-							<h2 id="work-title-${work.dailyWorkRecordId}">일용직 근무현황</h2>
-							<a href="#" aria-label="닫기">&times;</a>
+							<h2 id="work-title-${work.dailyWorkRecordId}">日雇い勤務状況</h2>
+							<a href="#" aria-label="閉じる">&times;</a>
 						</header>
 						<div class="modal-body">
 							<dl>
 								<div>
-									<dt>근무자</dt>
+									<dt>労働者</dt>
 									<dd
 										style="text-align: right !important; display: block !important;">
 										<c:out value="${employee.empNameKr}" />
 									</dd>
 								</div>
 								<div>
-									<dt>현장/프로젝트</dt>
+									<dt>現場/プロジェクト</dt>
 									<dd
 										style="text-align: right !important; display: block !important;">
 										<c:out value="${work.projectName}" />
 									</dd>
 								</div>
 								<div>
-									<dt>근무일자</dt>
+									<dt>労働日</dt>
 									<dd
 										style="text-align: right !important; display: block !important;">
 										<c:out value="${work.workDate}" />
 									</dd>
 								</div>
 								<div class="money">
-									<dt>일당</dt>
+									<dt>一日あたり</dt>
 									<dd>
 										<c:out value="${work.dailyPay}" />
-										원
+										ウォン
 									</dd>
 								</div>
 								<div class="money">
-									<dt>지급율</dt>
+									<dt>支払い率</dt>
 									<dd>
 										<c:out value="${work.payRate}" />
 									</dd>
 								</div>
 								<div class="money">
-									<dt>소득세</dt>
+									<dt>所得税</dt>
 									<dd>
 										<c:out value="${work.incomeTax}" />
-										원
+										ウォン
 									</dd>
 								</div>
 								<div class="money">
-									<dt>지방소득세</dt>
+									<dt>地方所得税</dt>
 									<dd>
 										<c:out value="${work.localIncomeTax}" />
-										원
+										ウォン
 									</dd>
 								</div>
 								<div class="money total">
-									<dt>실지급액</dt>
+									<dt>差引支給額</dt>
 									<dd>
 										<c:out value="${work.actualPay}" />
-										원
+										ウォン
 									</dd>
 								</div>
 							</dl>
@@ -293,31 +294,31 @@
 
 
 	<script>
-	//상세 조회 근무일자 설정 관련 스크립트(시작일이 종료일보다 늦거나, 종료일이 시작일보다 이를 수 없도록 제한)
+	//詳細照会勤務日の設定関連スクリプト
 		const startDateInput = document.getElementById('startDate');
 		const endDateInput = document.getElementById('endDate');
 
-		// 시작일이 변경될 때
+		// 開始日が変更されたとき
 		startDateInput.addEventListener('change', function() {
 			const startDate = startDateInput.value;
 
-			// 종료일의 최소값(min)을 시작일로 설정
+			// 終了日の最小値（min）を開始日に設定
 			endDateInput.min = startDate;
 
-			// 만약 이미 입력된 종료일이 새로 설정된 시작일보다 앞선다면 종료일 초기화
+			// すでに入力された終了日が新しく設定された開始日より前の場合、終了日の初期化
 			if (endDateInput.value && endDateInput.value < startDate) {
 				endDateInput.value = '';
 			}
 		});
 
-		// 종료일이 변경될 때
+		// 終了日が変更されたとき
 		endDateInput.addEventListener('change', function() {
 			const endDate = endDateInput.value;
 
-			// 시작일의 최대값(max)을 종료일로 설정
+			// 開始日の最大値（max）を終了日に設定
 			startDateInput.max = endDate;
 
-			// 만약 이미 입력된 시작일이 새로 설정된 종료일보다 나중이라면 시작일 초기화
+			// すでに入力された開始日が新しく設定された終了日より後の場合、開始日の初期化
 			if (startDateInput.value && startDateInput.value > endDate) {
 				startDateInput.value = '';
 			}

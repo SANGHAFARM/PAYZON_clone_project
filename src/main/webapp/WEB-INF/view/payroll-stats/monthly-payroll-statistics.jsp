@@ -8,35 +8,35 @@
 <%
 	/*
 	 * ================================================================
-	 * 미리보기 및 백엔드 연동 예시용 더미 데이터
+	 *プレビューとバックエンド連動の例のダミーデータ
 	 * ================================================================
 	 *
-	 * [실제 구현 방법]
-	 * 1. 화면에서 선택한 귀속연도를 baseYear 파라미터로 전달합니다.
-	 * 2. 선택한 연도의 1월부터 12월까지 급여액과 인원을 집계합니다.
-	 * 3. 급여가 없는 월도 누락하지 말고 값이 0인 항목으로 전달합니다.
-	 * 4. 컨트롤러에서 아래 이름으로 request 속성을 전달합니다.
+	 * [実際の実装方法]
+	 * 1. 画面で選択した帰属年を baseYear パラメータに渡します。
+	 * 2. 選択した年の1月から12月までの給与額と人数を集計します。
+	 * 3. 給与のない月も欠けておらず、値が0の項目に渡します。
+	 *4. コントローラから以下の名前でリクエスト属性を渡します。
 	 *
-	 *    availableYears          : 귀속연도 선택 상자에 표시할 연도 목록
-	 *    selectedYear            : 현재 선택된 귀속연도
-	 *    monthlyStats            : 1월부터 12월까지의 월별 통계 목록
-	 *    totalPayrollYearText    : 선택 연도의 전체 급여액 합계
-	 *    averageHeadcountYearText: 선택 연도의 월평균 인원
+	 * availableYears：帰属年選択ボックスに表示する年のリスト
+	 * selectedYear : 現在選択されている帰属年度
+	 * monthlyStats：1月から12月までの月別統計のリスト
+	 *totalPayrollYearText: 選択年の総給与額の合計
+	 * averageHeadcountYearText: 選択年の月平均人数
 	 *
-	 * [monthlyStats 항목별 필드]
-	 * month               : 귀속월
-	 * totalPayrollText    : 화면에 표시할 월 전체 급여액 문자열
-	 * payrollGrowth       : 전월 대비 급여 증가율 색상 판별용 숫자
-	 * payrollGrowthText   : 화면에 표시할 급여 증가율 문자열
-	 * headcountText       : 화면에 표시할 월 인원 문자열
-	 * headcountGrowth     : 전월 대비 인원 증가율 색상 판별용 숫자
-	 * headcountGrowthText : 화면에 표시할 인원 증가율 문자열
-	 * payrollBarRate      : 전체 급여액 막대 높이 비율(0~100)
-	 * headcountBarRate    : 인원 막대 높이 비율(0~100)
+	 * [monthlyStats項目別フィールド]
+	 * month : 帰属月
+	 * totalPayrollText：画面に表示する月全体の給与額文字列
+	 * payrollGrowth：前月比給与増加率カラー判別用数字
+	 * payrollGrowthText：画面に表示する給与増加率文字列
+	 * headcountText : 画面に表示する月の人数文字列
+	 * headcountGrowth : 前月比人数増加率 色判別用数字
+	 * headcountGrowthText : 画面に表示する人数増加率文字列
+	 * payrollBarRate : 全給与額棒高さ比率(0～100)
+	 * headcountBarRate : 人員バー高さ比率(0～100)
 	 *
-	 * 두 막대 비율은 각각의 월별 최댓값을 100으로 환산하여 전달합니다.
-	 * 실제 monthlyStats가 전달되면 아래 더미 데이터는 실행되지 않습니다.
-	 * 백엔드 연동 완료 후에는 이 블록 전체를 제거해도 됩니다.
+	 * 2つのバー比率は、それぞれの月ごとの最大値を100に換算して渡します。
+	 *実際のmonthlyStatsが渡されると、下のダミーデータは実行されません。
+	 *バックエンド連動完了後は、このブロック全体を削除してもかまいません。
 	 */
 	if (request.getAttribute("monthlyStats") == null) {
 		int[] months = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
@@ -70,14 +70,14 @@
 		request.setAttribute("totalPayrollYearText", "318,300");
 		request.setAttribute("averageHeadcountYearText", "7.8");
 	}
-	/* 미리보기 및 백엔드 연동 예시용 더미 데이터 끝 */
+	/* プレビューとバックエンド連動の例のダミーデータの終わり */
 %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja-JP">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>월별 전체급여 통계</title>
+	<title>月別総給与統計</title>
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/common.css">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/payroll-stats/annual-payroll-statistics.css">
@@ -89,33 +89,33 @@
 	<main class="page-content annual-stat-page monthly-stat-page">
 		<header class="page-heading">
 			<div>
-				<p>급여통계</p>
-				<h1>월별 전체급여 통계</h1>
+				<p>給与統計</p>
+				<h1>月別総給与統計</h1>
 			</div>
 		</header>
 
 		<section class="content-card" aria-labelledby="monthly-stat-title">
-			<h2 id="monthly-stat-title" class="sr-only">월별 전체급여 통계 조회</h2>
+			<h2 id="monthly-stat-title" class="sr-only">月別総給与統計の照会</h2>
 
 			<form class="search-bar" method="get">
 				<div class="search-bar__controls">
-					<label for="baseYear">귀속연도</label>
+					<label for="baseYear">帰属年</label>
 					<select id="baseYear" name="baseYear">
-						<option value="">선택</option>
+						<option value="">選択</option>
 						<c:forEach var="year" items="${availableYears}">
-							<option value="${year}" <c:if test="${year eq selectedYear}">selected</c:if>>${year}년</option>
+							<option value="${year}" <c:if test="${year eq selectedYear}">selected</c:if>>${year}年</option>
 						</c:forEach>
 					</select>
-					<button type="submit" class="ui-button ui-button--primary">조회</button>
+					<button type="submit" class="ui-button ui-button--primary">照会</button>
 				</div>
 			</form>
 
 			<section class="chart-panel" aria-labelledby="monthly-chart-title">
 				<div class="section-title-row">
-					<h3 id="monthly-chart-title" class="sr-only">월별 급여 지급현황</h3>
-					<div class="chart-legend" aria-label="차트 범례">
-						<span><i class="chart-legend__pay"></i>전체 급여액</span>
-						<span><i class="chart-legend__people"></i>인원</span>
+					<h3 id="monthly-chart-title" class="sr-only">月別給与支給状況</h3>
+					<div class="chart-legend" aria-label="チャートの凡例">
+						<span><i class="chart-legend__pay"></i>給与総額</span>
+						<span><i class="chart-legend__people"></i>人数</span>
 					</div>
 				</div>
 
@@ -126,11 +126,11 @@
 								<div class="annual-chart__bar annual-chart__bar--pay" style="height:${stat.payrollBarRate}%"></div>
 								<div class="annual-chart__bar annual-chart__bar--people" style="height:${stat.headcountBarRate}%"></div>
 							</div>
-							<strong>${stat.month}월</strong>
+							<strong>${stat.month}月</strong>
 							<div class="annual-chart__tooltip" role="tooltip">
-								<b>${stat.month}월</b>
-								<span><i class="tooltip-dot tooltip-dot--pay"></i>전체 급여액 (천원) <em>${stat.totalPayrollText}</em></span>
-								<span><i class="tooltip-dot tooltip-dot--people"></i>인원 (명) <em>${stat.headcountText}</em></span>
+								<b>${stat.month}月</b>
+								<span><i class="tooltip-dot tooltip-dot--pay"></i>給与総額（千ウォン） <em>${stat.totalPayrollText}</em></span>
+								<span><i class="tooltip-dot tooltip-dot--people"></i>人数（人） <em>${stat.headcountText}</em></span>
 							</div>
 						</div>
 					</c:forEach>
@@ -139,36 +139,36 @@
 
 			<div class="statistics-table-wrap">
 				<table class="statistics-table monthly-statistics-table">
-					<caption>${selectedYear}년 월별 전체 급여액과 인원 현황</caption>
+					<caption>${selectedYear}年毎月の全給与額と人員の現状</caption>
 					<thead>
 						<tr>
-							<th scope="col">구분</th>
+							<th scope="col">区分</th>
 							<c:forEach var="stat" items="${monthlyStats}">
-								<th scope="col">${stat.month}월</th>
+								<th scope="col">${stat.month}月</th>
 							</c:forEach>
-							<th scope="col">합계</th>
+							<th scope="col">合計</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr class="statistics-table__main-row">
-							<th scope="row">전체 급여액 (천원)</th>
+							<th scope="row">給与総額（千ウォン）</th>
 							<c:forEach var="stat" items="${monthlyStats}"><td>${stat.totalPayrollText}</td></c:forEach>
 							<td class="statistics-total">${totalPayrollYearText}</td>
 						</tr>
 						<tr class="statistics-table__rate-row">
-							<th scope="row">└ 증가율</th>
+							<th scope="row">└増加率</th>
 							<c:forEach var="stat" items="${monthlyStats}">
 								<td class="${stat.payrollGrowth gt 0 ? 'rate-up' : stat.payrollGrowth lt 0 ? 'rate-down' : ''}">${stat.payrollGrowthText}</td>
 							</c:forEach>
 							<td></td>
 						</tr>
 						<tr class="statistics-table__main-row">
-							<th scope="row">인원 (명)</th>
+							<th scope="row">人数（人）</th>
 							<c:forEach var="stat" items="${monthlyStats}"><td>${stat.headcountText}</td></c:forEach>
 							<td class="statistics-total">${averageHeadcountYearText}</td>
 						</tr>
 						<tr class="statistics-table__rate-row">
-							<th scope="row">└ 증가율</th>
+							<th scope="row">└増加率</th>
 							<c:forEach var="stat" items="${monthlyStats}">
 								<td class="${stat.headcountGrowth gt 0 ? 'rate-up' : stat.headcountGrowth lt 0 ? 'rate-down' : ''}">${stat.headcountGrowthText}</td>
 							</c:forEach>

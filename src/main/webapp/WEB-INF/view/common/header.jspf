@@ -1,19 +1,19 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%-- 전체 페이지 레이아웃과 헤더 전용 스타일 --%>
+<%-- フルページレイアウトとヘッダーのみのスタイル --%>
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/common/common.css">
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/common/header.css?v=20260820-2">
 
 <header class="site-header">
-	<!-- 사이트 이름과 홈 링크 영역 -->
+	<!-- サイト名とホームリンクエリア -->
 	<div class="site-header__brand">
 		<div class="site-header__logo">
 			<img src="${pageContext.request.contextPath}/images/header/payzon-logo-light.png" alt="PAYZON">
 		</div>
 	</div>
 
-	<!-- 자주 사용하는 업무로 바로 이동하는 아이콘 메뉴 -->
+	<!-- 頻繁に使用するタスクに直接アクセスできるアイコン メニュー -->
 	<ul class="quick-menu">
 		<li class="quick-menu__item"><a class="quick-menu__link"
 			href="${pageContext.request.contextPath}/home.do"> <img
@@ -25,168 +25,153 @@
 			href="${pageContext.request.contextPath}/settings/register1.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/employee-register.png">
-				<span>사원등록</span>
+				<span>社員登録</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
 			href="${pageContext.request.contextPath}/employees/employees.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/employee-status.png">
-				<span>사원현황</span>
+				<span>社員状況</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
 			href="${pageContext.request.contextPath}/employees/certificate.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/certificate.png">
-				<span>제증명서 발급</span>
+				<span>各種証明書発行</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
 			href="${pageContext.request.contextPath}/attendance/attendance-management.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/attendance.png">
-				<span>근태기록/관리</span>
+				<span>勤怠記録/管理</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
 			href="${pageContext.request.contextPath}/example.do?menu=leave">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/leave.png">
-				<span>휴가조회</span>
+				<span>休暇照会</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
 			href="${pageContext.request.contextPath}/payroll/management.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/payroll.png">
-				<span>급여입력/관리</span>
+				<span>給与入力/管理</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
 			href="${pageContext.request.contextPath}/payroll/day-worker-management.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/daily-payroll.png">
-				<span>급여입력(일용직)</span>
+				<span>給与入力/管理（日雇い）</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
 			href="${pageContext.request.contextPath}/payroll/register.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/payroll-ledger.png">
-				<span>급여대장</span>
+				<span>給与台帳</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
 			href="${pageContext.request.contextPath}/payroll/payslip.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/payslip.png">
-				<span>급여명세서</span>
+				<span>給与明細書</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
 			href="${pageContext.request.contextPath}/payroll/employee-history.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/employee-payroll.png">
-				<span>사원별 급여내역</span>
+				<span>社員別給与履歴</span>
 		</a></li>
 	</ul>
 
-	<!-- 업무 분야별 주 메뉴와 마우스를 올렸을 때 표시되는 하위 메뉴 -->
+	<!-- 各分野のメインメニューとマウスオーバーで表示されるサブメニュー -->
 	<nav class="main-nav">
 		<ul class="main-nav__list">
 			<li class="main-nav__item"><a class="main-nav__trigger"
-				href="${pageContext.request.contextPath}/settings/user-info.do">기본
-					환경설정</a>
+				href="${pageContext.request.contextPath}/settings/user-info.do">基本設定</a>
 				<ul class="dropdown-menu">
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/settings/user-info.do">사용자
-							정보</a></li>
+						href="${pageContext.request.contextPath}/settings/user-info.do">ユーザー
+							情報</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/settings/register1.do">사원
-							등록</a></li>
+						href="${pageContext.request.contextPath}/settings/register1.do">社員
+							登録</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/settings/attendance.do">휴가/근태
-							설정</a></li>
+						href="${pageContext.request.contextPath}/settings/attendance.do">休暇・勤怠設定</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/settings/pay-item.do">급여항목
-							설정</a></li>
+						href="${pageContext.request.contextPath}/settings/pay-item.do">給与項目設定</a></li>
 				</ul></li>
 			<li class="main-nav__item"><a class="main-nav__trigger"
-				href="${pageContext.request.contextPath}/employees/employees.do">인사관리</a>
+				href="${pageContext.request.contextPath}/employees/employees.do">人事管理</a>
 				<ul class="dropdown-menu">
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/employees/employees.do">사원현황/관리</a></li>
+						href="${pageContext.request.contextPath}/employees/employees.do">社員状況/管理</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/employees/employee-card.do">인사기록
-							카드</a></li>
+						href="${pageContext.request.contextPath}/employees/employee-card.do">人事記録
+							カード</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/employees/certificate.do">제증명서
-							발급</a></li>
+						href="${pageContext.request.contextPath}/employees/certificate.do">各種証明書発行</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/employees/certificate-register.do">제증명서
-							발급대장</a></li>
+						href="${pageContext.request.contextPath}/employees/certificate-register.do">証明書
+							発行台帳</a></li>
 				</ul></li>
 			<li class="main-nav__item"><a class="main-nav__trigger"
-				href="${pageContext.request.contextPath}/attendance/attendance-management.do">근태관리</a>
+				href="${pageContext.request.contextPath}/attendance/attendance-management.do">勤怠管理</a>
 				<ul class="dropdown-menu">
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/attendance/attendance-management.do">근태기록/관리</a></li>
+						href="${pageContext.request.contextPath}/attendance/attendance-management.do">勤怠記録/管理</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/attendance/attendance-inquiry.do">근태조회</a></li>
+						href="${pageContext.request.contextPath}/attendance/attendance-inquiry.do">勤怠照会</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/attendance/leave-inquiry.do">휴가조회</a></li>
+						href="${pageContext.request.contextPath}/attendance/leave-inquiry.do">休暇照会</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/attendance/day-worker-management.do">일용직
-							근무기록/관리</a></li>
+						href="${pageContext.request.contextPath}/attendance/day-worker-management.do">日雇い勤務記録/管理</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/attendance/day-worker-inquiry.do">일용직
-							근무 조회</a></li>
+						href="${pageContext.request.contextPath}/attendance/day-worker-inquiry.do">日雇い勤務照会</a></li>
 				</ul></li>
 			<li class="main-nav__item"><a class="main-nav__trigger"
-				href="${pageContext.request.contextPath}/payroll/management.do">급여관리</a>
+				href="${pageContext.request.contextPath}/payroll/management.do">給与管理</a>
 				<ul class="dropdown-menu">
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/payroll/management.do">급여입력/관리</a></li>
+						href="${pageContext.request.contextPath}/payroll/management.do">給与入力/管理</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/payroll/day-worker-management.do">급여입력/관리(일용직)</a></li>
+						href="${pageContext.request.contextPath}/payroll/day-worker-management.do">給与入力/管理（日雇い）</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/payroll/register.do">급여대장</a></li>
+						href="${pageContext.request.contextPath}/payroll/register.do">給与台帳</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/payroll/payslip.do">급여명세서</a></li>
+						href="${pageContext.request.contextPath}/payroll/payslip.do">給与明細書</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/payroll/employee-history.do">사원별
-							급여내역</a></li>
+						href="${pageContext.request.contextPath}/payroll/employee-history.do">社員別給与履歴</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/payroll/item-ledger.do">항목별
-							대장</a></li>
+						href="${pageContext.request.contextPath}/payroll/item-ledger.do">項目別台帳</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/payroll/four-insurance.do">4대보험
-							공제내역</a></li>
+						href="${pageContext.request.contextPath}/payroll/four-insurance.do">四大保険控除履歴</a></li>
 				</ul></li>
 				<li class="main-nav__item">
    
-    				<a class="main-nav__trigger" href="${pageContext.request.contextPath}/payroll-stats/annual.do">급여통계</a>
+				<a class="main-nav__trigger" href="${pageContext.request.contextPath}/payroll-stats/annual.do">給与統計</a>
     					<ul class="dropdown-menu">
 					
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/payroll-stats/annual.do">연도별
-							전체급여 통계</a></li>
+						href="${pageContext.request.contextPath}/payroll-stats/annual.do">年度別給与統計</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/payroll-stats/monthly.do">월별
-							전체급여 통계</a></li>
+						href="${pageContext.request.contextPath}/payroll-stats/monthly.do">月別給与統計</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/payroll-stats/annual-personal.do">연도별
-							개인연봉 통계</a></li>
+						href="${pageContext.request.contextPath}/payroll-stats/annual-personal.do">年度別個人年収統計</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/payroll-stats/monthly-personal.do">월별
-							개인급여 통계</a></li>
+						href="${pageContext.request.contextPath}/payroll-stats/monthly-personal.do">月別個人給与統計</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/payroll-stats/composition.do">급여항목
-							구성 통계</a></li>
+						href="${pageContext.request.contextPath}/payroll-stats/composition.do">給与項目構成統計</a></li>
 				</ul></li>
 			<li class="main-nav__item"><a class="main-nav__trigger"
-				href="${pageContext.request.contextPath}/retirement/process.do">퇴직관리</a>
+				href="${pageContext.request.contextPath}/retirement/process.do">退職管理</a>
 				<ul class="dropdown-menu">
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/retirement/process.do">사원
-							퇴직처리</a></li>
+						href="${pageContext.request.contextPath}/retirement/process.do">退職処理</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/retirement/benefit.do">퇴직급여
-							입력/관리</a></li>
+						href="${pageContext.request.contextPath}/retirement/benefit.do">退職給付
+							入力/管理</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/retirement/payslip.do">퇴직급여명세서</a></li>
+						href="${pageContext.request.contextPath}/retirement/payslip.do">退職給付明細書</a></li>
 				</ul></li>
 		</ul>
 	</nav>

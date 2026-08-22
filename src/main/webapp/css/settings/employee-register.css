@@ -7,7 +7,7 @@
 	min-width:920px;
 	margin:28px auto 44px;
 	color:#334155;
-	font-family:"Malgun Gothic","맑은 고딕",Arial,sans-serif
+	font-family:"Yu Gothic","Meiryo",Arial,sans-serif
 }
 
 .page-heading {
@@ -296,7 +296,7 @@
 .field {
 	min-width:0;
 	display:grid;
-	grid-template-columns:118px minmax(0,1fr);
+	grid-template-columns:132px minmax(0,1fr);
 	align-items:center;
 	gap:10px;
 	min-height:55px;
@@ -312,7 +312,8 @@
 .field>span,.detail-row>span {
 	color:#526174;
 	font-size:12px;
-	font-weight:700
+	font-weight:700;
+	white-space:nowrap
 }
 
 .field input,.field select,.field textarea,.detail-row input,.detail-row select,table input,table select {

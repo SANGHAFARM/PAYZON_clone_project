@@ -1,0 +1,307 @@
+.retirement-benefit-page * { box-sizing: border-box; }
+.benefit-card { overflow:hidden; margin-bottom:16px; border:1px solid #d7dee8; border-radius:8px; background:#fff; box-shadow:0 3px 12px rgba(35,54,80,.05); }
+.benefit-list-card { padding:16px; }
+.benefit-toolbar { min-height:60px; display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; padding:10px 12px; border:1px solid #d4deea; background:#f5f8fb; }
+.benefit-toolbar form { display:flex; align-items:center; gap:8px; }
+.benefit-toolbar label { color:#173f64; font-weight:700; }
+.benefit-toolbar select { width:105px; }
+.benefit-toolbar .search-button { min-width:76px; width:76px; }
+.benefit-toolbar .new-button { min-width:76px; color:#fff; background:#347fc3; }
+.benefit-list-table { width:100%; }
+.benefit-list-table .payment-date-col { width:9%; }
+.benefit-list-table .type-col { width:9%; }
+.benefit-list-table .name-col { width:8%; }
+.benefit-list-table .position-col { width:7%; }
+.benefit-list-table .department-col { width:9%; }
+.benefit-list-table .period-col { width:18%; }
+.benefit-list-table .service-days-col { width:9%; }
+.benefit-list-table .net-payment-col { width:12%; }
+.benefit-list-table .payment-method-col { width:19%; }
+.benefit-list-table td:last-child { white-space:nowrap; }
+.benefit-list-row a { height:100%; display:flex; align-items:center; justify-content:center; color:inherit; text-decoration:none; }
+.benefit-list-row:hover td { background:#f3f8fd; }
+.benefit-list-row.is-selected td { color:#174f7f; background:#e4f1fb; font-weight:700; }
+.draft-benefit-row button { width:100%; height:100%; padding:0 6px; color:inherit; border:0; background:transparent; cursor:pointer; font:inherit; }
+.draft-benefit-row .amount button { text-align:right; }
+.amount { text-align:right!important; }
+.list-actions { display:flex; justify-content:flex-end; gap:10px; padding-top:14px; }
+.list-actions .button { min-width:84px; color:#fff; background:#929aa3; }
+.card-title { min-height:46px; }
+.card-title .small-button { margin:0; }
+.summary-grid { display:grid; grid-template-columns:repeat(4,1fr); padding:14px 16px; gap:10px 16px; }
+.summary-grid label,.compact-form-grid label,.calculation-grid label,.payment-grid label { display:grid; grid-template-columns:92px minmax(0,1fr); align-items:center; gap:8px; }
+.summary-grid label>span,.compact-form-grid label>span,.calculation-grid label>span,.payment-grid label>span { color:#173f64; font-weight:700; }
+.summary-grid input,.summary-grid select,.compact-form-grid input,.calculation-grid input,.payment-grid input { width:100%; }
+.unit-input { display:flex; align-items:center; gap:6px; min-width:0; }
+.unit-input input { min-width:0; text-align:right; }
+.unit-input em { color:#4b5e70; font-style:normal; white-space:nowrap; }
+.section-note { margin:12px 16px 8px; color:#718096; }
+.input-table,.deferred-table { width:calc(100% - 32px); margin:0 16px 16px; }
+.input-table input,.deferred-table input { width:100%; height:29px!important; }
+.date-range { display:flex; align-items:center; gap:4px; }
+.date-range input { min-width:0; }
+.date-range i { font-style:normal; }
+.input-table tfoot th,.input-table tfoot td { background:#fffced; font-weight:700; }
+.benefit-two-column { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.compact-form-grid,.calculation-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 16px; padding:16px; }
+.calculation-grid { grid-template-columns:repeat(4,1fr); }
+.calculation-grid label { grid-template-columns:110px minmax(0,1fr); }
+.payment-section { padding:16px; }
+.payment-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
+.payment-grid label { display:block; }
+.payment-grid label>span { min-height:30px; display:flex; align-items:center; justify-content:center; margin-bottom:5px; padding:5px; color:#fff; background:#354052; }
+.bottom-actions { margin:20px 0 28px; }
+.bottom-actions .button-primary { color:#fff; background:#347fc3; }
+.employee-select-overlay { position:fixed; z-index:3000; inset:0; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(0,0,0,.48); }
+.employee-select-overlay:target { display:flex; }
+.employee-select-modal { width:670px; overflow:hidden; border-radius:10px; background:#fff; box-shadow:0 18px 55px rgba(0,0,0,.35); }
+.employee-select-modal>header { min-height:62px; display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid #d7dee8; }
+.employee-select-modal h2 { margin:0; color:#555; font-size:20px; }
+.modal-close { width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; color:#77808a; font-size:23px; text-decoration:none; }
+.employee-modal-search { display:flex; align-items:center; gap:7px; margin:14px 20px 0; padding-bottom:10px; border-bottom:1px solid #d7dee8; }
+.employee-modal-search form { display:flex; align-items:center; gap:7px; }
+.employee-modal-search .employee-department-form { margin-left:auto; }
+.employee-modal-search input { width:180px; }
+.employee-modal-search select { width:105px; }
+.employee-modal-search .search-button { min-width:64px; width:64px; }
+.employee-modal-search .apply-button { min-width:64px; width:64px; }
+.employee-modal-search .all-view { min-width:76px; height:34px; }
+.employee-select-table-wrap { height:340px; overflow-y:auto; margin:0 20px; border:1px solid #d4deea; border-top:0; }
+.employee-select-table { width:100%; }
+.employee-select-table .select-col { width:42px; }
+.employee-select-table th,.employee-select-table td { height:33px; }
+.employee-select-actions { display:flex; justify-content:center; gap:12px; padding:14px 20px 20px; }
+.employee-select-actions .button { min-width:96px; color:#fff; }
+.employee-select-actions .button-primary { background:#347fc3; }
+.employee-select-actions .button-muted { border-color:#929aa3; background:#929aa3; }
+@media(max-width:1100px){.calculation-grid{grid-template-columns:1fr 1fr}.payment-grid{grid-template-columns:repeat(3,1fr)}}
+
+/* 원본 퇴직급여 계산 화면과 동일한 항목 배치 */
+.retirement-calc-bar { min-height:58px; display:flex; align-items:center; gap:11px; margin-bottom:16px; padding:9px 14px; color:#fff; background:#4a5261; }
+.retirement-calc-bar h2 { min-width:185px; margin:0 8px 0 0; font-size:15px; }
+.retirement-calc-bar h2 strong { color:#fff43b; }
+.retirement-calc-bar label { display:flex; align-items:center; gap:6px; white-space:nowrap; }
+.retirement-calc-bar select { width:92px; }
+.retirement-calc-bar input[type="date"] { width:130px; }
+.retirement-calc-bar .excluded-days { min-width:120px; }
+.retirement-calc-bar .excluded-days input { width:62px; }
+.retirement-calc-bar .small-button { flex:none; margin:0; color:#fff; border-color:#222; background:#222; }
+.calc-value { display:flex; align-items:center; gap:5px; white-space:nowrap; }
+.calc-value b { min-width:72px; height:34px; display:inline-flex; align-items:center; justify-content:flex-end; padding:0 8px; color:#173f64; background:#f5ff1b; }
+.calc-value em { font-style:normal; }
+.original-two-column { display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+.original-block { margin-bottom:16px; }
+.original-section-title { min-height:42px; display:flex; align-items:center; gap:8px; }
+.original-section-title h2 { margin:0; color:#333; font-size:17px; }
+.original-section-title span { color:#687485; }
+.original-section-title .small-button { margin-left:auto; }
+.original-table { width:100%; border-collapse:collapse; table-layout:fixed; }
+.original-table th,.original-table td { height:36px; padding:4px; border:1px solid #d6dbe1; text-align:center; }
+.original-table th { color:#334155; background:#f7f7f7; }
+.original-table input,.original-table select { width:100%; height:28px!important; border-radius:0!important; text-align:right; }
+.original-table input[readonly],.result-table td,.salary-history-table tfoot td { background:#fffdec; }
+.salary-history-table th:first-child { width:48%; }
+.salary-history-table th:nth-child(2) { width:24%; }
+.date-range { display:flex; align-items:center; gap:4px; }
+.date-range input { min-width:0; }
+.date-range i { font-style:normal; }
+.warning-note { margin:6px 0 14px; color:#df5b5b; font-size:11px; }
+.two-field-table,.three-field-table { margin-top:8px; }
+.other-income-table th:nth-child(1) { width:18%; }.other-income-table th:nth-child(2) { width:37%; }.other-income-table th:nth-child(3) { width:21%; }
+.deferred-block { margin-top:4px; }
+.deferred-table th { width:20%; }
+.calculate-action { display:flex; justify-content:center; margin:30px 0; }
+.calculate-action .calculate-button { min-width:168px; color:#fff; background:#347fc3; }
+.result-block { border-top:2px solid #51a539; }
+.result-table th { height:38px; }
+.result-table td { height:38px; text-align:right; }
+.payment-block { margin-top:26px; }
+.payment-table thead th { height:38px; color:#fff; background:#111; }
+.payment-table td { height:42px; background:#fffdec; text-align:right; }
+.payment-table th { width:20%; }
+.payment-table th:nth-child(4) { width:24%; }.payment-table th:nth-child(5) { width:16%; }
+.payment-table td strong { color:#f05252; font-size:16px; }
+.benefit-form>.bottom-actions { margin:34px 0 28px; }
+@media(max-width:1180px){.retirement-calc-bar{flex-wrap:wrap}.retirement-calc-bar h2{width:100%}.original-two-column{grid-template-columns:1fr}}
+
+/* 공통 Payzon UI 디자인으로 통일하고 원본에서는 배치만 유지 */
+.retirement-calc-bar {
+    min-height:70px;
+    display:grid;
+    grid-template-columns:.72fr 1.18fr 1.18fr .92fr .92fr .92fr;
+    align-items:center;
+    column-gap:16px;
+    padding:14px 16px;
+    color:#334155;
+    border:1px solid #d7dee8;
+    border-radius:8px;
+    background:#f4f8fc;
+    box-shadow:0 3px 12px rgba(35,54,80,.05);
+}
+
+.retirement-calc-bar label,
+.retirement-calc-bar .calc-value {
+    min-width:0;
+    display:grid;
+    grid-template-columns:max-content minmax(0,1fr) max-content;
+    align-items:center;
+    gap:7px;
+}
+
+.retirement-calc-bar label > select,
+.retirement-calc-bar label > input,
+.retirement-calc-bar .unit-input {
+    width:100%;
+    min-width:0;
+}
+
+.retirement-calc-bar input[type="date"],
+.retirement-calc-bar select {
+    width:100%;
+}
+
+.retirement-calc-bar select:disabled {
+    color:#59616a;
+    background:#f2f4f7;
+    cursor:not-allowed;
+    opacity:1;
+}
+
+.retirement-calc-bar .excluded-days {
+    min-width:0;
+}
+
+.retirement-calc-bar .excluded-days input {
+    width:100%;
+}
+
+.retirement-calc-bar .calc-value b {
+    width:100%;
+    min-width:0;
+}
+
+.retirement-calc-bar h2 {
+    color:#18588f;
+    font-size:16px;
+}
+
+.retirement-calc-bar h2 strong {
+    color:#1765a5;
+}
+
+.retirement-calc-bar label > span,
+.calc-value > span {
+    color:#173f64;
+    font-weight:700;
+}
+
+.calc-value b {
+    border:1px solid #c5d2e1;
+    border-radius:3px;
+    color:#334155;
+    background:#fff;
+}
+
+.retirement-calc-bar .small-button {
+    color:#fff;
+    border-color:#347fc3;
+    background:#347fc3;
+}
+
+.original-block {
+    padding:14px 16px 16px;
+    border:1px solid #d7dee8;
+    border-radius:8px;
+    background:#fff;
+    box-shadow:0 3px 12px rgba(35,54,80,.05);
+}
+
+.original-section-title {
+    min-height:42px;
+    margin:-14px -16px 14px;
+    padding:0 16px;
+    border-bottom:1px solid #347fc3;
+    background:#f4f8fc;
+}
+
+.original-section-title h2 {
+    color:#18588f;
+    font-size:16px;
+}
+
+.original-section-title span {
+    color:#718096;
+}
+
+.original-table th {
+    color:#173f64;
+    border-color:#ccd6e0;
+    background:#eaf2f7;
+}
+
+.original-table td {
+    border-color:#ccd6e0;
+    background:#fff;
+}
+
+.original-table input[readonly],
+.result-table td,
+.salary-history-table tfoot td {
+    background:#f8fafc;
+}
+
+.salary-history-table tfoot th,
+.salary-history-table tfoot td {
+    color:#173f64;
+    background:#f4f8fc;
+    font-weight:700;
+}
+
+.warning-note {
+    color:#c75b63;
+}
+
+.deferred-block,
+.result-block,
+.payment-block {
+    margin-top:16px;
+}
+
+.result-block {
+    border-top:1px solid #d7dee8;
+}
+
+.result-table thead th {
+    border-top:2px solid #347fc3;
+}
+
+.payment-table thead th {
+    color:#fff;
+    border-color:#2b70ad;
+    background:#347fc3;
+}
+
+.payment-table td {
+    background:#f8fafc;
+}
+
+.payment-table td strong {
+    color:#1765a5;
+}
+
+.other-income-table + .three-field-table {
+    margin-top:34px;
+}
+
+.benefit-alert { position:fixed; z-index:6000; inset:0; display:flex; align-items:center; justify-content:center; }
+.benefit-alert__close-control { position:absolute; width:1px; height:1px; overflow:hidden; opacity:0; pointer-events:none; }
+.benefit-alert__close-control:checked + .benefit-alert { display:none; }
+.benefit-alert__backdrop { position:absolute; inset:0; background:rgba(0,0,0,.48); }
+.benefit-alert__panel { position:relative; width:480px; padding:24px; border:0; border-radius:10px; background:#fff; box-shadow:0 12px 35px rgba(0,0,0,.3); text-align:center; }
+.benefit-alert__panel p { margin:8px 0 14px; color:#555; font-size:13px; font-weight:700; line-height:1.7; white-space:nowrap; }
+.benefit-alert__panel .benefit-alert__warning { margin:0 0 24px; color:#d64040; font-weight:400; }
+.benefit-alert__confirm { width:97px; height:32px; display:flex; align-items:center; justify-content:center; margin:8px auto 0; border-radius:4px; color:#fff; background:#347fc3; text-decoration:none; font-weight:700; cursor:pointer; }
+.benefit-alert__actions { display:flex; justify-content:center; gap:10px; }
+.benefit-alert__actions button,.benefit-alert__actions a { width:97px; height:34px; display:flex; align-items:center; justify-content:center; border:0; border-radius:4px; color:#fff; text-decoration:none; font-weight:700; }
+.benefit-alert__actions button { background:#d64040; }
+.benefit-alert__actions a { background:#a5a5a5; }

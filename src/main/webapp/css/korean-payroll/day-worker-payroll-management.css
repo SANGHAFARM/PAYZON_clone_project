@@ -1,0 +1,316 @@
+@charset "UTF-8";
+
+/* 일용직 급여 화면의 좌우 영역 비율 */
+.day-worker-payment-page .payroll-workspace {
+	grid-template-columns: minmax(360px, .72fr) minmax(700px, 1.28fr);
+}
+
+/* 급여 대상 사원 목록 */
+.day-worker-payment-page .employee-table-wrap {
+	max-height: 442px;
+}
+
+.day-worker-payment-page .money-column {
+	width: 108px;
+}
+
+.day-worker-payment-page .employee-table td.employee-net-payment {
+	padding: 0 6px;
+	white-space: nowrap;
+	text-align: center !important;
+}
+
+/* 근무별 지급내역과 공제항목 배치 */
+.day-payment-panels {
+	display: grid;
+	grid-template-columns: minmax(440px, 1.55fr) minmax(250px, .85fr);
+	gap: 12px;
+	align-items: stretch;
+}
+
+.day-payment-panels .amount-panel {
+	height: 100%;
+}
+
+/* 근무별 지급내역 */
+.work-detail-panel .table-wrap {
+	min-height: 332px;
+}
+
+.work-payment-table th:nth-child(1) {
+	width: 24%;
+}
+
+.work-payment-table th:nth-child(2) {
+	width: 14%;
+}
+
+.work-payment-table th:nth-child(3) {
+	width: 20%;
+}
+
+.work-payment-table th:nth-child(4),
+.work-payment-table th:nth-child(5) {
+	width: 21%;
+}
+
+.work-payment-table input[readonly] {
+	color: #4b5d70;
+	background: #f8fafc;
+	cursor: default;
+}
+
+.work-payment-table td:first-child input {
+	text-align: center;
+}
+
+.work-payment-table td:nth-child(2) input,
+.work-payment-table td:nth-child(3) input,
+.work-payment-table td:nth-child(4) input,
+.work-payment-table td:nth-child(5) input {
+	text-align: right;
+}
+
+/* 공제항목 */
+.deduction-table {
+	width: 100%;
+	table-layout: fixed;
+	border-collapse: collapse;
+}
+
+.deduction-table th:first-child {
+	width: 48%;
+}
+
+.deduction-table th:nth-child(2),
+.deduction-table td:nth-child(2) {
+	width: 52%;
+}
+
+.deduction-table input {
+	width: 100%;
+	text-align: right;
+	box-sizing: border-box;
+}
+
+/* 4대보험, 기간단위 소득세 버튼 */
+.deduction-tools {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	margin-left: auto;
+}
+
+.deduction-tools button {
+	height: 24px;
+	padding: 0 7px;
+	border: 1px solid #245d89;
+	border-radius: 3px;
+	color: #fff;
+	background: #2f6089;
+	font-family: "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
+	font-size: 10px;
+	font-weight: 700;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.deduction-tools button:hover,
+.deduction-tools button:focus-visible {
+	border-color: #17476d;
+	background: #244f73;
+	outline: none;
+}
+
+/* 지급총액과 공제총액 */
+.day-worker-totals {
+	height: 40px;
+	display: grid;
+	grid-template-columns: minmax(440px, 1.55fr) minmax(250px, .85fr);
+	margin-top: 12px;
+	border: 1px solid #ccd6e0;
+	background: #f4f8fc;
+}
+
+.day-worker-totals > div {
+	display: grid;
+	grid-template-columns: 110px minmax(0, 1fr) 22px;
+	align-items: center;
+	color: #173f64;
+	font-size: 11px;
+}
+
+.day-worker-totals > div + div {
+	border-left: 1px solid #ccd6e0;
+}
+
+.day-worker-totals strong {
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-right: 1px solid #ccd6e0;
+}
+
+.day-worker-totals span {
+	padding-right: 5px;
+	text-align: right;
+	font-weight: 700;
+}
+
+.day-worker-totals em {
+	text-align: center;
+	font-style: normal;
+}
+
+/* 사원 추가 팝업 */
+.day-worker-payment-page .employee-modal {
+	width: 690px;
+}
+
+.employee-search-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 14px 20px 10px;
+}
+
+.employee-search-row input,
+.employee-search-row select {
+	height: 34px;
+	border: 1px solid #c5d2e1;
+	border-radius: 3px;
+	background: #fff;
+	box-sizing: border-box;
+	font-family: "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
+	font-size: 12px;
+}
+
+.employee-search-row input {
+	width: 210px;
+	padding: 5px 9px;
+}
+
+.employee-search-row select {
+	width: 84px;
+	padding: 4px 6px;
+}
+
+.employee-filters {
+	display: flex;
+	gap: 7px;
+	margin-left: auto;
+}
+
+.day-worker-payment-page .employee-modal .modal-body {
+	height: 300px;
+	margin-top: 0;
+	overflow-y: auto;
+}
+
+/* 팝업 페이지 이동 */
+.modal-pagination {
+	height: 36px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 13px;
+	color: #64748b;
+}
+
+.modal-pagination a {
+	color: #52677d;
+	text-decoration: none;
+}
+
+.modal-pagination a:hover,
+.modal-pagination a:focus-visible {
+	color: #1765a5;
+	text-decoration: underline;
+	outline: none;
+}
+
+.modal-pagination span {
+	min-width: 24px;
+	height: 24px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #e07373;
+	color: #d15860;
+	background: #fff;
+	box-sizing: border-box;
+}
+
+/* 팝업 하단 버튼 */
+.day-worker-payment-page .employee-modal .modal-actions {
+	justify-content: center;
+	margin: 0 0 18px;
+}
+
+.day-worker-payment-page .employee-modal .modal-actions .button {
+	width: 112px;
+	min-width: 112px;
+}
+
+/* 화면 폭이 좁을 때 */
+@media (max-width: 1180px) {
+	.day-worker-payment-page .payroll-workspace {
+		grid-template-columns: 1fr;
+	}
+
+	.day-payment-panels,
+	.day-worker-totals {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+/* 계산 및 저장 결과 안내 팝업 */
+.day-worker-alert {
+	position: fixed;
+	z-index: 7000;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.day-worker-alert__backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, .48);
+}
+
+.day-worker-alert__panel {
+	position: relative;
+	width: 480px;
+	padding: 24px;
+	border: 0;
+	border-radius: 10px;
+	background: #fff;
+	box-shadow: 0 12px 35px rgba(0, 0, 0, .3);
+	text-align: center;
+}
+
+.day-worker-alert__panel p {
+	margin: 8px 0 14px;
+	color: #555;
+	font-size: 13px;
+	font-weight: 700;
+	line-height: 1.7;
+	white-space: nowrap;
+}
+
+.day-worker-alert__panel > a {
+	width: 97px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 8px auto 0;
+	border-radius: 4px;
+	color: #fff;
+	background: #347fc3;
+	font-weight: 700;
+	text-decoration: none;
+}
