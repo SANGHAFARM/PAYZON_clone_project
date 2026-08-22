@@ -23,7 +23,7 @@ import jdbc.connection.ConnectionProvider;
 import mvc.command.CommandHandler;
 
 public class DayWorkerInquiryHandler implements CommandHandler{
-	final private String FORM_VIEW = "/WEB-INF/view/attendance/day-worker-inquiry-test.jsp";
+	final private String FORM_VIEW = "/WEB-INF/view/attendance/day-worker-inquiry.jsp";
 	
 	
 	@Override
@@ -61,10 +61,12 @@ public class DayWorkerInquiryHandler implements CommandHandler{
 			req.setAttribute("jobPositionId", jobPositionId);
 			DailyWorkListService dailyWorkListService = new DailyWorkListService();
 			List<DailyWorkListDto> list = dailyWorkListService.list(new DailyWorkListRequest(year, month, departmentId, jobPositionId));
-			req.setAttribute("dailyWorkList", dailyWorkListService.list(new DailyWorkListRequest(year, month, departmentId, jobPositionId)));
+			req.setAttribute("dailyWorkList", list);
 			JobPositionListService jobPositionListService = new JobPositionListService();
 			req.setAttribute("jobPositions", jobPositionListService.list());
-		} else if ("detail".equals(view)) {
+		} 
+		//상세 조회
+		else if ("detail".equals(view)) {
 			req.setAttribute("view", view);
 			
 
@@ -93,11 +95,10 @@ public class DayWorkerInquiryHandler implements CommandHandler{
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");	
 					Date startDate = sdf.parse(startStr);
 					Date endDate = sdf.parse(endStr);
-					if (endDate.before(startDate)) {
-						startDate=null;
-						endDate=null;
-						req.setAttribute("dateError", "dateError");
-					}
+					/*
+					 * if (endDate.before(startDate)) { startDate=null; endDate=null;
+					 * req.setAttribute("dateError", "dateError"); }
+					 */
 					request.setStartDate(startDate);
 					request.setEndDate(endDate);
 					req.setAttribute("startDate", startDate!=null?startStr:null);

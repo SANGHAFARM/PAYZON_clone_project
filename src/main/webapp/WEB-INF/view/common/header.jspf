@@ -119,7 +119,7 @@
 							발급대장</a></li>
 				</ul></li>
 			<li class="main-nav__item"><a class="main-nav__trigger"
-				href="${pageContext.request.contextPath}//attendance/attendance-management.do">근태관리</a>
+				href="${pageContext.request.contextPath}/attendance/attendance-management.do">근태관리</a>
 				<ul class="dropdown-menu">
 					<li><a class="dropdown-menu__link"
 						href="${pageContext.request.contextPath}/attendance/attendance-management.do">근태기록/관리</a></li>

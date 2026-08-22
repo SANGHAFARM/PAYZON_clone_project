@@ -27,7 +27,7 @@ import mvc.command.CommandHandler;
 
 public class AttendanceManagementHandler implements CommandHandler {
 
-	private static final String FORM_VIEW = "/WEB-INF/view/attendance/attendance-management-test.jsp";
+	private static final String FORM_VIEW = "/WEB-INF/view/attendance/attendance-management.jsp";
 	private static final String SUCCESS_VIEW = ""; // 임시적으로 적은 경로
 
 	/*
