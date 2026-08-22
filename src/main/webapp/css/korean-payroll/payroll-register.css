@@ -1,0 +1,49 @@
+@charset "UTF-8";
+.payment-register-page,.payment-register-page *{box-sizing:border-box}.payment-register-page{width:min(1240px,calc(100% - 36px));min-width:960px;margin:28px auto 44px;color:#334155;font:12px "Malgun Gothic","맑은 고딕",Arial,sans-serif}.payment-register-page .page-heading{margin-bottom:18px;padding:20px 26px;border:1px solid #d7dee8;border-radius:8px;background:linear-gradient(135deg,#fff,#f5f8fc);box-shadow:0 4px 14px rgba(35,54,80,.07)}.payment-register-page .page-heading p{margin:0 0 4px;color:#347fc3;font-weight:700}.payment-register-page .page-heading h1{margin:0;color:#1f2937;font-size:25px}.payment-register-page .button{min-width:76px;height:36px;display:inline-flex;align-items:center;justify-content:center;padding:0 14px;border:1px solid #2673b8;border-radius:4px;color:#1765a5;background:#fff;font:700 12px inherit;text-decoration:none;cursor:pointer}.payment-register-page .button-primary{color:#fff;background:#3485c9}.register-card{padding:18px;border:1px solid #d7dee8;border-radius:8px;background:#fff;box-shadow:0 3px 12px rgba(35,54,80,.05)}.register-search,.detail-filter{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding:12px 14px;border:1px solid #ccd6e0;background:#f7f9fc}.register-search label{color:#173f64;font-weight:700}.register-search select,.detail-filter select{width:130px;height:34px;padding:5px 9px;border:1px solid #c5d2e1;border-radius:3px;background:#fff;font:12px inherit}.table-wrap,.detail-table-wrap{overflow:auto}.register-table{width:100%;border-collapse:collapse;table-layout:fixed}.register-table th,.register-table td{height:40px;padding:6px 8px;border:1px solid #ccd6e0;text-align:center;vertical-align:middle}.register-table thead th{color:#173f64;background:#eaf2f7}.register-table tbody tr:hover td{background:#f3f8fd}.register-table a{color:#1765a5;font-weight:700;text-decoration:none}.register-table .amount{text-align:right}.register-table .give{color:#1765a5}.register-table .deduction{color:#d15860}.register-table .empty-row{height:110px;color:#8795a8;background:#fff}.register-table tfoot th,.register-table tfoot td{font-weight:700;background:#fffceb}.month-col,.round-col{width:105px}.period-col{width:190px}.date-col{width:120px}.count-col{width:75px}.money-col{width:135px}.delete-col{width:70px}.table-button{height:27px;padding:0 10px;border:1px solid #9ca3aa;border-radius:3px;color:#fff;background:#a5a5a5;font:700 11px inherit;cursor:pointer}.pagination{min-height:42px;display:flex;align-items:center;justify-content:center;gap:7px;margin-top:14px}.pagination:empty{display:none}.pagination a{min-width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;padding:0 7px;border:1px solid #c7d4e2;border-radius:3px;color:#52677d;text-decoration:none}.pagination a.active{color:#fff;border-color:#347fc3;background:#347fc3}.detail-filter{justify-content:flex-end}.register-summary{margin-bottom:14px;border:1px solid #ccd6e0;background:#f7f9fc}.register-summary dl{display:flex;align-items:center;margin:0;padding:11px 14px;gap:22px}.register-summary dl>div{display:flex;align-items:center;gap:8px}.register-summary dt{color:#173f64;font-weight:700}.register-summary dd{margin:0;color:#52677d}.detail-table-wrap{max-width:100%;border:1px solid #ccd6e0}.detail-table{min-width:2410px;border-collapse:collapse;table-layout:fixed;font-size:11px}.detail-table th,.detail-table td{width:95px;height:38px;padding:5px 7px;border-right:1px solid #ccd6e0;border-bottom:1px solid #ccd6e0;text-align:right;white-space:nowrap}.detail-table thead th{text-align:center;color:#173f64;background:#eaf2f7}.detail-table thead .give-item{color:#1765a5}.detail-table thead .deduction-item{color:#d15860;background:#fff1f1}.detail-table .fixed{text-align:center}.detail-table .type{width:80px}.detail-table .name{width:80px}.detail-table .date{width:95px}.detail-table .department,.detail-table .position{width:90px}.detail-table .give-total,.detail-table .deduction-total{width:120px;color:#fff;background:#347fc3}.detail-table .deduction-total{background:#d66b73}.detail-table .net-total{width:130px;color:#fff;background:#475569}.detail-table tbody td:nth-child(-n+5){text-align:center}.detail-table tbody .give{color:#1765a5;font-weight:700;background:#f2f8fd}.detail-table tbody .deduction{color:#d15860;font-weight:700;background:#fff5f5}.detail-table tbody .net{font-weight:700;background:#f4f6f8}.detail-table tfoot th,.detail-table tfoot td{font-weight:700;background:#fffceb}.detail-table .empty-row{height:120px;text-align:center;color:#8795a8;background:#fff}.detail-actions{display:flex;justify-content:center;margin-top:18px}.detail-actions .button{min-width:110px}
+
+.detail-topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:14px;padding:12px 14px;border:1px solid #ccd6e0;background:#f7f9fc}
+.register-information{display:flex;align-items:center;gap:18px;margin:0;white-space:nowrap}
+.register-information>div{display:flex;align-items:center;gap:7px}
+.register-information dt{color:#173f64;font-weight:700}
+.register-information dd{margin:0;color:#52677d}
+.detail-topbar .detail-filter{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin:0;padding:0;border:0;background:transparent}
+.detail-topbar .detail-filter select{width:112px}
+.detail-card .detail-topbar{width:100%;display:flex!important;align-items:center!important;justify-content:space-between!important;flex-wrap:nowrap!important}
+.detail-card .detail-topbar .register-information{display:flex!important;flex-direction:row!important;align-items:center!important;gap:16px!important;margin:0!important;padding:0!important}
+.detail-card .detail-topbar .register-information>div{display:flex!important;flex-direction:row!important;align-items:center!important;gap:6px!important}
+.detail-table{min-width:2250px}
+.detail-table .type{width:68px}.detail-table .name{width:72px}.detail-table .department{width:78px}.detail-table .position{width:68px}
+.detail-table tbody td:nth-child(5){text-align:right}
+.detail-table tbody td:nth-child(-n+4){text-align:center}
+.detail-table tfoot th:first-child{text-align:center!important}
+.register-table tbody td:nth-child(6),.register-table tbody td:nth-child(7),.register-table tbody td:nth-child(8){font-weight:700}
+.detail-table tfoot td{color:#334155;font-weight:400}
+.detail-table{width:max-content;min-width:100%;table-layout:auto}
+.detail-table th,.detail-table td{min-width:95px}
+.detail-table .type{min-width:68px}.detail-table .name{min-width:72px}.detail-table .department{min-width:78px}.detail-table .position{min-width:68px}
+.detail-table tbody .give,.detail-table tfoot .give{color:#1765a5;font-weight:700}
+.detail-table tbody .deduction,.detail-table tfoot .deduction{color:#d15860;font-weight:700}
+.detail-table tbody .net,.detail-table tfoot .net{color:#1f2937;font-weight:700}
+.payment-register-page .detail-card .detail-topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;width:100%;margin:0 0 14px;padding:12px 14px;border:1px solid #ccd6e0;background:#f7f9fc}
+.payment-register-page .detail-card .register-information{display:flex;flex:1 1 auto;align-items:center;gap:18px;margin:0;padding:0;list-style:none;white-space:nowrap}
+.payment-register-page .detail-card .register-information>div{display:flex;align-items:center;gap:7px;margin:0}
+.payment-register-page .detail-card .detail-filter{display:flex;flex:0 0 auto;align-items:center;gap:8px;margin:0;padding:0;border:0;background:transparent}
+.payment-register-page .detail-card .detail-table{width:max-content;min-width:100%}
+.payment-register-page .detail-card .empty-row{width:auto;min-width:0;text-align:center}
+.payment-register-page .detail-card .detail-toolbar{width:100%;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:20px!important;margin:0 0 14px!important;padding:12px 14px!important;border:1px solid #ccd6e0!important;background:#f7f9fc!important}
+.payment-register-page .detail-card .detail-toolbar .register-information{display:flex!important;flex:1 1 auto!important;flex-direction:row!important;align-items:center!important;gap:18px!important;margin:0!important;padding:0!important}
+.payment-register-page .detail-card .detail-toolbar .register-information>div{display:flex!important;flex-direction:row!important;align-items:center!important;gap:7px!important}
+.payment-register-page .detail-card .detail-filter-controls{display:flex;flex:0 0 auto;align-items:center;gap:8px;margin-left:auto}
+.payment-register-page .detail-card .detail-filter-controls select{width:122px;height:34px;padding:5px 9px;border:1px solid #c5d2e1;border-radius:3px;background:#fff;font:12px "Malgun Gothic","맑은 고딕",Arial,sans-serif}
+
+/* 급여대장 삭제 확인 팝업 */
+.register-delete-alert{position:fixed;z-index:7000;inset:0;display:flex;align-items:center;justify-content:center;font-family:"Malgun Gothic","맑은 고딕",Arial,sans-serif}
+.register-delete-alert__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.48)}
+.register-delete-alert__panel{position:relative;width:480px;padding:24px;border:0;border-radius:10px;background:#fff;box-shadow:0 12px 35px rgba(0,0,0,.3);text-align:center}
+.register-delete-alert__panel p{margin:8px 0 14px;color:#555;font-size:13px;font-weight:700;line-height:1.7;white-space:nowrap}
+.register-delete-alert__panel p strong{color:#d64040}
+.register-delete-alert__panel .register-delete-alert__warning{margin:0 0 24px;color:#d64040;font-weight:400}
+.register-delete-alert__actions{display:flex;justify-content:center;gap:10px}
+.register-delete-alert__actions button,.register-delete-alert__actions a{width:97px;height:34px;display:flex;align-items:center;justify-content:center;border:0;border-radius:4px;color:#fff;text-decoration:none;font-weight:700}
+.register-delete-alert__actions button{background:#d64040;cursor:pointer}
+.register-delete-alert__actions a{background:#a5a5a5}

@@ -1,7 +1,7 @@
 @charset "UTF-8";
 
 .payment-management-page,.payment-management-page *{box-sizing:border-box}
-.payment-management-page{width:min(1400px,calc(100% - 36px));min-width:960px;margin:28px auto 44px;color:#334155;font:12px "Malgun Gothic","맑은 고딕",Arial,sans-serif}
+.payment-management-page{width:min(1400px,calc(100% - 36px));min-width:960px;margin:28px auto 44px;color:#334155;font:12px "Yu Gothic","Meiryo",Arial,sans-serif}
 .payment-management-page .page-heading{display:block;margin-bottom:18px;padding:20px 26px;border:1px solid #d7dee8;border-radius:8px;background:linear-gradient(135deg,#fff,#f5f8fc);box-shadow:0 4px 14px rgba(35,54,80,.07)}
 .payment-management-page .page-heading>div{display:block;text-align:left}
 .payment-management-page .page-heading p{margin:0 0 4px;color:#347fc3;font-size:12px;font-weight:700}
@@ -100,8 +100,8 @@
 .item-modal-body{margin:10px 20px 0;padding:10px 14px;border:1px solid #d7dee8}
 .item-guide{margin:0 0 8px;color:#687789;font-size:0;line-height:1.5}
 .item-guide:before,.item-guide:after{display:block;font-size:11px}
-#give-item-manager .item-guide:before{content:"지급항목별로 수정하실 수 있습니다."}#give-item-manager .item-guide:after{content:"계산 수정은 급여항목 설정에서 진행하세요."}
-#deduction-item-manager .item-guide:before{content:"공제항목별로 수정하실 수 있습니다."}#deduction-item-manager .item-guide:after{content:"계산 변경은 급여항목 설정에서 진행하세요."}
+#give-item-manager .item-guide:before{content:"お支払い項目別に編集できます。"}#give-item-manager .item-guide:after{content:"計算の変更は、給与明細の設定で行ってください。"}
+#deduction-item-manager .item-guide:before{content:"控除項目別に編集できます。"}#deduction-item-manager .item-guide:after{content:"計算の変更は、給与明細の設定で行ってください。"}
 .item-select-line{display:grid;grid-template-columns:154px 96px;align-items:center;justify-content:space-between;gap:10px;padding-bottom:7px;border-bottom:2px solid #222}
 .item-modal-body .item-select-line select{width:154px}.text-delete{width:96px;height:28px;padding:0 6px;border:1px solid #efb3b7;border-radius:3px;color:#c75d64;background:#fff;font:11px inherit;cursor:pointer;white-space:nowrap}
 .item-modal-body>label,.item-radio-line{min-height:42px;display:grid;grid-template-columns:118px minmax(0,1fr);align-items:center;column-gap:8px;border-bottom:1px solid #e0e4e8}

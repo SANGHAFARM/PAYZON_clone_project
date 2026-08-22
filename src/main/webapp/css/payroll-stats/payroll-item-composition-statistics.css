@@ -178,17 +178,17 @@
 	border-right: 1px solid #c9d7e5;
 }
 
-/* 사원 선택 모달 테이블 스크롤 처리 */
+/* 社員選択モーダルテーブルスクロール処理 */
 .employee-modal__table-wrap {
-    max-height: 400px; /* 원하는 높이로 조절 가능 */
-    overflow-y: auto;  /* 내용이 넘치면 세로 스크롤 생성 */
+    max-height: 400px; /* 希望の高さに調整可能 */
+    overflow-y: auto;  /* 内容があふれたら縦スクロール生成 */
 }
 
-/* 스크롤할 때 테이블 제목(thead)은 위에 고정되게 만들면 더 좋습니다 */
+/* スクロールするときは、テーブルのタイトル（thead）を上に固定することをお勧めします */
 .employee-modal__table thead th {
     position: sticky;
     top: 0;
-    background-color: #f8f9fa; /* 헤더 배경색에 맞게 조정 */
+    background-color: #f8f9fa; /* ヘッダの背景色に合わせて調整 */
     z-index: 1;
 }
 

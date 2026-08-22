@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
 
 <c:set var="employeePage"
 	value="${empty param.employeePage ? 1 : param.employeePage}" />
@@ -7,12 +8,12 @@
 	value="${empty availableEmployeePage.totalPages ? 1 : availableEmployeePage.totalPages}" />
 
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja-JP">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<title>급여입력/관리(일용직)</title>
+	<title>給与入力/管理（日雇い）</title>
 
 	<link rel="stylesheet"
 		href="${pageContext.request.contextPath}/css/common/common.css">
@@ -30,8 +31,8 @@
 	<main class="page-content payment-management-page day-worker-payment-page">
 		<header class="page-heading">
 			<div>
-				<p>급여관리</p>
-				<h1>급여입력/관리(일용직)</h1>
+				<p>給与管理</p>
+				<h1>給与入力/管理（日雇い）</h1>
 			</div>
 		</header>
 
@@ -40,61 +41,61 @@
 			action="${pageContext.request.contextPath}/payroll/day-worker-management.do">
 
 			<div class="period-field">
-				<label for="paymentYear">귀속연도</label>
+				<label for="paymentYear">帰属年</label>
 				<select id="paymentYear" name="paymentYear">
 					<c:forEach var="year" items="${paymentYears}">
 						<option value="${year}"
 							<c:if test="${year eq selectedYear}">selected</c:if>>
-							${year}년
+							${year}年
 						</option>
 					</c:forEach>
 				</select>
 			</div>
 
 			<div class="period-field">
-				<label for="paymentMonth">귀속월</label>
+				<label for="paymentMonth">帰属月</label>
 				<select id="paymentMonth" name="paymentMonth">
 					<c:forEach var="month" begin="1" end="12">
 						<option value="${month}"
 							<c:if test="${month eq selectedMonth}">selected</c:if>>
-							${month}월
+							${month}月
 						</option>
 					</c:forEach>
 				</select>
 			</div>
 
 			<div class="period-field">
-				<label for="paymentRound">급여차수</label>
+				<label for="paymentRound">給与回次</label>
 				<select id="paymentRound" name="paymentRound">
 					<c:forEach var="round" begin="1" end="10">
 						<option value="${round}"
 							<c:if test="${round eq selectedRound}">selected</c:if>>
-							급여-${round}차
+							給与-${round}車
 						</option>
 					</c:forEach>
 				</select>
 			</div>
 
 			<div class="period-field period-range">
-				<label>정산기간</label>
-				<input type="date"
+				<label>精算期間</label>
+				<input type="date" lang="ja-JP"
 					name="calculationStart"
 					value="${calculationStart}">
 				<span>~</span>
-				<input type="date"
+				<input type="date" lang="ja-JP"
 					name="calculationEnd"
 					value="${calculationEnd}">
 			</div>
 
 			<div class="period-field">
-				<label for="paymentDate">급여지급일</label>
+				<label for="paymentDate">給与支給日</label>
 				<input id="paymentDate"
-					type="date"
+					type="date" lang="ja-JP"
 					name="paymentDate"
 					value="${paymentDate}">
 			</div>
 
-			<button type="submit" class="button button-primary">조회</button>
+			<button type="submit" class="button button-primary">照会</button>
 		</form>
 
 		<section class="payroll-workspace">
@@ -102,7 +103,7 @@
 				<div class="section-toolbar">
 					<div class="toolbar-buttons toolbar-buttons-left">
 						<a class="button button-primary" href="#employee-add">
-							신규추가
+							新規追加
 						</a>
 					</div>
 
@@ -110,7 +111,7 @@
 						<button type="submit"
 							form="employeeForm"
 							class="button button-neutral">
-							선택삭제
+							選択削除
 						</button>
 
 						<button type="submit"
@@ -118,7 +119,7 @@
 							name="deleteType"
 							value="ALL"
 							class="button button-neutral">
-							전체삭제
+							完全削除
 						</button>
 					</div>
 				</div>
@@ -145,11 +146,11 @@
 
 							<thead>
 								<tr>
-									<th>선택</th>
-									<th>구분</th>
-									<th>성명</th>
-									<th>부서</th>
-									<th>실지급액</th>
+									<th>選択</th>
+									<th>区分</th>
+									<th>氏名</th>
+									<th>部署</th>
+									<th>差引支給額</th>
 								</tr>
 							</thead>
 
@@ -170,7 +171,7 @@
 
 												<td>
 													<a href="?paymentYear=${selectedYear}&amp;paymentMonth=${selectedMonth}&amp;paymentRound=${selectedRound}&amp;employeeId=${employee.employeeId}">
-														${employee.employmentTypeName}
+														<ui:code-label value="${employee.employmentTypeName}" />
 													</a>
 												</td>
 
@@ -189,7 +190,7 @@
 									<c:otherwise>
 										<tr>
 											<td class="empty-row" colspan="5">
-												조회된 급여 대상 일용직 사원이 없습니다.
+												照会された給与の対象日雇い社員はありません。
 											</td>
 										</tr>
 									</c:otherwise>
@@ -217,18 +218,18 @@
 					<div class="day-payment-panels">
 						<section class="amount-panel work-detail-panel">
 							<header>
-								<h2>근무별 지급내역</h2>
+								<h2>勤務別支給履歴</h2>
 							</header>
 
 							<div class="table-wrap">
 								<table class="input-table work-payment-table">
 									<thead>
 										<tr>
-											<th>일자</th>
-											<th>지급률</th>
-											<th>지급액</th>
-											<th>소득세</th>
-											<th>지방소득세</th>
+											<th>日付</th>
+											<th>支払い率</th>
+											<th>支払額</th>
+											<th>所得税</th>
+											<th>地方所得税</th>
 										</tr>
 									</thead>
 
@@ -240,7 +241,7 @@
 
 													<tr>
 														<td>
-															<input type="date"
+															<input type="date" lang="ja-JP"
 																value="${work.workDate}"
 																readonly>
 														</td>
@@ -271,7 +272,7 @@
 											<c:otherwise>
 												<tr>
 													<td class="empty-row" colspan="5">
-														선택한 사원의 근무별 지급내역이 없습니다.
+														選択した社員の勤務別支給内訳がありません。
 													</td>
 												</tr>
 											</c:otherwise>
@@ -283,19 +284,19 @@
 
 						<section class="amount-panel deduction-panel">
 							<header>
-								<h2>공제항목</h2>
+								<h2>控除項目</h2>
 
 								<div class="deduction-tools">
 									<button type="submit"
 										name="calculationType"
 										value="INSURANCE">
-										4대보험
+										4大保険
 									</button>
 
 									<button type="submit"
 										name="calculationType"
 										value="PERIOD_TAX">
-										기간단위 소득세
+										期間単位所得税
 									</button>
 								</div>
 							</header>
@@ -303,14 +304,14 @@
 							<table class="input-table deduction-table">
 								<thead>
 									<tr>
-										<th>항목</th>
-										<th>금액</th>
+										<th>項目</th>
+										<th>金額</th>
 									</tr>
 								</thead>
 
 								<tbody>
 									<tr>
-										<th>국민연금</th>
+										<th>国民年金</th>
 										<td>
 									<input type="number"
 										name="nationalPension"
@@ -319,7 +320,7 @@
 										</td>
 									</tr>
 									<tr>
-										<th>건강보험</th>
+										<th>健康保険</th>
 										<td>
 									<input type="number"
 										name="healthInsurance"
@@ -328,7 +329,7 @@
 										</td>
 									</tr>
 									<tr>
-										<th>장기요양보험</th>
+										<th>長期療養保険</th>
 										<td>
 									<input type="number"
 										name="longTermCareInsurance"
@@ -337,7 +338,7 @@
 										</td>
 									</tr>
 									<tr>
-										<th>고용보험</th>
+										<th>雇用保険</th>
 										<td>
 									<input type="number"
 										name="employmentInsurance"
@@ -346,7 +347,7 @@
 										</td>
 									</tr>
 									<tr>
-										<th>소득세</th>
+										<th>所得税</th>
 										<td>
 									<input type="number"
 										name="incomeTax"
@@ -355,7 +356,7 @@
 										</td>
 									</tr>
 									<tr>
-										<th>지방소득세</th>
+										<th>地方所得税</th>
 										<td>
 									<input type="number"
 										name="localIncomeTax"
@@ -364,7 +365,7 @@
 										</td>
 									</tr>
 									<tr>
-										<th>상조회비</th>
+										<th>商調会費</th>
 										<td>
 									<input type="number"
 										name="mutualAidFee"
@@ -379,32 +380,32 @@
 
 					<div class="day-worker-totals">
 						<div>
-							<strong>지급총액</strong>
+							<strong>支給総額</strong>
 							<span>${selectedEmployee.totalPayment}</span>
-							<em>원</em>
+							<em>ウォン</em>
 						</div>
 
 						<div>
-							<strong>공제총액</strong>
+							<strong>控除総額</strong>
 							<span>${selectedEmployee.totalDeduction}</span>
-							<em>원</em>
+							<em>ウォン</em>
 						</div>
 					</div>
 
 					<div class="net-payment">
-						<span>실지급액:</span>
+						<span>差引支給額：</span>
 						<strong>${selectedEmployee.netPayment}</strong>
-						<em>원</em>
+						<em>ウォン</em>
 					</div>
 
 					<div class="form-actions">
 						<button type="submit" class="button button-primary">
-							저장
+							保存
 						</button>
 
 						<button type="reset"
 							class="button button-outline button-clear">
-							내용지우기
+							内容を消去する
 						</button>
 					</div>
 				</form>
@@ -415,8 +416,8 @@
 	<div id="employee-add" class="modal-overlay">
 		<section class="modal employee-modal">
 			<header>
-				<h2>급여 대상 일용직 사원 추가</h2>
-				<a href="#" aria-label="닫기">×</a>
+				<h2>給与対象日雇い社員追加</h2>
+				<a href="#" aria-label="閉じる">×</a>
 			</header>
 
 			<form method="get"
@@ -432,15 +433,15 @@
 					<input type="search"
 						name="employeeKeyword"
 						value="<c:out value='${param.employeeKeyword}' />"
-						placeholder="사원검색">
+						placeholder="社員検索">
 
 					<button class="button button-primary" type="submit">
-						검색
+						検索
 					</button>
 
 					<div class="employee-filters">
 						<select name="departmentId">
-							<option value="">부서별</option>
+							<option value="">部署別</option>
 							<c:forEach var="department" items="${departments}">
 								<option value="${department.departmentId}" ${param.departmentId eq department.departmentId ? 'selected' : ''}>
 									${department.departmentName}
@@ -449,7 +450,7 @@
 						</select>
 
 						<select name="status">
-							<option value="ACTIVE">재직</option>
+							<option value="ACTIVE">在職</option>
 						</select>
 					</div>
 				</div>
@@ -468,13 +469,13 @@
 					<table class="data-table">
 						<thead>
 							<tr>
-								<th class="check-column">선택</th>
-								<th>구분</th>
-								<th>사원번호</th>
-								<th>성명</th>
-								<th>부서</th>
-								<th>직위</th>
-								<th>상태</th>
+								<th class="check-column">選択</th>
+								<th>区分</th>
+								<th>社員番号</th>
+								<th>氏名</th>
+								<th>部署</th>
+								<th>役職</th>
+								<th>ステータス</th>
 							</tr>
 						</thead>
 
@@ -490,12 +491,12 @@
 													name="employeeIds"
 													value="${employee.employeeId}">
 											</td>
-											<td>${employee.employmentTypeName}</td>
+											<td><ui:code-label value="${employee.employmentTypeName}" /></td>
 											<td>${employee.employeeNumber}</td>
 											<td>${employee.employeeName}</td>
 											<td>${employee.departmentName}</td>
 											<td>${employee.positionName}</td>
-											<td>${employee.statusName}</td>
+											<td><ui:code-label value="${employee.statusName}" /></td>
 										</tr>
 									</c:forEach>
 								</c:when>
@@ -503,7 +504,7 @@
 								<c:otherwise>
 									<tr>
 										<td colspan="7" class="empty-row">
-											추가할 수 있는 일용직 사원이 없습니다.
+											追加できる日雇い社員はいません。
 										</td>
 									</tr>
 								</c:otherwise>
@@ -516,7 +517,7 @@
 					<c:if test="${employeePage gt 1}">
 						<c:url var="previousDayWorkerEmployeePageUrl" value="/payroll/day-worker-management.do"><c:param name="paymentYear" value="${selectedYear}" /><c:param name="paymentMonth" value="${selectedMonth}" /><c:param name="paymentRound" value="${selectedRound}" /><c:param name="employeeKeyword" value="${param.employeeKeyword}" /><c:param name="departmentId" value="${param.departmentId}" /><c:param name="status" value="${param.status}" /><c:param name="employeePage" value="${employeePage - 1}" /></c:url>
 						<a href="${previousDayWorkerEmployeePageUrl}#employee-add">
-							‹ 이전
+							‹前
 						</a>
 					</c:if>
 
@@ -525,18 +526,18 @@
 					<c:if test="${employeePage lt employeeTotalPages}">
 						<c:url var="nextDayWorkerEmployeePageUrl" value="/payroll/day-worker-management.do"><c:param name="paymentYear" value="${selectedYear}" /><c:param name="paymentMonth" value="${selectedMonth}" /><c:param name="paymentRound" value="${selectedRound}" /><c:param name="employeeKeyword" value="${param.employeeKeyword}" /><c:param name="departmentId" value="${param.departmentId}" /><c:param name="status" value="${param.status}" /><c:param name="employeePage" value="${employeePage + 1}" /></c:url>
 						<a href="${nextDayWorkerEmployeePageUrl}#employee-add">
-							다음 ›
+							次の›
 						</a>
 					</c:if>
 				</nav>
 
 				<div class="modal-actions">
 					<button type="submit" class="button button-primary">
-						사원선택
+						社員を選択
 					</button>
 
 					<a href="#" class="button button-neutral">
-						선택취소
+						選択解除
 					</a>
 				</div>
 			</form>
@@ -554,10 +555,10 @@
 		</c:url>
 		<div class="day-worker-alert" role="alertdialog" aria-modal="true"
 			aria-labelledby="day-worker-alert-message">
-			<a class="day-worker-alert__backdrop" href="${dayWorkerReturnUrl}" aria-label="닫기"></a>
+			<a class="day-worker-alert__backdrop" href="${dayWorkerReturnUrl}" aria-label="閉じる"></a>
 			<div class="day-worker-alert__panel">
-				<p id="day-worker-alert-message"><c:out value="${payrollPopupMessage}" /></p>
-				<a href="${dayWorkerReturnUrl}">확인</a>
+				<p id="day-worker-alert-message"><ui:message-label value="${payrollPopupMessage}" /></p>
+				<a href="${dayWorkerReturnUrl}">確認</a>
 			</div>
 		</div>
 	</c:if>

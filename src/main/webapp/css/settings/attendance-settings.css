@@ -7,7 +7,7 @@
 	min-width: 920px;
 	margin: 28px auto 44px;
 	color: #334155;
-	font-family: "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
+	font-family: "Malgun Gothic", "Yu Gothic", Arial, sans-serif;
 }
 
 .page-heading {
@@ -143,7 +143,7 @@ td a:not(.small-button) {
 	width: 18%;
 }
 
-/* 두 설정표는 내용 길이에 관계없이 동일한 단일행 높이를 유지한다. */
+/* 両方の設定テーブルは、内容の長さに関係なく同じ行の高さを維持します。 */
 .leave-table tbody tr, .attendance-table tbody tr,
 	.leave-table tbody td, .attendance-table tbody td {
 	height: 43px;
@@ -377,6 +377,10 @@ td a:not(.small-button) {
 }
 
 .editor-actions .clear {
+	width: 96px !important;
+	min-width: 96px !important;
+	max-width: 96px !important;
+	flex-basis: 96px !important;
 	border-color: #999;
 	color: #fff;
 	background: #999;
@@ -710,7 +714,7 @@ td a:not(.small-button) {
 	}
 }
 
-/* --- 연차휴가 계산방법 안내 모달 --- */
+/* ---年次休暇計算方法ガイドモーダル--- */
 .info-modal {
 	position: fixed;
 	z-index: 3200;
@@ -826,7 +830,7 @@ td a:not(.small-button) {
 	letter-spacing: -0.3px;
 }
 
-/* 근태그룹 관리는 사용자정보의 부서·직위 관리 팝업과 같은 규격을 사용한다. */
+/* 勤怠グループ管理は、ユーザー情報の部署・役職管理ポップアップのような規格を使用する。 */
 .group-modal__panel{width:390px;max-height:calc(100vh - 70px);padding:0 20px 18px}
 .group-modal__title{height:70px}.group-modal__title h2{font-size:20px;font-weight:700}
 .group-list{max-height:340px;margin-top:16px;overflow-y:auto}
@@ -837,7 +841,7 @@ td a:not(.small-button) {
 .group-add{display:grid;grid-template-columns:minmax(0,1fr) 78px;gap:8px;margin-top:14px;padding:12px;background:#f2f5f8}
 .group-add input,.group-add button{box-sizing:border-box;height:38px;margin:0}.group-add input{padding:0 10px}.group-add button{border-radius:3px}
 
-/* 처리 결과와 삭제 재확인은 설정 화면의 공통 팝업 형식으로 표시한다. */
+/* 処理結果と削除再確認は、設定画面の共通ポップアップ形式で表示する。 */
 .attendance-alert,.attendance-delete-modal{position:fixed;z-index:4000;inset:0;display:flex;align-items:center;justify-content:center}
 .attendance-modal__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.48)}
 .attendance-alert__panel,.attendance-delete-modal__panel{position:relative;z-index:1;width:430px;max-width:calc(100vw - 40px);padding:30px 24px 22px;border-radius:10px;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.32);text-align:center}

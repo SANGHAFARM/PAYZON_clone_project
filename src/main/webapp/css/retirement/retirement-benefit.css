@@ -76,7 +76,7 @@
 .employee-select-actions .button-muted { border-color:#929aa3; background:#929aa3; }
 @media(max-width:1100px){.calculation-grid{grid-template-columns:1fr 1fr}.payment-grid{grid-template-columns:repeat(3,1fr)}}
 
-/* 원본 퇴직급여 계산 화면과 동일한 항목 배치 */
+/* 原本退職給付計算画面と同じ項目配置 */
 .retirement-calc-bar { min-height:58px; display:flex; align-items:center; gap:11px; margin-bottom:16px; padding:9px 14px; color:#fff; background:#4a5261; }
 .retirement-calc-bar h2 { min-width:185px; margin:0 8px 0 0; font-size:15px; }
 .retirement-calc-bar h2 strong { color:#fff43b; }
@@ -124,7 +124,7 @@
 .benefit-form>.bottom-actions { margin:34px 0 28px; }
 @media(max-width:1180px){.retirement-calc-bar{flex-wrap:wrap}.retirement-calc-bar h2{width:100%}.original-two-column{grid-template-columns:1fr}}
 
-/* 공통 Payzon UI 디자인으로 통일하고 원본에서는 배치만 유지 */
+/* 共通Payzon UIデザインで統一し、オリジナルでは配置のみを維持 */
 .retirement-calc-bar {
     min-height:70px;
     display:grid;

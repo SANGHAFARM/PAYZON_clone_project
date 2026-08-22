@@ -1,0 +1,524 @@
+.attendance-page, .attendance-page * {
+	box-sizing: border-box
+}
+
+.attendance-page {
+	width: min(1240px, calc(100% - 36px));
+	min-width: 960px;
+	margin: 28px auto 44px;
+	color: #334155;
+	font: 12px "Malgun Gothic", "맑은 고딕", Arial, sans-serif
+}
+
+.page-heading {
+	margin-bottom: 18px;
+	padding: 20px 26px;
+	border: 1px solid #d7dee8;
+	border-radius: 8px;
+	background: linear-gradient(135deg, #fff, #f5f8fc);
+	box-shadow: 0 4px 14px rgba(35, 54, 80, .07)
+}
+
+.page-heading p {
+	margin: 0 0 4px;
+	color: #347fc3;
+	font-weight: 700
+}
+
+.page-heading h1 {
+	margin: 0;
+	font-size: 25px
+}
+
+.form-message {
+	padding: 12px 16px;
+	border: 1px solid #9ec5fe;
+	border-radius: 6px;
+	color: #084298;
+	background: #cfe2ff
+}
+
+.attendance-card {
+	padding: 18px;
+	border: 1px solid #d7dee8;
+	border-radius: 8px;
+	background: #fff;
+	box-shadow: 0 3px 12px rgba(35, 54, 80, .05)
+}
+
+.employee-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 15px;
+	padding: 12px;
+	border: 1px solid #ccd6e0;
+	background: #f7f9fc
+}
+
+.employee-toolbar form {
+	display: flex;
+	gap: 7px
+}
+
+.employee-toolbar input, .employee-toolbar select {
+	height: 34px;
+	padding: 5px 8px;
+	border: 1px solid #c5d2e1;
+	border-radius: 3px;
+	background: #fff
+}
+
+.employee-toolbar input {
+	width: 190px
+}
+
+.employee-toolbar button, .employee-toolbar a {
+	height: 34px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 13px;
+	border: 1px solid #347fc3;
+	border-radius: 4px;
+	color: #fff;
+	background: #347fc3;
+	font-weight: 700;
+	text-decoration: none
+}
+
+.employee-toolbar a {
+	color: #286da9;
+	background: #fff
+}
+
+.employee-toolbar p {
+	flex: 1;
+	margin: 0;
+	color: #d24c5a
+}
+
+.status-search {
+	padding: 0 10px !important
+}
+
+.attendance-layout {
+	display: grid;
+	grid-template-columns: minmax(620px, 1.55fr) minmax(330px, .8fr);
+	gap: 16px;
+	align-items: start
+}
+
+.employee-list-panel, .attendance-editor {
+	border: 1px solid #d4deea;
+	border-radius: 6px;
+	overflow: hidden;
+	background: #fff
+}
+
+.employee-list-panel {
+	max-height: 500px;
+	overflow: auto
+}
+
+.employee-table {
+	width: 100%;
+	border-collapse: collapse;
+	table-layout: fixed
+}
+
+.employee-table th, .employee-table td {
+	height: 42px;
+	padding: 6px;
+	border-right: 1px solid #ccd6e0;
+	border-bottom: 1px solid #ccd6e0;
+	text-align: center
+}
+
+.employee-table th {
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	color: #173f64;
+	background: #eaf2f7
+}
+
+.employee-table th:first-child {
+	width: 48px
+}
+
+.employee-table th:nth-child(2) {
+	width: 78px
+}
+
+.employee-table th:nth-child(3) {
+	width: 105px
+}
+
+.employee-table th:nth-child(7) {
+	width: 78px
+}
+
+.employee-table tr:hover td {
+	background: #f3f8fc
+}
+
+.manage-button {
+	display: inline-flex;
+	height: 27px;
+	align-items: center;
+	padding: 0 12px;
+	border: 1px solid #347fc3;
+	border-radius: 3px;
+	color: #fff;
+	background: #347fc3;
+	text-decoration: none;
+	font-weight: 700
+}
+
+.attendance-editor h2 {
+	margin: 0;
+	padding: 14px 16px;
+	border-bottom: 2px solid #3f8bda;
+	color: #18588f;
+	background: #f4f8fc;
+	font-size: 17px
+}
+
+.attendance-editor form {
+	padding: 14px
+}
+
+.attendance-editor label {
+	display: grid;
+	grid-template-columns: 95px minmax(0, 1fr);
+	align-items: center;
+	min-height: 52px;
+	border-bottom: 1px solid #dbe3ec
+}
+
+.attendance-editor label>span:first-child {
+	font-weight: 700
+}
+
+.attendance-editor input, .attendance-editor select {
+	width: 100%;
+	height: 34px;
+	padding: 5px 8px;
+	border: 1px solid #c5d2e1;
+	border-radius: 3px;
+	background: #fff
+}
+
+.period-inputs {
+	display: grid;
+	grid-template-columns: 1fr 14px 1fr;
+	align-items: center
+}
+
+.period-inputs i {
+	text-align: center;
+	font-style: normal
+}
+
+.days-field {
+	display: grid;
+	grid-template-columns: 80px 20px 1fr;
+	align-items: center;
+	gap: 5px
+}
+
+.days-field em {
+	font-style: normal
+}
+
+.days-field a {
+	height: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #347fc3;
+	border-radius: 3px;
+	color: #fff;
+	background: #347fc3;
+	text-decoration: none;
+	font-weight: 700
+}
+
+.editor-actions {
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+	padding-top: 16px
+}
+
+.editor-actions button {
+	height: 36px;
+	min-width: 84px;
+	border: 1px solid #347fc3;
+	border-radius: 4px;
+	color: #fff;
+	background: #347fc3;
+	font-weight: 700
+}
+
+.editor-actions .secondary {
+	border-color: #929aa3;
+	background: #929aa3
+}
+
+.modal-overlay {
+	position: fixed;
+	z-index: 5000;
+	inset: 0;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+	background: rgba(0, 0, 0, .55)
+}
+
+.modal-overlay:target {
+	display: flex
+}
+
+.modal {
+	width: min(800px, calc(100vw - 48px));
+	min-height: 260px;
+	max-height: calc(100vh - 48px);
+	display: flex;
+	flex-direction: column;
+	border-radius: 10px;
+	background: #fff;
+	box-shadow: 0 18px 55px rgba(0, 0, 0, .35);
+	overflow: hidden
+}
+
+.modal>header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	border-bottom: 1px solid #d7dee8
+}
+
+.modal>header h2 {
+	margin: 0;
+	color: #555;
+	font-size: 20px
+}
+
+.modal>header a {
+	color: #777;
+	font-size: 26px;
+	text-decoration: none
+}
+
+.modal-body {
+	flex: 1;
+	overflow: auto;
+	padding: 16px 20px
+}
+
+.modal table {
+	width: 100%;
+	border-collapse: collapse;
+	table-layout: fixed
+}
+
+.modal th, .modal td {
+	height: 35px;
+	padding: 6px;
+	border: 1px solid #d4dde6;
+	text-align: center
+}
+
+.modal th {
+	border-top: 2px solid #3f93e6;
+	color: #173f64;
+	background: #edf6f8
+}
+
+.record-summary {
+	display: flex;
+	align-items: center;
+	gap: 22px;
+	margin-bottom: 15px;
+	padding: 10px;
+	color: #666
+}
+
+.record-summary form {
+	display: flex;
+	gap: 6px;
+	margin-left: auto
+}
+
+.record-summary select {
+	height: 28px;
+	border: 1px solid #ccd6e0;
+	background: #fff
+}
+
+.modal--record {
+	min-height: 510px
+}
+
+.modal--record .modal-body {
+	border: 1px solid #e1e5ea;
+	margin: 0 20px 16px;
+	padding: 14px
+}
+
+.modal--record table th:nth-child(1) {
+	width: 42px
+}
+
+.modal--record table th:nth-child(5) {
+	width: 68px
+}
+
+.modal--record table th:nth-child(6) {
+	width: 86px
+}
+
+.modal--record table th:last-child {
+	width: 100px
+}
+
+.modal--record td a {
+	color: #347fc3;
+	text-decoration: none
+}
+
+.modal--holiday {
+	width: min(745px, calc(100vw - 48px))
+}
+
+.modal--holiday .modal-body {
+	margin: 0 18px 18px;
+	border: 1px solid #e1e5ea
+}
+
+.used-days {
+	color: #2877d4;
+	font-weight: 700
+}
+
+.remaining-days {
+	color: #e34b62;
+	font-weight: 700
+}
+
+@media ( max-width :1100px) {
+	.attendance-layout {
+		grid-template-columns: 1fr
+	}
+	.employee-toolbar {
+		flex-wrap: wrap
+	}
+	.employee-toolbar p {
+		order: 3;
+		flex-basis: 100%
+	}
+}
+
+.attendance-editor .days-field a {
+	width: 96px;
+	justify-self: end
+}
+
+.modal-overlay {
+	font: 12px "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
+	color: #555
+}
+
+.modal>header h2 {
+	font-size: 18px
+}
+
+.modal--record td .mini-button{
+	display:inline-flex;
+	height:24px;
+	min-width:38px;
+	align-items:center;
+	justify-content:center;
+	margin:0 2px;
+	border:1px solid #8aa9c7;
+	border-radius:3px;
+	color:#27679e!important;
+	background:#f5f9fd;
+	font-size:11px;
+	font-weight:700;
+	text-decoration:none!important;
+	cursor:pointer;
+}
+.modal--record td .mini-delete{
+	border-color:#dfa4aa;
+	color:#c64e59!important;
+	background:#fff7f8;
+}
+
+.employee-toolbar>form:last-child {
+	margin-left: auto
+}
+
+.modal, .modal * {
+	box-sizing: border-box
+}
+
+.modal th, .modal td {
+	height: 34px;
+	padding: 4px 6px
+}
+
+.modal th {
+	line-height: 1.2
+}
+
+.modal--record .record-summary {
+	margin-bottom: 6px;
+	padding: 3px 4px 7px
+}
+
+.modal--record .modal-body {
+	padding-top: 9px
+}
+
+.attendance-editor h2 {
+	height: 42px;
+	display: flex;
+	align-items: center;
+	margin: 0;
+	padding: 0 16px;
+	border-bottom-width: 1px;
+	font-size: 15px
+}
+
+.employee-table .empty-row, .modal .empty-row {
+	height: 100px;
+	color: #8795a8;
+	text-align: center
+}
+.modal--record td .mini-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: 25px;
+	margin: 0 2px;
+	padding: 0 7px;
+	color: #1768a8;
+	border: 1px solid #9ebbd2;
+	border-radius: 3px;
+	text-decoration: none;
+	background: #fff;
+	font-size: 11px;
+	font-weight: 400;
+	cursor: pointer;
+}
+
+.modal--record td .mini-delete {
+	color: #d34b57;
+	border-color: #e5a3aa;
+	background: #fdf8f8;
+}

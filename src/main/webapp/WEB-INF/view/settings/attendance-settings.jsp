@@ -1,14 +1,15 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja-JP">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>기본환경설정 &gt; 휴가/근태 설정</title>
+<title>基本設定>休暇/勤務設定</title>
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/settings/attendance-settings.css?v=20260820-3">
+	href="${pageContext.request.contextPath}/css/settings/attendance-settings.css?v=20260822-1">
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260821-1">
 </head>
@@ -18,13 +19,13 @@
 		<div class="attendance-page">
 			<header class="page-heading">
 				<div>
-					<p>기본환경설정</p>
-					<h1>휴가/근태 설정</h1>
+					<p>基本設定</p>
+					<h1>休暇/勤労設定</h1>
 				</div>
 			</header>
 			<section class="setting-card" id="leave-settings">
 				<div class="card-title">
-					<h2>휴가항목 설정</h2>
+					<h2>休暇項目の設定</h2>
 				</div>
 				<div class="setting-layout">
 					<div class="list-panel">
@@ -32,10 +33,10 @@
 							<table class="leave-table">
 								<thead>
 									<tr>
-										<th>휴가항목</th>
-										<th>적용기간</th>
-										<th>사원별 휴가일수</th>
-										<th>사용여부</th>
+										<th>休暇項目</th>
+										<th>適用期間</th>
+										<th>社員別休暇日数</th>
+										<th>使用可</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -49,14 +50,14 @@
 													pattern="yyyy/MM/dd" /> ~ <fmt:formatDate
 													value="${leave.applyEndDate}" pattern="yyyy/MM/dd" /></td>
 											<td><a class="small-button"
-												href="${pageContext.request.contextPath}/settings/attendance.do?leaveItemId=${leave.leaveItemId}#employee-leave-modal">관리</a></td>
+												href="${pageContext.request.contextPath}/settings/attendance.do?leaveItemId=${leave.leaveItemId}#employee-leave-modal">管理</a></td>
 											<td><span
-												class="use-status use-status--${leave.useYn eq 'Y' ? 'on' : 'off'}">${leave.useYn eq 'Y' ? '사용' : '미사용'}</span></td>
+												class="use-status use-status--${leave.useYn eq 'Y' ? 'on' : 'off'}">${leave.useYn eq 'Y' ? '使用' : '未使用'}</span></td>
 										</tr>
 									</c:forEach>
 									<c:if test="${empty leaveItems}">
 										<tr>
-											<td colspan="4" class="empty-row">등록된 휴가항목이 없습니다.</td>
+											<td colspan="4" class="empty-row">登録された休暇項目はありません。</td>
 										</tr>
 									</c:if>
 								</tbody>
@@ -68,36 +69,36 @@
 						method="post">
 						<input type="hidden" name="leaveItemId"
 							value="<c:out value='${selectedLeaveItem.leaveItemId}' />">
-						<h3>휴가항목 정보</h3>
-						<label class="editor-field"><span>휴가항목</span><input
+						<h3>休暇項目情報</h3>
+						<label class="editor-field"><span>休暇項目</span><input
 							name="itemName"
 							value="<c:out value='${selectedLeaveItem.itemName}' />"
-							maxlength="100" placeholder="휴가항목을 입력해주세요" required></label>
+							maxlength="100" placeholder="休暇項目を入力してください" required></label>
 						<div class="editor-field editor-field--full">
-							<span>적용기간</span>
+							<span>適用期間</span>
 							<div class="date-range">
-								<input type="date" name="applyStartDate"
+								<input type="date" lang="ja-JP" name="applyStartDate"
 									value="<fmt:formatDate value='${selectedLeaveItem.applyStartDate}' pattern='yyyy-MM-dd' />"
-									required><i>~</i><input type="date" name="applyEndDate"
+									required><i>~</i><input type="date" lang="ja-JP" name="applyEndDate"
 									value="<fmt:formatDate value='${selectedLeaveItem.applyEndDate}' pattern='yyyy-MM-dd' />"
 									required>
 							</div>
 						</div>
 						<div class="editor-field editor-field--full">
-							<span>사용여부</span>
+							<span>使用可</span>
 							<div class="radio-line">
 								<label><input type="radio" name="useYn" value="Y"
 									${empty selectedLeaveItem.useYn or selectedLeaveItem.useYn eq 'Y' ? 'checked' : ''}>
-									사용</label><label><input type="radio" name="useYn" value="N"
+									使用</label><label><input type="radio" name="useYn" value="N"
 									${selectedLeaveItem.useYn eq 'N' ? 'checked' : ''}>
-									사용안함</label>
+									無効</label>
 							</div>
 						</div>
 						<div class="editor-actions">
-							<button name="action" value="insert">추가</button>
-							<button name="action" value="update">수정</button>
-							<button class="danger" name="action" value="requestDelete" formnovalidate>삭제</button>
-							<button class="clear" name="action" value="clear">내용지우기</button>
+							<button name="action" value="insert">追加</button>
+							<button name="action" value="update">修正</button>
+							<button class="danger" name="action" value="requestDelete" formnovalidate>削除</button>
+							<button class="clear" name="action" value="clear">内容を消去する</button>
 						</div>
 					</form>
 				</div>
@@ -105,7 +106,7 @@
 
 			<section class="setting-card" id="attendance-item-settings">
 				<div class="card-title">
-					<h2>근태항목 설정</h2>
+					<h2>勤怠項目の設定</h2>
 				</div>
 				<div class="setting-layout">
 					<div class="list-panel">
@@ -113,11 +114,11 @@
 							<table class="attendance-table">
 								<thead>
 									<tr>
-										<th>근태항목</th>
-										<th>단위</th>
-										<th>그룹관리</th>
-										<th>휴가공제</th>
-										<th>사용여부</th>
+										<th>勤怠項目</th>
+										<th>単位</th>
+										<th>グループ管理</th>
+										<th>休暇控除</th>
+										<th>使用可</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -127,16 +128,16 @@
 											<td><a
 												href="${pageContext.request.contextPath}/settings/attendance.do?attendItemId=${item.attendanceItemId}#attendance-item-settings"><c:out
 														value="${item.attendName}" /></a></td>
-											<td><c:out value="${item.unitType}" /></td>
+											<td><ui:code-label value="${item.unitType}" /></td>
 											<td><c:out value="${item.groupName}" /></td>
 											<td><c:out value="${item.leaveName}" /></td>
 											<td><span
-												class="use-status use-status--${item.useYn eq 'Y' ? 'on' : 'off'}">${item.useYn eq 'Y' ? '사용' : '미사용'}</span></td>
+												class="use-status use-status--${item.useYn eq 'Y' ? 'on' : 'off'}">${item.useYn eq 'Y' ? '使用' : '未使用'}</span></td>
 										</tr>
 									</c:forEach>
 									<c:if test="${empty attendItems}">
 										<tr>
-											<td colspan="5" class="empty-row">등록된 근태항목이 없습니다.</td>
+											<td colspan="5" class="empty-row">登録された勤怠項目はありません。</td>
 										</tr>
 									</c:if>
 								</tbody>
@@ -148,57 +149,57 @@
 						method="post">
 						<input type="hidden" name="attendItemId"
 							value="<c:out value='${selectedAttendItem.attendanceItemId}' />">
-						<h3>근태항목 정보</h3>
-						<label class="editor-field"><span>근태항목</span><input
+						<h3>勤怠項目情報</h3>
+						<label class="editor-field"><span>勤怠項目</span><input
 							name="attendName"
 							value="<c:out value='${selectedAttendItem.attendName}' />"
-							maxlength="100" placeholder="근태항목을 입력해주세요" required></label> <label
-							class="editor-field"><span>단위</span><select
-							name="unitType"><option value="">선택하세요.</option>
+							maxlength="100" placeholder="勤怠項目を入力してください" required></label> <label
+							class="editor-field"><span>単位</span><select
+							name="unitType"><option value="">選択してください。</option>
 								<option value="일"
-									${selectedAttendItem.unitType eq '일' ? 'selected' : ''}>일</option>
+									${selectedAttendItem.unitType eq '일' ? 'selected' : ''}>日</option>
 								<option value="시간"
-									${selectedAttendItem.unitType eq '시간' ? 'selected' : ''}>시간</option></select></label>
+									${selectedAttendItem.unitType eq '시간' ? 'selected' : ''}>時間</option></select></label>
 						<div class="editor-field editor-field--group">
-							<span>근태그룹</span><select name="attendanceGroupId" required><option
-									value="">선택하세요.</option>
+							<span>勤怠グループ</span><select name="attendanceGroupId" required><option
+									value="">選択してください。</option>
 								<c:forEach var="group" items="${attendGroups}">
 									<option value="${group.attendanceGroupId}"
 										${group.attendanceGroupId eq selectedAttendItem.attendanceGroupId ? 'selected' : ''}><c:out
 											value="${group.groupName}" /></option>
-								</c:forEach></select><a href="#attend-group-modal">그룹관리</a>
+								</c:forEach></select><a href="#attend-group-modal">グループ管理</a>
 						</div>
-						<label class="editor-field"><span>휴가공제</span><select
-							name="deductLeaveId"><option value="">선택하세요.</option>
+						<label class="editor-field"><span>休暇控除</span><select
+							name="deductLeaveId"><option value="">選択してください。</option>
 								<c:forEach var="leave" items="${leaveItems}">
 									<option value="${leave.leaveItemId}"
 										${leave.leaveItemId eq selectedAttendItem.deductLeaveId ? 'selected' : ''}><c:out
 											value="${leave.itemName}" /></option>
-								</c:forEach></select></label> <label class="editor-field"><span>근로시간연계</span><select
-							name="workHourType"><option value="">선택하세요.</option>
+								</c:forEach></select></label> <label class="editor-field"><span>労働時間連携</span><select
+							name="workHourType"><option value="">選択してください。</option>
 								<option value="소정근로"
-									${selectedAttendItem.workHourType eq '소정근로' ? 'selected' : ''}>소정근로</option>
+									${selectedAttendItem.workHourType eq '소정근로' ? 'selected' : ''}>所定の労働</option>
 								<option value="연장근로"
-									${selectedAttendItem.workHourType eq '연장근로' ? 'selected' : ''}>연장근로</option>
+									${selectedAttendItem.workHourType eq '연장근로' ? 'selected' : ''}>延長労働</option>
 								<option value="야간근로"
-									${selectedAttendItem.workHourType eq '야간근로' ? 'selected' : ''}>야간근로</option>
+									${selectedAttendItem.workHourType eq '야간근로' ? 'selected' : ''}>夜間労働</option>
 								<option value="휴일근로"
-									${selectedAttendItem.workHourType eq '휴일근로' ? 'selected' : ''}>휴일근로</option></select></label>
+									${selectedAttendItem.workHourType eq '휴일근로' ? 'selected' : ''}>休日労働</option></select></label>
 						<div class="editor-field editor-field--full">
-							<span>사용여부</span>
+							<span>使用可</span>
 							<div class="radio-line">
 								<label><input type="radio" name="useYn" value="Y"
 									${empty selectedAttendItem.useYn or selectedAttendItem.useYn eq 'Y' ? 'checked' : ''}>
-									사용</label><label><input type="radio" name="useYn" value="N"
+									使用</label><label><input type="radio" name="useYn" value="N"
 									${selectedAttendItem.useYn eq 'N' ? 'checked' : ''}>
-									사용안함</label>
+									無効</label>
 							</div>
 						</div>
 						<div class="editor-actions">
-							<button name="action" value="insert">추가</button>
-							<button name="action" value="update">수정</button>
-							<button class="danger" name="action" value="requestDelete" formnovalidate>삭제</button>
-							<button class="clear" name="action" value="clear">내용지우기</button>
+							<button name="action" value="insert">追加</button>
+							<button name="action" value="update">修正</button>
+							<button class="danger" name="action" value="requestDelete" formnovalidate>削除</button>
+							<button class="clear" name="action" value="clear">内容を消去する</button>
 						</div>
 					</form>
 				</div>
@@ -207,11 +208,11 @@
 			<div id="attend-group-modal" class="group-modal" role="dialog"
 				aria-modal="true" aria-labelledby="group-modal-title">
 				<a class="group-modal__backdrop" href="#attendance-item-settings"
-					aria-label="닫기"></a>
+					aria-label="閉じる"></a>
 				<div class="group-modal__panel">
 					<div class="group-modal__title">
-						<h2 id="group-modal-title">근태그룹 관리</h2>
-						<a href="#attendance-item-settings" aria-label="닫기">×</a>
+						<h2 id="group-modal-title">勤労グループ管理</h2>
+						<a href="#attendance-item-settings" aria-label="閉じる">×</a>
 					</div>
 					<form
 						action="${pageContext.request.contextPath}/settings/attend-group.do"
@@ -220,22 +221,22 @@
 							<c:forEach var="group" items="${attendGroups}">
 								<li><input
 									name="groupNames" value="<c:out value='${group.groupName}' />"
-									aria-label="근태그룹명" maxlength="100" required><input type="hidden" name="groupIds"
+									aria-label="勤労グループ名" maxlength="100" required><input type="hidden" name="groupIds"
 									value="${group.attendanceGroupId}">
 									<div>
 										<button name="action"
-											value="update:${group.attendanceGroupId}">수정</button>
+											value="update:${group.attendanceGroupId}">修正</button>
 										<button name="action" formnovalidate
-											value="requestDelete:${group.attendanceGroupId}">삭제</button>
+											value="requestDelete:${group.attendanceGroupId}">削除</button>
 									</div></li>
 							</c:forEach>
 							<c:if test="${empty attendGroups}">
-								<li class="group-list__empty">등록된 근태그룹이 없습니다.</li>
+								<li class="group-list__empty">登録された勤労グループはありません。</li>
 							</c:if>
 						</ul>
 						<div class="group-add">
-							<input name="newGroupName" placeholder="새 근태그룹명" maxlength="100" required>
-							<button name="action" value="insert">＋ 추가하기</button>
+							<input name="newGroupName" placeholder="新しい勤労グループ名" maxlength="100" required>
+							<button name="action" value="insert">＋追加</button>
 						</div>
 					</form>
 				</div>
@@ -245,11 +246,11 @@
 				role="dialog" aria-modal="true"
 				aria-labelledby="employee-leave-title">
 				<a class="employee-leave-modal__backdrop" href="#leave-settings"
-					aria-label="닫기"></a>
+					aria-label="閉じる"></a>
 				<div class="employee-leave-modal__panel">
 					<div class="employee-leave-modal__title">
-						<h2 id="employee-leave-title">휴가일수 설정</h2>
-						<a href="#leave-settings" aria-label="닫기">×</a>
+						<h2 id="employee-leave-title">休暇日数を設定</h2>
+						<a href="#leave-settings" aria-label="閉じる">×</a>
 					</div>
 					<form
 						action="${pageContext.request.contextPath}/settings/employee-leave.do"
@@ -258,30 +259,30 @@
 							value="${selectedLeaveItem.leaveItemId}">
 						<div class="employee-leave-tools">
 							<div>
-								<input name="keyword" placeholder="사원검색"
+								<input name="keyword" placeholder="社員検索"
 									value="<c:out value='${param.keyword}' />">
-								<button name="action" value="search">검색</button>
-								<button name="action" value="showAll">전체보기</button>
+								<button name="action" value="search">検索</button>
+								<button name="action" value="showAll">全体を見る</button>
 							</div>
 
 							<select name="status">
-								<option value="">상태별</option>
-								<option value="재직" ${param.status eq '재직' ? 'selected' : ''}>재직</option>
-								<option value="퇴직" ${param.status eq '퇴직' ? 'selected' : ''}>퇴직</option>
+								<option value="">ステータス別</option>
+								<option value="재직" ${param.status eq '재직' ? 'selected' : ''}>在職</option>
+								<option value="퇴직" ${param.status eq '퇴직' ? 'selected' : ''}>退職</option>
 							</select>
 						</div>
 						<div class="employee-leave-table-wrap">
 							<table class="employee-leave-table">
 								<thead>
 									<tr>
-										<th>선택</th>
-										<th>구분</th>
-										<th>사원번호</th>
-										<th>성명</th>
-										<th>부서</th>
-										<th>직위</th>
-										<th>입사일</th>
-										<th>휴가일수</th>
+										<th>選択</th>
+										<th>区分</th>
+										<th>社員番号</th>
+										<th>氏名</th>
+										<th>部署</th>
+										<th>役職</th>
+										<th>入社日</th>
+										<th>休暇日数</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -290,7 +291,7 @@
 											<td><input type="checkbox" name="checkedEmpIds"
 												value="${row.employeeId}"></td>
 
-											<td><c:out value="${row.empType}" /></td>
+											<td><ui:code-label value="${row.empType}" /></td>
 											<td><c:out value="${row.empNo}" /></td>
 											<td><c:out value="${row.empName}" /></td>
 											<td><c:out value="${row.deptName}" /></td>
@@ -301,13 +302,13 @@
 													name="empLeaveId_${row.employeeId}"
 													value="${row.empLeaveId}"> <input type="number"
 													min="0" step="0.5" name="leaveDays_${row.employeeId}"
-													value="${row.leaveDays}"> <span>일</span>
+													value="${row.leaveDays}"> <span>日</span>
 											</label></td>
 										</tr>
 									</c:forEach>
 									<c:if test="${empty employeeLeaveRows}">
 										<tr>
-											<td colspan="8" class="empty-row">조회된 사원이 없습니다.</td>
+											<td colspan="8" class="empty-row">照会された社員はありません。</td>
 										</tr>
 									</c:if>
 								</tbody>
@@ -315,12 +316,12 @@
 						</div>
 						<div class="employee-leave-actions">
 							<div>
-								<button class="delete" name="action" value="requestDelete" formnovalidate>휴가일수
-									삭제</button>
-								<button name="action" value="save">휴가일수 저장</button>
+								<button class="delete" name="action" value="requestDelete" formnovalidate>休暇日数
+									削除</button>
+								<button name="action" value="save">休暇日数を保存</button>
 							</div>
 							<div>
-								<a href="#annual-leave-info-modal">연차휴가 계산방법</a>
+								<a href="#annual-leave-info-modal">年次休暇の計算方法</a>
 							</div>
 						</div>
 					</form>
@@ -332,16 +333,16 @@
 					aria-labelledby="attendance-delete-title">
 					<a class="attendance-modal__backdrop"
 						href="${pageContext.request.contextPath}/settings/attendance.do${deleteReturnHash}"
-						aria-label="삭제 취소"></a>
+						aria-label="削除のキャンセル"></a>
 					<form class="attendance-delete-modal__panel" method="post"
 						action="${pageContext.request.contextPath}${deleteActionUrl}">
-						<p id="attendance-delete-title"><strong><c:out value="${deleteSettingName}" /></strong> 항목을 삭제하시겠습니까?</p>
-						<p class="attendance-delete-warning">삭제한 항목은 복구할 수 없습니다.</p>
+						<p id="attendance-delete-title"><strong><c:out value="${deleteSettingName}" /></strong> 項目を削除してもよろしいですか？</p>
+						<p class="attendance-delete-warning">削除した項目は復元できません。</p>
 						<input type="hidden" name="action" value="confirmDelete">
 						<input type="hidden" name="deleteId" value="${deleteSettingId}">
 						<c:if test="${deleteSettingType eq 'leave'}"><input type="hidden" name="leaveItemId" value="${deleteSettingId}"></c:if>
 						<c:if test="${deleteSettingType eq 'attendance'}"><input type="hidden" name="attendItemId" value="${deleteSettingId}"></c:if>
-						<div><button type="submit">삭제</button><a href="${pageContext.request.contextPath}/settings/attendance.do${deleteReturnHash}">취소</a></div>
+						<div><button type="submit">削除</button><a href="${pageContext.request.contextPath}/settings/attendance.do${deleteReturnHash}">キャンセル</a></div>
 					</form>
 				</div>
 			</c:if>
@@ -349,14 +350,14 @@
 			<c:if test="${not empty employeeLeaveDeleteCount}">
 				<div class="attendance-delete-modal" role="alertdialog" aria-modal="true"
 					aria-labelledby="employee-leave-delete-title">
-					<a class="attendance-modal__backdrop" href="${pageContext.request.contextPath}/settings/attendance.do?cancelEmployeeLeaveDelete=true&amp;leaveItemId=${selectedLeaveItem.leaveItemId}#employee-leave-modal" aria-label="삭제 취소"></a>
+					<a class="attendance-modal__backdrop" href="${pageContext.request.contextPath}/settings/attendance.do?cancelEmployeeLeaveDelete=true&amp;leaveItemId=${selectedLeaveItem.leaveItemId}#employee-leave-modal" aria-label="削除のキャンセル"></a>
 					<form class="attendance-delete-modal__panel" method="post"
 						action="${pageContext.request.contextPath}/settings/employee-leave.do">
-						<p id="employee-leave-delete-title">선택한 <strong><c:out value="${employeeLeaveDeleteCount}" />명</strong>의 휴가일수를 삭제하시겠습니까?</p>
-						<p class="attendance-delete-warning">삭제한 휴가일수는 복구할 수 없습니다.</p>
+						<p id="employee-leave-delete-title">選択 <strong><c:out value="${employeeLeaveDeleteCount}" />人</strong>の休日を削除してもよろしいですか？</p>
+						<p class="attendance-delete-warning">削除した休暇日数は復元できません。</p>
 						<input type="hidden" name="action" value="confirmDelete">
 						<input type="hidden" name="leaveItemId" value="${selectedLeaveItem.leaveItemId}">
-						<div><button type="submit">삭제</button><a href="${pageContext.request.contextPath}/settings/attendance.do?cancelEmployeeLeaveDelete=true&amp;leaveItemId=${selectedLeaveItem.leaveItemId}#employee-leave-modal">취소</a></div>
+						<div><button type="submit">削除</button><a href="${pageContext.request.contextPath}/settings/attendance.do?cancelEmployeeLeaveDelete=true&amp;leaveItemId=${selectedLeaveItem.leaveItemId}#employee-leave-modal">キャンセル</a></div>
 					</form>
 				</div>
 			</c:if>
@@ -367,78 +368,78 @@
 					aria-labelledby="attendance-alert-message">
 					<a class="attendance-modal__backdrop"
 						href="${pageContext.request.contextPath}/settings/attendance.do?dismissMessage=true${messageHash}"
-						aria-label="확인"></a>
+						aria-label="確認"></a>
 					<div class="attendance-alert__panel">
-						<p id="attendance-alert-message"><c:out value="${message}" /></p>
-						<a href="${pageContext.request.contextPath}/settings/attendance.do?dismissMessage=true${messageHash}">확인</a>
+						<p id="attendance-alert-message"><ui:message-label value="${message}" /></p>
+						<a href="${pageContext.request.contextPath}/settings/attendance.do?dismissMessage=true${messageHash}">確認</a>
 					</div>
 				</div>
 				<c:remove var="message" scope="session" />
 				<c:remove var="messageReturnTarget" scope="session" />
 			</c:if>
 		</div>
-		<!-- ▼▼ 연차휴가 계산방법 모달 (순수 CSS 방식) ▼▼ -->
+		<!-- ▼▼年次休暇計算方法モーダル（純粋CSS方式）▼▼ -->
 		<div id="annual-leave-info-modal" class="info-modal" role="dialog"
 			aria-modal="true" aria-labelledby="info-modal-title">
-			<!-- 💡 닫기를 누르면 이전 창(사원 휴가일수 설정 창)으로 깔끔하게 돌아갑니다! -->
+			<!-- 💡 閉じるを押すと前のウィンドウ（社員休暇日数設定ウィンドウ）にすっきり戻ります！ -->
 			<a class="info-modal__backdrop" href="#employee-leave-modal"
-				aria-label="닫기"></a>
+				aria-label="閉じる"></a>
 			<div class="info-modal__panel">
 				<div class="info-modal__title">
-					<h2 id="info-modal-title">연차휴가 계산법</h2>
-					<a href="#employee-leave-modal" aria-label="닫기">×</a>
+					<h2 id="info-modal-title">年次休暇計算法</h2>
+					<a href="#employee-leave-modal" aria-label="閉じる">×</a>
 				</div>
 				<div class="info-modal__body">
 
-					<!-- 주 40시간제 -->
+					<!-- 週40時間制 -->
 					<div class="leave-calc-section">
-						<h3>주 40시간제 적용 사업장</h3>
-						<p class="calc-desc">연차휴가는 1년에 15일을 기본으로 하며, 3년 이상 계속 근로 시 최초
-							1년을 초과하는 계속 근로연수 2년에 대하여 1일의 가산연차 휴가 발생(최대 25일)</p>
+						<h3>週40時間制適用事業場</h3>
+						<p class="calc-desc">年次休暇は1年に15日に基づいており、3年以上労働を続けて初めて
+							1年を超える継続勤労研修 2年に対して1日の加算年次休暇発生（最大25日）</p>
 						<ul class="calc-list">
-							<li><strong>1) 입사 1년 미만자인 경우</strong>
-								<p>연차휴가 = 기준일(15) * (근무일수/365) = 소수 첫 자리 까지 (소수 두번째 자리에서
-									반올림)</p>
+							<li><strong>1)入社1年未満の場合</strong>
+								<p>年次休暇 = 基準日(15) * (勤務日数/365) = 小数 1 桁まで (小数 2 桁
+									丸め)</p>
 								<div class="calc-example">
-									예) 2023년 2월 14일 ~ 2023년 12월 31일 만근 시 : 근무일수는 322일<br> 사용기간
-									: 2024년 1월 1일 ~ 2024년 12월 31일<br> 2024년 1월 1일 연차계산 시 :
-									13.2일 (15 * (322/365))
+									例）2023年2月14日〜2023年12月31日全日勤務時：勤務日数は322日<br> 使用期間
+									：2024年1月1日〜2024年12月31日<br> 2024年1月1日年次計算時：
+									13.2日 (15 * (322/365))
 								</div></li>
-							<li><strong>2) 입사 1년 이상자인 경우</strong>
+							<li><strong>2) 入社1年以上の場合</strong>
 								<p>
-									- 근무연도 > 2 (3년 이상인 경우)<br> 연차휴가 = 기준일(15) + (근무 연도/2) (소수점
-									버림 계산)
+									 - 勤務年度 > 2 (3年以上の場合)<br> 年次休暇 = 基準日(15) + (労働年/2) (小数点
+									捨て計算)
 								</p>
-								<div class="calc-example">예) 2020년 2월 14일 입사한 직원의 2024년 1월
-									1일 연차계산 시 : 16일 (15 + (2/2))</div>
+								<div class="calc-example">例）2020年2月14日入社した社員の2024年1月
+									1日年次計算時：16日（15+（2/2））</div>
 								<p class="mt-2">
-									- 근무연도 &lt; 3 (3년 미만인 경우)<br> 연차휴가 = 기준일(15)
+									 - 勤務年度< 3（3年未満の場合）<br> 年次休暇=基準日(15)
 								</p></li>
 						</ul>
 					</div>
 
-					<!-- 주 44시간제 -->
+					<!-- 週44時間制 -->
 					<div class="leave-calc-section">
-						<h3>주 44시간제 적용 사업장</h3>
-						<p class="calc-desc">연차휴가는 1년에 10일을 기본으로 하며, 2년 이상 계속 근로 시 최초
-							1년을 초과하는 계속 근로연수 2년에 대하여 1일의 가산연차 휴가 발생</p>
+						<h3>週44時間制適用事業場</h3>
+						<p class="calc-desc">年次休暇は1年に10日に基づいており、2年以上労働を続けて初めて
+							1年を超える継続勤労研修2年に対して1日の加算年次休暇発生</p>
 						<ul class="calc-list">
-							<li><strong>1) 입사 1년 미만자인 경우</strong>
-								<p>연차휴가 = 기준일(10) * (근무일수/365) = 소수 첫 자리 까지 (소수 두번째 자리에서
-									반올림)</p>
+							<li><strong>1)入社1年未満の場合</strong>
+								<p>年次休暇 = 基準日(10) * (勤務日数/365) = 小数 1 桁まで (小数 2 桁
+									丸め)</p>
 								<div class="calc-example">
-									예) 2023년 2월 14일 ~ 2023년 12월 31일 만근 시 : 근무일수는 322일<br> 사용기간
-									: 2024년 1월 1일 ~ 2024년 12월 31일<br> 2024년 1월 1일 연차계산 시 :
-									8.8일 (10 * (322/365))
+									例）2023年2月14日〜2023年12月31日全日勤務時：勤務日数は322日<br> 使用期間
+									：2024年1月1日〜2024年12月31日<br> 2024年1月1日年次計算時：
+									8.8日 (10 * (322/365))
 								</div></li>
-							<li><strong>2) 입사 1년 이상자인 경우</strong>
+							<li><strong>2) 入社1年以上の場合</strong>
 								<p>
-									- 근무연도 > 2 (3년 이상인 경우)<br> 연차휴가 = 기준일(10) + (근무 연도)
+									 - 勤務年度 > 2 (3年以上の場合)<br> 年次休暇 = 基準日(10) + (勤務年度)
 								</p>
-								<div class="calc-example">예) 2020년 2월 14일 입사한 직원의 2024년 1월
-									1일 연차계산 시 : 12일 (10 + 2)</div>
+								<div class="calc-example">例）2020年2月14日入社した社員の2024年1月
+									1日年次計算時：12日（10+2）</div>
 								<p class="mt-2">
-									- 근무연도 &lt; 3 (3년 미만인 경우)<br> 연차휴가 = 기준일(10)
+									 - 勤務年度< 3（3年未満の場合）<br> 年次休暇=基準日（10）
 								</p></li>
 						</ul>
 					</div>
@@ -446,7 +447,7 @@
 				</div>
 			</div>
 		</div>
-		<!-- ▲▲ 연차휴가 계산방법 모달 끝 ▲▲ -->
+		<!-- ▲▲年次休暇の計算方法モーダル終了▲▲ -->
 	</main>
 	<%@ include file="/WEB-INF/view/common/footer.jspf"%>
 </body>

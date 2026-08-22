@@ -1,5 +1,5 @@
 .day-worker-inquiry-page,.day-worker-inquiry-page *{box-sizing:border-box}
-.day-worker-inquiry-page{width:min(1240px,calc(100% - 36px));min-width:960px;margin:28px auto 44px;color:#334155;font:12px "Malgun Gothic","맑은 고딕",Arial,sans-serif}
+.day-worker-inquiry-page{width:min(1240px,calc(100% - 36px));min-width:960px;margin:28px auto 44px;color:#334155;font:12px "Yu Gothic","Meiryo",Arial,sans-serif}
 .inquiry-card{padding:18px}
 .view-tabs{margin-bottom:14px}
 .month-filter{min-height:58px;display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:10px 12px;border:1px solid #d4deea;background:#f5f8fb}

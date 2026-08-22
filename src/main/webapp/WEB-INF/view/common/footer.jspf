@@ -1,11 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%-- 푸터 전용 스타일 --%>
+<%-- フッターのみのスタイル --%>
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/common/footer.css">
 
 <footer class="site-footer">
 	<div class="site-footer__inner">
-		<!-- 고객센터 전화번호와 운영시간 -->
+		<!-- カスタマーセンターの電話番号と営業時間 -->
 		<div class="site-footer__summary">
 			<section>
 				<p class="site-footer__center-label">CUSTOMER CENTER</p>
@@ -14,23 +14,23 @@
 
 			<dl class="site-footer__hours">
 				<div class="site-footer__hours-row">
-					<dt>평일</dt>
-					<dd>오전 10:00 ~ 오후 5:50</dd>
+					<dt>平日</dt>
+					<dd>午前10時～午後5時50分</dd>
 				</div>
 				<div class="site-footer__hours-row">
-					<dt>점심시간</dt>
-					<dd>오전 12:50 ~ 오후 2:00</dd>
+					<dt>ランチタイム</dt>
+					<dd>午前12:50～午後2:00</dd>
 				</div>
 				<div class="site-footer__hours-row">
-					<dt>휴무일</dt>
-					<dd>주말 및 공휴일</dd>
+					<dt>休業日</dt>
+					<dd>週末と祝日</dd>
 				</div>
 			</dl>
 		</div>
 
-		<!-- 회사 정보와 저작권 표시 -->
+		<!-- 会社情報と著作権表示 -->
 		<div class="site-footer__company">
-			<p>서울시 강남구 언주로603 · 사업자등록번호 000-00-0000 · TEL 0000-0000 · FAX
+			<p>ソウル市江南区恩州路603・事業者登録番号 000-00-0000・TEL 0000-0000・FAX
 				00-0000-0000</p>
 			<p class="site-footer__copyright">Copyright &copy; 2026 PAYZON.
 				LTD. All rights reserved.</p>

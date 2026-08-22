@@ -8,37 +8,37 @@
 <%
 	/*
 	 * ================================================================
-	 * 미리보기 및 백엔드 연동 예시용 더미 데이터
+	 *プレビューとバックエンド連動の例のダミーデータ
 	 * ================================================================
 	 *
-	 * [실제 구현 방법]
-	 * 1. 화면에서 선택한 귀속연도를 baseYear 파라미터로 전달합니다.
-	 * 2. 선택 연도를 포함한 최근 10개년 자료를 오름차순으로 조회합니다.
-	 *    예: 2026년 선택 시 2017년부터 2026년까지 조회
-	 * 3. 컨트롤러에서 아래 이름으로 request 속성을 전달합니다.
+	 * [実際の実装方法]
+	 * 1. 画面で選択した帰属年を baseYear パラメータに渡します。
+	 * 2. 選択年度を含む最近10ヶ年の資料を昇順で照会します。
+	 * 例: 2026 年選択時 2017 年から 2026 年まで照会
+	 *3. コントローラから以下の名前でリクエスト属性を渡します。
 	 *
-	 *    availableYears     : 귀속연도 선택 상자에 표시할 연도 목록
-	 *    selectedYear       : 현재 선택된 귀속연도
-	 *    statisticsStartYear: 조회된 통계의 시작 연도
-	 *    statisticsEndYear  : 조회된 통계의 마지막 연도
-	 *    annualStats        : 최근 10개년 통계 목록
+	 * availableYears：帰属年選択ボックスに表示する年のリスト
+	 * selectedYear : 現在選択されている帰属年度
+	 * statisticsStartYear: 照会された統計の開始年
+	 * statisticsEndYear : 照会された統計の最後の年
+	 * annualStats：最近10カ年の統計リスト
 	 *
-	 * [annualStats 항목별 필드]
-	 * year                 : 귀속연도
-	 * totalPayrollText     : 화면에 표시할 전체 급여액 문자열
-	 * payrollGrowth        : 급여 증가율 색상 판별용 숫자
-	 * payrollGrowthText    : 화면에 표시할 급여 증가율 문자열
-	 * headcountText        : 화면에 표시할 인원 문자열
-	 * headcountGrowth      : 인원 증가율 색상 판별용 숫자
-	 * headcountGrowthText  : 화면에 표시할 인원 증가율 문자열
-	 * payrollBarRate       : 전체 급여액 막대 높이 비율(0~100)
-	 * headcountBarRate     : 인원 막대 높이 비율(0~100)
+	 * [annualStats 項目別フィールド]
+	 * year : 帰属年度
+	 * totalPayrollText : 画面に表示する全給与額文字列
+	 * payrollGrowth：給与増加率の色判別のための数
+	 * payrollGrowthText：画面に表示する給与増加率文字列
+	 * headcountText : 画面に表示する人数文字列
+	 * headcountGrowth : 人数増加率 色判別用数値
+	 * headcountGrowthText : 画面に表示する人数増加率文字列
+	 * payrollBarRate : 全給与額棒高さ比率(0～100)
+	 * headcountBarRate : 人員バー高さ比率(0～100)
 	 *
-	 * payrollBarRate와 headcountBarRate는 각각의 최댓값을 100으로
-	 * 환산해서 컨트롤러에서 계산한 뒤 전달합니다.
+	 * payrollBarRateとheadcountBarRateはそれぞれの最大値を100に
+	 *換算してコントローラで計算した後渡します。
 	 *
-	 * 실제 annualStats가 전달되면 아래 더미 데이터는 실행되지 않습니다.
-	 * 백엔드 연동 완료 후에는 이 주석과 더미 데이터 블록 전체를 제거해도 됩니다.
+	 *実際のannualStatsが渡されると、下のダミーデータは実行されません。
+	 * バックエンド連動完了後は、このコメントとダミーデータブロック全体を削除してもかまいません。
 	 */
 	if (request.getAttribute("annualStats") == null) {
 		int[] years = {2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026};
@@ -72,14 +72,14 @@
 		request.setAttribute("statisticsStartYear", 2017);
 		request.setAttribute("statisticsEndYear", 2026);
 	}
-	/* 미리보기 및 백엔드 연동 예시용 더미 데이터 끝 */
+	/* プレビューとバックエンド連動の例のダミーデータの終わり */
 %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja-JP">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>연도별 전체급여 통계</title>
+	<title>年別総給与統計</title>
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/common.css">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/payroll-stats/annual-payroll-statistics.css">
@@ -90,24 +90,24 @@
 	<main class="page-content annual-stat-page">
 		<header class="page-heading">
 			<div>
-				<p>급여통계</p>
-				<h1>연도별 전체급여 통계</h1>
+				<p>給与統計</p>
+				<h1>年別総給与統計</h1>
 			</div>
 		</header>
 
 		<section class="content-card" aria-labelledby="annual-stat-title">
-			<h2 id="annual-stat-title" class="sr-only">연도별 전체급여 통계 조회</h2>
+			<h2 id="annual-stat-title" class="sr-only">年ごとの総給与統計の照会</h2>
 
 			<form class="search-bar" method="get">
 				<div class="search-bar__controls">
-					<label for="baseYear">귀속연도</label>
+					<label for="baseYear">帰属年</label>
 					<select id="baseYear" name="baseYear">
-						<option value="">선택</option>
+						<option value="">選択</option>
 						<c:forEach var="year" items="${availableYears}">
-							<option value="${year}" <c:if test="${year eq selectedYear}">selected</c:if>>${year}년</option>
+							<option value="${year}" <c:if test="${year eq selectedYear}">selected</c:if>>${year}年</option>
 						</c:forEach>
 					</select>
-					<button type="submit" class="ui-button ui-button--primary">조회</button>
+					<button type="submit" class="ui-button ui-button--primary">照会</button>
 				</div>
 			</form>
 
@@ -115,10 +115,10 @@
 				<c:when test="${not empty annualStats}">
 					<section class="chart-panel" aria-labelledby="payroll-chart-title">
 						<div class="section-title-row">
-							<h3 id="payroll-chart-title" class="sr-only">연도별 급여 지급현황</h3>
-							<div class="chart-legend" aria-label="차트 범례">
-								<span><i class="chart-legend__pay"></i>전체 급여액</span>
-								<span><i class="chart-legend__people"></i>인원</span>
+							<h3 id="payroll-chart-title" class="sr-only">年別給与支払状況</h3>
+							<div class="chart-legend" aria-label="チャートの凡例">
+								<span><i class="chart-legend__pay"></i>給与総額</span>
+								<span><i class="chart-legend__people"></i>人数</span>
 							</div>
 						</div>
 
@@ -127,15 +127,15 @@
 								<div class="annual-chart__item" tabindex="0">
 									<div class="annual-chart__plot">
 										<div class="annual-chart__bar annual-chart__bar--pay"
-											style="height:${stat.payrollBarRate}%" title="전체 급여액 ${stat.totalPayrollText}천원"></div>
+											style="height:${stat.payrollBarRate}%" title="全給与額 ${stat.totalPayrollText}千ウォン"></div>
 										<div class="annual-chart__bar annual-chart__bar--people"
-											style="height:${stat.headcountBarRate}%" title="인원 ${stat.headcountText}명"></div>
+											style="height:${stat.headcountBarRate}%" title="人員${stat.headcountText}名"></div>
 									</div>
 									<strong>${stat.year}</strong>
 									<div class="annual-chart__tooltip" role="tooltip">
-										<b>${stat.year}년</b>
-										<span><i class="tooltip-dot tooltip-dot--pay"></i>전체 급여액 (천원) <em>${stat.totalPayrollText}</em></span>
-										<span><i class="tooltip-dot tooltip-dot--people"></i>인원 (명) <em>${stat.headcountText}</em></span>
+										<b>${stat.year}年</b>
+										<span><i class="tooltip-dot tooltip-dot--pay"></i>給与総額（千ウォン） <em>${stat.totalPayrollText}</em></span>
+										<span><i class="tooltip-dot tooltip-dot--people"></i>人数（人） <em>${stat.headcountText}</em></span>
 									</div>
 								</div>
 							</c:forEach>
@@ -144,24 +144,24 @@
 
 					<div class="statistics-table-wrap">
 						<table class="statistics-table">
-							<caption>최근 10개년도 전체 급여액과 인원 현황</caption>
+							<caption>最近の10年間の総給与額と人員の現状</caption>
 							<thead>
 								<tr>
-									<th scope="col">구분</th>
+									<th scope="col">区分</th>
 									<c:forEach var="stat" items="${annualStats}">
-										<th scope="col">${stat.year}년</th>
+										<th scope="col">${stat.year}年</th>
 									</c:forEach>
 								</tr>
 							</thead>
 							<tbody>
 								<tr class="statistics-table__main-row">
-									<th scope="row">전체 급여액 (천원)</th>
+									<th scope="row">給与総額（千ウォン）</th>
 									<c:forEach var="stat" items="${annualStats}">
 										<td>${stat.totalPayrollText}</td>
 									</c:forEach>
 								</tr>
 								<tr class="statistics-table__rate-row">
-									<th scope="row">└ 증가율</th>
+									<th scope="row">└増加率</th>
 									<c:forEach var="stat" items="${annualStats}">
 										<td class="${stat.payrollGrowth gt 0 ? 'rate-up' : stat.payrollGrowth lt 0 ? 'rate-down' : ''}">
 											${stat.payrollGrowthText}
@@ -169,13 +169,13 @@
 									</c:forEach>
 								</tr>
 								<tr class="statistics-table__main-row">
-									<th scope="row">인원 (명)</th>
+									<th scope="row">人数（人）</th>
 									<c:forEach var="stat" items="${annualStats}">
 										<td>${stat.headcountText}</td>
 									</c:forEach>
 								</tr>
 								<tr class="statistics-table__rate-row">
-									<th scope="row">└ 증가율</th>
+									<th scope="row">└増加率</th>
 									<c:forEach var="stat" items="${annualStats}">
 										<td class="${stat.headcountGrowth gt 0 ? 'rate-up' : stat.headcountGrowth lt 0 ? 'rate-down' : ''}">
 											${stat.headcountGrowthText}
@@ -188,8 +188,8 @@
 				</c:when>
 				<c:otherwise>
 					<div class="empty-state">
-						<p>조회된 연도별 급여 통계가 없습니다.</p>
-						<span>귀속연도를 선택한 후 조회해 주세요.</span>
+						<p>照会された年ごとの給与統計はありません。</p>
+						<span>帰属年度を選択して検索してください。</span>
 					</div>
 				</c:otherwise>
 			</c:choose>

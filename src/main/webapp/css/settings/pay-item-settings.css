@@ -1,5 +1,5 @@
 .pay-item-page,.pay-item-page *{box-sizing:border-box}
-.pay-item-page{width:min(1180px,calc(100% - 40px));min-width:920px;margin:28px auto 44px;color:#334155;font:13px "Malgun Gothic","맑은 고딕",Arial,sans-serif}
+.pay-item-page{width:min(1180px,calc(100% - 40px));min-width:920px;margin:28px auto 44px;color:#334155;font:13px "Yu Gothic","Meiryo",Arial,sans-serif}
 .page-heading{margin-bottom:18px;padding:22px 26px;border:1px solid #d7dee8;border-radius:8px;background:linear-gradient(135deg,#fff,#f5f8fc);box-shadow:0 4px 14px rgba(35,54,80,.07)}
 .page-heading p{margin:0 0 5px;color:#347fc3;font-size:12px;font-weight:700}.page-heading h1{margin:0;color:#1f2937;font-size:25px}
 .setting-card{margin-bottom:22px;border:1px solid #d7dee8;border-radius:8px;background:#fff;box-shadow:0 3px 12px rgba(35,54,80,.05);overflow:hidden}

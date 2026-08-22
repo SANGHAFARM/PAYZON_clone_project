@@ -7,7 +7,7 @@
 	min-width: 960px;
 	margin: 28px auto 44px;
 	color: #334155;
-	font: 12px "Malgun Gothic", "맑은 고딕", Arial, sans-serif
+	font: 12px "Malgun Gothic", "Yu Gothic", Arial, sans-serif
 }
 
 .page-heading {
@@ -429,7 +429,7 @@
 }
 
 .modal-overlay {
-	font: 12px "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
+	font: 12px "Malgun Gothic", "Yu Gothic", Arial, sans-serif;
 	color: #555
 }
 

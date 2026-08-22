@@ -1,0 +1,200 @@
+.pay-composition-page .search-bar select:first-of-type { width: 118px; }
+.pay-composition-page .search-bar select:nth-of-type(2) { width: 90px; }
+
+.donut-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 14px;
+	margin-top: 18px;
+}
+
+.donut-card {
+	min-height: 300px;
+	padding: 12px 16px 14px;
+	border: 1px solid #cedbea;
+	border-radius: 6px;
+	background: #fff;
+	text-align: center;
+}
+
+.donut-card h2 {
+	margin: 0;
+	padding: 0 0 9px;
+	border-bottom: 2px solid #3788cc;
+	color: #07579c;
+	font-size: 15px;
+	font-weight: 700;
+	text-align: left;
+}
+
+.interactive-donut {
+	position: relative;
+	width: 180px;
+	height: 180px;
+	margin: 14px auto;
+}
+
+.donut-svg {
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	transform: rotate(-90deg);
+}
+
+.donut-track,
+.donut-segment {
+	fill: none !important;
+	stroke-width: 28;
+}
+
+.interactive-donut svg circle {
+	fill: none !important;
+}
+
+.donut-track { stroke: #edf2f7; }
+
+.donut-segment {
+	cursor: pointer;
+	transition: opacity .15s ease, stroke-width .15s ease, filter .15s ease;
+}
+
+.donut-svg:has(.donut-segment-group:hover) .donut-segment { opacity: .25; }
+.donut-segment-group:hover .donut-segment {
+	opacity: 1 !important;
+	stroke-width: 34;
+	filter: drop-shadow(0 2px 3px rgba(30, 48, 65, .24));
+}
+
+.donut-center {
+	position: absolute;
+	z-index: 5;
+	inset: 0 !important;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	pointer-events: none;
+}
+
+.donut-center strong { color: #111; font-size: 15px; font-weight: 500; line-height: 1.35; }
+.donut-center span { margin-top: 4px; color: #789; font-size: 11px; }
+
+.donut-svg-tooltip {
+	display: none;
+	transform: rotate(90deg);
+	transform-origin: 100px 100px;
+	pointer-events: none;
+}
+
+.donut-segment-group:hover .donut-svg-tooltip { display: block; }
+.donut-svg-tooltip rect { fill: rgba(255, 255, 255, .96); stroke: #aebdcc; stroke-width: 1; filter: drop-shadow(0 2px 3px rgba(30, 48, 65, .22)); }
+.donut-svg-tooltip text { fill: #344b61; font-size: 11px; text-anchor: middle; }
+.donut-svg-tooltip text:last-child { font-weight: 700; fill: #1768aa; }
+
+.donut-percentage-label {
+	position: absolute;
+	z-index: 4;
+	color: #fff;
+	font-size: 10px;
+	font-weight: 700;
+	line-height: 1;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+	white-space: nowrap;
+	transform: translate(-50%, -50%);
+	pointer-events: none;
+}
+
+.donut-legend {
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 6px 12px;
+	color: #526a80;
+}
+
+.donut-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.donut-legend i { width: 9px; height: 9px; border-radius: 2px; }
+.donut-legend .is-zero { opacity: .3; }
+
+.composition-table-wrap {
+	margin-top: 16px;
+	overflow-x: auto;
+	border: 1px solid #c9d7e5;
+}
+
+.composition-table {
+	width: 100%;
+	min-width: 1100px;
+	border-collapse: collapse;
+	table-layout: fixed;
+}
+
+.composition-table caption {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+}
+
+.composition-table th,
+.composition-table td {
+	height: 38px;
+	padding: 7px 8px;
+	border-right: 1px solid #c9d7e5;
+	border-bottom: 1px solid #c9d7e5;
+	text-align: right;
+	white-space: nowrap;
+}
+
+.composition-table thead th {
+	background: #eaf2f8;
+	color: #173f65;
+	text-align: center;
+}
+
+.composition-table th:first-child { width: 135px; text-align: left; }
+.composition-table tbody th { background: #f7f9fc; font-weight: 600; }
+.composition-table .deduction-head { color: #d85260; }
+.composition-table .net-head { background: #3788cc; color: #fff; }
+.composition-table .total-cell { background: #fffced; font-weight: 700; }
+.composition-table .net-cell { color: #07579c; font-weight: 700; }
+
+.composition-summary {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	margin-top: 16px;
+	border: 1px solid #c9d7e5;
+	background: #f7f9fc;
+}
+
+.composition-summary > div {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 52px;
+	padding: 0 18px;
+	border-right: 1px solid #c9d7e5;
+}
+
+/* 사원 선택 모달 테이블 스크롤 처리 */
+.employee-modal__table-wrap {
+    max-height: 400px; /* 원하는 높이로 조절 가능 */
+    overflow-y: auto;  /* 내용이 넘치면 세로 스크롤 생성 */
+}
+
+/* 스크롤할 때 테이블 제목(thead)은 위에 고정되게 만들면 더 좋습니다 */
+.employee-modal__table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa; /* 헤더 배경색에 맞게 조정 */
+    z-index: 1;
+}
+
+.composition-summary > div:last-child { border-right: 0; }
+.composition-summary span { color: #526a80; font-weight: 700; }
+.composition-summary strong { color: #173f65; font-size: 14px; }
+.composition-summary__net { background: #3788cc; }
+.composition-summary__net span,
+.composition-summary__net strong { color: #fff; }

@@ -1,11 +1,11 @@
 @charset "UTF-8";
 
-/* 일용직 급여 화면의 좌우 영역 비율 */
+/* 日雇い給与画面の左右領域の割合 */
 .day-worker-payment-page .payroll-workspace {
 	grid-template-columns: minmax(360px, .72fr) minmax(700px, 1.28fr);
 }
 
-/* 급여 대상 사원 목록 */
+/* 給与対象の社員一覧 */
 .day-worker-payment-page .employee-table-wrap {
 	max-height: 442px;
 }
@@ -20,7 +20,7 @@
 	text-align: center !important;
 }
 
-/* 근무별 지급내역과 공제항목 배치 */
+/* 勤務別支給履歴と控除項目の配置 */
 .day-payment-panels {
 	display: grid;
 	grid-template-columns: minmax(440px, 1.55fr) minmax(250px, .85fr);
@@ -32,7 +32,7 @@
 	height: 100%;
 }
 
-/* 근무별 지급내역 */
+/* 勤務別支給履歴 */
 .work-detail-panel .table-wrap {
 	min-height: 332px;
 }
@@ -71,7 +71,7 @@
 	text-align: right;
 }
 
-/* 공제항목 */
+/* 控除項目 */
 .deduction-table {
 	width: 100%;
 	table-layout: fixed;
@@ -93,7 +93,7 @@
 	box-sizing: border-box;
 }
 
-/* 4대보험, 기간단위 소득세 버튼 */
+/*  4大保険、期間単位所得税ボタン */
 .deduction-tools {
 	display: flex;
 	align-items: center;
@@ -108,7 +108,7 @@
 	border-radius: 3px;
 	color: #fff;
 	background: #2f6089;
-	font-family: "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
+	font-family: "Malgun Gothic", "Yu Gothic", Arial, sans-serif;
 	font-size: 10px;
 	font-weight: 700;
 	white-space: nowrap;
@@ -122,7 +122,7 @@
 	outline: none;
 }
 
-/* 지급총액과 공제총액 */
+/* 支給総額と控除総額 */
 .day-worker-totals {
 	height: 40px;
 	display: grid;
@@ -163,7 +163,7 @@
 	font-style: normal;
 }
 
-/* 사원 추가 팝업 */
+/* 社員追加ポップアップ */
 .day-worker-payment-page .employee-modal {
 	width: 690px;
 }
@@ -182,7 +182,7 @@
 	border-radius: 3px;
 	background: #fff;
 	box-sizing: border-box;
-	font-family: "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
+	font-family: "Malgun Gothic", "Yu Gothic", Arial, sans-serif;
 	font-size: 12px;
 }
 
@@ -208,7 +208,7 @@
 	overflow-y: auto;
 }
 
-/* 팝업 페이지 이동 */
+/* ポップアップページを移動 */
 .modal-pagination {
 	height: 36px;
 	display: flex;
@@ -242,7 +242,7 @@
 	box-sizing: border-box;
 }
 
-/* 팝업 하단 버튼 */
+/* ポップアップボトムボタン */
 .day-worker-payment-page .employee-modal .modal-actions {
 	justify-content: center;
 	margin: 0 0 18px;
@@ -253,7 +253,7 @@
 	min-width: 112px;
 }
 
-/* 화면 폭이 좁을 때 */
+/* 画面幅が狭いとき */
 @media (max-width: 1180px) {
 	.day-worker-payment-page .payroll-workspace {
 		grid-template-columns: 1fr;
@@ -265,7 +265,7 @@
 	}
 }
 
-/* 계산 및 저장 결과 안내 팝업 */
+/* 計算と保存結果の案内ポップアップ */
 .day-worker-alert {
 	position: fixed;
 	z-index: 7000;
