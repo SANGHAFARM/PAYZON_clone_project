@@ -81,7 +81,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>年別総給与統計</title>
+    <title>年度別総給与統計</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/common.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/payroll-stats/annual-payroll-statistics.css">
@@ -93,7 +93,7 @@
         <header class="page-heading">
             <div>
                 <p>給与統計</p>
-                <h1>年別総給与統計</h1>
+                <h1>年度別総給与統計</h1>
             </div>
         </header>
 

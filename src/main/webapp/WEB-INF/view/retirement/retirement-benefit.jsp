@@ -9,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>退職給付の入力/管理</title>
+    <title>退職給与の入力/管理</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/retirement/retirement-benefit.css?v=20260816-3">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260821-1">
 </head>
@@ -23,7 +23,7 @@
         <div class="benefit-toolbar">
             <form method="get" action="${pageContext.request.contextPath}/retirement/benefit.do">
                 <input type="hidden" name="mode" value="list">
-                <label for="paymentYear">支払年</label>
+                <label for="paymentYear">支給年</label>
                 <select id="paymentYear" name="paymentYear">
                     <c:forEach var="year" items="${paymentYears}"><option value="${year}" ${year eq selectedYear ? 'selected' : ''}>${year}年</option></c:forEach>
                 </select>
@@ -72,7 +72,7 @@
                     <td><a href="${employeeBenefitUrl}">${item.paymentMethod}</a></td>
                 </tr>
             </c:forEach>
-            <c:if test="${empty retirementBenefits and empty draftBenefitEmployees}"><tr><td colspan="9" class="empty-row">登録された退職給付履歴はありません。</td></tr></c:if>
+            <c:if test="${empty retirementBenefits and empty draftBenefitEmployees}"><tr><td colspan="9" class="empty-row">登録された退職給与履歴がありません。</td></tr></c:if>
             </tbody>
         </table>
         <form id="draftEmployeeForm" method="post" action="${pageContext.request.contextPath}/retirement/benefit/new.do">
@@ -123,7 +123,7 @@
         </div>
 
         <section class="original-block deferred-block">
-            <div class="original-section-title"><h2>課税連携口座</h2><span>該当しない場合は入力しません。</span></div>
+            <div class="original-section-title"><h2>課税繰延口座</h2><span>該当しない場合は入力しません。</span></div>
             <table class="original-table deferred-table"><thead><tr><th>退職年金事業者名</th><th>事業者登録番号</th><th>口座番号</th><th>入金（振替）日</th><th>口座振込金額</th></tr></thead><tbody><c:forEach begin="0" end="1" var="row"><c:set var="deferral" value="${retirementBenefit.taxDeferrals[row]}"/><tr><td><input type="text" name="pensionProvider" value="${deferral.bizName}"></td><td><input type="text" name="pensionBusinessNo" value="${deferral.bizRegNo}"></td><td><input type="text" name="pensionAccount" value="${deferral.accountNo}"></td><td><input type="date" lang="ja-JP" name="pensionDate" value="<fmt:formatDate value='${deferral.depositDate}' pattern='yyyy-MM-dd'/>"></td><td><input type="text" name="pensionAmount" value="${deferral.depositAmt}"></td></tr></c:forEach></tbody></table>
             <p class="warning-note">年金口座に入金して退職所得税を徴収しない場合に作成します。</p>
         </section>

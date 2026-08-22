@@ -39,7 +39,7 @@
                     method="get" class="employee-search">
                     <input type="hidden" name="status" value="${status }"> <input
                         type="search" name="keyword" value="${keyword}"
-                        placeholder="検索語を入力">
+                        placeholder="検索キーワードを入力">
                     <button type="submit">検索</button>
                     <a
                         href="${pageContext.request.contextPath}/attendance/attendance-management.do">全体を見る</a>

@@ -235,7 +235,7 @@
                                             <th>資格/ライセンス</th>
                                             <th>取得日</th>
                                             <th>発行機関</th>
-                                            <th>証明書番号</th>
+                                            <th>証番号</th>
                                             <th>備考</th>
                                         </tr>
                                     </thead>
@@ -279,7 +279,7 @@
                                             <th>取得日</th>
                                             <th>読解</th>
                                             <th>作文</th>
-                                            <th>絵画</th>
+                                            <th>会話</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -369,7 +369,7 @@
 
                         <section class="form-card" id="reward-punish">
                             <div class="card-title">
-                                <h2>罰</h2>
+                                <h2>賞罰</h2>
                                 <div>
                                     <button name="action" value="addRewardPunish" formnovalidate>追加する</button>
                                     <button name="action" value="deleteRewardPunishes" formnovalidate>選択削除</button>
@@ -381,10 +381,10 @@
                                         <tr>
                                             <th>選択</th>
                                             <th>区分</th>
-                                            <th>商罰名</th>
-                                            <th>商罰権者</th>
-                                            <th>相反日</th>
-                                            <th>商罰内容</th>
+                                            <th>賞罰名</th>
+                                            <th>賞罰権者</th>
+                                            <th>賞罰日付</th>
+                                            <th>賞罰内容</th>
                                             <th>備考</th>
                                         </tr>
                                     </thead>
@@ -434,7 +434,7 @@
                                             <th>発令日</th>
                                             <th>部署</th>
                                             <th>役職</th>
-                                            <th>役職</th>
+                                            <th>職責</th>
                                             <th>備考</th>
                                         </tr>
                                     </thead>
@@ -469,9 +469,9 @@
                         </section>
 
                         <section class="form-card" id="recommendation">
-                            <h2>おすすめ/身元保証</h2>
+                            <h2>推薦/身元保証</h2>
                             <div class="sub-card-title">
-                                <h3>おすすめ</h3>
+                                <h3>推薦者</h3>
                             </div>
                             <div class="table-wrap">
                                 <table>
@@ -602,7 +602,7 @@
                                             <td><label class="money-cell"><input
                                                     value="<fmt:formatNumber value='${latestRetirementBenefit.netPayment}' pattern='#,##0' />" readonly><span>円</span></label></td>
                                             <td><a class="table-button"
-                                                href="${pageContext.request.contextPath}/retirement/payslip.do?empId=${employee.employeeId}">仕様書
+                                                href="${pageContext.request.contextPath}/retirement/payslip.do?empId=${employee.employeeId}">明細書
                                                     ダウンロード</a></td>
                                         </tr>
                                     </tbody>

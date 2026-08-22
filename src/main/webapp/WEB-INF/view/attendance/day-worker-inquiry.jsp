@@ -31,7 +31,7 @@
                     class="${empty param.view or param.view eq 'month' ? 'is-active' : ''}"
                     href="?view=month">月別照会</a> <a
                     class="${param.view eq 'detail' ? 'is-active' : ''}"
-                    href="?view=detail">詳細ビュー</a>
+                    href="?view=detail">詳細照会</a>
             </nav>
             <!-- =================================== -->
             <!-- =========詳細検索=========== -->
@@ -43,7 +43,7 @@
                             <input type="hidden" name="view" value="detail">
                             <div class="filter-field">
 
-                                <span>労働日</span>
+                                <span>勤務日</span>
                                 <div class="date-range">
                                     <input type="date" lang="ja-JP" id="startDate" name="startDate"
                                         value="${startDate}"><i>~</i><input type="date" lang="ja-JP"
@@ -175,7 +175,7 @@
                                     <th>合計</th>
                                     <th>所得税</th>
                                     <th>地方所得税</th>
-                                    <th>実際の給与合計</th>
+                                    <th>差引支給額の合計</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -246,21 +246,21 @@
                                     </dd>
                                 </div>
                                 <div>
-                                    <dt>労働日</dt>
+                                    <dt>勤務日</dt>
                                     <dd
                                         style="text-align: right !important; display: block !important;">
                                         <c:out value="${work.workDate}" />
                                     </dd>
                                 </div>
                                 <div class="money">
-                                    <dt>一日あたり</dt>
+                                    <dt>日当</dt>
                                     <dd>
                                         <c:out value="${work.dailyPay}" />
                                         円
                                     </dd>
                                 </div>
                                 <div class="money">
-                                    <dt>支払い率</dt>
+                                    <dt>支給率</dt>
                                     <dd>
                                         <c:out value="${work.payRate}" />
                                     </dd>

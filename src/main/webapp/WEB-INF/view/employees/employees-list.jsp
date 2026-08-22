@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>人事管理>社員状況/管理</title>
+    <title>人事管理>社員現況/管理</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/employees/employees-list.css?v=20260822-1">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260821-1">
     <style>
@@ -54,12 +54,12 @@
             <%--  DBで集計した在職/退職および雇用形態別社員数 --%>
             <nav class="summary-grid" aria-label="社員状況のまとめ">
                 <div class="summary-card summary-card--work"><span>在職者</span><strong><c:out value="${employeeSummary.workingCount}" default="0" /></strong></div>
-                <div class="summary-card"><span>正規職</span><strong><c:out value="${employeeSummary.regularCount}" default="0" /></strong></div>
-                <div class="summary-card"><span>契約会社</span><strong><c:out value="${employeeSummary.contractCount}" default="0" /></strong></div>
-                <div class="summary-card"><span>臨時職</span><strong><c:out value="${employeeSummary.temporaryCount}" default="0" /></strong></div>
-                <div class="summary-card"><span>派遣職</span><strong><c:out value="${employeeSummary.dispatchedCount}" default="0" /></strong></div>
-                <div class="summary-card"><span>委任職</span><strong><c:out value="${employeeSummary.commissionedCount}" default="0" /></strong></div>
-                <div class="summary-card"><span>日雇い</span><strong><c:out value="${employeeSummary.dailyCount}" default="0" /></strong></div>
+                <div class="summary-card"><span>正社員</span><strong><c:out value="${employeeSummary.regularCount}" default="0" /></strong></div>
+                <div class="summary-card"><span>契約社員</span><strong><c:out value="${employeeSummary.contractCount}" default="0" /></strong></div>
+                <div class="summary-card"><span>臨時社員</span><strong><c:out value="${employeeSummary.temporaryCount}" default="0" /></strong></div>
+                <div class="summary-card"><span>派遣社員</span><strong><c:out value="${employeeSummary.dispatchedCount}" default="0" /></strong></div>
+                <div class="summary-card"><span>委嘱社員</span><strong><c:out value="${employeeSummary.commissionedCount}" default="0" /></strong></div>
+                <div class="summary-card"><span>日雇い社員</span><strong><c:out value="${employeeSummary.dailyCount}" default="0" /></strong></div>
                 <div class="summary-card summary-card--retired"><span>退職者</span><strong><c:out value="${employeeSummary.retiredCount}" default="0" /></strong></div>
                 <div class="summary-card summary-card--total"><span>全体</span><strong><c:out value="${employeeSummary.totalCount}" default="0" /></strong></div>
             </nav>

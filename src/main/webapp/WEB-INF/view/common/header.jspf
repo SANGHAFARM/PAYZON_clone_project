@@ -90,11 +90,9 @@
 				href="${pageContext.request.contextPath}/settings/user-info.do">基本設定</a>
 				<ul class="dropdown-menu">
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/settings/user-info.do">ユーザー
-							情報</a></li>
+						href="${pageContext.request.contextPath}/settings/user-info.do">利用者情報</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/settings/register1.do">社員
-							登録</a></li>
+						href="${pageContext.request.contextPath}/settings/register1.do">社員登録</a></li>
 					<li><a class="dropdown-menu__link"
 						href="${pageContext.request.contextPath}/settings/attendance.do">休暇・勤怠設定</a></li>
 					<li><a class="dropdown-menu__link"
@@ -104,10 +102,9 @@
 				href="${pageContext.request.contextPath}/employees/employees.do">人事管理</a>
 				<ul class="dropdown-menu">
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/employees/employees.do">社員状況/管理</a></li>
+						href="${pageContext.request.contextPath}/employees/employees.do">社員現況/管理</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/employees/employee-card.do">人事記録
-							カード</a></li>
+						href="${pageContext.request.contextPath}/employees/employee-card.do">人事記録カード</a></li>
 					<li><a class="dropdown-menu__link"
 						href="${pageContext.request.contextPath}/employees/certificate.do">各種証明書発行</a></li>
 					<li><a class="dropdown-menu__link"
@@ -124,9 +121,9 @@
 					<li><a class="dropdown-menu__link"
 						href="${pageContext.request.contextPath}/attendance/leave-inquiry.do">休暇照会</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/attendance/day-worker-management.do">日雇い勤務記録/管理</a></li>
+						href="${pageContext.request.contextPath}/attendance/day-worker-management.do">日雇い写真勤務記録/管理</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/attendance/day-worker-inquiry.do">日雇い勤務照会</a></li>
+						href="${pageContext.request.contextPath}/attendance/day-worker-inquiry.do">日雇い写真勤務照会</a></li>
 				</ul></li>
 			<li class="main-nav__item"><a class="main-nav__trigger"
 				href="${pageContext.request.contextPath}/payroll/management.do">給与管理</a>
@@ -168,10 +165,9 @@
 					<li><a class="dropdown-menu__link"
 						href="${pageContext.request.contextPath}/retirement/process.do">退職処理</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/retirement/benefit.do">退職給付
-							入力/管理</a></li>
+						href="${pageContext.request.contextPath}/retirement/benefit.do">退職給与の入力/管理</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/retirement/payslip.do">退職給付明細書</a></li>
+						href="${pageContext.request.contextPath}/retirement/payslip.do">退職給与明細書</a></li>
 				</ul></li>
 		</ul>
 	</nav>

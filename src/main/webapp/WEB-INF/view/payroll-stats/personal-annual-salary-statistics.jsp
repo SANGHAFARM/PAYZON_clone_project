@@ -9,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>年別の個人給与統計</title>
+    <title>年度別個人年収統計</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/common.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/payroll-stats/annual-payroll-statistics.css">
@@ -20,7 +20,7 @@
 
     <main class="page-content annual-stat-page personal-salary-page">
         <header class="page-heading">
-            <div><p>給与統計</p><h1>年別の個人給与統計</h1></div>
+            <div><p>給与統計</p><h1>年度別個人年収統計</h1></div>
         </header>
 
         <section class="content-card">

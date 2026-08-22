@@ -31,7 +31,7 @@
             <div class="table-wrap">
                 <table class="register-table">
                     <colgroup><col class="month-col"><col class="round-col"><col class="period-col"><col class="date-col"><col class="count-col"><col class="money-col"><col class="money-col"><col class="money-col"><col class="delete-col"></colgroup>
-                    <thead><tr><th>帰属年月</th><th>給与回次</th><th>精算期間</th><th>支給日</th><th>人数</th><th>支給総額</th><th>控除総額</th><th>差引支給額</th><th>削除</th></tr></thead>
+                    <thead><tr><th>帰属年月</th><th>給与回数</th><th>精算期間</th><th>支給日</th><th>人数</th><th>支給総額</th><th>控除総額</th><th>差引支給額</th><th>削除</th></tr></thead>
                     <tbody>
                     <c:choose>
                         <c:when test="${not empty paymentRegisters}">
