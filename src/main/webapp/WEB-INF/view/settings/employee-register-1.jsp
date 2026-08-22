@@ -618,9 +618,9 @@
 											<th>軍別</th>
 											<th>服務期間（から）</th>
 											<th>服務期間（まで）</th>
-											<th>最終クラス</th>
+											<th>最終階級</th>
 											<th>病科</th>
-											<th>ミピル理由</th>
+											<th>未了理由</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -634,7 +634,7 @@
 											<td><select name="milBranch"><option value="">選択</option>
 													<c:forEach var="branch"
 														items="${fn:split('육군,해군,공군,상비군,면제,기타', ',')}">
-														<option ${branch eq employee.milBranch ? 'selected' : ''}>${branch}</option>
+												<option value="${branch}" ${branch eq employee.milBranch ? 'selected' : ''}><ui:code-label value="${branch}" /></option>
 													</c:forEach></select></td>
 											<td><input type="date" lang="ja-JP" name="milServiceStart"
 												value="<fmt:formatDate value='${employee.milServiceStart}' pattern='yyyy-MM-dd' />"></td>

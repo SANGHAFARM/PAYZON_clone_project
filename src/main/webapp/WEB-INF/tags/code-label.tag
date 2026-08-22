@@ -73,6 +73,11 @@
 	<c:when test="${value eq '상'}">上</c:when>
 	<c:when test="${value eq '중'}">中</c:when>
 	<c:when test="${value eq '하'}">下</c:when>
+	<c:when test="${value eq '육군'}">陸軍</c:when>
+	<c:when test="${value eq '해군'}">海軍</c:when>
+	<c:when test="${value eq '공군'}">空軍</c:when>
+	<c:when test="${value eq '상비군'}">常備軍</c:when>
+	<c:when test="${value eq '기타'}">その他</c:when>
 	<c:when test="${fn:contains(value, '급여-') or fn:contains(value, '사업/기타') or fn:contains(value, '사업·기타') or fn:contains(value, '일반') or fn:contains(value, '일용직')}">
 		<c:set var="localizedRound" value="${fn:replace(value, '급여-', '給与-')}" />
 		<c:set var="localizedRound" value="${fn:replace(localizedRound, '차', '回目')}" />
