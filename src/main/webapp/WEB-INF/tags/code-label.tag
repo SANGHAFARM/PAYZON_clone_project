@@ -10,7 +10,7 @@
 	<c:when test="${value eq '임시직'}">臨時社員</c:when>
 	<c:when test="${value eq '파견직'}">派遣社員</c:when>
 	<c:when test="${value eq '위촉직'}">委嘱社員</c:when>
-	<c:when test="${value eq '일용직'}">日雇い</c:when>
+	<c:when test="${value eq '일용직'}">日雇い社員</c:when>
 	<c:when test="${value eq '재직' or value eq 'WORK' or value eq 'ACTIVE'}">在職</c:when>
 	<c:when test="${value eq '퇴직' or value eq 'RETIRED'}">退職</c:when>
 	<c:when test="${value eq '내국인'}">内国人</c:when>
@@ -91,7 +91,7 @@
 		<c:set var="localizedRound" value="${fn:replace(localizedRound, '일반', '一般')}" />
 		<c:set var="localizedRound" value="${fn:replace(localizedRound, '사업/기타', '事業・その他')}" />
 		<c:set var="localizedRound" value="${fn:replace(localizedRound, '사업·기타', '事業・その他')}" />
-		<c:set var="localizedRound" value="${fn:replace(localizedRound, '일용직', '日雇い')}" />
+		<c:set var="localizedRound" value="${fn:replace(localizedRound, '일용직', '日雇い社員')}" />
 		<c:out value="${localizedRound}" />
 	</c:when>
 	<c:otherwise><c:out value="${value}" /></c:otherwise>
