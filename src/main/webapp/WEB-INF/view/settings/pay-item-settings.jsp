@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>基本設定>給与項目設定</title>
 <link rel="stylesheet"
-    href="${pageContext.request.contextPath}/css/settings/pay-item-settings.css?v=20260820-7">
+    href="${pageContext.request.contextPath}/css/settings/pay-item-settings.css?v=20260822-1">
 <link rel="stylesheet"
     href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260821-1">
 </head>
@@ -29,6 +29,7 @@
             <section class="setting-card" id="payment-settings">
                 <div class="card-title">
                     <h2>支払い項目の設定</h2>
+                    <span class="required-item-guide"><b>*</b> 基本項目</span>
                 </div>
                 <div class="setting-layout">
                     <div class="list-panel">
@@ -57,7 +58,7 @@
                                         <tr
                                             class="${item.payItemId eq selectedPaymentItem.payItemId ? 'is-selected' : ''}">
                                             <td><a
-                                                href="${pageContext.request.contextPath}/settings/pay-item.do?payItemId=${item.payItemId}#payment-settings"><ui:code-label
+                                                href="${pageContext.request.contextPath}/settings/pay-item.do?payItemId=${item.payItemId}#payment-settings"><c:if test="${item.payName eq '기본급'}"><b class="required-item-mark">*</b></c:if><ui:code-label
                                                         value="${item.payName}" /></a></td>
                                             <td><ui:code-label value="${item.taxType}" />
                                                 <c:if
@@ -86,6 +87,10 @@
                         </div>
                     </div>
 
+                    <c:set var="paymentCalcMethodLabel" value="${selectedPaymentItem.calcMethod}" />
+                    <c:if test="${selectedPaymentItem.calcMethod eq '사원 기본급'}">
+                        <c:set var="paymentCalcMethodLabel" value="社員基本給" />
+                    </c:if>
                     <form id="payment-editor-form" class="editor-panel"
                         action="${pageContext.request.contextPath}/settings/pay-item.do"
                         method="post">
@@ -141,7 +146,7 @@
                                 value="<c:out value='${selectedPaymentItem.directTaxFreeLimit}' />"><i>円</i></div></label>
                         <label class="editor-field"><span>計算方法</span><input
                             name="calcMethod"
-                            value="<c:out value='${selectedPaymentItem.calcMethod}' />"
+                            value="<c:out value='${paymentCalcMethodLabel}' />"
                             placeholder="計算方法を入力してください"></label> <label class="editor-field"><span>端数処理単位</span><select
                             name="roundUnit"><option value="0"
                                     ${empty selectedPaymentItem.roundUnit or selectedPaymentItem.roundUnit eq '0' ? 'selected' : ''}>なし</option>
@@ -190,6 +195,7 @@
             <section class="setting-card" id="deduction-settings">
                 <div class="card-title">
                     <h2>控除項目の設定</h2>
+                    <span class="required-item-guide"><b>*</b> 基本項目</span>
                 </div>
                 <div class="setting-layout">
                     <div class="list-panel">
@@ -214,7 +220,7 @@
                                         <tr
                                             class="${item.deductItemId eq selectedDeductionItem.deductItemId ? 'is-selected' : ''}">
                                             <td><a
-                                                href="${pageContext.request.contextPath}/settings/pay-item.do?deductItemId=${item.deductItemId}#deduction-settings"><ui:code-label
+                                                href="${pageContext.request.contextPath}/settings/pay-item.do?deductItemId=${item.deductItemId}#deduction-settings"><c:if test="${item.deductName eq '국민연금' or item.deductName eq '건강보험' or item.deductName eq '장기요양보험' or item.deductName eq '노인장기요양보험' or item.deductName eq '고용보험' or item.deductName eq '소득세' or item.deductName eq '지방소득세'}"><b class="required-item-mark">*</b></c:if><ui:code-label
                                                         value="${item.deductName}" /></a></td>
                                             <td><c:out value="${item.roundUnit}" /></td>
                                             <td><span
@@ -231,6 +237,21 @@
                             </table>
                         </div>
                     </div>
+                    <c:set var="deductionCalcMethodLabel" value="${selectedDeductionItem.calcMethod}" />
+                    <c:set var="deductionNoteLabel" value="${selectedDeductionItem.note}" />
+                    <c:choose>
+                        <c:when test="${selectedDeductionItem.calcMethod eq '기준소득월액 × 4.5%'}"><c:set var="deductionCalcMethodLabel" value="標準報酬月額 × 4.5%" /></c:when>
+                        <c:when test="${selectedDeductionItem.calcMethod eq '보수월액 × 3.545%'}"><c:set var="deductionCalcMethodLabel" value="標準報酬月額 × 3.545%" /></c:when>
+                        <c:when test="${selectedDeductionItem.calcMethod eq '건강보험료 × 장기요양보험요율'}"><c:set var="deductionCalcMethodLabel" value="健康保険料 × 介護保険料率" /></c:when>
+                        <c:when test="${selectedDeductionItem.calcMethod eq '보수월액 × 0.9%'}"><c:set var="deductionCalcMethodLabel" value="標準報酬月額 × 0.9%" /></c:when>
+                        <c:when test="${selectedDeductionItem.calcMethod eq '근로소득 간이세액표'}"><c:set var="deductionCalcMethodLabel" value="給与所得の源泉徴収税額表" /></c:when>
+                        <c:when test="${selectedDeductionItem.calcMethod eq '소득세 × 10%'}"><c:set var="deductionCalcMethodLabel" value="所得税 × 10%" /></c:when>
+                    </c:choose>
+                    <c:choose>
+                        <c:when test="${selectedDeductionItem.note eq '사원부담분'}"><c:set var="deductionNoteLabel" value="従業員負担分" /></c:when>
+                        <c:when test="${selectedDeductionItem.note eq '급여소득세'}"><c:set var="deductionNoteLabel" value="給与所得税" /></c:when>
+                        <c:when test="${selectedDeductionItem.note eq '지방소득세'}"><c:set var="deductionNoteLabel" value="地方所得税" /></c:when>
+                    </c:choose>
                     <form class="editor-panel"
                         action="${pageContext.request.contextPath}/settings/deduction-item.do"
                         method="post">
@@ -250,7 +271,7 @@
                         </label> <label
                             class="editor-field"><span>計算方法</span><input
                             name="calcMethod"
-                            value="<c:out value='${selectedDeductionItem.calcMethod}' />"
+                            value="<c:out value='${deductionCalcMethodLabel}' />"
                             placeholder="計算方法を入力してください"></label> <label class="editor-field"><span>端数処理単位</span><select
                             name="roundUnit"><option value="0">なし</option>
                                 <option value="1"
@@ -263,7 +284,7 @@
                                     ${selectedDeductionItem.roundUnit eq '100' ? 'selected' : ''}>100円
                                     単位</option></select></label> <label class="editor-field"><span>備考</span><input
                             name="note"
-                            value="<c:out value='${selectedDeductionItem.note}' />"></label>
+                            value="<c:out value='${deductionNoteLabel}' />"></label>
                         <div class="editor-field">
                             <span>使用可</span>
                             <div class="radio-line use-radio-line">

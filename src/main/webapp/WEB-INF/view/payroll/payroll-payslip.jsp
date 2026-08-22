@@ -51,7 +51,7 @@
             </aside>
 
             <article class="payslip-document">
-                <header class="document-header"><div class="company-logo"><c:choose><c:when test="${not empty company.logoUrl}"><img src="${pageContext.request.contextPath}${company.logoUrl}" alt="会社のロゴ"></c:when><c:otherwise><span>会社のロゴ</span></c:otherwise></c:choose></div><h2>クラス3人</h2></header>
+                <header class="document-header"><div class="company-logo"><c:choose><c:when test="${not empty company.logoUrl}"><img src="${pageContext.request.contextPath}${company.logoUrl}" alt="会社のロゴ"></c:when><c:otherwise><span>会社のロゴ</span></c:otherwise></c:choose></div><h2>給与明細書</h2></header>
                 <table class="employee-information"><tbody>
                 <tr><th>氏名</th><td>${selectedEmployee.employeeName}</td><th>生年月日</th><td>${selectedEmployee.birthDate}</td></tr>
                 <tr><th>部署</th><td>${selectedEmployee.departmentName}</td><th>職級</th><td>${selectedEmployee.positionName}</td></tr>

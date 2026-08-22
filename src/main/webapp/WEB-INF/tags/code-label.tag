@@ -35,6 +35,13 @@
 	<c:when test="${value eq '사원부담분'}">従業員負担分</c:when>
 	<c:when test="${value eq '급여소득세'}">給与所得税</c:when>
 	<c:when test="${value eq '대여금 등'}">貸付金など</c:when>
+	<c:when test="${value eq '사원 기본급'}">社員基本給</c:when>
+	<c:when test="${value eq '기준소득월액 × 4.5%'}">標準報酬月額 × 4.5%</c:when>
+	<c:when test="${value eq '보수월액 × 3.545%'}">標準報酬月額 × 3.545%</c:when>
+	<c:when test="${value eq '건강보험료 × 장기요양보험요율'}">健康保険料 × 介護保険料率</c:when>
+	<c:when test="${value eq '보수월액 × 0.9%'}">標準報酬月額 × 0.9%</c:when>
+	<c:when test="${value eq '근로소득 간이세액표'}">給与所得の源泉徴収税額表</c:when>
+	<c:when test="${value eq '소득세 × 10%'}">所得税 × 10%</c:when>
 	<c:when test="${value eq '지급합계'}">支給合計</c:when>
 	<c:when test="${value eq '공제합계'}">控除合計</c:when>
 	<c:when test="${value eq '지급항목'}">支給項目</c:when>

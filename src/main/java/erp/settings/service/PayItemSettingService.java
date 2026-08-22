@@ -106,7 +106,7 @@ public class PayItemSettingService {
 		item.setPayName("기본급");
 		item.setTaxType("전체과세");
 		item.setTaxFreeLimit(0L);
-		item.setCalcMethod("사원 기본급");
+		item.setCalcMethod("社員基本給");
 		item.setRoundUnit(10);
 		item.setUseYn("Y");
 		return item;
@@ -118,12 +118,12 @@ public class PayItemSettingService {
 	// 一つのConnectionで自動コミットを無効化して関連DAO処理をまとめ、成功時はcommit、失敗時はrollbackする。
 	private List<DeductItem> createRequiredDeductItems() {
 		return Arrays.asList(
-				createRequiredDeductItem("국민연금", "기준소득월액 × 4.5%", "사원부담분"),
-				createRequiredDeductItem("건강보험", "보수월액 × 3.545%", "사원부담분"),
-				createRequiredDeductItem("장기요양보험", "건강보험료 × 장기요양보험요율", "사원부담분"),
-				createRequiredDeductItem("고용보험", "보수월액 × 0.9%", "사원부담분"),
-				createRequiredDeductItem("소득세", "근로소득 간이세액표", "급여소득세"),
-				createRequiredDeductItem("지방소득세", "소득세 × 10%", "지방소득세"));
+				createRequiredDeductItem("국민연금", "標準報酬月額 × 4.5%", "従業員負担分"),
+				createRequiredDeductItem("건강보험", "標準報酬月額 × 3.545%", "従業員負担分"),
+				createRequiredDeductItem("장기요양보험", "健康保険料 × 介護保険料率", "従業員負担分"),
+				createRequiredDeductItem("고용보험", "標準報酬月額 × 0.9%", "従業員負担分"),
+				createRequiredDeductItem("소득세", "給与所得の源泉徴収税額表", "給与所得税"),
+				createRequiredDeductItem("지방소득세", "所得税 × 10%", "地方所得税"));
 	}
 
 	// 지급항목설정 처리에 사용할 필수값공제항목 데이터나 객체를 생성한다.
