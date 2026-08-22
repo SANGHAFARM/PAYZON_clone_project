@@ -345,13 +345,42 @@ public class EmployeeAttendanceDao {
 		}
 		return list;
 	}
+	
+	public List<AttendanceRecordDto> selectByEmpIdAndLeaveItemId(Connection conn, int empId, int leaveItemId)
+			throws SQLException {
+		String sql = "SELECT A.INPUT_DATE, I.ATTEND_NAME, "
+				+ "L.ITEM_NAME, A.START_DATE, A.END_DATE, A.ATTEND_VALUE, A.NOTE "
+				+ "FROM EMPLOYEE_ATTENDANCE A "
+				+ "LEFT JOIN ATTENDANCE_ITEM I ON I.ATTENDANCE_ITEM_ID = A.ATTENDANCE_ITEM_ID "
+				+ "LEFT JOIN LEAVE_ITEM L ON L.LEAVE_ITEM_ID = A.LEAVE_ITEM_ID "
+				+ "WHERE A.EMPLOYEE_ID = ? AND A.LEAVE_ITEM_ID = ? "
+				+ "ORDER BY A.START_DATE ASC";
+		List<AttendanceRecordDto> list = new ArrayList<>();
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, empId);
+			pstmt.setInt(2, leaveItemId);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				while (rs.next()) {
+					AttendanceRecordDto dto = new AttendanceRecordDto();
+					dto.setInputDate(rs.getDate("INPUT_DATE"));
+					dto.setAttendName(rs.getString("ATTEND_NAME"));
+					dto.setItemName(rs.getString("ITEM_NAME"));
+					dto.setStartDate(rs.getDate("START_DATE"));
+					dto.setEndDate(rs.getDate("END_DATE"));
+					dto.setAttendValue(rs.getDouble("ATTEND_VALUE"));
+					dto.setNote(rs.getString("NOTE"));
+					list.add(dto);
+				}
+			}
+		}
+		return list;
+	}
 
 	private java.sql.Date dateToSQLDate(java.util.Date date) {
 		return date != null ? new java.sql.Date(date.getTime()) : null;
 	}
 
 	/* EmpAttendRecord테이블에 있는 기록을 수정하는 메서드 EmpAttendRecordテーブルにある記録を修正するメソッド */
-
 	// 근태기록 수정
 	public int update(Connection conn, EmployeeAttendance empAt) throws SQLException {
 		String sql = "UPDATE EMPLOYEE_ATTENDANCE SET ATTENDANCE_ITEM_ID=?, LEAVE_ITEM_ID=?, INPUT_DATE=?, START_DATE=?, END_DATE=?, ATTEND_VALUE=?, PAY_AMOUNT=?, NOTE=? WHERE EMPLOYEE_ATTENDANCE_ID=?";

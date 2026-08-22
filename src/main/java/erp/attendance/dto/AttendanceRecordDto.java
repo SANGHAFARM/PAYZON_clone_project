@@ -4,15 +4,16 @@ import java.util.Date;
 
 //근태기록 입력 폼에 사용할 dto
 public class AttendanceRecordDto {
-	int employeeAttendanceId;
-	Date inputDate;
-	int attendanceItemId;
-	String attendName;
-	Date startDate;
-	Date endDate;
-	double attendValue;
-	long payAmount;
-	String note;
+	private int employeeAttendanceId;
+	private Date inputDate;
+	private int attendanceItemId;
+	private String attendName;
+	private Date startDate;
+	private Date endDate;
+	private double attendValue;
+	private long payAmount;
+	private String note;
+	private String itemName;
 
 
 	
@@ -20,8 +21,9 @@ public class AttendanceRecordDto {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
 	public AttendanceRecordDto(int employeeAttendanceId, Date inputDate, int attendanceItemId, String attendName,
-			Date startDate, Date endDate, double attendValue, long payAmount, String note) {
+			Date startDate, Date endDate, double attendValue, long payAmount, String note, String itemName) {
 		super();
 		this.employeeAttendanceId = employeeAttendanceId;
 		this.inputDate = inputDate;
@@ -32,7 +34,9 @@ public class AttendanceRecordDto {
 		this.attendValue = attendValue;
 		this.payAmount = payAmount;
 		this.note = note;
+		this.itemName = itemName;
 	}
+
 	public int getEmployeeAttendanceId() {
 		return employeeAttendanceId;
 	}
@@ -89,6 +93,15 @@ public class AttendanceRecordDto {
 	public void setNote(String note) {
 		this.note = note;
 	}
+
+	public String getItemName() {
+		return itemName;
+	}
+
+	public void setItemName(String itemName) {
+		this.itemName = itemName;
+	}
+	
 	
 	
 }
