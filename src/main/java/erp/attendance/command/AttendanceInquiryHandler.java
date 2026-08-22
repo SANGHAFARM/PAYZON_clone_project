@@ -23,7 +23,7 @@ import mvc.command.CommandHandler;
 
 public class AttendanceInquiryHandler implements CommandHandler {
 
-	final String FORM_VIEW = "/WEB-INF/view/attendance/attendance-inquiry-test.jsp";
+	final String FORM_VIEW = "/WEB-INF/view/attendance/attendance-inquiry.jsp";
 
 	ListMonthlyAttendanceService listService = new ListMonthlyAttendanceService();
 	DepartmentDao departmentDao = DepartmentDao.getInstance();

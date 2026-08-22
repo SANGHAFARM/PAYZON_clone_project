@@ -17,7 +17,7 @@ import erp.settings.service.DepartmentPositionService;
 import mvc.command.CommandHandler;
 
 public class LeaveInquiryHandler implements CommandHandler {
-	final String FORM_VIEW = "/WEB-INF/view/attendance/leave-inquiry-test.jsp";
+	final String FORM_VIEW = "/WEB-INF/view/attendance/leave-inquiry.jsp";
 	AttendanceSettingService attendanceSettingService = AttendanceSettingService.getInstance();
 	DepartmentPositionService departmentPositionService = DepartmentPositionService.getInstance();
 	LeaveInquiryService leaveInquiryService = new LeaveInquiryService();

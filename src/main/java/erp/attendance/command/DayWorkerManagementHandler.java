@@ -30,7 +30,7 @@ import jdbc.connection.ConnectionProvider;
 import mvc.command.CommandHandler;
 
 public class DayWorkerManagementHandler implements CommandHandler {
-	private static final String FORM_VIEW = "/WEB-INF/view/attendance/day-worker-management-test.jsp";
+	private static final String FORM_VIEW = "/WEB-INF/view/attendance/day-worker-management.jsp";
 	private static final String SUCCESS_VIEW = "";
 
 	ListDailyWorkRecordService listService = new ListDailyWorkRecordService();
