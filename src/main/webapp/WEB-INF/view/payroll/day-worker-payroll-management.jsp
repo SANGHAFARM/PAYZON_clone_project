@@ -382,20 +382,20 @@
 						<div>
 							<strong>支給総額</strong>
 							<span>${selectedEmployee.totalPayment}</span>
-							<em>ウォン</em>
+							<em>円</em>
 						</div>
 
 						<div>
 							<strong>控除総額</strong>
 							<span>${selectedEmployee.totalDeduction}</span>
-							<em>ウォン</em>
+							<em>円</em>
 						</div>
 					</div>
 
 					<div class="net-payment">
 						<span>差引支給額：</span>
 						<strong>${selectedEmployee.netPayment}</strong>
-						<em>ウォン</em>
+						<em>円</em>
 					</div>
 
 					<div class="form-actions">

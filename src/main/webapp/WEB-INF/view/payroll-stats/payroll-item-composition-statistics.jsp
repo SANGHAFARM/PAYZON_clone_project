@@ -50,13 +50,13 @@
 				</section>
 				<div class="composition-table-wrap"><table class="composition-table"><caption>給与支払明細の設定</caption>
 					<thead><tr><th>支給項目</th><c:forEach var="item" items="${paymentItems}"><th><ui:code-label value="${item.name}" /></th></c:forEach><th>合計</th></tr></thead>
-					<tbody><tr><th>└金額（ウォン）</th><c:forEach var="item" items="${paymentItems}"><td>${item.amountText}</td></c:forEach><td class="total-cell">${totalPaymentText}</td></tr><tr><th>└構成比率</th><c:forEach var="item" items="${paymentItems}"><td>${item.ratioText}</td></c:forEach><td class="total-cell">100%</td></tr></tbody>
+					<tbody><tr><th>└金額（円）</th><c:forEach var="item" items="${paymentItems}"><td>${item.amountText}</td></c:forEach><td class="total-cell">${totalPaymentText}</td></tr><tr><th>└構成比率</th><c:forEach var="item" items="${paymentItems}"><td>${item.ratioText}</td></c:forEach><td class="total-cell">100%</td></tr></tbody>
 				</table></div>
 				<div class="composition-table-wrap"><table class="composition-table"><caption>給与控除項目の構成</caption>
 					<thead><tr><th class="deduction-head">控除項目</th><c:forEach var="item" items="${deductionItems}"><th><ui:code-label value="${item.name}" /></th></c:forEach><th>合計</th></tr></thead>
-					<tbody><tr><th>└金額（ウォン）</th><c:forEach var="item" items="${deductionItems}"><td>${item.amountText}</td></c:forEach><td class="total-cell">${totalDeductionText}</td></tr><tr><th>└構成比率</th><c:forEach var="item" items="${deductionItems}"><td>${item.ratioText}</td></c:forEach><td class="total-cell">100%</td></tr></tbody>
+					<tbody><tr><th>└金額（円）</th><c:forEach var="item" items="${deductionItems}"><td>${item.amountText}</td></c:forEach><td class="total-cell">${totalDeductionText}</td></tr><tr><th>└構成比率</th><c:forEach var="item" items="${deductionItems}"><td>${item.ratioText}</td></c:forEach><td class="total-cell">100%</td></tr></tbody>
 				</table></div>
-				<div class="composition-summary"><div><span>支給総額</span><strong>${totalPaymentText}ウォン</strong></div><div><span>控除総額</span><strong>${totalDeductionText}ウォン</strong></div><div class="composition-summary__net"><span>差引支給額</span><strong>${netPaymentText}ウォン</strong></div></div>
+				<div class="composition-summary"><div><span>支給総額</span><strong>${totalPaymentText}円</strong></div><div><span>控除総額</span><strong>${totalDeductionText}円</strong></div><div class="composition-summary__net"><span>差引支給額</span><strong>${netPaymentText}円</strong></div></div>
 			</section>
 		</main>
 

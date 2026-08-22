@@ -150,7 +150,7 @@
 										<c:forEach var="type" items="${employmentTypes}">
 											<option value="${type}"
 											${type eq employee.empType ? 'selected' : ''}><c:choose><c:when test="${type eq '정규직'}">正社員</c:when><c:when test="${type eq '계약직'}">契約社員</c:when><c:when test="${type eq '임시직'}">臨時社員</c:when><c:when test="${type eq '파견직'}">派遣社員</c:when><c:when test="${type eq '위촉직'}">委嘱社員</c:when><c:when test="${type eq '일용직'}">日雇い</c:when><c:otherwise><c:out value="${type}" /></c:otherwise></c:choose></option>
-										</c:forEach></select></label> <label class="field"><span><b>*</b> 氏名（韓国語）</span><input
+										</c:forEach></select></label> <label class="field"><span><b>*</b> 氏名</span><input
 									name="empNameKr"
 									value="<c:out value='${employee.empNameKr}' />" required
 									maxlength="50"></label><label class="field"><span>氏名（英語）</span><input
@@ -354,10 +354,10 @@
 											value="${item.trainInstitute}" maxlength="150"></td>
 												<td><label class="money-cell"><input
 														type="number" name="trainings[${row.index}].trainingCost"
-														value="${item.trainCost}"><span>ウォン</span></label></td>
+														value="${item.trainCost}"><span>円</span></label></td>
 												<td><label class="money-cell"><input
 														type="number" name="trainings[${row.index}].refundCost"
-														value="${item.refundCost}"><span>ウォン</span></label></td>
+														value="${item.refundCost}"><span>円</span></label></td>
 											</tr>
 										</c:forEach>
 									</tbody>
@@ -521,7 +521,7 @@
 												value="${suretyInsurance.insuranceNo}"></td>
 											<td><label class="money-cell"><input
 													type="number" name="suretyInsurance.amount"
-													value="${suretyInsurance.insuranceAmt}"><span>ウォン</span></label></td>
+													value="${suretyInsurance.insuranceAmt}"><span>円</span></label></td>
 											<td><input type="date" lang="ja-JP" name="suretyInsurance.startDate"
 												value="<fmt:formatDate value='${suretyInsurance.signupDate}' pattern='yyyy-MM-dd' />"></td>
 											<td><input type="date" lang="ja-JP" name="suretyInsurance.endDate"
@@ -558,7 +558,7 @@
 												value="${guarantor.juminNo}"></td>
 											<td><label class="money-cell"><input
 													type="number" name="guarantor.amount"
-													value="${guarantor.guaranteeAmt}"><span>ウォン</span></label></td>
+													value="${guarantor.guaranteeAmt}"><span>円</span></label></td>
 											<td><input type="date" lang="ja-JP" name="guarantor.startDate"
 												value="<fmt:formatDate value='${guarantor.guaranteeDate}' pattern='yyyy-MM-dd' />"></td>
 											<td><input type="date" lang="ja-JP" name="guarantor.endDate"
@@ -598,7 +598,7 @@
 											<td><input name="afterRetireContact"
 												value="${employee.afterRetireContact}"></td>
 											<td><label class="money-cell"><input
-													value="<fmt:formatNumber value='${latestRetirementBenefit.netPayment}' pattern='#,##0' />" readonly><span>ウォン</span></label></td>
+													value="<fmt:formatNumber value='${latestRetirementBenefit.netPayment}' pattern='#,##0' />" readonly><span>円</span></label></td>
 											<td><a class="table-button"
 												href="${pageContext.request.contextPath}/retirement/payslip.do?empId=${employee.employeeId}">仕様書
 													ダウンロード</a></td>

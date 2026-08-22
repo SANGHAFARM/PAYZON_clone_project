@@ -65,7 +65,7 @@
 				<tr><th class="category deduction-category" rowspan="2"><span>控除</span><span>項目</span></th><td colspan="3" class="empty-item">登録された控除項目はありません。</td></tr>
 				</c:otherwise></c:choose>
 				<tr class="total-row deduction-total"><th colspan="2">控除総額</th><td class="amount">${selectedEmployee.totalDeduction}</td></tr>
-				<tr class="net-row"><th colspan="3">差引支給額</th><td class="amount">${selectedEmployee.netPayment}ウォン</td></tr>
+				<tr class="net-row"><th colspan="3">差引支給額</th><td class="amount">${selectedEmployee.netPayment}円</td></tr>
 				</tbody></table></section>
 
 				<p class="closing-message">あなたの労苦に感謝し、お疲れ様でした。</p>

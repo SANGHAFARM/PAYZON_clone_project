@@ -28,7 +28,7 @@ public class HomeHandler implements CommandHandler {
 		HomeDashboard dashboard = homeService.getDashboard();
 		req.setAttribute("dashboard", dashboard);
 		req.setAttribute("today", today.format(
-				DateTimeFormatter.ofPattern("yyyy년 M월 d일 EEEE", Locale.KOREAN)));
+				DateTimeFormatter.ofPattern("yyyy年M月d日 EEEE", Locale.JAPANESE)));
 		req.setAttribute("currentYear", today.getYear());
 		req.setAttribute("currentMonth", today.getMonthValue());
 		return VIEW;

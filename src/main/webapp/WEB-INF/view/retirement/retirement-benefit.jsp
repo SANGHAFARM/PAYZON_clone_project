@@ -48,7 +48,7 @@
                     <td><button type="submit" name="activeEmployeeId" value="${draftEmployee.employeeId}" form="draftEmployeeForm"><c:out value="${draftEmployee.departmentName}" /></button></td>
                     <td><button type="submit" name="activeEmployeeId" value="${draftEmployee.employeeId}" form="draftEmployeeForm">${loadedDraft ? loadedBenefit.startDate : '-'}<c:if test="${loadedDraft}"> ~ ${loadedBenefit.endDate}</c:if></button></td>
                     <td><button type="submit" name="activeEmployeeId" value="${draftEmployee.employeeId}" form="draftEmployeeForm">${loadedDraft ? loadedBenefit.serviceDays : '-'}<c:if test="${loadedDraft}">日</c:if></button></td>
-                    <td class="amount"><button type="submit" name="activeEmployeeId" value="${draftEmployee.employeeId}" form="draftEmployeeForm"><c:choose><c:when test="${loadedDraft}"><fmt:formatNumber value="${loadedBenefit.netPayment}" />ウォン</c:when><c:otherwise>0ウォン</c:otherwise></c:choose></button></td>
+                    <td class="amount"><button type="submit" name="activeEmployeeId" value="${draftEmployee.employeeId}" form="draftEmployeeForm"><c:choose><c:when test="${loadedDraft}"><fmt:formatNumber value="${loadedBenefit.netPayment}" />円</c:when><c:otherwise>0円</c:otherwise></c:choose></button></td>
                     <td><button type="submit" name="activeEmployeeId" value="${draftEmployee.employeeId}" form="draftEmployeeForm">${loadedDraft ? loadedBenefit.paymentMethod : '-'}</button></td>
                 </tr>
             </c:forEach>
@@ -66,7 +66,7 @@
                     <td><a href="${employeeBenefitUrl}">${item.departmentName}</a></td>
                     <td><a href="${employeeBenefitUrl}">${item.calculationStartDate} ~ ${item.calculationEndDate}</a></td>
                     <td><a href="${employeeBenefitUrl}">${item.serviceDays}日</a></td>
-                    <td class="amount"><a href="${employeeBenefitUrl}">${item.netPayment}ウォン</a></td>
+                    <td class="amount"><a href="${employeeBenefitUrl}">${item.netPayment}円</a></td>
                     <td><a href="${employeeBenefitUrl}">${item.paymentMethod}</a></td>
                 </tr>
             </c:forEach>
@@ -134,7 +134,7 @@
         </section>
 
         <section class="original-block payment-block">
-            <table class="original-table payment-table"><thead><tr><th>課税対象退職給付</th><th>差引源泉徴収税額</th><th>差引支給額</th><th>支給方法</th><th>支給日</th></tr></thead><tbody><tr><td><strong>${showCalculationResult ? retirementBenefit.taxablePayment : ''}</strong><c:if test="${showCalculationResult}"> ウォン</c:if></td><td><strong>${showCalculationResult ? retirementBenefit.withholdingTax : ''}</strong><c:if test="${showCalculationResult}"> ウォン</c:if></td><td><strong>${showCalculationResult ? retirementBenefit.netPayment : ''}</strong><c:if test="${showCalculationResult}"> ウォン</c:if></td><td><input type="text" name="paymentMethod" value="${retirementBenefit.paymentMethod}"></td><td><input type="date" lang="ja-JP" name="paymentDate" value="${retirementBenefit.paymentDate}"></td></tr></tbody></table>
+            <table class="original-table payment-table"><thead><tr><th>課税対象退職給付</th><th>差引源泉徴収税額</th><th>差引支給額</th><th>支給方法</th><th>支給日</th></tr></thead><tbody><tr><td><strong>${showCalculationResult ? retirementBenefit.taxablePayment : ''}</strong><c:if test="${showCalculationResult}"> 円</c:if></td><td><strong>${showCalculationResult ? retirementBenefit.withholdingTax : ''}</strong><c:if test="${showCalculationResult}"> 円</c:if></td><td><strong>${showCalculationResult ? retirementBenefit.netPayment : ''}</strong><c:if test="${showCalculationResult}"> 円</c:if></td><td><input type="text" name="paymentMethod" value="${retirementBenefit.paymentMethod}"></td><td><input type="date" lang="ja-JP" name="paymentDate" value="${retirementBenefit.paymentDate}"></td></tr></tbody></table>
         </section>
         <div class="bottom-actions"><button type="submit" class="button button-primary">保存</button><a href="${pageContext.request.contextPath}/retirement/benefit.do?paymentYear=${selectedYear}" class="button button-muted">内容を消去する</a></div>
     </form>

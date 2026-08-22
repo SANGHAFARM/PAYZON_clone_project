@@ -140,7 +140,7 @@
 									</c:if>
 								</tbody>
 							</table>
-							<div class="panel-total"><strong>支給総額</strong><span><c:out value="${paymentTotals.grossPayment}" /> ウォン</span></div>
+							<div class="panel-total"><strong>支給総額</strong><span><c:out value="${paymentTotals.grossPayment}" /> 円</span></div>
 						</section>
 
 						<section class="amount-panel deduction-panel">
@@ -156,19 +156,19 @@
 									</c:if>
 								</tbody>
 							</table>
-							<div class="panel-total"><strong>控除総額</strong><span><c:out value="${paymentTotals.totalDeduction}" /> ウォン</span></div>
+							<div class="panel-total"><strong>控除総額</strong><span><c:out value="${paymentTotals.totalDeduction}" /> 円</span></div>
 						</section>
 					</div>
 					</c:when>
 					<c:otherwise>
 					<div class="amount-panels business-panels">
-						<section class="amount-panel give-panel"><header><h2>支給項目</h2><a class="item-manage-button" href="#give-item-manager">項目管理</a></header><table class="input-table"><thead><tr><th>項目</th><th>金額</th></tr></thead><tbody><tr class="amount-row"><th>事業所得</th><td><input type="number" name="businessIncome" value="${businessPayment.businessIncome}"></td></tr><tr class="calculation-row"><th>計算方法</th><td><input type="text" name="businessCalc" value="${businessPayment.businessCalculationMethod}" placeholder="計算方法"></td></tr><tr class="amount-row"><th>その他の収入</th><td><input type="number" name="otherIncome" value="${businessPayment.otherIncome}"></td></tr><tr class="calculation-row"><th>計算方法</th><td><input type="text" name="otherCalc" value="${businessPayment.otherCalculationMethod}" placeholder="計算方法"></td></tr></tbody></table><div class="panel-total"><strong>支給総額</strong><span><c:out value="${paymentTotals.grossPayment}" /> ウォン</span></div></section>
-						<section class="amount-panel deduction-panel"><header><h2>控除項目</h2><a class="item-manage-button" href="#deduction-item-manager">項目管理</a></header><table class="input-table"><thead><tr><th>項目</th><th>金額</th></tr></thead><tbody><tr class="amount-row"><th>所得税</th><td><input type="number" name="businessTax" value="${businessPayment.incomeTax}"></td></tr><tr class="calculation-row"><th>計算方法</th><td><input type="text" name="businessTaxCalc" value="${businessPayment.incomeTaxCalculationMethod}" placeholder="計算方法"></td></tr><tr class="amount-row"><th>地方所得税</th><td><input type="number" name="businessLocalTax" value="${businessPayment.localIncomeTax}"></td></tr><tr class="calculation-row"><th>計算方法</th><td><input type="text" name="businessLocalTaxCalc" value="${businessPayment.localIncomeTaxCalculationMethod}" placeholder="計算方法"></td></tr></tbody></table><div class="panel-total"><strong>控除総額</strong><span><c:out value="${paymentTotals.totalDeduction}" /> ウォン</span></div></section>
+						<section class="amount-panel give-panel"><header><h2>支給項目</h2><a class="item-manage-button" href="#give-item-manager">項目管理</a></header><table class="input-table"><thead><tr><th>項目</th><th>金額</th></tr></thead><tbody><tr class="amount-row"><th>事業所得</th><td><input type="number" name="businessIncome" value="${businessPayment.businessIncome}"></td></tr><tr class="calculation-row"><th>計算方法</th><td><input type="text" name="businessCalc" value="${businessPayment.businessCalculationMethod}" placeholder="計算方法"></td></tr><tr class="amount-row"><th>その他の収入</th><td><input type="number" name="otherIncome" value="${businessPayment.otherIncome}"></td></tr><tr class="calculation-row"><th>計算方法</th><td><input type="text" name="otherCalc" value="${businessPayment.otherCalculationMethod}" placeholder="計算方法"></td></tr></tbody></table><div class="panel-total"><strong>支給総額</strong><span><c:out value="${paymentTotals.grossPayment}" /> 円</span></div></section>
+						<section class="amount-panel deduction-panel"><header><h2>控除項目</h2><a class="item-manage-button" href="#deduction-item-manager">項目管理</a></header><table class="input-table"><thead><tr><th>項目</th><th>金額</th></tr></thead><tbody><tr class="amount-row"><th>所得税</th><td><input type="number" name="businessTax" value="${businessPayment.incomeTax}"></td></tr><tr class="calculation-row"><th>計算方法</th><td><input type="text" name="businessTaxCalc" value="${businessPayment.incomeTaxCalculationMethod}" placeholder="計算方法"></td></tr><tr class="amount-row"><th>地方所得税</th><td><input type="number" name="businessLocalTax" value="${businessPayment.localIncomeTax}"></td></tr><tr class="calculation-row"><th>計算方法</th><td><input type="text" name="businessLocalTaxCalc" value="${businessPayment.localIncomeTaxCalculationMethod}" placeholder="計算方法"></td></tr></tbody></table><div class="panel-total"><strong>控除総額</strong><span><c:out value="${paymentTotals.totalDeduction}" /> 円</span></div></section>
 					</div>
 					</c:otherwise>
 					</c:choose>
 
-					<div class="net-payment"><span>差引支給額：</span><strong><c:out value="${paymentTotals.netPayment}" /></strong><em>ウォン</em></div>
+					<div class="net-payment"><span>差引支給額：</span><strong><c:out value="${paymentTotals.netPayment}" /></strong><em>円</em></div>
 					<div class="form-actions"><button type="submit" class="button button-primary">保存</button><button type="reset" class="button button-neutral button-clear">内容を消去する</button></div>
 				</form>
 			</div>
@@ -217,11 +217,11 @@
 					<label><span>支給項目</span><input type="text" name="itemName" placeholder="お支払い項目を入力してください。"></label>
 					<div class="item-radio-line"><span>課税可</span><label><input type="radio" name="taxType" value="TAX" checked> 全体課税</label><label><input type="radio" name="taxType" value="FREE"> 非課税</label></div>
 					<label class="tax-free-field"><span>非課税</span><select name="taxFreeName"><option value="">非課税/減免コードを選択</option><c:forEach var="taxFreeItem" items="${taxFreeItems}"><option value="${taxFreeItem.taxFreeCode}"><c:out value="${taxFreeItem.taxFreeName}" /> (<c:out value="${taxFreeItem.taxFreeCode}" />)</option></c:forEach></select></label>
-					<label class="tax-free-field"><span>非課税限度額</span><span class="unit-field"><input type="number" name="taxFreeLimit" value="0" min="0"><em>ウォン</em></span></label>
+					<label class="tax-free-field"><span>非課税限度額</span><span class="unit-field"><input type="number" name="taxFreeLimit" value="0" min="0"><em>円</em></span></label>
 					<label><span>計算方法</span><input type="text" name="calculationMethod" placeholder="計算方法を入力してください。"></label>
-					<label><span>端数処理単位</span><select name="roundingUnit"><option value="">選択してください。</option><option value="1">1ウォン</option><option value="10">10ウォン</option><option value="100">100ウォン</option></select></label>
+					<label><span>端数処理単位</span><select name="roundingUnit"><option value="">選択してください。</option><option value="1">1円</option><option value="10">10円</option><option value="100">100円</option></select></label>
 					<label><span>勤怠連携/一括支給</span><select name="attendanceLink"><option value="">選択してください。</option><c:forEach var="attendanceItem" items="${attendanceItems}"><c:if test="${attendanceItem.useYn eq 'Y'}"><option value="${attendanceItem.attendanceItemId}"><c:out value="${attendanceItem.attendName}" /></option></c:if></c:forEach><option value="BATCH">一括支給</option></select></label>
-					<label class="batch-amount-field"><span>一括支払額</span><span class="unit-field"><input type="number" name="batchAmount" value="0" min="0"><em>ウォン</em></span></label>
+					<label class="batch-amount-field"><span>一括支払額</span><span class="unit-field"><input type="number" name="batchAmount" value="0" min="0"><em>円</em></span></label>
 				</div>
 				<div class="modal-actions"><button class="button button-primary" name="action" value="insert">追加</button><button class="button button-neutral" name="action" value="update">修正</button><button class="button button-neutral" name="action" value="requestDelete">削除</button></div>
 			</form>
@@ -258,7 +258,7 @@
 				<input type="hidden" name="paymentMonth" value="${selectedMonth}">
 				<input type="hidden" name="paymentRound" value="${selectedRound}">
 				<input type="hidden" name="incomeType" value="${incomeMode}">
-				<div class="item-modal-body"><p class="item-guide">控除項目別に編集できます。計算の変更は、給与明細の設定で行ってください。</p><div class="item-select-line"><select name="deductionItemId"><option value="">控除項目の選択</option><c:forEach var="item" items="${allDeductionItems}"><option value="${item.itemCode}"><ui:code-label value="${item.itemName}" /></option></c:forEach></select><button type="submit" name="action" value="requestDeleteAll" class="text-delete">すべての項目を削除</button></div><label><span>控除項目</span><input type="text" name="itemName" placeholder="控除項目を入力してください。"></label><label><span>計算方法</span><input type="text" name="calculationMethod" placeholder="計算方法を入力してください。"></label><label><span>端数処理単位</span><select name="roundingUnit"><option value="">選択してください。</option><option value="1">1ウォン</option><option value="10">10ウォン</option><option value="100">100ウォン</option></select></label><label><span>備考</span><input type="text" name="note"></label></div>
+				<div class="item-modal-body"><p class="item-guide">控除項目別に編集できます。計算の変更は、給与明細の設定で行ってください。</p><div class="item-select-line"><select name="deductionItemId"><option value="">控除項目の選択</option><c:forEach var="item" items="${allDeductionItems}"><option value="${item.itemCode}"><ui:code-label value="${item.itemName}" /></option></c:forEach></select><button type="submit" name="action" value="requestDeleteAll" class="text-delete">すべての項目を削除</button></div><label><span>控除項目</span><input type="text" name="itemName" placeholder="控除項目を入力してください。"></label><label><span>計算方法</span><input type="text" name="calculationMethod" placeholder="計算方法を入力してください。"></label><label><span>端数処理単位</span><select name="roundingUnit"><option value="">選択してください。</option><option value="1">1円</option><option value="10">10円</option><option value="100">100円</option></select></label><label><span>備考</span><input type="text" name="note"></label></div>
 				<div class="modal-actions"><button class="button button-primary" name="action" value="insert">追加</button><button class="button button-neutral" name="action" value="update">修正</button><button class="button button-neutral" name="action" value="requestDelete">削除</button></div>
 			</form>
 		</section>

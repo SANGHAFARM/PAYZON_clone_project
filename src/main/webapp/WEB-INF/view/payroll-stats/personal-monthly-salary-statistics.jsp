@@ -50,7 +50,7 @@
 								</div>
 							</div>
 							<strong>${stat.month}月</strong>
-							<div class="annual-chart__tooltip" role="tooltip"><b>${stat.month}月</b><span><i class="tooltip-dot tooltip-dot--net"></i>差引支給額（千ウォン） <em>${stat.netSalaryText}</em></span><span><i class="tooltip-dot tooltip-dot--deduction"></i>控除額（千ウォン） <em>${stat.deductionText}</em></span></div>
+							<div class="annual-chart__tooltip" role="tooltip"><b>${stat.month}月</b><span><i class="tooltip-dot tooltip-dot--net"></i>差引支給額（千円） <em>${stat.netSalaryText}</em></span><span><i class="tooltip-dot tooltip-dot--deduction"></i>控除額（千円） <em>${stat.deductionText}</em></span></div>
 						</div>
 					</c:forEach>
 				</div>
@@ -61,9 +61,9 @@
 					<caption> ${selectedEmployeeName}社員の${selectedYear}年月別個人給与の現況</caption>
 					<thead><tr><th scope="col">区分</th><c:forEach var="stat" items="${monthlySalaryStats}"><th scope="col">${stat.month}月</th></c:forEach><th scope="col">合計</th></tr></thead>
 					<tbody>
-						<tr class="statistics-table__main-row"><th scope="row">月給与額（千ウォン）</th><c:forEach var="stat" items="${monthlySalaryStats}"><td>${stat.monthlySalaryText}</td></c:forEach><td class="statistics-total">${totalSalaryYearText}</td></tr>
-						<tr><th scope="row">└控除額（千ウォン）</th><c:forEach var="stat" items="${monthlySalaryStats}"><td>${stat.deductionText}</td></c:forEach><td class="statistics-total">${totalDeductionYearText}</td></tr>
-						<tr class="statistics-table__main-row"><th scope="row">└差引支給額（千ウォン）</th><c:forEach var="stat" items="${monthlySalaryStats}"><td>${stat.netSalaryText}</td></c:forEach><td class="statistics-total">${totalNetYearText}</td></tr>
+						<tr class="statistics-table__main-row"><th scope="row">月給与額（千円）</th><c:forEach var="stat" items="${monthlySalaryStats}"><td>${stat.monthlySalaryText}</td></c:forEach><td class="statistics-total">${totalSalaryYearText}</td></tr>
+						<tr><th scope="row">└控除額（千円）</th><c:forEach var="stat" items="${monthlySalaryStats}"><td>${stat.deductionText}</td></c:forEach><td class="statistics-total">${totalDeductionYearText}</td></tr>
+						<tr class="statistics-table__main-row"><th scope="row">└差引支給額（千円）</th><c:forEach var="stat" items="${monthlySalaryStats}"><td>${stat.netSalaryText}</td></c:forEach><td class="statistics-total">${totalNetYearText}</td></tr>
 					</tbody>
 				</table>
 			</div>
