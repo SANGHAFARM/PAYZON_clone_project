@@ -22,7 +22,7 @@
             <header class="page-heading">
                 <div>
                     <p>基本設定</p>
-                    <h1>休暇/勤労設定</h1>
+                    <h1>休暇/勤怠設定</h1>
                 </div>
             </header>
             <section class="setting-card" id="leave-settings">
@@ -38,7 +38,7 @@
                                         <th>休暇項目</th>
                                         <th>適用期間</th>
                                         <th>社員別休暇日数</th>
-                                        <th>使用可</th>
+                                        <th>使用有無</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -93,7 +93,7 @@
                                     ${empty selectedLeaveItem.useYn or selectedLeaveItem.useYn eq 'Y' ? 'checked' : ''}>
                                     使用</label><label><input type="radio" name="useYn" value="N"
                                     ${selectedLeaveItem.useYn eq 'N' ? 'checked' : ''}>
-                                    無効</label>
+                                    使用しない</label>
                             </div>
                         </div>
                         <div class="editor-actions">
@@ -180,7 +180,7 @@
                                 </c:forEach></select></label> <label class="editor-field"><span>労働時間連携</span><select
                             name="workHourType"><option value="">選択してください。</option>
                                 <option value="소정근로"
-                                    ${selectedAttendItem.workHourType eq '소정근로' ? 'selected' : ''}>所定の労働</option>
+                                    ${selectedAttendItem.workHourType eq '소정근로' ? 'selected' : ''}>所定労働</option>
                                 <option value="연장근로"
                                     ${selectedAttendItem.workHourType eq '연장근로' ? 'selected' : ''}>延長労働</option>
                                 <option value="야간근로"
@@ -194,7 +194,7 @@
                                     ${empty selectedAttendItem.useYn or selectedAttendItem.useYn eq 'Y' ? 'checked' : ''}>
                                     使用</label><label><input type="radio" name="useYn" value="N"
                                     ${selectedAttendItem.useYn eq 'N' ? 'checked' : ''}>
-                                    無効</label>
+                                    使用しない</label>
                             </div>
                         </div>
                         <div class="editor-actions">

@@ -61,7 +61,7 @@
                                         alt="社員の写真">
                                 </c:when>
                                 <c:otherwise>
-                                    <span>写真待ち</span>
+                                    <span>写真を登録してください</span>
                                 </c:otherwise>
                             </c:choose>
                         </div>
@@ -357,12 +357,12 @@
                                         value="<c:out value='${employee.npMonthlyBase}' />">円</label>
                                 </div>
                                 <div class="detail-row">
-                                    <span>健康保険保守月額</span><label><input type="number"
+                                    <span>健康保険報酬月額</span><label><input type="number"
                                         min="0" name="hiMonthlyBase"
                                         value="<c:out value='${employee.hiMonthlyBase}' />">円</label>
                                 </div>
                                 <div class="detail-row">
-                                    <span>雇用保険保守月額</span><label><input type="number"
+                                    <span>雇用保険報酬月額</span><label><input type="number"
                                         min="0" name="eiMonthlyBase"
                                         value="<c:out value='${employee.eiMonthlyBase}' />">円</label>
                                 </div>
@@ -450,7 +450,7 @@
                                             <th>障害有無</th>
                                             <th>人的控除</th>
                                             <th>健康保険</th>
-                                            <th>同居可</th>
+                                            <th>同居有無</th>
                                             <th>給与所得税</th>
                                             <th>20歳未満の子供</th>
                                         </tr>
@@ -517,7 +517,7 @@
                                             <th>卒業年月</th>
                                             <th>学校名</th>
                                             <th>専攻</th>
-                                            <th></th>
+                                            <th>履修</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -621,8 +621,8 @@
                                             <th>服務期間（から）</th>
                                             <th>服務期間（まで）</th>
                                             <th>最終階級</th>
-                                            <th>病科</th>
-                                            <th>未了理由</th>
+                                            <th>兵科</th>
+                                            <th>兵役未了理由</th>
                                         </tr>
                                     </thead>
                                     <tbody>

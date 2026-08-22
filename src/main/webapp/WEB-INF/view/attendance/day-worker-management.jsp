@@ -119,7 +119,7 @@
 
                     <h2>日雇い勤務記録を入力</h2>
                     <div class="form-fields">
-                        <label><span>労働日</span> <input type="date" lang="ja-JP"
+                        <label><span>勤務日</span> <input type="date" lang="ja-JP"
                             name="workDate" required
                             value="${empty editId ? today : workDate}"></label> <label><span>現場/プロジェクト</span><span
                             class="project-control"><select name="projectId">
@@ -133,10 +133,10 @@
                                     </c:forEach>
                                 </select><a class="button button-project" href="#project-manager">リスト管理</a></span>
 
-                        </label> <label> <span>一日あたり</span> <span class="amount-control">
+                        </label> <label> <span>日当</span> <span class="amount-control">
                                 <input type="number" id="dailyPay" name="dailyPay" min="0"
                                 value="${dailyPay}" placeholder="日給を入力してください"> <em>円</em>
-                        </span></label> <label> <span>支払い率</span> <input type="number"
+                        </span></label> <label> <span>支給率</span> <input type="number"
                             id="payRate" name="payRate" min="0" step="0.1"
                             value="${empty editId ? 1.0 : payRate}"></label> <label
                             class="calculated"> <span>所得税</span> <span

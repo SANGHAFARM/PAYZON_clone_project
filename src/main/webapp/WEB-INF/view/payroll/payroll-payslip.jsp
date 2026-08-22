@@ -32,7 +32,7 @@
             <div class="period-controls">
                 <div class="period-field"><label for="paymentYear">帰属年</label><select id="paymentYear" name="paymentYear"><option value="">選択</option><c:forEach var="year" items="${paymentYears}"><option value="${year}" <c:if test="${year eq selectedYear}">selected</c:if>>${year}年</option></c:forEach></select></div>
                 <div class="period-field month-field"><label for="paymentMonth">帰属月</label><select id="paymentMonth" name="paymentMonth"><option value="">選択</option><c:forEach var="month" begin="1" end="12"><option value="${month}" <c:if test="${month eq selectedMonth}">selected</c:if>>${month}月</option></c:forEach></select></div>
-                <div class="period-field"><label for="paymentRound">給与回次</label><select id="paymentRound" name="paymentRound"><option value="">回次を選択</option><c:forEach var="round" begin="1" end="10"><option value="${round}" <c:if test="${round eq selectedRound}">selected</c:if>>給与 ${round}回</option></c:forEach></select></div>
+                <div class="period-field"><label for="paymentRound">給与回数</label><select id="paymentRound" name="paymentRound"><option value="">回目を選択</option><c:forEach var="round" begin="1" end="10"><option value="${round}" <c:if test="${round eq selectedRound}">selected</c:if>>${round}給与回目</option></c:forEach></select></div>
                 <button type="submit" class="button button-primary">照会</button>
             </div>
         </form>

@@ -28,7 +28,7 @@
             <header class="page-heading">
                 <div>
                     <p class="page-heading__path">基本設定</p>
-                    <h1>ユーザー情報</h1>
+                    <h1>利用者情報</h1>
                 </div>
                 <p class="page-heading__notice">
                     <strong>*</strong> 表示は必須入力です。
@@ -214,7 +214,7 @@
                     </article>
                     <article class="asset-card">
                         <div class="asset-card__title">
-                            <h2>塗装登録</h2>
+                            <h2>印鑑登録</h2>
                         </div>
                         <div class="asset-card__body">
                             <div class="asset-preview">

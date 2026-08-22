@@ -34,7 +34,7 @@
                 <option value="all" ${param.searchTarget eq 'all' ? 'selected' : ''}>全体</option>
             </select>
             <input type="search" name="keyword" value="${param.keyword}"
-                    placeholder="検索語を入力" aria-label="検索語">
+                    placeholder="検索キーワードを入力" aria-label="検索語">
             <button type="submit" class="search-button">検索</button>
             <a class="all-view" href="${pageContext.request.contextPath}/retirement/process.do">全体を見る</a>
             <select class="status-filter" name="status" aria-label="在職状況">
@@ -114,7 +114,7 @@
                         <label><span>退職理由</span><input type="text" name="retirementReason" value="${employee.retirementReason}" ${employee.status eq 'RETIRED' ? 'readonly' : ''}></label>
                         <label><span>退職後の連絡先</span><input type="text" name="afterContact" value="${employee.afterContact}" ${employee.status eq 'RETIRED' ? 'readonly' : ''}></label>
                     </div>
-                    <div class="retirement-modal__actions"><button type="submit" class="button button-primary">保存</button></div>
+                    <div class="retirement-modal__actions"><button type="submit" class="button button-primary">退職処理取り消し</button></div>
                 </form>
             </div>
         </section>

@@ -42,10 +42,10 @@
                 </select>
             </div>
             <div class="period-field">
-                <label for="paymentRound">給与回次</label>
+                <label for="paymentRound">給与回数</label>
                 <select id="paymentRound" name="paymentRound">
                     <c:forEach var="round" begin="1" end="10">
-                        <option value="${round}" <c:if test="${round eq selectedRound}">selected</c:if>>給与 ${round}回</option>
+                        <option value="${round}" <c:if test="${round eq selectedRound}">selected</c:if>>${round}給与回目</option>
                     </c:forEach>
                 </select>
             </div>
@@ -71,7 +71,7 @@
             <div class="employee-area">
                 <div class="section-toolbar">
                     <div class="toolbar-buttons toolbar-buttons-left">
-                        <a class="button button-outline" href="#previous-payment-modal">過去の給与を呼び出す</a>
+                        <a class="button button-outline" href="#previous-payment-modal">過去の給与呼び出し</a>
                         <a class="button button-primary" href="#employee-add">新規追加</a>
                     </div>
                     <div class="toolbar-buttons toolbar-buttons-right">
@@ -243,7 +243,7 @@
                 <input type="hidden" name="paymentDate" value="${paymentDate}">
                 <div class="previous-payment-body">
                     <select name="previousPaymentPeriod" required>
-                        <option value="">対象年月・回次を選択</option>
+                        <option value="">対象年月・回目を選択</option>
                         <c:forEach var="period" items="${previousPaymentPeriods}"><option value="${period.periodId}"><c:out value="${period.periodName}" /></option></c:forEach>
                     </select>
                     <button type="submit" class="button button-primary">給与情報を読み込む</button>

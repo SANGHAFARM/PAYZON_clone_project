@@ -67,12 +67,12 @@
             </div>
 
             <div class="period-field">
-                <label for="paymentRound">給与回次</label>
+                <label for="paymentRound">給与回数</label>
                 <select id="paymentRound" name="paymentRound">
                     <c:forEach var="round" begin="1" end="10">
                         <option value="${round}"
                             <c:if test="${round eq selectedRound}">selected</c:if>>
-                            給与-${round}車
+                            給与-${round}次
                         </option>
                     </c:forEach>
                 </select>
@@ -228,8 +228,8 @@
                                     <thead>
                                         <tr>
                                             <th>日付</th>
-                                            <th>支払い率</th>
-                                            <th>支払額</th>
+                                            <th>支給率</th>
+                                            <th>支給額</th>
                                             <th>所得税</th>
                                             <th>地方所得税</th>
                                         </tr>
@@ -367,7 +367,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>商調会費</th>
+                                        <th>互助会費</th>
                                         <td>
                                     <input type="number"
                                         name="mutualAidFee"

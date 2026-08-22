@@ -28,7 +28,7 @@
 
             <section class="setting-card" id="payment-settings">
                 <div class="card-title">
-                    <h2>支払い項目の設定</h2>
+                    <h2>支給項目の設定</h2>
                     <span class="required-item-guide"><b>*</b> 基本項目</span>
                 </div>
                 <div class="setting-layout">
@@ -46,11 +46,11 @@
                                 <thead>
                                     <tr>
                                         <th>支給項目</th>
-                                        <th>課税可</th>
+                                        <th>課税有無</th>
                                         <th>非課税限度額</th>
                                         <th>端数処理単位</th>
                                         <th>勤怠連携/一括支給</th>
-                                        <th>使用可</th>
+                                        <th>使用有無</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -108,7 +108,7 @@
                                 <c:otherwise>
                                     <input name="payName" maxlength="50"
                                         value="<c:out value='${selectedPaymentItem.payName}' />"
-                                        placeholder="お支払い項目を入力してください" required>
+                                        placeholder="支給項目を入力してください" required>
                                 </c:otherwise>
                             </c:choose>
                         </label>
@@ -124,15 +124,14 @@
                             </div>
                         </div>
                         <div class="editor-field tax-free-field tax-free-selector-field">
-                            <span>非課税</span>
+                            <span>非課税名</span>
                             <div class="input-with-button">
                                 <input name="taxFreeName"
                                     value="<c:out value='${selectedPaymentItem.taxFreeName}' />"
                                     readonly><a href="#tax-free-modal">選択</a>
                             </div>
                         </div>
-                        <label class="editor-field tax-free-field standard-tax-free-field"><span>非課税
-                                限度額</span>
+                        <label class="editor-field tax-free-field standard-tax-free-field"><span>非課税限度額</span>
                         <div class="amount-input">
                                 <input name="taxFreeLimit" inputmode="numeric" readonly
                                     value="<c:out value='${selectedPaymentItem.taxFreeLimit}' />"><i>円</i>
@@ -173,13 +172,13 @@
                                     value="<c:out value='${selectedPaymentItem.bulkPayAmount}' />"><i>円</i>
                             </div></label>
                         <div class="editor-field">
-                            <span>使用可</span>
+                            <span>使用有無</span>
                             <div class="radio-line use-radio-line">
                                 <label><input type="radio" name="useYn" value="Y"
                                     ${empty selectedPaymentItem.useYn or selectedPaymentItem.useYn eq 'Y' ? 'checked' : ''}>
                                     使用</label><label><input type="radio" name="useYn" value="N"
                                     ${selectedPaymentItem.useYn eq 'N' ? 'checked' : ''}>
-                                    無効</label>
+                                    使用しない</label>
                             </div>
                         </div>
                         <div class="editor-actions">
@@ -211,7 +210,7 @@
                                     <tr>
                                         <th>控除項目</th>
                                         <th>端数処理単位</th>
-                                        <th>使用可</th>
+                                        <th>使用有無</th>
                                         <th>備考</th>
                                     </tr>
                                 </thead>
@@ -286,13 +285,13 @@
                             name="note"
                             value="<c:out value='${deductionNoteLabel}' />"></label>
                         <div class="editor-field">
-                            <span>使用可</span>
+                            <span>使用有無</span>
                             <div class="radio-line use-radio-line">
                                 <label><input type="radio" name="useYn" value="Y"
                                     ${empty selectedDeductionItem.useYn or selectedDeductionItem.useYn eq 'Y' ? 'checked' : ''}>
                                     使用</label><label><input type="radio" name="useYn" value="N"
                                     ${selectedDeductionItem.useYn eq 'N' ? 'checked' : ''}>
-                                    無効</label>
+                                    使用しない</label>
                             </div>
                         </div>
                         <div class="editor-actions">

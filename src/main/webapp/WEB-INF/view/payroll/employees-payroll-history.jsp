@@ -30,7 +30,7 @@
                     <colgroup><col class="month-col"><col><col><col><col><col><col><col><col><col><col></colgroup>
                     <thead>
                         <tr><th colspan="5" class="group-title payment-group">月別給与履歴</th><th colspan="6" class="group-title deduction-group">四大保険・給与所得税内訳</th></tr>
-                        <tr><th>給与月（次数）</th><th>保守月額</th><th>支給合計</th><th>控除合計</th><th>差引支給額</th><th>国民年金</th><th>健康保険</th><th>長期療養保険</th><th>雇用保険</th><th>所得税</th><th>住民税</th></tr>
+                        <tr><th>給与月（回数）</th><th>報酬月額</th><th>支給合計</th><th>控除合計</th><th>差引支給額</th><th>国民年金</th><th>健康保険</th><th>長期療養保険</th><th>雇用保険</th><th>所得税</th><th>住民税</th></tr>
                     </thead>
                     <tbody>
                     <c:choose>
