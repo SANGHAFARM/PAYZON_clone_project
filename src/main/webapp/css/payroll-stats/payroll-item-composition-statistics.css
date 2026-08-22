@@ -2,88 +2,88 @@
 .pay-composition-page .search-bar select:nth-of-type(2) { width: 90px; }
 
 .donut-grid {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 14px;
-	margin-top: 18px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 18px;
 }
 
 .donut-card {
-	min-height: 300px;
-	padding: 12px 16px 14px;
-	border: 1px solid #cedbea;
-	border-radius: 6px;
-	background: #fff;
-	text-align: center;
+    min-height: 300px;
+    padding: 12px 16px 14px;
+    border: 1px solid #cedbea;
+    border-radius: 6px;
+    background: #fff;
+    text-align: center;
 }
 
 .donut-card h2 {
-	margin: 0;
-	padding: 0 0 9px;
-	border-bottom: 2px solid #3788cc;
-	color: #07579c;
-	font-size: 15px;
-	font-weight: 700;
-	text-align: left;
+    margin: 0;
+    padding: 0 0 9px;
+    border-bottom: 2px solid #3788cc;
+    color: #07579c;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: left;
 }
 
 .interactive-donut {
-	position: relative;
-	width: 180px;
-	height: 180px;
-	margin: 14px auto;
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin: 14px auto;
 }
 
 .donut-svg {
-	width: 100%;
-	height: 100%;
-	overflow: visible;
-	transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    transform: rotate(-90deg);
 }
 
 .donut-track,
 .donut-segment {
-	fill: none !important;
-	stroke-width: 28;
+    fill: none !important;
+    stroke-width: 28;
 }
 
 .interactive-donut svg circle {
-	fill: none !important;
+    fill: none !important;
 }
 
 .donut-track { stroke: #edf2f7; }
 
 .donut-segment {
-	cursor: pointer;
-	transition: opacity .15s ease, stroke-width .15s ease, filter .15s ease;
+    cursor: pointer;
+    transition: opacity .15s ease, stroke-width .15s ease, filter .15s ease;
 }
 
 .donut-svg:has(.donut-segment-group:hover) .donut-segment { opacity: .25; }
 .donut-segment-group:hover .donut-segment {
-	opacity: 1 !important;
-	stroke-width: 34;
-	filter: drop-shadow(0 2px 3px rgba(30, 48, 65, .24));
+    opacity: 1 !important;
+    stroke-width: 34;
+    filter: drop-shadow(0 2px 3px rgba(30, 48, 65, .24));
 }
 
 .donut-center {
-	position: absolute;
-	z-index: 5;
-	inset: 0 !important;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-	pointer-events: none;
+    position: absolute;
+    z-index: 5;
+    inset: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    pointer-events: none;
 }
 
 .donut-center strong { color: #111; font-size: 15px; font-weight: 500; line-height: 1.35; }
 .donut-center span { margin-top: 4px; color: #789; font-size: 11px; }
 
 .donut-svg-tooltip {
-	display: none;
-	transform: rotate(90deg);
-	transform-origin: 100px 100px;
-	pointer-events: none;
+    display: none;
+    transform: rotate(90deg);
+    transform-origin: 100px 100px;
+    pointer-events: none;
 }
 
 .donut-segment-group:hover .donut-svg-tooltip { display: block; }
@@ -92,25 +92,25 @@
 .donut-svg-tooltip text:last-child { font-weight: 700; fill: #1768aa; }
 
 .donut-percentage-label {
-	position: absolute;
-	z-index: 4;
-	color: #fff;
-	font-size: 10px;
-	font-weight: 700;
-	line-height: 1;
-	text-shadow: 0 1px 2px rgba(0, 0, 0, .35);
-	white-space: nowrap;
-	transform: translate(-50%, -50%);
-	pointer-events: none;
+    position: absolute;
+    z-index: 4;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+    white-space: nowrap;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
 }
 
 .donut-legend {
-	display: flex;
-	align-items: flex-start;
-	justify-content: center;
-	flex-wrap: wrap;
-	gap: 6px 12px;
-	color: #526a80;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    color: #526a80;
 }
 
 .donut-legend span { display: inline-flex; align-items: center; gap: 5px; }
@@ -118,40 +118,40 @@
 .donut-legend .is-zero { opacity: .3; }
 
 .composition-table-wrap {
-	margin-top: 16px;
-	overflow-x: auto;
-	border: 1px solid #c9d7e5;
+    margin-top: 16px;
+    overflow-x: auto;
+    border: 1px solid #c9d7e5;
 }
 
 .composition-table {
-	width: 100%;
-	min-width: 1100px;
-	border-collapse: collapse;
-	table-layout: fixed;
+    width: 100%;
+    min-width: 1100px;
+    border-collapse: collapse;
+    table-layout: fixed;
 }
 
 .composition-table caption {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	overflow: hidden;
-	clip: rect(0, 0, 0, 0);
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
 }
 
 .composition-table th,
 .composition-table td {
-	height: 38px;
-	padding: 7px 8px;
-	border-right: 1px solid #c9d7e5;
-	border-bottom: 1px solid #c9d7e5;
-	text-align: right;
-	white-space: nowrap;
+    height: 38px;
+    padding: 7px 8px;
+    border-right: 1px solid #c9d7e5;
+    border-bottom: 1px solid #c9d7e5;
+    text-align: right;
+    white-space: nowrap;
 }
 
 .composition-table thead th {
-	background: #eaf2f8;
-	color: #173f65;
-	text-align: center;
+    background: #eaf2f8;
+    color: #173f65;
+    text-align: center;
 }
 
 .composition-table th:first-child { width: 135px; text-align: left; }
@@ -162,20 +162,20 @@
 .composition-table .net-cell { color: #07579c; font-weight: 700; }
 
 .composition-summary {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	margin-top: 16px;
-	border: 1px solid #c9d7e5;
-	background: #f7f9fc;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 16px;
+    border: 1px solid #c9d7e5;
+    background: #f7f9fc;
 }
 
 .composition-summary > div {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	height: 52px;
-	padding: 0 18px;
-	border-right: 1px solid #c9d7e5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    padding: 0 18px;
+    border-right: 1px solid #c9d7e5;
 }
 
 /* 社員選択モーダルテーブルスクロール処理 */

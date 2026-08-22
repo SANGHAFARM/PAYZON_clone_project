@@ -23,17 +23,25 @@ import erp.settings.model.JobPosition;
 import erp.settings.service.DepartmentPositionService;
 import mvc.command.CommandHandler;
 
+// 사원Register1 화면의 HTTP 요청을 구분하고 적절한 서비스 호출과 화면 이동을 담당한다.
+// 社員Register1画面のHTTPリクエストを判別し、適切なサービス呼び出しと画面遷移を担当する。
 public class EmployeeRegister1Handler implements CommandHandler {
 
 	// 3가지 핵심 비즈니스 서비스를 싱글톤으로 불러옵니다.
+	// 同じサービスまたはDAOを共有できるよう、シングルトンインスタンスを生成して管理する。
 	private EmployeeRegisterService registerService = EmployeeRegisterService.getInstance();
 	private EmployeeHistoryService historyService = EmployeeHistoryService.getInstance();
 	private EmployeePhotoService photoService = EmployeePhotoService.getInstance();
 	private DepartmentPositionService deptPosService = DepartmentPositionService.getInstance();
 
 	@Override
+	// 요청 방식과 작업 구분을 확인하여 사원Register1 조회·저장 작업을 적절한 처리로 연결한다.
+	// 요청 파라미터를 검증해 Service에 전달하고 처리 결과를 request 또는 session에 저장한 뒤 JSP 포워드나 리다이렉트 경로를 결정한다.
+	// リクエスト方式と処理区分を確認し、社員Register1の照会・保存処理へ適切に振り分ける。
+	// リクエストパラメーターを検証してServiceへ渡し、処理結果をrequestまたはsessionへ保存した後、JSPフォワードまたはリダイレクト先を決定する。
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		// HTTP 요청 방식(GET/POST)에 따른 분기 처리
+		// HTTPメソッドと処理区分を確認し、照会またはデータ変更に対応する処理へ分岐する。
 		if (req.getMethod().equalsIgnoreCase("GET")) {
 			return processForm(req, res);
 		} else if (req.getMethod().equalsIgnoreCase("POST")) {
@@ -43,6 +51,10 @@ public class EmployeeRegister1Handler implements CommandHandler {
 	}
 
 	// [GET] 화면 렌더링 (사원 정보 조회)
+	// 사원Register1 화면에 필요한 데이터를 조회하여 request에 저장하고 JSP 경로를 반환한다.
+	// 요청 파라미터를 검증해 Service에 전달하고 처리 결과를 request 또는 session에 저장한 뒤 JSP 포워드나 리다이렉트 경로를 결정한다.
+	// 社員Register1画面に必要なデータを照会してrequestへ保存し、JSPパスを返す。
+	// リクエストパラメーターを検証してServiceへ渡し、処理結果をrequestまたはsessionへ保存した後、JSPフォワードまたはリダイレクト先を決定する。
 	private String processForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String empIdStr = req.getParameter("empId");
 		
@@ -66,24 +78,29 @@ public class EmployeeRegister1Handler implements CommandHandler {
 			List<EmployeeInsuranceHistory> insuranceRows = historyService.getInsuranceHistories(empId);
 			
 			// 서버에서 경력 기간(년/월) 직접 계산 로직
+			// 基準日と期間の境界を確認し、照会・計算に使用できる日付形式へ変換する。
 			if (careers != null) {
 				for (EmployeeCareer c : careers) {
 					if (c.getJoinDate() != null && c.getQuitDate() != null) {
 						// 기존 Date 타입을 계산하기 쉬운 LocalDate로 변환
+						// 基準日と期間の境界を確認し、照会・計算に使用できる日付形式へ変換する。
 						LocalDate start = c.getJoinDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 						LocalDate end = c.getQuitDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
 						// 퇴사일이 입사일보다 이후인 정상적인 경우에만 계산
+						// 支給額・控除額・期間値を業務基準に従って計算し、合計と最終金額へ反映する。
 						if (!end.isBefore(start)) {
 							Period period = Period.between(start, end);
 							int totalMonths = (period.getYears() * 12) + period.getMonths();
 
 							// 요구사항 반영: 1개월 미만일 경우 최소 1개월로 처리
+							// 基準日と期間の境界を確認し、照会・計算に使用できる日付形式へ変換する。
 							if (totalMonths < 1) {
 								totalMonths = 1;
 							}
 
 							// 계산된 총 개월 수를 다시 년과 월로 분리하여 객체에 세팅
+							// 基準日と期間の境界を確認し、照会・計算に使用できる日付形式へ変換する。
 							c.setYears(totalMonths / 12);
 							c.setMonths(totalMonths % 12);
 						}
@@ -92,6 +109,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 			}
 
 			// JSP(뷰)로 전달하기 위해 request 영역에 저장
+			// 画面表示に必要なデータとメッセージをrequestまたはsessionへ保存し、JSPへ引き渡す。
 			req.setAttribute("employee", employee);
 			req.setAttribute("dependents", dependents);
 			req.setAttribute("educations", educations);
@@ -113,14 +131,20 @@ public class EmployeeRegister1Handler implements CommandHandler {
 	}
 
 	// [POST] 폼 전송 시 'action' 파라미터에 따른 동적 로직 분기
+	// 요청에서 작업구분 작업에 필요한 값을 읽고 검증한 뒤 해당 서비스 처리를 호출한다.
+	// 요청 파라미터를 검증해 Service에 전달하고 처리 결과를 request 또는 session에 저장한 뒤 JSP 포워드나 리다이렉트 경로를 결정한다.
+	// リクエストから処理区分処理に必要な値を取得・検証し、該当するサービス処理を呼び出す。
+	// リクエストパラメーターを検証してServiceへ渡し、処理結果をrequestまたはsessionへ保存した後、JSPフォワードまたはリダイレクト先を決定する。
 	private String processAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		req.setCharacterEncoding("UTF-8");
 
 		// JSP의 <button name="action" value="..."> 에서 넘어온 값
+		// 画面表示に必要なデータとメッセージをrequestまたはsessionへ保存し、JSPへ引き渡す。
 		String action = req.getParameter("action");
 		String empIdStr = req.getParameter("empId");
 
 		// 신규 등록은 0으로 구분하고 실제 PK는 서비스에서 시퀀스로 발급합니다.
+		// データを一意に識別するキーを発行または適用し、対象レコードを正確に処理する。
 		int empId = parseEmployeeId(empIdStr);
 
 		try {
@@ -149,9 +173,11 @@ public class EmployeeRegister1Handler implements CommandHandler {
 
 			if ("save".equals(action)) {
 				// 1. 통합 저장 로직
+				// 社員基本情報と関連設定値を一つの保存処理としてまとめ、登録または更新する。
 				validateRequiredFields(req);
 
 				// 1-1. 텍스트 폼에서 메인 사원(Employee) 객체 추출 및 저장
+				// 社員の識別情報と在職・雇用・所属条件を確認し、対象社員データへ反映する。
 				Employee employee = parseEmployeeBasicInfo(req, empId);
 				if (empId == 0) {
 					Integer reservedId = (Integer) req.getSession().getAttribute("reservedEmployeeId");
@@ -161,6 +187,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 				}
 				if (empId > 0) {
 					// 사원정보 1 화면에 없는 퇴직 항목은 기존 값을 그대로 유지한다.
+					// 画面表示に必要なデータとメッセージをrequestまたはsessionへ保存し、JSPへ引き渡す。
 					Employee existingEmployee = registerService.getEmployeeBasicProfile(empId);
 					if (existingEmployee != null) {
 						employee.setStatus(existingEmployee.getStatus());
@@ -173,12 +200,14 @@ public class EmployeeRegister1Handler implements CommandHandler {
 				empId = registerService.saveEmployeeBasicInfo(employee);
 
 				// 1-2. 1:N 이력 리스트 추출 및 일괄 갱신 (모든 함수에 empId 전달)
+				// 識別された既存データへ変更値を反映し、未変更項目は従来の値を維持する。
 				List<EmployeeDependent> deps = parseDependents(req, empId);
 				List<EmployeeEducation> edus = parseEducations(req, empId);
 				List<EmployeeCareer> cars = parseCareers(req, empId);
 				List<EmployeeInsuranceHistory> insurances = parseInsuranceHistories(req, empId);
 
 				// 서비스 호출 시 4대보험 이력(insurances)도 함께 넘겨줍니다.
+				// 保険・税区分と適用基準を確認し、対象金額に合う控除または非課税処理を適用する。
 				historyService.saveAllHistories(empId, deps, edus, cars, insurances);
 				String photoPreset = req.getParameter("photoPreset");
 				if (isBlank(photoPreset)) {
@@ -206,6 +235,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 
 			} else if ("deleteDependents".equals(action)) {
 				// 4. 하위 이력 선택 삭제 로직 (예: 부양가족)
+				// 選択された対象と関連範囲を確認して削除し、残りの一覧状態を再構成する。
 				String[] deleteIds = req.getParameterValues("dependentDeleteIds");
 				if (deleteIds != null) {
 					List<Integer> idList = new ArrayList<>();
@@ -218,6 +248,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 				}
 
 				// 5. 학력 선택 삭제 로직
+				// 選択された対象と関連範囲を確認して削除し、残りの一覧状態を再構成する。
 			} else if ("deleteEducations".equals(action)) {
 				String[] deleteIds = req.getParameterValues("educationDeleteIds");
 				if (deleteIds != null) {
@@ -231,6 +262,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 				}
 
 				// 6. 경력 선택 삭제 로직
+				// 選択された対象と関連範囲を確認して削除し、残りの一覧状態を再構成する。
 			} else if ("deleteCareers".equals(action)) {
 				String[] deleteIds = req.getParameterValues("careerDeleteIds");
 				if (deleteIds != null) {
@@ -249,10 +281,15 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		}
 
 		// 작업 완료 후 데이터 중복 전송(F5)을 막기 위해 현재 사원 번호를 달고 GET 화면으로 리다이렉트
+		// 重複値とデータベース制約違反を確認し、保存可能なデータだけを処理する。
 		res.sendRedirect(req.getContextPath() + "/settings/register1.do?empId=" + empId);
 		return null; // 포워딩 방지
 	}
 
+	// 입력 데이터를 사원식별번호 처리에 필요한 형식으로 변환한다.
+	// 누락되거나 잘못된 파라미터가 500 오류로 이어지지 않도록 기본값과 형식 검사를 적용한다.
+	// 入力データを社員識別番号処理に必要な形式へ変換する。
+	// 不足または不正なパラメーターが500エラーにつながらないよう、初期値と形式検証を適用する。
 	private int parseEmployeeId(String value) {
 		try {
 			int employeeId = Integer.parseInt(value);
@@ -262,12 +299,20 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		}
 	}
 
+	// 사원정보 1에서 저장된 사원을 확인하여 사원정보 2 입력 대상으로 반환한다.
+	// 화면에서 전달된 값과 현재 조회조건을 유지하면서 필요한 request 속성 또는 이동 URL을 구성한다.
+	// 社員情報1で保存された社員を確認し、社員情報2の入力対象として返す。
+	// 画面から渡された値と現在の検索条件を維持しながら、必要なrequest属性または遷移URLを構成する。
 	private void requireSavedEmployee(int employeeId) {
 		if (employeeId <= 0 || registerService.getEmployeeBasicProfile(employeeId) == null) {
 			throw new IllegalArgumentException("사원정보 1을 먼저 저장해주세요.");
 		}
 	}
 
+	// 사원Register1 처리에 필요한 Preset사진경로를 조회하거나 계산하여 반환한다.
+	// 호출자가 전달한 조회조건을 적용하고 결과가 없을 때도 빈 값이나 빈 목록을 안전하게 반환한다.
+	// 社員Register1処理に必要なPreset写真パスを照会または計算して返す。
+	// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
 	private String getPresetPhotoPath(String preset) {
 		if (preset != null && preset.matches("0[1-5]")) {
 			return "/images/settings/employee-presets/employee-" + preset + ".png";
@@ -275,6 +320,10 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		throw new IllegalArgumentException("사용할 기본 사원사진을 선택해주세요.");
 	}
 
+	// 필수값Fields 입력값과 업무 처리 가능 여부를 검증한다.
+	// 화면에서 전달된 값과 현재 조회조건을 유지하면서 필요한 request 속성 또는 이동 URL을 구성한다.
+	// 必須値Fieldsの入力値と業務処理の可否を検証する。
+	// 画面から渡された値と現在の検索条件を維持しながら、必要なrequest属性または遷移URLを構成する。
 	private void validateRequiredFields(HttpServletRequest req) {
 		if (isBlank(req.getParameter("empType")) || isBlank(req.getParameter("empNameKr"))
 				|| isBlank(req.getParameter("joinDate")) || isBlank(req.getParameter("foreignYn"))
@@ -289,21 +338,37 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		}
 	}
 
+	// 빈 값 조건의 충족 여부를 확인하여 반환한다.
+	// 호출자가 전달한 조회조건을 적용하고 결과가 없을 때도 빈 값이나 빈 목록을 안전하게 반환한다.
+	// 空値条件を満たしているか確認して返す。
+	// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
 	private boolean isBlank(String value) {
 		return value == null || value.trim().isEmpty();
 	}
 
+	// 반복 입력 항목별 행 개수를 request에 저장하여 화면의 추가 행을 유지한다.
+	// 화면에서 전달된 값과 현재 조회조건을 유지하면서 필요한 request 속성 또는 이동 URL을 구성한다.
+	// 繰り返し入力項目ごとの行数をrequestへ保存し、画面の追加行を維持する。
+	// 画面から渡された値と現在の検索条件を維持しながら、必要なrequest属性または遷移URLを構成する。
 	private void bindRowCounts(HttpServletRequest req) {
 		req.setAttribute("dependentRowCount", getRowCount(req, "dependentRowCount", 4));
 		req.setAttribute("educationRowCount", getRowCount(req, "educationRowCount", 3));
 		req.setAttribute("careerRowCount", getRowCount(req, "careerRowCount", 3));
 	}
 
+	// 사원Register1 처리에 필요한 행 데이터건수를 조회하거나 계산하여 반환한다.
+	// 호출자가 전달한 조회조건을 적용하고 결과가 없을 때도 빈 값이나 빈 목록을 안전하게 반환한다.
+	// 社員Register1処理に必要な行データ件数を照会または計算して返す。
+	// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
 	private int getRowCount(HttpServletRequest req, String key, int defaultCount) {
 		Integer count = (Integer) req.getSession().getAttribute(key);
 		return count == null ? defaultCount : Math.max(defaultCount, Math.min(count, 20));
 	}
 
+	// 사용자가 선택한 반복 입력 영역의 행 개수를 한 건 증가시킨다.
+	// 화면에서 전달된 값과 현재 조회조건을 유지하면서 필요한 request 속성 또는 이동 URL을 구성한다.
+	// ユーザーが選択した繰り返し入力領域の行数を一件増加させる。
+	// 画面から渡された値と現在の検索条件を維持しながら、必要なrequest属性または遷移URLを構成する。
 	private void increaseRowCount(HttpServletRequest req, String action) {
 		String key;
 		int defaultCount;
@@ -322,6 +387,10 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		req.getSession().setAttribute(key, Math.min(getRowCount(req, key, defaultCount) + 1, 20));
 	}
 
+	// 사용자가 선택한 반복 입력 영역의 마지막 행을 제거할 수 있도록 행 개수를 감소시킨다.
+	// 화면에서 전달된 값과 현재 조회조건을 유지하면서 필요한 request 속성 또는 이동 URL을 구성한다.
+	// ユーザーが選択した繰り返し入力領域の最終行を削除できるように行数を減少させる。
+	// 画面から渡された値と現在の検索条件を維持しながら、必要なrequest属性または遷移URLを構成する。
 	private void decreaseRowCount(HttpServletRequest req, String key, int defaultCount, int amount) {
 		int count = getRowCount(req, key, defaultCount);
 		req.getSession().setAttribute(key, Math.max(defaultCount, count - Math.max(amount, 0)));
@@ -329,12 +398,18 @@ public class EmployeeRegister1Handler implements CommandHandler {
 
 	/**
 	 * [Helper] 폼에서 넘어온 사원 메인 정보를 v5 스키마(EMPLOYEE)에 맞게 파싱
+	  * 社員の識別情報と在職・雇用・所属条件を確認し、対象社員データへ反映する。
 	 */
+	// 입력 데이터를 사원Basic정보 처리에 필요한 형식으로 변환한다.
+	// 누락되거나 잘못된 파라미터가 500 오류로 이어지지 않도록 기본값과 형식 검사를 적용한다.
+	// 入力データを社員Basic情報処理に必要な形式へ変換する。
+	// 不足または不正なパラメーターが500エラーにつながらないよう、初期値と形式検証を適用する。
 	private Employee parseEmployeeBasicInfo(HttpServletRequest req, int empId) throws Exception {
 		Employee emp = new Employee();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		// [1. 사원 기본정보]
+		// 社員の識別情報と在職・雇用・所属条件を確認し、対象社員データへ反映する。
 		emp.setEmployeeId(empId);
 		emp.setEmpNo(req.getParameter("empNo"));
 		emp.setEmpType(req.getParameter("empType"));
@@ -349,6 +424,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		}
 
 		// 부서 및 직위 (v5 스키마 기준 NUMBER 타입)
+		// 社員の識別情報と在職・雇用・所属条件を確認し、対象社員データへ反映する。
 		String deptIdStr = req.getParameter("deptId");
 		if (deptIdStr != null && !deptIdStr.trim().isEmpty()) {
 			emp.setDepartmentId(deptPosService.requireDepartmentId(deptIdStr));
@@ -359,6 +435,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		}
 
 		// [2. 연락처 및 주소]
+		// 画面で入力または照会する業務属性を保持し、登録・詳細表示で共通利用する。
 		emp.setZipCode(req.getParameter("zipCode"));
 		emp.setAddress(req.getParameter("address"));
 		emp.setTelNo(req.getParameter("telNo"));
@@ -368,6 +445,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		emp.setMemo(req.getParameter("memo"));
 
 		// [3. 급여 및 소득세 설정]
+		// 支給額・控除額・期間値を業務基準に従って計算し、合計と最終金額へ反映する。
 		String basicPayStr = req.getParameter("basicPay");
 		emp.setBasicPay(basicPayStr != null && !basicPayStr.trim().isEmpty() ? Long.parseLong(basicPayStr) : 0);
 
@@ -380,6 +458,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 						: 100);
 
 		// 체크박스는 체크 해제 시 null이 넘어오므로 삼항연산자 처리
+		// 使用済みのJDBCリソースを安全に閉じ、接続漏れやリソース漏れを防止する。
 		emp.setYouthTaxReduceYn(req.getParameter("youthTaxReduceYn") != null ? "Y" : "N");
 
 		String youthTaxRateStr = req.getParameter("youthTaxRate");
@@ -387,6 +466,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 				youthTaxRateStr != null && !youthTaxRateStr.trim().isEmpty() ? Integer.parseInt(youthTaxRateStr) : 0);
 
 		// [4. 4대보험 설정]
+		// 保険・税区分と適用基準を確認し、対象金額に合う控除または非課税処理を適用する。
 		emp.setNpYn(req.getParameter("npYn") != null ? "Y" : "N");
 		emp.setHiYn(req.getParameter("hiYn") != null ? "Y" : "N");
 		emp.setLtciYn(req.getParameter("ltciYn") != null ? "Y" : "N");
@@ -403,6 +483,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 
 		// [5. 두루누리 사회보험 지원]
 		// 통합 설정은 같은 지원율을 적용하고, 분리 설정은 국민연금과 고용보험을 각각 저장합니다.
+		// 保険・税区分と適用基準を確認し、対象金額に合う控除または非課税処理を適用する。
 		boolean separate = req.getParameter("durunuriSeparateYn") != null;
 		emp.setDurunuriSeparateYn(separate ? "Y" : "N");
 		if (separate) {
@@ -415,6 +496,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		}
 
 		// [6. 보험료 계산 기준 금액]
+		// 支給額・控除額・期間値を業務基準に従って計算し、合計と最終金額へ反映する。
 		String npBase = req.getParameter("npMonthlyBase");
 		emp.setNpMonthlyBase(npBase != null && !npBase.trim().isEmpty() ? Long.parseLong(npBase) : 0);
 
@@ -425,10 +507,12 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		emp.setEiMonthlyBase(eiBase != null && !eiBase.trim().isEmpty() ? Long.parseLong(eiBase) : 0);
 
 		// [7. 급여계좌]
+		// 支給額・控除額・期間値を業務基準に従って計算し、合計と最終金額へ反映する。
 		emp.setBankName(req.getParameter("bankName"));
 		emp.setAccountNo(req.getParameter("accountNo"));
 
 		// [8. 병역정보]
+		// 画面で入力または照会する業務属性を保持し、登録・詳細表示で共通利用する。
 		emp.setDischargeType(req.getParameter("dischargeType"));
 		emp.setMilBranch(req.getParameter("milBranch"));
 
@@ -448,11 +532,16 @@ public class EmployeeRegister1Handler implements CommandHandler {
 
 		// [9. 퇴직상태 기본값 세팅]
 		// 사원등록 1페이지에서는 기본적으로 '재직' 상태입니다. (실제 퇴직처리는 2페이지 또는 퇴직관리 메뉴에서 수행)
+		// 全件数と表示件数からページ範囲を計算し、現在ページに該当するデータだけを取得する。
 		emp.setStatus("재직");
 
 		return emp;
 	}
 
+	// 입력 데이터를 비율 처리에 필요한 형식으로 변환한다.
+	// 누락되거나 잘못된 파라미터가 500 오류로 이어지지 않도록 기본값과 형식 검사를 적용한다.
+	// 入力データを率処理に必要な形式へ変換する。
+	// 不足または不正なパラメーターが500エラーにつながらないよう、初期値と形式検証を適用する。
 	private int parseRate(String value) {
 		if ("80".equals(value) || "90".equals(value)) {
 			return Integer.parseInt(value);
@@ -461,6 +550,10 @@ public class EmployeeRegister1Handler implements CommandHandler {
 	}
 
 	// [Helper] 폼에서 배열 형태로 넘어온 부양가족 리스트를 DTO에 맞게 파싱하는 메서드
+	// 입력 데이터를 부양가족 목록 처리에 필요한 형식으로 변환한다.
+	// 누락되거나 잘못된 파라미터가 500 오류로 이어지지 않도록 기본값과 형식 검사를 적용한다.
+	// 入力データを扶養家族一覧処理に必要な形式へ変換する。
+	// 不足または不正なパラメーターが500エラーにつながらないよう、初期値と形式検証を適用する。
 	private List<EmployeeDependent> parseDependents(HttpServletRequest req, int empId) {
 		List<EmployeeDependent> list = new ArrayList<>();
 
@@ -494,14 +587,20 @@ public class EmployeeRegister1Handler implements CommandHandler {
 	}
 
 	// [Helper] 폼에서 배열 형태로 넘어온 4대보험 취득/상실 이력 파싱
+	// 입력 데이터를 보험이력 목록 처리에 필요한 형식으로 변환한다.
+	// 누락되거나 잘못된 파라미터가 500 오류로 이어지지 않도록 기본값과 형식 검사를 적용한다.
+	// 入力データを保険履歴一覧処理に必要な形式へ変換する。
+	// 不足または不正なパラメーターが500エラーにつながらないよう、初期値と形式検証を適用する。
 	private List<EmployeeInsuranceHistory> parseInsuranceHistories(HttpServletRequest req, int empId) throws Exception {
 		List<EmployeeInsuranceHistory> list = new ArrayList<>();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		// JSP 화면상 국민연금, 건강보험, 고용보험, 산재보험 순서대로 input 태그가 존재함
+		// 画面表示に必要なデータとメッセージをrequestまたはsessionへ保存し、JSPへ引き渡す。
 		String[] types = { "국민연금", "건강보험", "고용보험", "산재보험" };
 
 		// name="insuranceNo" 등의 속성으로 여러 개가 넘어오므로 getParameterValues 사용
+		// HTTPメソッドと処理区分を確認し、照会またはデータ変更に対応する処理へ分岐する。
 		String[] nos = req.getParameterValues("insuranceNo");
 		String[] startDates = req.getParameterValues("insuranceStartDate");
 		String[] endDates = req.getParameterValues("insuranceEndDate");
@@ -509,6 +608,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		if (nos != null) {
 			for (int i = 0; i < types.length; i++) {
 				// 기호번호나 날짜 중 하나라도 입력된 데이터가 있다면 저장
+				// 基準日と期間の境界を確認し、照会・計算に使用できる日付形式へ変換する。
 				boolean hasData = (nos.length > i && nos[i] != null && !nos[i].trim().isEmpty())
 						|| (startDates.length > i && startDates[i] != null && !startDates[i].trim().isEmpty())
 						|| (endDates.length > i && endDates[i] != null && !endDates[i].trim().isEmpty());
@@ -538,6 +638,10 @@ public class EmployeeRegister1Handler implements CommandHandler {
 	}
 
 	// 학력 리스트 파싱
+	// 입력 데이터를 학력 목록 처리에 필요한 형식으로 변환한다.
+	// 누락되거나 잘못된 파라미터가 500 오류로 이어지지 않도록 기본값과 형식 검사를 적용한다.
+	// 入力データを学歴一覧処理に必要な形式へ変換する。
+	// 不足または不正なパラメーターが500エラーにつながらないよう、初期値と形式検証を適用する。
 	private List<EmployeeEducation> parseEducations(HttpServletRequest req, int empId) {
 		List<EmployeeEducation> list = new ArrayList<>();
 
@@ -545,6 +649,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 			String schoolName = req.getParameter("educations[" + i + "].schoolName");
 
 			// 학교명이 비어있지 않은 실제 데이터만 리스트에 추가
+			// 入力された内容を新しい業務データとして構成し、関連データとともに登録する。
 			if (schoolName != null && !schoolName.trim().isEmpty()) {
 				EmployeeEducation edu = new EmployeeEducation();
 				edu.setEmployeeId(empId);
@@ -553,6 +658,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 				edu.setEduType(req.getParameter("educations[" + i + "].schoolType"));
 
 				// JSP의 "YYYY-MM" 형태를 DB 규격인 "YYYYMM" (VARCHAR2(6)) 형태로 변환
+				// 画面表示に必要なデータとメッセージをrequestまたはsessionへ保存し、JSPへ引き渡す。
 				String adminYm = req.getParameter("educations[" + i + "].admissionYm");
 				if (adminYm != null && !adminYm.isEmpty()) {
 					edu.setAdmissionYm(adminYm.replace("-", ""));
@@ -578,6 +684,10 @@ public class EmployeeRegister1Handler implements CommandHandler {
 	}
 
 	// 경력 리스트 파싱
+	// 입력 데이터를 Careers 처리에 필요한 형식으로 변환한다.
+	// 누락되거나 잘못된 파라미터가 500 오류로 이어지지 않도록 기본값과 형식 검사를 적용한다.
+	// 入力データをCareers処理に必要な形式へ変換する。
+	// 不足または不正なパラメーターが500エラーにつながらないよう、初期値と形式検証を適用する。
 	private List<EmployeeCareer> parseCareers(HttpServletRequest req, int empId) throws Exception {
 		List<EmployeeCareer> list = new ArrayList<>();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -586,6 +696,7 @@ public class EmployeeRegister1Handler implements CommandHandler {
 			String companyName = req.getParameter("careers[" + i + "].companyName");
 
 			// 회사명이 비어있지 않은 실제 데이터만 리스트에 추가
+			// 入力された内容を新しい業務データとして構成し、関連データとともに登録する。
 			if (companyName != null && !companyName.trim().isEmpty()) {
 				EmployeeCareer career = new EmployeeCareer();
 				career.setEmployeeId(empId);
@@ -618,6 +729,10 @@ public class EmployeeRegister1Handler implements CommandHandler {
 		return list;
 	}
 
+	// 입력 데이터를 행 데이터건수 처리에 필요한 형식으로 변환한다.
+	// 누락되거나 잘못된 파라미터가 500 오류로 이어지지 않도록 기본값과 형식 검사를 적용한다.
+	// 入力データを行データ件数処理に必要な形式へ変換する。
+	// 不足または不正なパラメーターが500エラーにつながらないよう、初期値と形式検証を適用する。
 	private int parseRowCount(HttpServletRequest req, String name, int defaultCount) {
 		try {
 			return Math.max(defaultCount, Math.min(Integer.parseInt(req.getParameter(name)), 20));

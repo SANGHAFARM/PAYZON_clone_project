@@ -14,8 +14,14 @@ import erp.payroll.dto.PayrollManagementItem;
 import jdbc.JdbcUtil;
 
 // 일용직 근무기록과 급여 공제내역을 조회한다.
+// 일용직근로자급여 데이터를 데이터베이스에서 조회하고 저장·수정·삭제한다.
+// 日雇い労働者給与データをデータベースから照会し、登録・更新・削除する。
 public class DayWorkerPayrollDao {
 
+	// 조회 조건에 맞는 지급사원 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う支給社員データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<DayWorkerPaymentEmployee> selectPaymentEmployees(Connection conn, int runId, Date startDate,
 			Date endDate) throws SQLException {
 		String sql = "SELECT E.EMPLOYEE_ID, E.EMP_TYPE, E.EMP_NO, E.EMP_NAME_KR, "
@@ -45,6 +51,10 @@ public class DayWorkerPayrollDao {
 		}
 	}
 
+	// 조회 조건에 맞는 사용가능사원 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う利用可能社員データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<DayWorkerPaymentEmployee> selectAvailableEmployees(Connection conn, int runId, String keyword,
 			Integer departmentId, int page, int size) throws SQLException {
 		String sql = "SELECT * FROM (SELECT A.*, ROWNUM RNUM FROM ("
@@ -78,6 +88,10 @@ public class DayWorkerPayrollDao {
 		}
 	}
 
+	// 조회 조건에 맞는 사용가능사원 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う利用可能社員データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public int countAvailableEmployees(Connection conn, int runId, String keyword, Integer departmentId)
 			throws SQLException {
 		String sql = "SELECT COUNT(*) FROM EMPLOYEE E WHERE E.EMP_TYPE = '일용직' AND E.STATUS = '재직' "
@@ -94,6 +108,10 @@ public class DayWorkerPayrollDao {
 		}
 	}
 
+	// 조회 조건에 맞는 근무지급내역 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う勤務支給明細データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<DayWorkerPaymentWork> selectWorkPayments(Connection conn, int employeeId, Date startDate,
 			Date endDate) throws SQLException {
 		String sql = "SELECT WORK_DATE, PAY_RATE, DAILY_PAY, INCOME_TAX, LOCAL_INCOME_TAX "
@@ -118,6 +136,10 @@ public class DayWorkerPayrollDao {
 		}
 	}
 
+	// 조회 조건에 맞는 공제상세내역 목록 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う控除明細一覧データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<PayrollManagementItem> selectDeductionEntries(Connection conn, int payrollEmployeeId)
 			throws SQLException {
 		String sql = "SELECT D.DEDUCT_ITEM_ID, D.DEDUCT_NAME, NVL(E.AMOUNT, 0) AMOUNT "
@@ -139,6 +161,10 @@ public class DayWorkerPayrollDao {
 		}
 	}
 
+	// 조회 조건에 맞는 Automatic공제 목록 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合うAutomatic控除一覧データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public long[] selectAutomaticDeductions(Connection conn, int employeeId, Date startDate, Date endDate)
 			throws SQLException {
 		String sql = "SELECT E.NP_YN, E.HI_YN, E.LTCI_YN, E.EI_YN, E.NP_MONTHLY_BASE, E.HI_MONTHLY_BASE, "
@@ -167,6 +193,7 @@ public class DayWorkerPayrollDao {
 				long employmentBase = positiveBase(rs.getLong("EI_MONTHLY_BASE"), grossPay);
 
 				// 등록된 보수월액이 없으면 해당 기간의 실제 지급총액을 계산 기준으로 사용한다.
+				// 基準日と期間の境界を確認し、照会・計算に使用できる日付形式へ変換する。
 				long nationalPension = "Y".equals(rs.getString("NP_YN"))
 						? roundDownTen(pensionBase * 0.045) : 0;
 				long healthInsurance = "Y".equals(rs.getString("HI_YN"))
@@ -177,6 +204,7 @@ public class DayWorkerPayrollDao {
 						? roundDownTen(employmentBase * 0.009) : 0;
 
 				// 근무기록에 세액이 없으면 일용근로소득 공제액을 반영한 간이세액을 사용한다.
+				// 支給額・控除額・期間値を業務基準に従って計算し、合計と最終金額へ反映する。
 				long incomeTax = rs.getLong("INCOME_TAX");
 				if (incomeTax == 0) {
 					incomeTax = selectEstimatedIncomeTax(conn, employeeId, startDate, endDate);
@@ -191,9 +219,14 @@ public class DayWorkerPayrollDao {
 		}
 	}
 
+	// 조회 조건에 맞는 Estimated소득세금 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合うEstimated所得税金データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	private long selectEstimatedIncomeTax(Connection conn, int employeeId, Date startDate, Date endDate)
 			throws SQLException {
 		// 일 15만원 공제 후 6% 세율과 55% 근로소득세액공제를 적용한 간이 계산이다.
+		// 支給額・控除額・期間値を業務基準に従って計算し、合計と最終金額へ反映する。
 		String sql = "SELECT NVL(SUM(FLOOR(GREATEST(DAILY_PAY - 150000, 0) * 0.027 / 10) * 10), 0) "
 				+ "FROM DAILY_WORK_RECORD WHERE EMPLOYEE_ID = ? AND WORK_DATE BETWEEN ? AND ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -207,14 +240,26 @@ public class DayWorkerPayrollDao {
 		}
 	}
 
+	// 보험료 계산에 사용할 기준금액이 음수가 되지 않도록 유효한 금액으로 보정한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 保険料計算に使用する基準金額が負数にならないよう有効な金額へ補正する。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	private long positiveBase(long registeredBase, long grossPay) {
 		return registeredBase > 0 ? registeredBase : grossPay;
 	}
 
+	// 계산된 보험료와 세액을 10단위로 절사하여 반환한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 計算した保険料と税額を10単位で切り捨てて返す。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	private long roundDownTen(double amount) {
 		return ((long) amount / 10) * 10;
 	}
 
+	// 전달받은 사용가능매개변수 값을 일용직근로자급여 객체에 저장한다.
+	// 요청값이나 조회 결과로 전달된 값을 대응하는 필드에 반영하여 객체의 현재 상태를 갱신한다.
+	// 受け取った利用可能パラメーターの値を日雇い労働者給与オブジェクトに保存する。
+	// リクエスト値または照会結果として渡された値を対応フィールドへ反映し、オブジェクトの現在状態を更新する。
 	private void setAvailableParameters(PreparedStatement pstmt, int runId, String keyword, Integer departmentId)
 			throws SQLException {
 		String searchKeyword = keyword == null || keyword.trim().isEmpty() ? null : keyword.trim();
@@ -226,6 +271,10 @@ public class DayWorkerPayrollDao {
 		pstmt.setObject(6, departmentId);
 	}
 
+	// 조회값과 입력값을 조합하여 사원 처리 데이터를 구성한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 照会値と入力値を組み合わせて社員の処理データを構成する。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	private DayWorkerPaymentEmployee makeEmployee(ResultSet rs) throws SQLException {
 		DayWorkerPaymentEmployee employee = new DayWorkerPaymentEmployee();
 		employee.setEmployeeId(rs.getInt("EMPLOYEE_ID"));

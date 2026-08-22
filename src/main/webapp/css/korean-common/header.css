@@ -1,206 +1,206 @@
 /* 헤더 내부 모든 요소에 동일한 크기 계산 방식을 적용 */
 .site-header, .site-header * {
-	box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 /* 헤더 전체의 기본 크기, 글꼴, 색상 */
 .site-header {
-	position: relative;
-	z-index: 1000;
-	min-width: 960px;
-	font-family: "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
-	color: #333;
-	background: #fff;
+    position: relative;
+    z-index: 1000;
+    min-width: 960px;
+    font-family: "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
+    color: #333;
+    background: #fff;
 }
 
 /* 헤더 안의 모든 링크에서 기본 밑줄 제거 */
 .site-header a {
-	color: inherit;
-	text-decoration: none;
+    color: inherit;
+    text-decoration: none;
 }
 
 /* 사이트 이름이 표시되는 최상단 패턴 배경 영역 */
 .site-header__brand {
-	height: 52px;
-	padding: 0 17px;
-	display: flex;
-	align-items: center;
-	background-color: #343945;
-	background-image: linear-gradient(45deg, rgba(255, 255, 255, .045) 25%,
-		transparent 25%, transparent 75%, rgba(255, 255, 255, .045) 75%),
-		linear-gradient(-45deg, rgba(255, 255, 255, .045) 25%, transparent 25%,
-		transparent 75%, rgba(255, 255, 255, .045) 75%),
-		linear-gradient(180deg, rgba(255, 255, 255, .04), rgba(0, 0, 0, .08));
-	background-position: 0 0, 8px 8px, 0 0;
-	background-size: 16px 16px, 16px 16px, 100% 100%;
-	border-bottom: 2px solid #24262d;
-	box-shadow: inset 0 1px rgba(255, 255, 255, .08);
+    height: 52px;
+    padding: 0 17px;
+    display: flex;
+    align-items: center;
+    background-color: #343945;
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, .045) 25%,
+    transparent 25%, transparent 75%, rgba(255, 255, 255, .045) 75%),
+    linear-gradient(-45deg, rgba(255, 255, 255, .045) 25%, transparent 25%,
+    transparent 75%, rgba(255, 255, 255, .045) 75%),
+    linear-gradient(180deg, rgba(255, 255, 255, .04), rgba(0, 0, 0, .08));
+    background-position: 0 0, 8px 8px, 0 0;
+    background-size: 16px 16px, 16px 16px, 100% 100%;
+    border-bottom: 2px solid #24262d;
+    box-shadow: inset 0 1px rgba(255, 255, 255, .08);
 }
 
 /* 사이트 이름과 홈 링크 */
 .site-header__logo {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
 }
 
 /* 등록된 PAYZON 로고를 원본 비율로 표시 */
 .site-header__logo img {
-	width: 126px;
-	height: 42px;
-	display: block;
-	object-fit: contain;
+    width: 126px;
+    height: 42px;
+    display: block;
+    object-fit: contain;
 }
 
 /* 아이콘으로 구성된 주요 업무 바로가기 목록 */
 .quick-menu {
-	height: 65px;
-	display: grid;
-	grid-template-columns: repeat(11, minmax(76px, 1fr));
-	margin: 0;
-	padding: 0;
-	list-style: none;
-	border-bottom: 1px solid #c8cdd2;
-	background: #fff;
+    height: 65px;
+    display: grid;
+    grid-template-columns: repeat(11, minmax(76px, 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid #c8cdd2;
+    background: #fff;
 }
 
 .quick-menu__item {
-	min-width: 0;
-	border-right: 1px dotted #d8d8d8;
+    min-width: 0;
+    border-right: 1px dotted #d8d8d8;
 }
 
 .quick-menu__link {
-	height: 65px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	gap: 2px;
-	font-size: 11px;
-	font-weight: 600;
-	white-space: nowrap;
-	transition: background-color .15s ease;
+    height: 65px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background-color .15s ease;
 }
 
 /* 바로가기 메뉴에 마우스를 올리거나 포커스했을 때 */
 .quick-menu__link:hover, .quick-menu__link:focus-visible {
-	background: #eef6fc;
-	color: #1765a5;
-	outline: none;
+    background: #eef6fc;
+    color: #1765a5;
+    outline: none;
 }
 
 /* 생성한 PNG 메뉴 아이콘의 표시 크기 */
 .quick-menu__icon-image {
-	width: 38px;
-	height: 38px;
-	display: block;
-	object-fit: contain;
+    width: 38px;
+    height: 38px;
+    display: block;
+    object-fit: contain;
 }
 
 /* 파란색 주 메뉴 영역 */
 .main-nav {
-	height: 30px;
-	background: linear-gradient(#347fc3, #1763ad);
-	box-shadow: inset 0 1px rgba(255, 255, 255, .28);
+    height: 30px;
+    background: linear-gradient(#347fc3, #1763ad);
+    box-shadow: inset 0 1px rgba(255, 255, 255, .28);
 }
 
 .main-nav__list {
-	height: 30px;
-	display: grid;
-	grid-template-columns: repeat(6, minmax(125px, 1fr));
-	margin: 0;
-	padding: 0;
-	list-style: none;
+    height: 30px;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(125px, 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
 .main-nav__item {
-	position: relative;
-	min-width: 0;
-	border-right: 1px solid rgba(255, 255, 255, .2);
-	border-left: 1px solid rgba(0, 42, 91, .18);
+    position: relative;
+    min-width: 0;
+    border-right: 1px solid rgba(255, 255, 255, .2);
+    border-left: 1px solid rgba(0, 42, 91, .18);
 }
 
 .main-nav__trigger {
-	height: 30px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 8px;
-	color: #fff !important;
-	font-size: 13px;
-	font-weight: 700;
-	white-space: nowrap;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #fff !important;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
 }
 
 .main-nav__trigger::after {
-	content: "";
-	width: 0;
-	height: 0;
-	border-left: 4px solid transparent;
-	border-right: 4px solid transparent;
-	border-top: 5px solid #caefff;
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid #caefff;
 }
 
 /* 주 메뉴에 마우스를 올렸을 때 어두운 선택 배경 표시 */
 .main-nav__item:hover .main-nav__trigger, .main-nav__item:focus-within .main-nav__trigger
-	{
-	background: linear-gradient(#424242, #292929);
+{
+    background: linear-gradient(#424242, #292929);
 }
 
 /* 평상시에는 숨겨져 있는 하위 드롭다운 메뉴 */
 .dropdown-menu {
-	position: absolute;
-	top: 30px;
-	left: 0;
-	width: 100%;
-	min-width: 166px;
-	margin: 0;
-	padding: 0;
-	list-style: none;
-	visibility: hidden;
-	opacity: 0;
-	transform: translateY(-4px);
-	background: #535762;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, .25);
-	transition: opacity .15s ease, transform .15s ease, visibility .15s;
+    position: absolute;
+    top: 30px;
+    left: 0;
+    width: 100%;
+    min-width: 166px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-4px);
+    background: #535762;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, .25);
+    transition: opacity .15s ease, transform .15s ease, visibility .15s;
 }
 
 /* 주 메뉴에 마우스를 올리거나 포커스하면 드롭다운 표시 */
 .main-nav__item:hover .dropdown-menu, .main-nav__item:focus-within .dropdown-menu
-	{
-	visibility: visible;
-	opacity: 1;
-	transform: translateY(0);
+{
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* 드롭다운 내부의 각 링크 */
 .dropdown-menu__link {
-	min-height: 30px;
-	display: flex;
-	align-items: center;
-	padding: 6px 20px;
-	border-top: 1px solid rgba(255, 255, 255, .06);
-	border-bottom: 1px solid rgba(0, 0, 0, .12);
-	color: #edf2f7 !important;
-	font-size: 13px;
-	line-height: 1.25;
-	white-space: nowrap;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    padding: 6px 20px;
+    border-top: 1px solid rgba(255, 255, 255, .06);
+    border-bottom: 1px solid rgba(0, 0, 0, .12);
+    color: #edf2f7 !important;
+    font-size: 13px;
+    line-height: 1.25;
+    white-space: nowrap;
 }
 
 .dropdown-menu__link:hover, .dropdown-menu__link:focus-visible {
-	padding-left: 24px;
-	background: #3f84be;
-	outline: none;
+    padding-left: 24px;
+    background: #3f84be;
+    outline: none;
 }
 
 /* 화면 폭이 좁을 때 일부 바로가기 메뉴를 숨김 */
 @media ( max-width : 1050px) {
-	.quick-menu {
-		grid-template-columns: repeat(6, 1fr);
-		height: auto;
-	}
-	.quick-menu__item:nth-child(n+7) {
-		display: none;
-	}
+    .quick-menu {
+        grid-template-columns: repeat(6, 1fr);
+        height: auto;
+    }
+    .quick-menu__item:nth-child(n+7) {
+        display: none;
+    }
 }

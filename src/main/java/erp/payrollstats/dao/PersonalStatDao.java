@@ -11,8 +11,14 @@ import java.util.Map;
 
 import jdbc.JdbcUtil;
 
+// 개인별통계 데이터를 데이터베이스에서 조회하고 저장·수정·삭제한다.
+// 個人別統計データをデータベースから照会し、登録・更新・削除する。
 public class PersonalStatDao {
 
+    // 조회 조건에 맞는 월간통계 데이터를 데이터베이스에서 조회한다.
+    // Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+    // 検索条件に合う月間統計データをデータベースから照会する。
+    // Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
     public Map<Integer, long[]> selectMonthlyStat(Connection conn, String year, String empNo) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -45,6 +51,10 @@ public class PersonalStatDao {
         }
     }
 
+    // 조회 조건에 맞는 사용가능연도 목록 데이터를 데이터베이스에서 조회한다.
+    // Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+    // 検索条件に合う利用可能年度一覧データをデータベースから照会する。
+    // Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
     public List<String> selectAvailableYears(Connection conn) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -64,6 +74,10 @@ public class PersonalStatDao {
         }
     }
 
+    // 조회 조건에 맞는 사원 데이터를 데이터베이스에서 조회한다.
+    // Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+    // 検索条件に合う社員データをデータベースから照会する。
+    // Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
     public List<Map<String, String>> searchEmployees(Connection conn, String keyword) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -72,6 +86,7 @@ public class PersonalStatDao {
         boolean hasKeyword = (keyword != null && !keyword.trim().isEmpty());
         
         // 💡 수정됨: 검색어가 없을 때 빈 리스트를 반환하던 조건문을 삭제했습니다. (연도별과 동일하게 통일)
+        // 検索語と選択条件を組み合わせ、利用者が指定した対象だけを照会する。
         
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT E.EMP_NO, E.EMP_TYPE, E.EMP_NAME_KR, D.DEPARTMENT_NAME, J.JOB_POSITION_NAME, E.STATUS ")
@@ -80,6 +95,7 @@ public class PersonalStatDao {
            .append("LEFT JOIN JOB_POSITION J ON E.JOB_POSITION_ID = J.JOB_POSITION_ID ");
            
         // 💡 검색어가 있을 때만 WHERE 절을 추가합니다.
+        // 検索語と選択条件を組み合わせ、利用者が指定した対象だけを照会する。
         if (hasKeyword) {
             sql.append("WHERE E.EMP_NAME_KR LIKE ? ")
                .append("   OR E.EMP_NO LIKE ? ")
@@ -92,6 +108,7 @@ public class PersonalStatDao {
             pstmt = conn.prepareStatement(sql.toString());
             
             // 💡 검색어가 있을 때만 ? 에 값을 세팅합니다.
+            // 検索語と選択条件を組み合わせ、利用者が指定した対象だけを照会する。
             if (hasKeyword) {
                 String searchVal = "%" + keyword.trim() + "%";
                 pstmt.setString(1, searchVal);
@@ -118,6 +135,10 @@ public class PersonalStatDao {
         }
     }
 
+    // 조회 조건에 맞는 사원명칭 데이터를 데이터베이스에서 조회한다.
+    // Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+    // 検索条件に合う社員名称データをデータベースから照会する。
+    // Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
     public String selectEmployeeName(Connection conn, String empNo) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;

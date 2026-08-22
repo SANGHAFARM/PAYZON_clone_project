@@ -13,8 +13,14 @@ import erp.payroll.dto.FourInsurancePage.FourInsuranceDeduction;
 import erp.payroll.dto.FourInsurancePage;
 
 // 급여 차수별 4대보험 공제액을 조회한다.
+// 4대보험보험 데이터를 데이터베이스에서 조회하고 저장·수정·삭제한다.
+// 四大保険保険データをデータベースから照会し、登録・更新・削除する。
 public class FourInsuranceDao {
 
+	// 조회 조건에 맞는 화면 데이터 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う画面データデータをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public FourInsurancePage selectPage(Connection conn, String year, String month, String sequence)
 			throws SQLException {
 		FourInsurancePage page = new FourInsurancePage();
@@ -23,6 +29,10 @@ public class FourInsuranceDao {
 		return page;
 	}
 
+	// 조회 조건에 맞는 기간 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う期間データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	private void selectPeriod(Connection conn, String year, String month, String sequence,
 			FourInsurancePage page) throws SQLException {
 		String sql = "SELECT MIN(CALC_START_DATE) CALC_START_DATE, MAX(CALC_END_DATE) CALC_END_DATE, "
@@ -41,6 +51,10 @@ public class FourInsuranceDao {
 		}
 	}
 
+	// 조회 조건에 맞는 공제 목록 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う控除一覧データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	private List<FourInsuranceDeduction> selectDeductions(Connection conn, String year, String month,
 			String sequence) throws SQLException {
 		Map<String, Integer> insuranceItemIds = selectInsuranceItemIds(conn);
@@ -89,6 +103,10 @@ public class FourInsuranceDao {
 	}
 
 	// 항목명은 보험 항목의 ID를 찾을 때만 사용하고, 금액 집계는 고정된 ID로 처리한다.
+	// 조회 조건에 맞는 보험항목Ids 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う保険項目Idsデータをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	private Map<String, Integer> selectInsuranceItemIds(Connection conn) throws SQLException {
 		String sql = "SELECT DEDUCT_ITEM_ID, DEDUCT_NAME FROM DEDUCT_ITEM "
 				+ "WHERE DEDUCT_NAME IN ('국민연금', '건강보험', '장기요양보험', '노인장기요양보험', '고용보험') "
@@ -107,6 +125,10 @@ public class FourInsuranceDao {
 		return result;
 	}
 
+	// 공제항목명을 국민연금·건강보험 등 화면에서 사용할 보험 구분으로 변환한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 控除項目名を国民年金・健康保険など画面で使用する保険区分へ変換する。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	private String insuranceType(String name) {
 		if ("국민연금".equals(name)) return "PENSION";
 		if ("건강보험".equals(name)) return "HEALTH";
@@ -115,11 +137,19 @@ public class FourInsuranceDao {
 		return null;
 	}
 
+	// 4대보험보험 데이터의 내부 식별번호를 반환한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 四大保険保険データの内部識別番号を返す。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	private int itemId(Map<String, Integer> itemIds, String type) {
 		Integer itemId = itemIds.get(type);
 		return itemId == null ? -1 : itemId;
 	}
 
+	// 조회값과 입력값을 조합하여 공제 처리 데이터를 구성한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 照会値と入力値を組み合わせて控除の処理データを構成する。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	private FourInsuranceDeduction makeDeduction(ResultSet rs) throws SQLException {
 		FourInsuranceDeduction deduction = new FourInsuranceDeduction();
 		deduction.setEmploymentTypeName(rs.getString("EMP_TYPE"));
@@ -127,6 +157,7 @@ public class FourInsuranceDao {
 		deduction.setDepartmentName(rs.getString("DEPARTMENT_NAME"));
 		deduction.setPositionName(rs.getString("POSITION_NAME"));
 		// 저장된 금액은 근로자 부담액이며 국민연금·건강보험 계열은 회사도 같은 금액을 부담한다.
+		// 支給額・控除額・期間値を業務基準に従って計算し、合計と最終金額へ反映する。
 		long pension = rs.getLong("PENSION");
 		long health = rs.getLong("HEALTH");
 		long care = rs.getLong("CARE");
@@ -143,10 +174,15 @@ public class FourInsuranceDao {
 			employmentBase = rs.getLong("GROSS_PAY");
 		}
 		// 회사는 실업급여분 외에 150인 미만 사업장 기준 0.25%를 추가 부담한다.
+		// 支給額・控除額・期間値を業務基準に従って計算し、合計と最終金額へ反映する。
 		deduction.setEmploymentEmployer(employment + roundDownTen(employmentBase * 0.0025));
 		return deduction;
 	}
 
+	// 계산된 보험료와 세액을 10단위로 절사하여 반환한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 計算した保険料と税額を10単位で切り捨てて返す。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	private long roundDownTen(double amount) {
 		return ((long) amount / 10) * 10;
 	}

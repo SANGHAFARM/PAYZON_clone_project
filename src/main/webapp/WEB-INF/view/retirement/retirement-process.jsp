@@ -1,3 +1,5 @@
+<%-- 조회 결과와 입력 양식을 표시하는 JSP 화면이다. --%>
+<%-- 照会結果と入力フォームを表示するJSP画面である。 --%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -21,24 +23,24 @@
             <h1>退職処理</h1>
         </div>
     </header>
-	<%--  EMPLOYEE中心JOIN結果と退職決済の有無を併せて表示する。 --%>
+    <%--  EMPLOYEE中心JOIN結果と退職決済の有無を併せて表示する。 --%>
     <section class="retirement-card">
         <div class="retirement-toolbar">
         <form class="retirement-keyword-search" method="get" action="${pageContext.request.contextPath}/retirement/process.do">
             <select name="searchTarget" aria-label="検索項目">
-				<option value="name" ${param.searchTarget eq 'name' ? 'selected' : ''}>氏名</option>
-				<option value="employeeNo" ${param.searchTarget eq 'employeeNo' ? 'selected' : ''}>社員番号</option>
-				<option value="department" ${param.searchTarget eq 'department' ? 'selected' : ''}>部署</option>
-				<option value="all" ${param.searchTarget eq 'all' ? 'selected' : ''}>全体</option>
+                <option value="name" ${param.searchTarget eq 'name' ? 'selected' : ''}>氏名</option>
+                <option value="employeeNo" ${param.searchTarget eq 'employeeNo' ? 'selected' : ''}>社員番号</option>
+                <option value="department" ${param.searchTarget eq 'department' ? 'selected' : ''}>部署</option>
+                <option value="all" ${param.searchTarget eq 'all' ? 'selected' : ''}>全体</option>
             </select>
             <input type="search" name="keyword" value="${param.keyword}"
-                   placeholder="検索語を入力" aria-label="検索語">
+                    placeholder="検索語を入力" aria-label="検索語">
             <button type="submit" class="search-button">検索</button>
             <a class="all-view" href="${pageContext.request.contextPath}/retirement/process.do">全体を見る</a>
             <select class="status-filter" name="status" aria-label="在職状況">
                 <option value="">ステータス別</option>
-				<option value="ACTIVE" ${param.status eq 'ACTIVE' ? 'selected' : ''}>在職</option>
-				<option value="RETIRED" ${param.status eq 'RETIRED' ? 'selected' : ''}>退職</option>
+                <option value="ACTIVE" ${param.status eq 'ACTIVE' ? 'selected' : ''}>在職</option>
+                <option value="RETIRED" ${param.status eq 'RETIRED' ? 'selected' : ''}>退職</option>
             </select>
             <button type="submit" class="search-button">照会</button>
         </form>
@@ -63,7 +65,7 @@
                     <tr class="employee-row">
                         <td><a href="#retirement-${employee.employeeId}">${status.count}</a></td>
                         <td><a href="#retirement-${employee.employeeId}"
-                               class="employee-status ${employee.status eq 'RETIRED' ? 'is-retired' : 'is-active'}"><ui:code-label value="${employee.statusName}" /></a></td>
+                                class="employee-status ${employee.status eq 'RETIRED' ? 'is-retired' : 'is-active'}"><ui:code-label value="${employee.statusName}" /></a></td>
                         <td><a href="#retirement-${employee.employeeId}">${employee.employeeNo}</a></td>
                         <td><a href="#retirement-${employee.employeeId}">${employee.name}</a></td>
                         <td><a href="#retirement-${employee.employeeId}">${employee.departmentName}</a></td>
@@ -75,7 +77,7 @@
                         <td><a href="#retirement-${employee.employeeId}">${employee.retirementSettlement ? '○' : '×'}</a></td>
                     </tr>
                 </c:forEach>
-				<c:if test="${empty employees}"><tr><td colspan="11" class="empty-row">検索された社員はありません。</td></tr></c:if>
+                <c:if test="${empty employees}"><tr><td colspan="11" class="empty-row">検索された社員はありません。</td></tr></c:if>
                 </tbody>
             </table>
         </div>
@@ -86,7 +88,7 @@
         </div>
     </section>
 
-	<%--  CSS：targetモーダルから退職情報を入力するか、既存の退職処理をキャンセルする。 --%>
+    <%--  CSS：targetモーダルから退職情報を入力するか、既存の退職処理をキャンセルする。 --%>
     <c:forEach var="employee" items="${employees}">
         <section id="retirement-${employee.employeeId}" class="retirement-modal-overlay">
             <div class="retirement-modal" role="dialog" aria-modal="true" aria-labelledby="title-${employee.employeeId}">
@@ -106,7 +108,7 @@
                             </c:when>
                             <c:otherwise>
                                 <label><span>退職区分</span><select name="retirementType"><option value="">選択</option><c:forEach var="type" items="${retirementTypes}"><option value="${type.code}">${type.name}</option></c:forEach></select></label>
-								<label><span>退職日</span><input type="date" lang="ja-JP" name="retirementDate" value="${empty employee.retirementDate ? currentDate : employee.retirementDate}"></label>
+                                <label><span>退職日</span><input type="date" lang="ja-JP" name="retirementDate" value="${empty employee.retirementDate ? currentDate : employee.retirementDate}"></label>
                             </c:otherwise>
                         </c:choose>
                         <label><span>退職理由</span><input type="text" name="retirementReason" value="${employee.retirementReason}" ${employee.status eq 'RETIRED' ? 'readonly' : ''}></label>

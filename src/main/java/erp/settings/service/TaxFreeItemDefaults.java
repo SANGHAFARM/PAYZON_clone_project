@@ -6,8 +6,14 @@ import java.util.List;
 import erp.settings.model.TaxFreeItem;
 
 /** 원본 PAYZON 급여항목 화면을 기준으로 제공하는 비과세·감면 소득 기본 코드 목록 */
+// 세금비과세항목기본값 정보를 보관하고 관련 기능에서 사용할 수 있도록 제공한다.
+// 税金非課税項目初期値情報を保持し、関連機能から利用できるように提供する。
 class TaxFreeItemDefaults {
 
+	// 전달받은 값으로 세금비과세항목기본값 객체의 초기 상태를 구성한다.
+	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
+	// 受け取った値で税金非課税項目初期値オブジェクトの初期状態を構成する。
+	// 生成時に受け取った必須値を各フィールドへ保持し、後続の照会と画面表示で再利用する。
 	private TaxFreeItemDefaults() {
 	}
 
@@ -64,6 +70,10 @@ class TaxFreeItemDefaults {
 		return items;
 	}
 
+	// 세금비과세항목기본값에서 사용할 전체 항목 목록을 구성하여 반환한다.
+	// 전달받은 값과 세금비과세항목기본값의 현재 상태를 기준으로 처리하며 호출자가 바로 사용할 수 있는 결과를 반환하거나 상태를 반영한다.
+	// 税金非課税項目初期値で使用する全項目一覧を構成して返す。
+	// 受け取った値と税金非課税項目初期値の現在状態を基準に処理し、呼び出し側が直ちに使用できる結果を返すか状態へ反映する。
 	private static TaxFreeItem item(String code, String legalClause, String reportField,
 			String name, long limit, String statementYn, String category) {
 		TaxFreeItem item = new TaxFreeItem();

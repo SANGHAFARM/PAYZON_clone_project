@@ -22,11 +22,17 @@ import erp.settings.service.JobPositionListService;
 import jdbc.connection.ConnectionProvider;
 import mvc.command.CommandHandler;
 
+// 일용직근로자조회 화면의 HTTP 요청을 구분하고 적절한 서비스 호출과 화면 이동을 담당한다.
+// 日雇い労働者照会画面のHTTPリクエストを判別し、適切なサービス呼び出しと画面遷移を担当する。
 public class DayWorkerInquiryHandler implements CommandHandler{
 	final private String FORM_VIEW = "/WEB-INF/view/attendance/day-worker-inquiry.jsp";
 	
 	
 	@Override
+	// 요청 방식과 작업 구분을 확인하여 일용직근로자조회 조회·저장 작업을 적절한 처리로 연결한다.
+	// 요청 파라미터를 검증해 Service에 전달하고 처리 결과를 request 또는 session에 저장한 뒤 JSP 포워드나 리다이렉트 경로를 결정한다.
+	// リクエスト方式と処理区分を確認し、日雇い労働者照会の照会・保存処理へ適切に振り分ける。
+	// リクエストパラメーターを検証してServiceへ渡し、処理結果をrequestまたはsessionへ保存した後、JSPフォワードまたはリダイレクト先を決定する。
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		if (req.getMethod().equalsIgnoreCase("GET")) {
 			return processForm(req, res);
@@ -36,6 +42,10 @@ public class DayWorkerInquiryHandler implements CommandHandler{
 		}
 	}
 	
+	// 일용직근로자조회 화면에 필요한 데이터를 조회하여 request에 저장하고 JSP 경로를 반환한다.
+	// 요청 파라미터를 검증해 Service에 전달하고 처리 결과를 request 또는 session에 저장한 뒤 JSP 포워드나 리다이렉트 경로를 결정한다.
+	// 日雇い労働者照会画面に必要なデータを照会してrequestへ保存し、JSPパスを返す。
+	// リクエストパラメーターを検証してServiceへ渡し、処理結果をrequestまたはsessionへ保存した後、JSPフォワードまたはリダイレクト先を決定する。
 	public String processForm(HttpServletRequest req, HttpServletResponse res) throws Exception{
 		String view = req.getParameter("view");
 		if (view==null) {
@@ -66,12 +76,14 @@ public class DayWorkerInquiryHandler implements CommandHandler{
 			req.setAttribute("jobPositions", jobPositionListService.list());
 		} 
 		//상세 조회
+		// 照会条件または詳細入力値を受け取り、送信後も現在の画面状態を維持する領域である。
 		else if ("detail".equals(view)) {
 			req.setAttribute("view", view);
 			
 
 
 			//현장/프로젝트 목록
+			// 対象一覧を順番に処理し、各行の入力値または照会結果を同じ基準で構成する。
 			ProjectDao projectDao = ProjectDao.getInstance();
 			try (Connection conn = ConnectionProvider.getConnection()){
 			List<Project> projects = projectDao.selectAll(conn);
@@ -79,6 +91,7 @@ public class DayWorkerInquiryHandler implements CommandHandler{
 			}
 			
 			//파라미터 기반으로 리퀘스트 생성
+			// リクエストから入力値を取得し、空白除去と形式変換を行って業務処理へ渡す。
 			String startStr = req.getParameter("startDate");
 			String endStr = req.getParameter("endDate");
 			String empNameKr = req.getParameter("empNameKr");
@@ -110,6 +123,7 @@ public class DayWorkerInquiryHandler implements CommandHandler{
 
 			
 			//일용직 근무 기록 상세 조회
+			// 照会条件または詳細入力値を受け取り、送信後も現在の画面状態を維持する領域である。
 		    DailyWorkDetailService dailyWorkDetailService = new DailyWorkDetailService();
 			List<DailyWorkDetailDto> dailyWorkDetail = dailyWorkDetailService.search(request);
 			req.setAttribute("dailyWorkDetail", dailyWorkDetail);

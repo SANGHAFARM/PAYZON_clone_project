@@ -26,18 +26,26 @@ import erp.settings.service.CompanyImageService;
 import erp.settings.service.DepartmentPositionService;
 import mvc.command.CommandHandler;
 
+// User정보설정 화면의 HTTP 요청을 구분하고 적절한 서비스 호출과 화면 이동을 담당한다.
+// User情報設定画面のHTTPリクエストを判別し、適切なサービス呼び出しと画面遷移を担当する。
 public class UserInfoSettingsHandler implements CommandHandler {
 	private static final long IMAGE_MAX_SIZE = 1024L * 1024L;
 	private static final int IMAGE_MAX_WIDTH = 150;
 
 	// 비즈니스 로직 처리를 위한 서비스 객체들을 싱글톤으로 불러옵니다.
+	// 同じサービスまたはDAOを共有できるよう、シングルトンインスタンスを生成して管理する。
 	private CompanyInfoService companyService = CompanyInfoService.getInstance();
 	private CompanyImageService imageService = CompanyImageService.getInstance();
 	private DepartmentPositionService deptPosService = DepartmentPositionService.getInstance();
 
 	@Override
+	// 요청 방식과 작업 구분을 확인하여 User정보설정 조회·저장 작업을 적절한 처리로 연결한다.
+	// 요청 파라미터를 검증해 Service에 전달하고 처리 결과를 request 또는 session에 저장한 뒤 JSP 포워드나 리다이렉트 경로를 결정한다.
+	// リクエスト方式と処理区分を確認し、User情報設定の照会・保存処理へ適切に振り分ける。
+	// リクエストパラメーターを検証してServiceへ渡し、処理結果をrequestまたはsessionへ保存した後、JSPフォワードまたはリダイレクト先を決定する。
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		// HTTP 요청 방식에 따라 화면 렌더링(GET)과 데이터 처리(POST)를 분기합니다.
+		// HTTPメソッドと処理区分を確認し、照会またはデータ変更に対応する処理へ分岐する。
 		if (req.getMethod().equalsIgnoreCase("GET")) {
 			return processForm(req, res);
 		} else if (req.getMethod().equalsIgnoreCase("POST")) {
@@ -47,15 +55,21 @@ public class UserInfoSettingsHandler implements CommandHandler {
 	}
 
 	// [GET] 화면 렌더링을 위한 데이터베이스 조회 및 바인딩 로직
+	// User정보설정 화면에 필요한 데이터를 조회하여 request에 저장하고 JSP 경로를 반환한다.
+	// 요청 파라미터를 검증해 Service에 전달하고 처리 결과를 request 또는 session에 저장한 뒤 JSP 포워드나 리다이렉트 경로를 결정한다.
+	// User情報設定画面に必要なデータを照会してrequestへ保存し、JSPパスを返す。
+	// リクエストパラメーターを検証してServiceへ渡し、処理結果をrequestまたはsessionへ保存した後、JSPフォワードまたはリダイレクト先を決定する。
 	private String processForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		int companyId = 1;
 
 		// 데이터베이스에서 실제 등록된 회사, 부서, 직위 정보를 조회합니다.
+		// 社員の識別情報と在職・雇用・所属条件を確認し、対象社員データへ反映する。
 		Company companyInfo = companyService.getCompanyDetails(companyId);
 		List<Department> departmentList = deptPosService.getDepartmentOptions();
 		List<JobPosition> positionList = deptPosService.getJobPositionOptions();
 
 		// JSP 화면에서 JSTL을 통해 사용할 수 있도록 Request 객체에 데이터를 담아줍니다.
+		// 画面表示に必要なデータとメッセージをrequestまたはsessionへ保存し、JSPへ引き渡す。
 		req.setAttribute("company", companyInfo);
 		req.setAttribute("departmentList", departmentList);
 		req.setAttribute("positionList", positionList);
@@ -71,10 +85,15 @@ public class UserInfoSettingsHandler implements CommandHandler {
 	}
 
 	// [POST] 폼 전송(Submit) 시 action 파라미터 값에 따른 분기 처리 로직
+	// 요청에서 작업구분 작업에 필요한 값을 읽고 검증한 뒤 해당 서비스 처리를 호출한다.
+	// 요청 파라미터를 검증해 Service에 전달하고 처리 결과를 request 또는 session에 저장한 뒤 JSP 포워드나 리다이렉트 경로를 결정한다.
+	// リクエストから処理区分処理に必要な値を取得・検証し、該当するサービス処理を呼び出す。
+	// リクエストパラメーターを検証してServiceへ渡し、処理結果をrequestまたはsessionへ保存した後、JSPフォワードまたはリダイレクト先を決定する。
 	private String processAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		req.setCharacterEncoding("UTF-8");
 
 		// JSP 폼 버튼에서 넘어온 기능 구분 값 (save, saveLogo, deleteLogo 등)
+		// 画面表示に必要なデータとメッセージをrequestまたはsessionへ保存し、JSPへ引き渡す。
 		String action = req.getParameter("action");
 		int companyId = 1;
 		String managerTarget = "";
@@ -128,11 +147,13 @@ public class UserInfoSettingsHandler implements CommandHandler {
 
 			} else if ("save".equals(action)) {
 				// 회사 텍스트 정보 전체 저장
+				// 会社基本情報と担当者情報をリクエストから読み取り、一括保存処理へ渡す。
 				saveCompanyTextInfo(req);
 				req.getSession().setAttribute("message", "기본환경설정이 성공적으로 저장되었습니다.");
 
 			} else if ("saveLogo".equals(action)) {
 				// 기본 이미지 선택 시 프로젝트 이미지를 사용하고, 그 외에는 업로드 파일을 저장합니다.
+				// 選択された画像識別値と保存パスを確認し、登録済み画像を各画面で再利用できるようにする。
 				String savedPath = "payzon".equals(req.getParameter("logoPreset"))
 						? "/images/settings/presets/payzon-logo.png"
 						: saveImageFile(req, req.getPart("logoFile"), "logo", companyId);
@@ -141,6 +162,7 @@ public class UserInfoSettingsHandler implements CommandHandler {
 
 			} else if ("deleteLogo".equals(action)) {
 				// DB 경로와 서버에 저장된 실제 파일을 함께 삭제합니다.
+				// 選択された画像識別値と保存パスを確認し、登録済み画像を各画面で再利用できるようにする。
 				imageService.deleteImage(companyId, "logo");
 				deleteImageFile(req, "logo", companyId);
 				req.getSession().setAttribute("message", "로고 이미지가 삭제되었습니다.");
@@ -177,10 +199,15 @@ public class UserInfoSettingsHandler implements CommandHandler {
 		}
 
 		// 로직 처리가 완료되면 POST 중복 전송 방지를 위해 GET 방식의 조회 페이지로 리다이렉트합니다.
+		// 重複値とデータベース制約違反を確認し、保存可能なデータだけを処理する。
 		res.sendRedirect(req.getContextPath() + "/settings/user-info.do" + managerTarget);
 		return null;
 	}
 
+	// 입력 데이터를 식별번호 처리에 필요한 형식으로 변환한다.
+	// 누락되거나 잘못된 파라미터가 500 오류로 이어지지 않도록 기본값과 형식 검사를 적용한다.
+	// 入力データを識別番号処理に必要な形式へ変換する。
+	// 不足または不正なパラメーターが500エラーにつながらないよう、初期値と形式検証を適用する。
 	private int parseId(String value) {
 		try {
 			int id = Integer.parseInt(value);
@@ -189,15 +216,24 @@ public class UserInfoSettingsHandler implements CommandHandler {
 			}
 		} catch (NumberFormatException e) {
 			// 아래의 공통 안내로 처리한다.
+			// 個別処理で生成したメッセージを共通案内方式へ統一し、一度だけ画面へ表示する。
 		}
 		throw new IllegalArgumentException("잘못된 설정 항목입니다.");
 	}
 
+	// 요청 문자열을 정리하고 공백제거 처리에 필요한 안전한 값으로 변환한다.
+	// 누락되거나 잘못된 파라미터가 500 오류로 이어지지 않도록 기본값과 형식 검사를 적용한다.
+	// リクエスト文字列を整え、空白除去処理に必要な安全な値へ変換する。
+	// 不足または不正なパラメーターが500エラーにつながらないよう、初期値と形式検証を適用する。
 	private String trim(String value) {
 		return value == null ? "" : value.trim();
 	}
 
 	// 업로드 파일을 검증한 뒤 가로 150px 이하의 PNG 이미지로 저장합니다.
+	// 입력값을 검증한 후 이미지파일 데이터를 트랜잭션으로 저장하거나 수정한다.
+	// 화면에서 전달된 값과 현재 조회조건을 유지하면서 필요한 request 속성 또는 이동 URL을 구성한다.
+	// 入力値を検証した後、画像ファイルデータをトランザクションで登録または更新する。
+	// 画面から渡された値と現在の検索条件を維持しながら、必要なrequest属性または遷移URLを構成する。
 	private String saveImageFile(HttpServletRequest req, Part filePart, String imageType, int companyId)
 			throws IOException {
 		if (filePart == null || filePart.getSize() == 0) {
@@ -253,11 +289,19 @@ public class UserInfoSettingsHandler implements CommandHandler {
 	}
 
 	// 삭제 요청 시 현재 저장 규칙의 파일과 기존 임시 구현의 파일을 함께 정리합니다.
+	// 선택되거나 식별된 이미지파일 데이터를 삭제하고 관련 상태를 정리한다.
+	// 화면에서 전달된 값과 현재 조회조건을 유지하면서 필요한 request 속성 또는 이동 URL을 구성한다.
+	// 選択または識別された画像ファイルデータを削除し、関連状態を整理する。
+	// 画面から渡された値と現在の検索条件を維持しながら、必要なrequest属性または遷移URLを構成する。
 	private void deleteImageFile(HttpServletRequest req, String imageType, int companyId) throws IOException {
 		deleteWebFile(req, "/upload/company/" + imageType + "_" + companyId + ".png");
 		deleteWebFile(req, "/upload/" + imageType + "_" + companyId + ".png");
 	}
 
+	// 선택되거나 식별된 웹파일 데이터를 삭제하고 관련 상태를 정리한다.
+	// 화면에서 전달된 값과 현재 조회조건을 유지하면서 필요한 request 속성 또는 이동 URL을 구성한다.
+	// 選択または識別されたWebファイルデータを削除し、関連状態を整理する。
+	// 画面から渡された値と現在の検索条件を維持しながら、必要なrequest属性または遷移URLを構成する。
 	private void deleteWebFile(HttpServletRequest req, String webPath) throws IOException {
 		String realPath = req.getServletContext().getRealPath(webPath);
 		if (realPath != null) {
@@ -266,6 +310,10 @@ public class UserInfoSettingsHandler implements CommandHandler {
 	}
 
 	// 화면에서 입력받은 회사 기본정보를 추출하여 DB에 저장하는 헬퍼 메서드
+	// 입력값을 검증한 후 사업장표시문자정보 데이터를 트랜잭션으로 저장하거나 수정한다.
+	// 화면에서 전달된 값과 현재 조회조건을 유지하면서 필요한 request 속성 또는 이동 URL을 구성한다.
+	// 入力値を検証した後、事業所表示文字情報データをトランザクションで登録または更新する。
+	// 画面から渡された値と現在の検索条件を維持しながら、必要なrequest属性または遷移URLを構成する。
 	private void saveCompanyTextInfo(HttpServletRequest req) throws Exception {
 		Company company = new Company();
 
@@ -308,6 +356,7 @@ public class UserInfoSettingsHandler implements CommandHandler {
 		company.setPayAccountHolder(req.getParameter("payAccountHolder"));
 
 		// 회사정보만 수정할 때 이미 등록된 로고와 도장 경로가 지워지지 않도록 보존합니다.
+		// 選択された画像識別値と保存パスを確認し、登録済み画像を各画面で再利用できるようにする。
 		Company existingCompany = companyService.getCompanyDetails(company.getCompanyId());
 		if (existingCompany != null) {
 			company.setLogoImgPath(existingCompany.getLogoImgPath());

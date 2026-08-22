@@ -6,9 +6,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 // JDBC 연동 과정에서 사용한 자원(Connection, Statement, ResultSet)을 안전하게 닫거나 롤백하기 위한 공통 유틸리티 클래스
+// JDBC 관련 반복 처리를 재사용할 수 있는 공통 기능으로 제공한다.
+// JDBCに関する共通処理を再利用可能な機能として提供する。
 public class JdbcUtil {
 
     // ResultSet(조회 결과 데이터) 객체가 null이 아닐 경우 예외 발생 없이 안전하게 자원을 해제하는 메서드
+    // 사용이 끝난 데이터베이스 연결이나 입출력 자원을 안전하게 닫는다.
+    // 대상이 NULL이거나 처리 중 예외가 발생해도 후속 정리 과정이 중단되지 않도록 예외를 안전하게 처리한다.
+    // 使用済みのデータベース接続または入出力リソースを安全に閉じる。
+    // 対象がNULLまたは処理中に例外が発生しても後続の整理処理が中断しないよう、例外を安全に処理する。
     public static void close(ResultSet rs) {
         if (rs != null) {
             try {
@@ -19,6 +25,10 @@ public class JdbcUtil {
     }
 
     // Statement(또는 PreparedStatement, 실행할 SQL 쿼리문) 객체가 null이 아닐 경우 예외 발생 없이 안전하게 자원을 해제하는 메서드
+    // 사용이 끝난 데이터베이스 연결이나 입출력 자원을 안전하게 닫는다.
+    // 대상이 NULL이거나 처리 중 예외가 발생해도 후속 정리 과정이 중단되지 않도록 예외를 안전하게 처리한다.
+    // 使用済みのデータベース接続または入出力リソースを安全に閉じる。
+    // 対象がNULLまたは処理中に例外が発生しても後続の整理処理が中断しないよう、例外を安全に処理する。
     public static void close(Statement stmt) {
         if (stmt != null) {
             try {
@@ -29,6 +39,10 @@ public class JdbcUtil {
     }
 
     // Connection(DB 연결) 객체가 null이 아닐 경우 예외 발생 없이 커넥션 풀로 반환(또는 연결 종료)하는 메서드
+    // 사용이 끝난 데이터베이스 연결이나 입출력 자원을 안전하게 닫는다.
+    // 대상이 NULL이거나 처리 중 예외가 발생해도 후속 정리 과정이 중단되지 않도록 예외를 안전하게 처리한다.
+    // 使用済みのデータベース接続または入出力リソースを安全に閉じる。
+    // 対象がNULLまたは処理中に例外が発生しても後続の整理処理が中断しないよう、例外を安全に処理する。
     public static void close(Connection conn) {
         if (conn != null) {
             try {
@@ -39,6 +53,10 @@ public class JdbcUtil {
     }
 
     // 트랜잭션 처리 중 오류가 발생했을 때, 지금까지 실행된 DB 작업들을 취소하고 안전하게 이전 상태로 되돌리는(롤백) 메서드
+    // 처리 중 오류가 발생한 데이터베이스 작업을 이전 상태로 되돌린다.
+    // 대상이 NULL이거나 처리 중 예외가 발생해도 후속 정리 과정이 중단되지 않도록 예외를 안전하게 처리한다.
+    // 処理中にエラーが発生したデータベース操作を以前の状態へロールバックする。
+    // 対象がNULLまたは処理中に例外が発生しても後続の整理処理が中断しないよう、例外を安全に処理する。
     public static void rollback(Connection conn) {
         if (conn != null) {
             try {

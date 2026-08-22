@@ -10,11 +10,18 @@ import java.util.List;
 import erp.retirement.model.RetirementIncomeEntry;
 
 // 퇴직급여 계산에 사용할 최근 급여 지급액을 조회한다.
+// 퇴직급여정산Query 데이터를 데이터베이스에서 조회하고 저장·수정·삭제한다.
+// 退職給与精算Queryデータをデータベースから照会し、登録・更新・削除する。
 public class RetirementBenefitQueryDao {
 
+	// 조회 조건에 맞는 최근급여상세내역 목록 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う直近給与明細一覧データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<RetirementIncomeEntry> selectRecentSalaryEntries(Connection conn, int employeeId,
 			String endDate) throws SQLException {
 		// 정산 종료일 기준 직전 3개월을 달력월 경계로 나누고, 첫·마지막 월은 일할 계산한다.
+		// 基準日と期間の境界を確認し、照会・計算に使用できる日付形式へ変換する。
 		String sql = "WITH PARAMS AS ("
 				+ " SELECT TO_DATE(?, 'YYYY-MM-DD') END_DATE, "
 				+ " ADD_MONTHS(TO_DATE(?, 'YYYY-MM-DD'), -3) + 1 START_DATE FROM DUAL"

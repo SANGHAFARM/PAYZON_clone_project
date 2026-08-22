@@ -13,8 +13,14 @@ import erp.payroll.model.PayrollRun;
 import jdbc.JdbcUtil;
 
 // 급여명세서의 회차·사원·지급·공제 내역을 조회한다.
+// 급여명세서 데이터를 데이터베이스에서 조회하고 저장·수정·삭제한다.
+// 給与明細書データをデータベースから照会し、登録・更新・削除する。
 public class PayrollPayslipDao {
 
+	// 조회 조건에 맞는 급여 회차 목록 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う給与回次一覧データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<PayrollRun> selectRuns(Connection conn, String year, String month, String sequence)
 			throws SQLException {
 		String sql = "SELECT * FROM PAYROLL_RUN WHERE PAY_YEAR = ? AND PAY_MONTH = ? AND PAY_SEQ = ? "
@@ -42,6 +48,10 @@ public class PayrollPayslipDao {
 		}
 	}
 
+	// 조회 조건에 맞는 사원 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う社員データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<PayrollPayslipEmployee> selectEmployees(Connection conn, String year, String month, String sequence,
 			String keyword) throws SQLException {
 		String sql = "SELECT DISTINCT E.EMPLOYEE_ID, E.EMP_TYPE, E.EMP_NAME_KR, "
@@ -85,6 +95,10 @@ public class PayrollPayslipDao {
 		}
 	}
 
+	// 누락된 금액 목록 값을 기본값으로 채워 화면 계산과 합계 처리를 안정화한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 不足している金額一覧の値を初期値で補い、画面計算と合計処理を安定させる。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	public void fillAmounts(Connection conn, String year, String month, String sequence,
 			List<PayrollPayslipEmployee> employees) throws SQLException {
 		String sql = "SELECT PE.EMPLOYEE_ID, EN.PAY_ITEM_ID, EN.DEDUCT_ITEM_ID, EN.AMOUNT, "
@@ -120,6 +134,10 @@ public class PayrollPayslipDao {
 		}
 	}
 
+	// 누락된 일용직지급내역 값을 기본값으로 채워 화면 계산과 합계 처리를 안정화한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 不足している日雇い支給明細の値を初期値で補い、画面計算と合計処理を安定させる。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	public void fillDailyPayments(Connection conn, String year, String month, String sequence,
 			List<PayrollPayslipEmployee> employees) throws SQLException {
 		String sql = "SELECT PE.EMPLOYEE_ID, NVL(SUM(W.DAILY_PAY), 0) AMOUNT FROM PAYROLL_RUN R "
@@ -144,6 +162,10 @@ public class PayrollPayslipDao {
 		}
 	}
 
+	// 조회 조건에 맞는 지급표시항목 목록 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う支給表示項目一覧データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<PayrollRegisterColumn> selectPaymentColumns(Connection conn, String year, String month,
 			String sequence, int employeeId) throws SQLException {
 		String sql = "SELECT DISTINCT P.PAY_ITEM_ID ITEM_ID, P.PAY_NAME ITEM_NAME FROM PAYROLL_RUN R "
@@ -154,6 +176,10 @@ public class PayrollPayslipDao {
 		return selectColumns(conn, sql, year, month, sequence, employeeId);
 	}
 
+	// 조회 조건에 맞는 공제표시항목 목록 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う控除表示項目一覧データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<PayrollRegisterColumn> selectDeductionColumns(Connection conn, String year, String month,
 			String sequence, int employeeId) throws SQLException {
 		String sql = "SELECT DISTINCT D.DEDUCT_ITEM_ID ITEM_ID, D.DEDUCT_NAME ITEM_NAME FROM PAYROLL_RUN R "
@@ -164,6 +190,10 @@ public class PayrollPayslipDao {
 		return selectColumns(conn, sql, year, month, sequence, employeeId);
 	}
 
+	// 조회 조건에 맞는 표시항목 목록 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う表示項目一覧データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	private List<PayrollRegisterColumn> selectColumns(Connection conn, String sql, String year, String month,
 			String sequence, int employeeId) throws SQLException {
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -181,11 +211,19 @@ public class PayrollPayslipDao {
 		}
 	}
 
+	// 전달받은 금액 데이터를 데이터베이스에 등록하고 처리 건수를 반환한다.
+	// 전달받은 Connection 안에서 SQL 매개변수를 바인딩해 실행하며 commit과 rollback은 호출한 Service가 제어한다.
+	// 受け取った金額データをデータベースへ登録し、処理件数を返す。
+	// 受け取ったConnection内でSQLパラメーターをバインドして実行し、commitとrollbackは呼び出し元のServiceが制御する。
 	private void addAmount(java.util.Map<Integer, Long> amounts, int itemId, long amount) {
 		long current = amounts.containsKey(itemId) ? amounts.get(itemId) : 0;
 		amounts.put(itemId, current + amount);
 	}
 
+	// 조회 조건에 맞는 사원 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う社員データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	private PayrollPayslipEmployee findEmployee(List<PayrollPayslipEmployee> employees, int employeeId) {
 		for (PayrollPayslipEmployee employee : employees) {
 			if (employee.getEmployeeId() == employeeId) {

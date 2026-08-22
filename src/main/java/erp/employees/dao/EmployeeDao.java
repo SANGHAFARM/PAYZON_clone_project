@@ -18,21 +18,36 @@ import erp.employees.service.EmployeeSearchCondition;
 import jdbc.JdbcUtil; // 자원 반환용 유틸리티 클래스
 
 // 사원 기본정보 데이터베이스 접근(DAO) 클래스
+// 사원 데이터를 데이터베이스에서 조회하고 저장·수정·삭제한다.
+// 社員データをデータベースから照会し、登録・更新・削除する。
 public class EmployeeDao {
 
 	// 싱글톤 인스턴스 생성
+	// 同じサービスまたはDAOを共有できるよう、シングルトンインスタンスを生成して管理する。
 	private static EmployeeDao employeeDao = new EmployeeDao();
 
 	// 싱글톤 접근 메서드
+	// 여러 서비스에서 공유할 수 있도록 생성된 싱글톤 인스턴스를 반환한다.
+	// 객체 생성을 한 곳으로 제한하여 모든 호출자가 동일한 DAO 인스턴스를 재사용하게 한다.
+	// 複数のサービスで共有できるように生成されたシングルトンインスタンスを返す。
+	// オブジェクト生成を一箇所へ制限し、すべての呼び出し側が同じDAOインスタンスを再利用できるようにする。
 	public static EmployeeDao getInstance() {
 		return employeeDao;
 	}
 
 	// 외부에서 객체 생성을 못 하도록 생성자를 private으로 제한
+	// 전달받은 값으로 사원 객체의 초기 상태를 구성한다.
+	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
+	// 受け取った値で社員オブジェクトの初期状態を構成する。
+	// 生成時に受け取った必須値を各フィールドへ保持し、後続の照会と画面表示で再利用する。
 	private EmployeeDao() {
 	}
 
 	// 신규 사원과 하위 이력이 동일한 PK를 사용하도록 INSERT 전에 시퀀스 값을 확보합니다.
+	// 시퀀스에서 다음 사원식별번호를 발급하여 신규 데이터 저장에 사용한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// シーケンスから次の社員識別番号を発行し、新規データの登録に使用する。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	public int nextEmployeeId(Connection conn) throws SQLException {
 		String sql = "SELECT EMPLOYEE_SEQ.NEXTVAL FROM DUAL";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
@@ -44,6 +59,10 @@ public class EmployeeDao {
 	}
 
 	// 서비스에서 미리 발급한 PK로 사원의 전체 정보를 저장합니다.
+	// 전달받은 사원 데이터를 데이터베이스에 등록하고 처리 건수를 반환한다.
+	// 전달받은 Connection 안에서 SQL 매개변수를 바인딩해 실행하며 commit과 rollback은 호출한 Service가 제어한다.
+	// 受け取った社員データをデータベースへ登録し、処理件数を返す。
+	// 受け取ったConnection内でSQLパラメーターをバインドして実行し、commitとrollbackは呼び出し元のServiceが制御する。
 	public void insert(Connection conn, Employee emp) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
@@ -136,7 +155,12 @@ public class EmployeeDao {
 	}
 
 	// 사원 정보 단건 조회
+	// 社員の識別情報と在職・雇用・所属条件を確認し、対象社員データへ反映する。
 	// 기본키(EMPLOYEE_ID)를 기준으로 단일 사원 데이터 반환
+	// 조회 조건에 맞는 By식별번호 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合うBy識別番号データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public Employee selectById(Connection conn, int empId) throws SQLException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -157,7 +181,12 @@ public class EmployeeDao {
 	}
 
 	// 사원 정보 전체 조회
+	// 社員の識別情報と在職・雇用・所属条件を確認し、対象社員データへ反映する。
 	// 가장 최근에 등록된 사원부터 내림차순 정렬하여 목록 반환
+	// 조회 조건에 맞는 전체 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う全体データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<Employee> selectAll(Connection conn) throws SQLException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -178,6 +207,10 @@ public class EmployeeDao {
 	}
 
 	// 사원현황 검색조건에 맞는 전체 행 수 조회 (페이징 계산용)
+	// 조회 조건에 맞는 By검색조건 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合うBy検索条件データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public int countByCondition(Connection conn, EmployeeSearchCondition condition) throws SQLException {
 		StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM EMPLOYEE E ");
 		sql.append("LEFT JOIN DEPARTMENT D ON E.DEPARTMENT_ID = D.DEPARTMENT_ID ");
@@ -191,6 +224,10 @@ public class EmployeeDao {
 	}
 
 	// EMPLOYEE를 중심으로 부서와 직위를 JOIN하여 화면용 사원 목록 조회
+	// 조회 조건에 맞는 목록By검색조건 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う一覧By検索条件データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<EmployeeListItem> selectListByCondition(Connection conn, EmployeeSearchCondition condition)
 			throws SQLException {
 		StringBuilder inner = new StringBuilder();
@@ -223,6 +260,10 @@ public class EmployeeDao {
 	}
 	
 	//근태관리 전용 사원 목록 조회 메서드
+	// 조회 조건에 맞는 근태사원 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う勤怠社員データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<AttendanceEmployeeDto> selectAttendanceEmployees(Connection conn, String keyword, String status) throws SQLException{
 		String sql = "SELECT E.EMPLOYEE_ID, E.EMP_TYPE, E.EMP_NO, E.EMP_NAME_KR, D.DEPARTMENT_NAME, J.JOB_POSITION_NAME "
 				+ "FROM EMPLOYEE E "
@@ -232,6 +273,7 @@ public class EmployeeDao {
 				+ "AND (? IS NULL OR ? = '' OR E.STATUS = ?)";
 		try(PreparedStatement pstmt = conn.prepareStatement(sql)){
 			//keyword 세팅
+			// 検索語と選択条件を組み合わせ、利用者が指定した対象だけを照会する。
 			pstmt.setString(1, keyword);
 			pstmt.setString(2, keyword);
 			pstmt.setString(3, keyword);
@@ -240,6 +282,7 @@ public class EmployeeDao {
 			pstmt.setString(6, keyword);
 			
 			//재직 상태 세팅
+			// 社員の識別情報と在職・雇用・所属条件を確認し、対象社員データへ反映する。
 			pstmt.setString(7, status);
 			pstmt.setString(8, status);
 			pstmt.setString(9, status);
@@ -263,6 +306,10 @@ public class EmployeeDao {
 	}
 	
 	//일용직 사원 정보 전용 조회 메서드
+	// 조회 조건에 맞는 일용직근로자목록By검색어And상태 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う日雇い労働者一覧By検索語And状態データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<DayWorkerDto> selectDayWorkerListByKeywordAndStatus(Connection conn, String keyword, String status) throws SQLException{
 		String sql="SELECT E.EMPLOYEE_ID, E.EMP_TYPE, E.EMP_NO, E.EMP_NAME_KR, "
 				+ "D.DEPARTMENT_NAME FROM EMPLOYEE E "
@@ -272,6 +319,7 @@ public class EmployeeDao {
 				+ "AND (? IS NULL OR ? = '' OR E.STATUS = ?)";
 		try(PreparedStatement pstmt = conn.prepareStatement(sql)){
 			//keyword 세팅
+			// 検索語と選択条件を組み合わせ、利用者が指定した対象だけを照会する。
 			pstmt.setString(1, keyword);
 			pstmt.setString(2, keyword);
 			pstmt.setString(3, keyword);
@@ -279,6 +327,7 @@ public class EmployeeDao {
 			pstmt.setString(5, keyword);
 			
 			//재직 상태 세팅
+			// 社員の識別情報と在職・雇用・所属条件を確認し、対象社員データへ反映する。
 			pstmt.setString(6, status);
 			pstmt.setString(7, status);
 			pstmt.setString(8, status);
@@ -299,6 +348,10 @@ public class EmployeeDao {
 	}
 
 	// 전체 사원을 상태 및 고용형태별로 집계하여 상단 현황 카드에 표시
+	// 조회 조건에 맞는 요약정보 데이터를 데이터베이스에서 조회한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// 検索条件に合う集計情報データをデータベースから照会する。
+	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public EmployeeSummary selectSummary(Connection conn) throws SQLException {
 		String sql = "SELECT COUNT(*) TOTAL_COUNT, "
 				+ "SUM(CASE WHEN STATUS = '재직' THEN 1 ELSE 0 END) WORKING_COUNT, "
@@ -326,8 +379,13 @@ public class EmployeeDao {
 		}
 	}
 
+	// 입력된 검색조건에 해당하는 WHERE 절과 PreparedStatement 매개변수를 동적으로 추가한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 入力された検索条件に対応するWHERE句とPreparedStatementパラメーターを動的に追加する。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	private void appendConditions(StringBuilder sql, List<Object> params, EmployeeSearchCondition condition) {
 		// 목록과 COUNT 쿼리에 동일한 WHERE 조건을 적용하기 위한 공통 메서드
+		// 業務条件に合うSQLを準備し、入力値をバインドしてデータベースで実行する。
 		if (condition.getDepartmentId() != null) { sql.append("AND E.DEPARTMENT_ID = ? "); params.add(condition.getDepartmentId()); }
 		if (condition.getPositionId() != null) { sql.append("AND E.JOB_POSITION_ID = ? "); params.add(condition.getPositionId()); }
 		if (!condition.getEmploymentType().isEmpty()) {
@@ -349,12 +407,21 @@ public class EmployeeDao {
 		}
 	}
 
+	// 전달받은 매개변수 값을 사원 객체에 저장한다.
+	// 요청값이나 조회 결과로 전달된 값을 대응하는 필드에 반영하여 객체의 현재 상태를 갱신한다.
+	// 受け取ったパラメーターの値を社員オブジェクトに保存する。
+	// リクエスト値または照会結果として渡された値を対応フィールドへ反映し、オブジェクトの現在状態を更新する。
 	private void setParameters(PreparedStatement pstmt, List<Object> params) throws SQLException {
 		for (int i = 0; i < params.size(); i++) pstmt.setObject(i + 1, params.get(i));
 	}
 
+	// 조회값과 입력값을 조합하여 사원목록항목 처리 데이터를 구성한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 照会値と入力値を組み合わせて社員一覧項目の処理データを構成する。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	private EmployeeListItem makeEmployeeListItem(ResultSet rs) throws SQLException {
 		// JOIN 조회 결과를 JSP 전용 DTO로 변환한다.
+		// 照会結果を列ごとに読み取り、画面またはサービスで使用するオブジェクトへ変換する。
 		EmployeeListItem item = new EmployeeListItem();
 		item.setEmployeeId(rs.getInt("EMPLOYEE_ID"));
 		item.setEmploymentType(rs.getString("EMP_TYPE"));
@@ -385,6 +452,10 @@ public class EmployeeDao {
 	}
 
 	// 사원 퇴직처리 시 상태와 퇴직 관련 컬럼만 갱신한다.
+	// 식별조건에 해당하는 퇴직급여 데이터를 전달받은 값으로 수정한다.
+	// 전달받은 Connection 안에서 SQL 매개변수를 바인딩해 실행하며 commit과 rollback은 호출한 Service가 제어한다.
+	// 識別条件に該当する退職給与データを受け取った値で更新する。
+	// 受け取ったConnection内でSQLパラメーターをバインドして実行し、commitとrollbackは呼び出し元のServiceが制御する。
 	public int updateRetirement(Connection conn, int employeeId, String retireType, java.util.Date retireDate,
 			String retireReason, String afterContact) throws SQLException {
 		String sql = "UPDATE EMPLOYEE SET STATUS = '퇴직', RETIRE_TYPE = ?, RETIRE_DATE = ?, RETIRE_REASON = ?, AFTER_RETIRE_CONTACT = ? WHERE EMPLOYEE_ID = ?";
@@ -399,6 +470,10 @@ public class EmployeeDao {
 	}
 
 	// 퇴직처리를 취소하면 재직 상태로 복원하고 퇴직정보를 초기화한다.
+	// 사원의 퇴직처리를 취소하고 퇴직일자·사유·연락처를 초기화한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 社員の退職処理を取り消し、退職日・理由・連絡先を初期化する。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	public int cancelRetirement(Connection conn, int employeeId) throws SQLException {
 		String sql = "UPDATE EMPLOYEE SET STATUS = '재직', RETIRE_TYPE = NULL, RETIRE_DATE = NULL, RETIRE_REASON = NULL, AFTER_RETIRE_CONTACT = NULL WHERE EMPLOYEE_ID = ? AND STATUS = '퇴직'";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -408,7 +483,12 @@ public class EmployeeDao {
 	}
 
 	// 사원 정보 수정
+	// 社員の識別情報と在職・雇用・所属条件を確認し、対象社員データへ反映する。
 	// 기본키를 기준으로 전체 48개 항목의 데이터 갱신
+	// 식별조건에 해당하는 사원 데이터를 전달받은 값으로 수정한다.
+	// 전달받은 Connection 안에서 SQL 매개변수를 바인딩해 실행하며 commit과 rollback은 호출한 Service가 제어한다.
+	// 識別条件に該当する社員データを受け取った値で更新する。
+	// 受け取ったConnection内でSQLパラメーターをバインドして実行し、commitとrollbackは呼び出し元のServiceが制御する。
 	public int update(Connection conn, Employee emp) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
@@ -501,7 +581,12 @@ public class EmployeeDao {
 	}
 
 	// 사원 정보 삭제
+	// 社員の識別情報と在職・雇用・所属条件を確認し、対象社員データへ反映する。
 	// 기본키를 기준으로 데이터 삭제
+	// 선택되거나 식별된 사원 데이터를 삭제하고 관련 상태를 정리한다.
+	// 전달받은 Connection 안에서 SQL 매개변수를 바인딩해 실행하며 commit과 rollback은 호출한 Service가 제어한다.
+	// 選択または識別された社員データを削除し、関連状態を整理する。
+	// 受け取ったConnection内でSQLパラメーターをバインドして実行し、commitとrollbackは呼び出し元のServiceが制御する。
 	public int delete(Connection conn, int empId) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
@@ -515,6 +600,10 @@ public class EmployeeDao {
 	}
 
 	// ResultSet 데이터를 Employee 객체로 변환
+	// 조회값과 입력값을 조합하여 사원From처리결과Set 처리 데이터를 구성한다.
+	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
+	// 照会値と入力値を組み合わせて社員From処理結果Setの処理データを構成する。
+	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
 	private Employee makeEmployeeFromResultSet(ResultSet rs) throws SQLException {
 		Employee emp = new Employee();
 

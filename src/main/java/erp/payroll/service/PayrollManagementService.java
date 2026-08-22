@@ -25,6 +25,8 @@ import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
 // 급여 회차와 사원별 지급·공제 내역을 관리한다.
+// 급여입력·관리 업무 규칙과 데이터 변경 트랜잭션을 처리한다.
+// 給与入力・管理の業務ルールとデータ変更トランザクションを処理する。
 public class PayrollManagementService {
 
 	private static final int EMPLOYEE_PAGE_SIZE = 10;
@@ -35,11 +37,19 @@ public class PayrollManagementService {
 	private TaxFreeItemDao taxFreeItemDao = TaxFreeItemDao.getInstance();
 	private AttendanceItemDao attendanceItemDao = AttendanceItemDao.getInstance();
 
+	// 요청 조건에 맞는 급여입력·관리 화면 데이터를 구성하여 반환한다.
+	// 호출자가 전달한 조회조건을 적용하고 결과가 없을 때도 빈 값이나 빈 목록을 안전하게 반환한다.
+	// リクエスト条件に合う給与入力・管理の画面データを構成して返す。
+	// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
 	public PayrollManagementPage getPage(String year, String month, String sequence, String incomeType,
 			Integer employeeId, String keyword, int employeePage) {
 		return getPage(year, month, sequence, incomeType, employeeId, keyword, null, null, null, employeePage);
 	}
 
+	// 요청 조건에 맞는 급여입력·관리 화면 데이터를 구성하여 반환한다.
+	// 호출자가 전달한 조회조건을 적용하고 결과가 없을 때도 빈 값이나 빈 목록을 안전하게 반환한다.
+	// リクエスト条件に合う給与入力・管理の画面データを構成して返す。
+	// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
 	public PayrollManagementPage getPage(String year, String month, String sequence, String incomeType,
 			Integer employeeId, String keyword, Integer departmentId, Integer positionId, String status,
 			int employeePage) {
@@ -76,6 +86,7 @@ public class PayrollManagementService {
 			page.setPositions(positions);
 			page.setPreviousPaymentPeriods(managementDao.selectPreviousRuns(conn, incomeType));
 			// 기본환경설정에 등록된 비과세/감면 코드를 지급항목 팝업에 제공한다.
+			// 保険・税区分と適用基準を確認し、対象金額に合う控除または非課税処理を適用する。
 			page.setTaxFreeItems(taxFreeItemDao.selectAll(conn));
 			page.setAttendanceItems(attendanceItemDao.selectAll(conn));
 
@@ -99,6 +110,10 @@ public class PayrollManagementService {
 		}
 	}
 
+	// 급여입력·관리 처리에 필요한 이전 회차 데이터를 조회하여 반환한다.
+	// 조회 전용 Connection으로 관련 DAO 결과를 조합하며 데이터 변경이 없으므로 별도의 commit이나 rollback을 수행하지 않는다.
+	// 給与入力・管理処理に必要な前回データを照会して返す。
+	// 照会専用Connectionで関連DAOの結果を組み合わせ、データ変更がないため個別のcommitやrollbackは実行しない。
 	public void loadPrevious(PayrollRun requestRun, int previousRunId) {
 		Connection conn = null;
 		try {
@@ -115,6 +130,10 @@ public class PayrollManagementService {
 		}
 	}
 
+	// 지급항목의 추가·수정·삭제 구분에 따라 데이터를 처리하고 결과를 반환한다.
+	// 하나의 Connection에서 자동 커밋을 해제하고 관련 DAO 작업을 묶어 성공 시 commit, 실패 시 rollback한다.
+	// 支給項目の追加・更新・削除区分に従ってデータを処理し、結果を返す。
+	// 一つのConnectionで自動コミットを無効化して関連DAO処理をまとめ、成功時はcommit、失敗時はrollbackする。
 	public void managePayItem(String action, Integer itemId, String itemName, String taxType, String taxFreeCode,
 			long taxFreeLimit, String calculationMethod, int roundUnit, String payMethod, Integer attendanceItemId,
 			Long bulkAmount) {
@@ -135,6 +154,10 @@ public class PayrollManagementService {
 		}
 	}
 
+	// 공제항목의 추가·수정·삭제 구분에 따라 데이터를 처리하고 결과를 반환한다.
+	// 하나의 Connection에서 자동 커밋을 해제하고 관련 DAO 작업을 묶어 성공 시 commit, 실패 시 rollback한다.
+	// 控除項目の追加・更新・削除区分に従ってデータを処理し、結果を返す。
+	// 一つのConnectionで自動コミットを無効化して関連DAO処理をまとめ、成功時はcommit、失敗時はrollbackする。
 	public void manageDeductItem(String action, Integer itemId, String itemName, String calculationMethod,
 			int roundUnit, String note) {
 		Connection conn = null;
@@ -153,6 +176,10 @@ public class PayrollManagementService {
 	}
 
 	// 산식을 입력하지 않으면 지급방식에 맞는 기본 계산 설명을 저장한다.
+	// 사원정보와 항목 설정을 기준으로 지급계산의 초기 계산금액을 산출한다.
+	// 입력금액과 기간·요율·절사단위를 적용하고 계산 중 발생할 수 있는 NULL이나 음수 결과를 안전하게 보정한다.
+	// 社員情報と項目設定を基準に支給計算の初期計算金額を算出する。
+	// 入力金額と期間・料率・端数処理単位を適用し、計算中に発生し得るNULLや負数結果を安全に補正する。
 	private String defaultPayCalculation(String calculationMethod, String payMethod) {
 		if (calculationMethod != null && !calculationMethod.trim().isEmpty()) return calculationMethod.trim();
 		if ("일괄지급".equals(payMethod)) return "일괄지급액";
@@ -161,6 +188,10 @@ public class PayrollManagementService {
 	}
 
 	// 대표적인 법정 공제는 실무에서 사용하는 기본 산식을 안내값으로 저장한다.
+	// 사원정보와 항목 설정을 기준으로 공제계산의 초기 계산금액을 산출한다.
+	// 입력금액과 기간·요율·절사단위를 적용하고 계산 중 발생할 수 있는 NULL이나 음수 결과를 안전하게 보정한다.
+	// 社員情報と項目設定を基準に控除計算の初期計算金額を算出する。
+	// 入力金額と期間・料率・端数処理単位を適用し、計算中に発生し得るNULLや負数結果を安全に補正する。
 	private String defaultDeductionCalculation(String itemName, String calculationMethod) {
 		if (calculationMethod != null && !calculationMethod.trim().isEmpty()) return calculationMethod.trim();
 		String name = itemName == null ? "" : itemName;
@@ -174,10 +205,18 @@ public class PayrollManagementService {
 	}
 
 	// 절사단위 미만 금액은 버림 처리하여 실제 지급 단위와 맞춘다.
+	// 보험료와 세액 계산 결과를 지정된 절사단위에 맞춰 내림 처리한다.
+	// 입력금액과 기간·요율·절사단위를 적용하고 계산 중 발생할 수 있는 NULL이나 음수 결과를 안전하게 보정한다.
+	// 保険料と税額の計算結果を指定された端数処理単位に合わせて切り捨てる。
+	// 入力金額と期間・料率・端数処理単位を適用し、計算中に発生し得るNULLや負数結果を安全に補正する。
 	private long roundDown(long amount, int roundUnit) {
 		return roundUnit > 1 ? amount / roundUnit * roundUnit : amount;
 	}
 
+	// 급여입력·관리 처리에 사용할 사원 데이터나 객체를 생성한다.
+	// 하나의 Connection에서 자동 커밋을 해제하고 관련 DAO 작업을 묶어 성공 시 commit, 실패 시 rollback한다.
+	// 給与入力・管理処理で使用する社員データまたはオブジェクトを生成する。
+	// 一つのConnectionで自動コミットを無効化して関連DAO処理をまとめ、成功時はcommit、失敗時はrollbackする。
 	public void addEmployees(PayrollRun requestRun, int[] employeeIds) {
 		Connection conn = null;
 		try {
@@ -198,6 +237,10 @@ public class PayrollManagementService {
 		}
 	}
 
+	// 선택되거나 식별된 사원 데이터를 삭제하고 관련 상태를 정리한다.
+	// 하나의 Connection에서 자동 커밋을 해제하고 관련 DAO 작업을 묶어 성공 시 commit, 실패 시 rollback한다.
+	// 選択または識別された社員データを削除し、関連状態を整理する。
+	// 一つのConnectionで自動コミットを無効化して関連DAO処理をまとめ、成功時はcommit、失敗時はrollbackする。
 	public void deleteEmployees(PayrollRun requestRun, int[] employeeIds, boolean deleteAll) {
 		Connection conn = null;
 		try {
@@ -217,6 +260,10 @@ public class PayrollManagementService {
 		}
 	}
 
+	// 입력값을 검증한 후 급여입력·관리 데이터를 트랜잭션으로 저장하거나 수정한다.
+	// 하나의 Connection에서 자동 커밋을 해제하고 관련 DAO 작업을 묶어 성공 시 commit, 실패 시 rollback한다.
+	// 入力値を検証した後、給与入力・管理データをトランザクションで登録または更新する。
+	// 一つのConnectionで自動コミットを無効化して関連DAO処理をまとめ、成功時はcommit、失敗時はrollbackする。
 	public void save(PayrollRun requestRun, int employeeId, List<PayrollManagementItem> payItems,
 			List<PayrollManagementItem> deductItems) {
 		Connection conn = null;
@@ -242,6 +289,10 @@ public class PayrollManagementService {
 		}
 	}
 
+	// 이전 급여내역의 지급·공제 항목명을 현재 화면 항목에 복사한다.
+	// 여러 DAO와 입력값을 조합해 화면 또는 다음 업무 단계에서 바로 사용할 수 있는 결과 객체를 만든다.
+	// 前回給与明細の支給・控除項目名を現在の画面項目へコピーする。
+	// 複数のDAO結果と入力値を組み合わせ、画面または次の業務段階で直ちに使用できる結果オブジェクトを作成する。
 	private void copyItemNames(List<PayrollManagementItem> requested, List<PayrollManagementItem> configured) {
 		for (PayrollManagementItem item : requested) {
 			for (PayrollManagementItem source : configured) {
@@ -254,6 +305,10 @@ public class PayrollManagementService {
 	}
 
 	// 사용자가 0원으로 둔 법정 공제만 간이 산식으로 계산한다. 직접 입력한 금액은 그대로 보존한다.
+	// 조회값과 입력값을 조합하여 기본공제 목록 처리 데이터를 구성한다.
+	// 여러 DAO와 입력값을 조합해 화면 또는 다음 업무 단계에서 바로 사용할 수 있는 결과 객체를 만든다.
+	// 照会値と入力値を組み合わせて初期控除一覧の処理データを構成する。
+	// 複数のDAO結果と入力値を組み合わせ、画面または次の業務段階で直ちに使用できる結果オブジェクトを作成する。
 	private void applyDefaultDeductions(List<PayrollManagementItem> payItems,
 			List<PayrollManagementItem> deductItems) {
 		long grossPay = 0;
@@ -279,6 +334,10 @@ public class PayrollManagementService {
 		}
 	}
 
+	// 급여입력·관리 처리에 필요한 OrCreate급여 회차를 조회하거나 계산하여 반환한다.
+	// 호출자가 전달한 조회조건을 적용하고 결과가 없을 때도 빈 값이나 빈 목록을 안전하게 반환한다.
+	// 給与入力・管理処理に必要なOrCreate給与回次を照会または計算して返す。
+	// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
 	private PayrollRun getOrCreateRun(Connection conn, PayrollRun requestRun) throws SQLException {
 		PayrollRun run = managementDao.selectRun(conn, requestRun.getPayYear(), requestRun.getPayMonth(),
 				requestRun.getPaySeq(), requestRun.getIncomeType());
@@ -289,8 +348,13 @@ public class PayrollManagementService {
 		return run;
 	}
 
+	// 급여입력·관리 처리에 필요한 사원 데이터를 조회하여 반환한다.
+	// 조회 전용 Connection으로 관련 DAO 결과를 조합하며 데이터 변경이 없으므로 별도의 commit이나 rollback을 수행하지 않는다.
+	// 給与入力・管理処理に必要な社員データを照会して返す。
+	// 照会専用Connectionで関連DAOの結果を組み合わせ、データ変更がないため個別のcommitやrollbackは実行しない。
 	private PayrollManagementEmployee selectEmployee(List<PayrollManagementEmployee> employees, Integer employeeId) {
 		// 최초 진입 시 첫 사원을 자동 선택하지 않는다.
+		// 社員の識別情報と在職・雇用・所属条件を確認し、対象社員データへ反映する。
 		if (employees.isEmpty() || employeeId == null) {
 			return null;
 		}
@@ -302,6 +366,10 @@ public class PayrollManagementService {
 		return null;
 	}
 
+	// 조회된 금액과 업무 규칙을 이용해 합계정보 계산 결과를 생성한다.
+	// 입력금액과 기간·요율·절사단위를 적용하고 계산 중 발생할 수 있는 NULL이나 음수 결과를 안전하게 보정한다.
+	// 照会した金額と業務ルールを使用して合計情報の計算結果を生成する。
+	// 入力金額と期間・料率・端数処理単位を適用し、計算中に発生し得るNULLや負数結果を安全に補正する。
 	private PayrollTotals calculateTotals(List<PayrollManagementItem> payItems,
 			List<PayrollManagementItem> deductItems) {
 		PayrollTotals totals = new PayrollTotals();
@@ -318,6 +386,10 @@ public class PayrollManagementService {
 		return totals;
 	}
 
+	// 조회값과 입력값을 조합하여 급여 회차 처리 데이터를 구성한다.
+	// 여러 DAO와 입력값을 조합해 화면 또는 다음 업무 단계에서 바로 사용할 수 있는 결과 객체를 만든다.
+	// 照会値と入力値を組み合わせて給与回次の処理データを構成する。
+	// 複数のDAO結果と入力値を組み合わせ、画面または次の業務段階で直ちに使用できる結果オブジェクトを作成する。
 	public PayrollRun makeRun(String year, String month, String sequence, String incomeType, String startDate,
 			String endDate, String payDate) {
 		int numericYear = Integer.parseInt(year);
@@ -340,6 +412,10 @@ public class PayrollManagementService {
 		return run;
 	}
 
+	// 입력 데이터를 일자 처리에 필요한 형식으로 변환한다.
+	// 여러 DAO와 입력값을 조합해 화면 또는 다음 업무 단계에서 바로 사용할 수 있는 결과 객체를 만든다.
+	// 入力データを日付処理に必要な形式へ変換する。
+	// 複数のDAO結果と入力値を組み合わせ、画面または次の業務段階で直ちに使用できる結果オブジェクトを作成する。
 	private Date toDate(String value, LocalDate defaultDate) {
 		LocalDate date = value == null || value.trim().isEmpty() ? defaultDate : LocalDate.parse(value);
 		return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());

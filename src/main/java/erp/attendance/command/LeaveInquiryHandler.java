@@ -16,6 +16,8 @@ import erp.settings.service.AttendanceSettingService;
 import erp.settings.service.DepartmentPositionService;
 import mvc.command.CommandHandler;
 
+// 휴가조회 화면의 HTTP 요청을 구분하고 적절한 서비스 호출과 화면 이동을 담당한다.
+// 休暇照会画面のHTTPリクエストを判別し、適切なサービス呼び出しと画面遷移を担当する。
 public class LeaveInquiryHandler implements CommandHandler {
 	final String FORM_VIEW = "/WEB-INF/view/attendance/leave-inquiry.jsp";
 	AttendanceSettingService attendanceSettingService = AttendanceSettingService.getInstance();
@@ -24,6 +26,10 @@ public class LeaveInquiryHandler implements CommandHandler {
 	LeaveRecordInquiryService leaveRecordInquiryService = new LeaveRecordInquiryService();
 	
 	@Override
+	// 요청 방식과 작업 구분을 확인하여 휴가조회 조회·저장 작업을 적절한 처리로 연결한다.
+	// 요청 파라미터를 검증해 Service에 전달하고 처리 결과를 request 또는 session에 저장한 뒤 JSP 포워드나 리다이렉트 경로를 결정한다.
+	// リクエスト方式と処理区分を確認し、休暇照会の照会・保存処理へ適切に振り分ける。
+	// リクエストパラメーターを検証してServiceへ渡し、処理結果をrequestまたはsessionへ保存した後、JSPフォワードまたはリダイレクト先を決定する。
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		if (req.getMethod().equalsIgnoreCase("GET")) {
 			return processForm(req, res);
@@ -33,6 +39,10 @@ public class LeaveInquiryHandler implements CommandHandler {
 		}
 	}
 
+	// 휴가조회 화면에 필요한 데이터를 조회하여 request에 저장하고 JSP 경로를 반환한다.
+	// 요청 파라미터를 검증해 Service에 전달하고 처리 결과를 request 또는 session에 저장한 뒤 JSP 포워드나 리다이렉트 경로를 결정한다.
+	// 休暇照会画面に必要なデータを照会してrequestへ保存し、JSPパスを返す。
+	// リクエストパラメーターを検証してServiceへ渡し、処理結果をrequestまたはsessionへ保存した後、JSPフォワードまたはリダイレクト先を決定する。
 	private String processForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		List<LeaveItem> leaveItems = attendanceSettingService.getUsableLeaveItems();
 		req.setAttribute("leaveItems", leaveItems);
@@ -81,12 +91,14 @@ public class LeaveInquiryHandler implements CommandHandler {
 		req.setAttribute("jobPositionId", jobPositionId);
 
 		// 사원별 휴가현황 모달용 - employeeId 파라미터가 있을 때만 처리
+		// リクエストから入力値を取得し、空白除去と形式変換を行って業務処理へ渡す。
 		String employeeIdStr = req.getParameter("employeeId");
 		if (employeeIdStr != null && !employeeIdStr.trim().isEmpty()) {
 			int employeeId = Integer.parseInt(employeeIdStr);
 			req.setAttribute("employeeId", employeeId);
 
 			// leaveEmployees 목록에서 해당 사원 찾기
+			// 社員の識別情報と在職・雇用・所属条件を確認し、対象社員データへ反映する。
 			LeaveInquiryDto selectedEmployee = null;
 			for (LeaveInquiryDto dto : leaveEmployees) {
 				if (dto.getEmployeeId() == employeeId) {
@@ -97,6 +109,7 @@ public class LeaveInquiryHandler implements CommandHandler {
 			req.setAttribute("selectedEmployee", selectedEmployee);
 
 			// 상세 사용내역 조회
+			// 選択社員と休暇項目に該当する使用履歴を照会し、詳細一覧として画面へ渡す。
 			List<AttendanceRecordDto> leaveRecords = leaveRecordInquiryService.getLeaveRecords(employeeId, leaveItemId);
 			req.setAttribute("leaveRecords", leaveRecords);
 		}
