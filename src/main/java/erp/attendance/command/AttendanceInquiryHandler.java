@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import erp.attendance.dto.AttendanceDetailDto;
 import erp.attendance.service.ListAttendanceDetailService;
 import erp.attendance.service.ListMonthlyAttendanceService;
+import erp.attendance.service.page.AttendanceDetailPage;
 import erp.attendance.service.request.AttendanceDetailRequest;
 import erp.attendance.service.request.MonthlyAttendanceRequest;
 import erp.settings.dao.DepartmentDao;
@@ -116,8 +117,15 @@ public class AttendanceInquiryHandler implements CommandHandler {
 			req.setAttribute("leaveItemId", request.getLeaveItemId());
 			req.setAttribute("empNameKr", request.getEmpNameKr());
 			req.setAttribute("note", request.getNote());
-			List<AttendanceDetailDto> attendanceRecords = detailService.getList(request);
-			req.setAttribute("attendanceRecords", attendanceRecords);
+			
+			String pageNoVal = req.getParameter("pageNo");
+			int pageNo = 1;
+			if (pageNoVal != null && !pageNoVal.trim().isEmpty()) {
+				pageNo = Integer.parseInt(pageNoVal);
+			}
+			
+			AttendanceDetailPage attendanceDetail = detailService.getDetailPage(pageNo, request);
+			req.setAttribute("attendanceDetail", attendanceDetail);
 		}
 
 		return FORM_VIEW;

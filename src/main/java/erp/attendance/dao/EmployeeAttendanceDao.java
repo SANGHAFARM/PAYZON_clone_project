@@ -46,8 +46,7 @@ public class EmployeeAttendanceDao {
 	};
 
 	/*
-	 * 근태기록 입력
-	  * 社員の勤務・休暇記録と適用期間を確認し、勤怠照会または残日数計算へ反映する。
+	 * 근태기록 입력 社員の勤務・休暇記録と適用期間を確認し、勤怠照会または残日数計算へ反映する。
 	 */
 	// 전달받은 사원근태 데이터를 데이터베이스에 등록하고 처리 건수를 반환한다.
 	// 전달받은 Connection 안에서 SQL 매개변수를 바인딩해 실행하며 commit과 rollback은 호출한 Service가 제어한다.
@@ -75,7 +74,8 @@ public class EmployeeAttendanceDao {
 	 */
 
 	// 조회 조건에 맞는 By식별번호 데이터를 데이터베이스에서 조회한다.
-	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로
+	// 변환한다.
 	// 検索条件に合うBy識別番号データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public EmployeeAttendance selectById(Connection conn, int no) throws SQLException {
@@ -100,11 +100,12 @@ public class EmployeeAttendanceDao {
 	/*
 	 * EmpAttendRecord테이블에 있는 기록을 사원ID와 연도와 월로 조회하는 메서드 month가 null일 시, month조건은
 	 * 무시되고 해당년도 전체를 조회함 EmpAttendRecordテーブルにある記録を社員IDと年度と月で照会するメソッド
-	  * 月条件は適用せず、指定社員と年度に該当する勤怠記録全体を照会する。
+	 * 月条件は適用せず、指定社員と年度に該当する勤怠記録全体を照会する。
 	 */
 
 	// 조회 조건에 맞는 ByEmp식별번호And연도And월 데이터를 데이터베이스에서 조회한다.
-	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로
+	// 변환한다.
 	// 検索条件に合うByEmp識別番号And年度And月データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<AttendanceRecordDto> selectByEmpIdAndYearAndMonth(Connection conn, int empId, int year, Integer month)
@@ -166,7 +167,8 @@ public class EmployeeAttendanceDao {
 	 */
 
 	// 조회 조건에 맞는 사용일수ByEmp식별번호And휴가항목식별번호 데이터를 데이터베이스에서 조회한다.
-	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로
+	// 변환한다.
 	// 検索条件に合う使用日数ByEmp識別番号And休暇項目識別番号データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public double selectUsedDaysByEmpIdAndLeaveItemId(Connection conn, int empId, Integer leaveItemId)
@@ -187,8 +189,7 @@ public class EmployeeAttendanceDao {
 	/*
 	 * 근태관리>근태조회>
 	 * 
-	 * 월별조회에서 사용하는 메서드 사원 1 명의 해당 연월의 근태기록을 조회
-	  * 基準日と期間の境界を確認し、照会・計算に使用できる日付形式へ変換する。
+	 * 월별조회에서 사용하는 메서드 사원 1 명의 해당 연월의 근태기록을 조회 基準日と期間の境界を確認し、照会・計算に使用できる日付形式へ変換する。
 	 */
 	/*
 	 * public List<EmployeeAttendance> selectByEmpIdAndMonthOverlap(Connection conn,
@@ -207,7 +208,8 @@ public class EmployeeAttendanceDao {
 
 	// 월별조회 사원목록
 	// 조회 조건에 맞는 By검색조건 데이터를 데이터베이스에서 조회한다.
-	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로
+	// 변환한다.
 	// 検索条件に合うBy検索条件データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<MonthlyAttendanceDto> selectByCondition(Connection conn, MonthlyAttendanceRequest req)
@@ -247,8 +249,10 @@ public class EmployeeAttendanceDao {
 
 	}
 
+	// ???????????????????????????????????????????????????????????????????????????????
 	// 조회 조건에 맞는 일용직근태 데이터를 데이터베이스에서 조회한다.
-	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로
+	// 변환한다.
 	// 検索条件に合う日雇い勤怠データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	private Map<Integer, String> selectDailyAttendance(Connection conn, int empId, int year, int month)
@@ -298,7 +302,8 @@ public class EmployeeAttendanceDao {
 	}
 
 	// 조회 조건에 맞는 합계Attend값 데이터를 데이터베이스에서 조회한다.
-	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로
+	// 변환한다.
 	// 検索条件に合う合計Attend値データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public Map<String, Double> selectTotalAttendValue(Connection conn, int empId, int year, int month,
@@ -339,13 +344,106 @@ public class EmployeeAttendanceDao {
 	 * 근태관리>근태조회>
 	 * 
 	 * 상세 조회에서 사용하는 메서드 입력일자,근태기간,부서,성명,근태그룹,근태항목,휴가항목, 적요로 상세 기록을 검색
-	  * 検索語と選択条件を組み合わせ、利用者が指定した対象だけを照会する。
+	 * 検索語と選択条件を組み合わせ、利用者が指定した対象だけを照会する。
 	 */
 
+	public int selectCountDetailList(Connection conn, AttendanceDetailRequest req) throws SQLException {
+		String sql = "SELECT COUNT(*) " + "FROM EMPLOYEE_ATTENDANCE ea "
+				+ "JOIN EMPLOYEE e ON ea.EMPLOYEE_ID = e.EMPLOYEE_ID "
+				+ "LEFT JOIN DEPARTMENT d ON e.DEPARTMENT_ID = d.DEPARTMENT_ID "
+				+ "LEFT JOIN JOB_POSITION p ON e.JOB_POSITION_ID = p.JOB_POSITION_ID "
+				+ "LEFT JOIN ATTENDANCE_ITEM ai ON ea.ATTENDANCE_ITEM_ID = ai.ATTENDANCE_ITEM_ID "
+				+ "WHERE (? IS NULL OR ea.INPUT_DATE = ?) " + "AND (? IS NULL OR ea.END_DATE >= ?) "
+				+ "AND (? IS NULL OR ea.START_DATE <= ?) " + "AND (? IS NULL OR e.DEPARTMENT_ID = ?) "
+				+ "AND (? IS NULL OR e.EMP_NAME_KR LIKE '%' || ? || '%') "
+				+ "AND (? IS NULL OR ai.ATTENDANCE_GROUP_ID = ?) " + "AND (? IS NULL OR ea.ATTENDANCE_ITEM_ID = ?) "
+				+ "AND (? IS NULL OR ai.DEDUCT_LEAVE_ID = ?) " + "AND (? IS NULL OR ea.NOTE LIKE '%' || ? || '%') ";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			setDateOrNull(pstmt, 1, 2, req.getInputDate());
+			setDateOrNull(pstmt, 3,4, req.getStartDate());
+			setDateOrNull(pstmt, 5, 6, req.getEndDate());
+			setIntOrNull(pstmt, 7, 8, req.getDepartmentId());
+
+			pstmt.setString(9, req.getEmpNameKr());
+			pstmt.setString(10, req.getEmpNameKr());
+
+			setIntOrNull(pstmt, 11, 12, req.getAttendanceGroupId());
+
+			setIntOrNull(pstmt, 13, 14, req.getAttendanceItemId());
+			setIntOrNull(pstmt, 15, 16, req.getLeaveItemId());
+
+			pstmt.setString(17, req.getNote());
+			pstmt.setString(18, req.getNote());
+			int result = 0;
+			try(ResultSet rs = pstmt.executeQuery()){
+				if (rs.next()) {
+					result =  rs.getInt("COUNT(*)");
+				}
+			}
+			return result;
+		}
+	}
+
 	// 조회 조건에 맞는 상세정보목록 데이터를 데이터베이스에서 조회한다.
-	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로
+	// 변환한다.
 	// 検索条件に合う詳細情報一覧データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
+	
+	public List<AttendanceDetailDto> selectDetailList(Connection conn, AttendanceDetailRequest req, int firstRow, int endRow)
+			throws SQLException {
+		String sql = "select * from (select rownum as rnum, a.* from (SELECT ea.INPUT_DATE, e.EMP_TYPE, e.EMP_NAME_KR, "
+				+ "       d.DEPARTMENT_NAME, p.JOB_POSITION_NAME, ai.ATTEND_NAME, "
+				+ "       ea.START_DATE, ea.END_DATE, ea.ATTEND_VALUE, ea.PAY_AMOUNT, ea.NOTE "
+				+ "FROM EMPLOYEE_ATTENDANCE ea " + "JOIN EMPLOYEE e ON ea.EMPLOYEE_ID = e.EMPLOYEE_ID "
+				+ "LEFT JOIN DEPARTMENT d ON e.DEPARTMENT_ID = d.DEPARTMENT_ID "
+				+ "LEFT JOIN JOB_POSITION p ON e.JOB_POSITION_ID = p.JOB_POSITION_ID "
+				+ "LEFT JOIN ATTENDANCE_ITEM ai ON ea.ATTENDANCE_ITEM_ID = ai.ATTENDANCE_ITEM_ID "
+				+ "WHERE (? IS NULL OR ea.INPUT_DATE = ?) " + "AND (? IS NULL OR ea.END_DATE >= ?) "
+				+ "AND (? IS NULL OR ea.START_DATE <= ?) " + "AND (? IS NULL OR e.DEPARTMENT_ID = ?) "
+				+ "AND (? IS NULL OR e.EMP_NAME_KR LIKE '%' || ? || '%') "
+				+ "AND (? IS NULL OR ai.ATTENDANCE_GROUP_ID = ?) " + "AND (? IS NULL OR ea.ATTENDANCE_ITEM_ID = ?) "
+				+ "AND (? IS NULL OR ai.DEDUCT_LEAVE_ID = ?) " + "AND (? IS NULL OR ea.NOTE LIKE '%' || ? || '%') "
+				+ "ORDER BY ea.INPUT_DATE DESC) a where rownum <= ? ) where rnum > ?";
+		List<AttendanceDetailDto> list = new ArrayList<>();
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			java.sql.Date inputdate = dateToSQLDate(req.getInputDate());
+			pstmt.setDate(1, inputdate);
+			pstmt.setDate(2, inputdate);
+
+			java.sql.Date periodStart = dateToSQLDate(req.getStartDate());
+			pstmt.setDate(3, periodStart);
+			pstmt.setDate(4, periodStart);
+
+			java.sql.Date periodEnd = dateToSQLDate(req.getEndDate());
+			pstmt.setDate(5, periodEnd);
+			pstmt.setDate(6, periodEnd);
+
+			setIntOrNull(pstmt, 7, 8, req.getDepartmentId());
+
+			pstmt.setString(9, req.getEmpNameKr());
+			pstmt.setString(10, req.getEmpNameKr());
+
+			setIntOrNull(pstmt, 11, 12, req.getAttendanceGroupId());
+
+			setIntOrNull(pstmt, 13, 14, req.getAttendanceItemId());
+			setIntOrNull(pstmt, 15, 16, req.getLeaveItemId());
+
+			pstmt.setString(17, req.getNote());
+			pstmt.setString(18, req.getNote());
+			
+			pstmt.setInt(19, endRow);
+			pstmt.setInt(20, firstRow);
+
+			try (ResultSet rs = pstmt.executeQuery()) {
+				while (rs.next()) {
+					list.add(convertAttendanceDetailDto(rs));
+				}
+			}
+		}
+		return list;
+	}
+		
 	public List<AttendanceDetailDto> selectDetailList(Connection conn, AttendanceDetailRequest req)
 			throws SQLException {
 		String sql = "SELECT ea.INPUT_DATE, e.EMP_TYPE, e.EMP_NAME_KR, "
@@ -396,20 +494,19 @@ public class EmployeeAttendanceDao {
 		}
 		return list;
 	}
-	
+
 	// 조회 조건에 맞는 ByEmp식별번호And휴가항목식별번호 데이터를 데이터베이스에서 조회한다.
-	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로 변환한다.
+	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로
+	// 변환한다.
 	// 検索条件に合うByEmp識別番号And休暇項目識別番号データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public List<AttendanceRecordDto> selectByEmpIdAndLeaveItemId(Connection conn, int empId, int leaveItemId)
 			throws SQLException {
 		String sql = "SELECT A.INPUT_DATE, I.ATTEND_NAME, "
-				+ "L.ITEM_NAME, A.START_DATE, A.END_DATE, A.ATTEND_VALUE, A.NOTE "
-				+ "FROM EMPLOYEE_ATTENDANCE A "
+				+ "L.ITEM_NAME, A.START_DATE, A.END_DATE, A.ATTEND_VALUE, A.NOTE " + "FROM EMPLOYEE_ATTENDANCE A "
 				+ "LEFT JOIN ATTENDANCE_ITEM I ON I.ATTENDANCE_ITEM_ID = A.ATTENDANCE_ITEM_ID "
 				+ "LEFT JOIN LEAVE_ITEM L ON L.LEAVE_ITEM_ID = A.LEAVE_ITEM_ID "
-				+ "WHERE A.EMPLOYEE_ID = ? AND A.LEAVE_ITEM_ID = ? "
-				+ "ORDER BY A.START_DATE ASC";
+				+ "WHERE A.EMPLOYEE_ID = ? AND A.LEAVE_ITEM_ID = ? " + "ORDER BY A.START_DATE ASC";
 		List<AttendanceRecordDto> list = new ArrayList<>();
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, empId);
@@ -439,6 +536,16 @@ public class EmployeeAttendanceDao {
 		return date != null ? new java.sql.Date(date.getTime()) : null;
 	}
 
+	private void setDateOrNull(PreparedStatement pstmt, int idx1, int idx2, java.util.Date value) throws SQLException {
+		if (value != null) {
+			pstmt.setDate(idx1, new java.sql.Date(value.getTime()));
+			pstmt.setDate(idx2, new java.sql.Date(value.getTime()));
+		} else {
+			pstmt.setNull(idx1, java.sql.Types.DATE);
+			pstmt.setNull(idx2, java.sql.Types.DATE);
+		}
+	}
+
 	/* EmpAttendRecord테이블에 있는 기록을 수정하는 메서드 EmpAttendRecordテーブルにある記録を修正するメソッド */
 	// 識別された既存データへ変更値を反映し、未変更項目は従来の値を維持する。
 	// 근태기록 수정
@@ -464,7 +571,7 @@ public class EmployeeAttendanceDao {
 
 	/*
 	 * EmpAttendRecord테이블에 있는 기록을 삭제하는 메서드 EmpAttendRecordテーブルにある記録を削除するメソッド
-	  * 選択された対象と関連範囲を確認して削除し、残りの一覧状態を再構成する。
+	 * 選択された対象と関連範囲を確認して削除し、残りの一覧状態を再構成する。
 	 */
 
 	// 선택되거나 식별된 사원근태 데이터를 삭제하고 관련 상태를 정리한다.
@@ -517,7 +624,7 @@ public class EmployeeAttendanceDao {
 
 	/*
 	 * ResultSet으로 AttendDetailItem을 만들어 반환하는 메서드*
-	  * 照会結果を列ごとに読み取り、画面またはサービスで使用するオブジェクトへ変換する。
+	 * 照会結果を列ごとに読み取り、画面またはサービスで使用するオブジェクトへ変換する。
 	 */
 	// 입력 데이터를 근태상세정보전달 데이터 처리에 필요한 형식으로 변환한다.
 	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
@@ -541,7 +648,7 @@ public class EmployeeAttendanceDao {
 
 	/*
 	 * 값이 null인지 구분하고, null일 시, SQLNULL을 입력하는 메서드
-	  * 業務条件に合うSQLを準備し、入力値をバインドしてデータベースで実行する。
+	 * 業務条件に合うSQLを準備し、入力値をバインドしてデータベースで実行する。
 	 */
 	// 전달받은 정수Or빈 값 값을 사원근태 객체에 저장한다.
 	// 요청값이나 조회 결과로 전달된 값을 대응하는 필드에 반영하여 객체의 현재 상태를 갱신한다.

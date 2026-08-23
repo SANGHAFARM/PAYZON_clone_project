@@ -13,8 +13,10 @@ import erp.attendance.dao.ProjectDao;
 import erp.attendance.dto.DailyWorkDetailDto;
 import erp.attendance.dto.DailyWorkListDto;
 import erp.attendance.model.Project;
+import erp.attendance.service.DailyWorkDetailListService;
 import erp.attendance.service.DailyWorkDetailService;
 import erp.attendance.service.DailyWorkListService;
+import erp.attendance.service.page.DailyWorkDetailPage;
 import erp.attendance.service.request.DailyWorkDetailRequest;
 import erp.attendance.service.request.DailyWorkListRequest;
 import erp.settings.service.DepartmentPositionService;
@@ -124,11 +126,20 @@ public class DayWorkerInquiryHandler implements CommandHandler{
 			
 			//일용직 근무 기록 상세 조회
 			// 照会条件または詳細入力値を受け取り、送信後も現在の画面状態を維持する領域である。
-		    DailyWorkDetailService dailyWorkDetailService = new DailyWorkDetailService();
-			List<DailyWorkDetailDto> dailyWorkDetail = dailyWorkDetailService.search(request);
+			/*
+			 * DailyWorkDetailService dailyWorkDetailService = new DailyWorkDetailService();
+			 * List<DailyWorkDetailDto> dailyWorkDetail =
+			 * dailyWorkDetailService.search(request); req.setAttribute("dailyWorkDetail",
+			 * dailyWorkDetail);
+			 */
+			String pageNoVal = req.getParameter("pageNo");
+			int pageNo = 1;
+			if (pageNoVal!=null&&!pageNoVal.trim().isEmpty()) {
+				pageNo = Integer.parseInt(pageNoVal);
+			}
+			DailyWorkDetailListService listService = new DailyWorkDetailListService();
+			DailyWorkDetailPage dailyWorkDetail = listService.getDetailPage(pageNo, request);
 			req.setAttribute("dailyWorkDetail", dailyWorkDetail);
-			
-
 
 		}
 		

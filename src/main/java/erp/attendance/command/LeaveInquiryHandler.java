@@ -10,6 +10,8 @@ import erp.attendance.dto.AttendanceRecordDto;
 import erp.attendance.dto.LeaveInquiryDto;
 import erp.attendance.service.LeaveInquiryService;
 import erp.attendance.service.LeaveRecordInquiryService;
+import erp.attendance.service.ListLeaveInquiryService;
+import erp.attendance.service.page.LeaveInquiryPage;
 import erp.attendance.service.request.LeaveInquiryRequest;
 import erp.settings.model.LeaveItem;
 import erp.settings.service.AttendanceSettingService;
@@ -44,6 +46,8 @@ public class LeaveInquiryHandler implements CommandHandler {
 	// 休暇照会画面に必要なデータを照会してrequestへ保存し、JSPパスを返す。
 	// リクエストパラメーターを検証してServiceへ渡し、処理結果をrequestまたはsessionへ保存した後、JSPフォワードまたはリダイレクト先を決定する。
 	private String processForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		//현재 사용할 수 있는 휴가항목만 조회
+		//現在使える休暇項目だけ照会
 		List<LeaveItem> leaveItems = attendanceSettingService.getUsableLeaveItems();
 		req.setAttribute("leaveItems", leaveItems);
 		List<String> empTypes = new ArrayList<>();
@@ -78,11 +82,24 @@ public class LeaveInquiryHandler implements CommandHandler {
 		Integer jobPositionId = (jobPositionIdstr != null && !jobPositionIdstr.trim().isEmpty())
 				? Integer.parseInt(jobPositionIdstr)
 				: null;
+		String pageStr = req.getParameter("page");
+		int pageNum = 1;
+		if (pageStr!=null&&!pageStr.trim().isEmpty()) {
+			pageNum = Integer.parseInt(pageStr);
+		}
+		
+		String pageSizeStr = req.getParameter("pageSize");
+		int pageSize = 30;
+		if (pageSizeStr!=null&&!pageSizeStr.trim().isEmpty()) {
+			pageSize = Integer.parseInt(pageSizeStr);
+		}
+		req.setAttribute("pageSize", pageSize);
+		
 		LeaveInquiryRequest request = new LeaveInquiryRequest(leaveItemId, keyword, status, empType, departmentId,
-				jobPositionId);
-		List<LeaveInquiryDto> leaveEmployees = leaveInquiryService.getLeaveEmployees(request);
-		req.setAttribute("leaveEmployees", leaveEmployees);
-
+				jobPositionId, pageSize);
+		ListLeaveInquiryService listLeaveInquiryService = new ListLeaveInquiryService();
+		LeaveInquiryPage leaveInquiryPage = listLeaveInquiryService.getInquiryPage(pageNum, request);
+		req.setAttribute("leaveInquiryPage", leaveInquiryPage);
 		req.setAttribute("empType", empType);
 		req.setAttribute("keyword", keyword);
 		req.setAttribute("status", status);
@@ -100,7 +117,7 @@ public class LeaveInquiryHandler implements CommandHandler {
 			// leaveEmployees 목록에서 해당 사원 찾기
 			// 社員の識別情報と在職・雇用・所属条件を確認し、対象社員データへ反映する。
 			LeaveInquiryDto selectedEmployee = null;
-			for (LeaveInquiryDto dto : leaveEmployees) {
+			for (LeaveInquiryDto dto : leaveInquiryPage.getContent()) {
 				if (dto.getEmployeeId() == employeeId) {
 					selectedEmployee = dto;
 					break;
