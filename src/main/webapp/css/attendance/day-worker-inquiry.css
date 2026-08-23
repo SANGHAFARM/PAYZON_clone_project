@@ -32,9 +32,10 @@
 .net-pay{color:#173f64;font-weight:700}
 .detail-layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px;align-items:start}
 .detail-filter{width:300px;margin:0;padding:12px;border:1px solid #d4deea;border-radius:6px;background:#fff}
-.filter-field{min-height:55px;display:grid;grid-template-columns:88px 1fr;align-items:center;border-bottom:1px solid #dbe3ec}
+.filter-field{min-height:55px;display:grid;grid-template-columns:18px 88px 1fr;align-items:center;border-bottom:1px solid #dbe3ec}
+.filter-field>input[type="checkbox"]{width:14px;height:14px;margin:0}
 .filter-field>span{font-weight:700}
-.filter-field input,.filter-field select{width:100%}
+.filter-field input:not([type="checkbox"]),.filter-field select{width:100%}
 .date-range{display:grid;grid-template-columns:1fr 14px 1fr;align-items:center}
 .detail-filter .date-range{width:100%;min-width:0;grid-template-columns:minmax(0,1fr) 14px minmax(0,1fr)}
 .detail-filter .date-range input{width:100%;min-width:0;padding:4px;font-size:11px}
@@ -71,3 +72,6 @@
     .detail-filter{width:100%;display:grid;grid-template-columns:repeat(2,1fr);gap:0 14px}
     .filter-actions{grid-column:1/-1}
 }
+.pagination{display:flex;justify-content:center;gap:5px;margin-top:17px}
+.pagination a{min-width:30px;height:30px;display:flex;align-items:center;justify-content:center;padding:0 8px;border:1px solid #c6d2df;border-radius:3px;color:#496075;text-decoration:none}
+.pagination .is-current{color:#fff;border-color:#347fc3;background:#347fc3}

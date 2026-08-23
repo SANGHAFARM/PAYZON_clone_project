@@ -121,9 +121,9 @@
                                             value="${item.attendName}" /></option>
                                 </c:forEach>
                         </select></label> <label class="period-field"><span>期間</span> <span
-                            class="period-inputs"> <input type="date" lang="ja-JP" name="startDate"
+                            class="period-inputs"> <input type="date" lang="ja-JP" name="startDate" id="startDate"
                                 value="${empty editId ? '' : startDate }"><i>~</i><input
-                                type="date" lang="ja-JP" name="endDate"
+                                type="date" lang="ja-JP" name="endDate" id="endDate"
                                 value="${empty editId ? '' : endDate }"></span></label> <label><span>勤怠日数</span><span
                             class="days-field"> <input type="number"
                                 name="attendValue" min="0" step="0.5"
@@ -306,5 +306,43 @@
     </div>
 
     <%@ include file="/WEB-INF/view/common/footer.jspf"%>
+        	<script>
+		//상세조회근무일의 설정관련 스크립트
+		//詳細照会勤務日の設定関連スクリプト
+		const startDateInput = document.getElementById('startDate');
+		const endDateInput = document.getElementById('endDate');
+
+		//시작일이 변경되었을 때
+		// 開始日が変更されたとき
+		startDateInput.addEventListener('change', function() {
+			const startDate = startDateInput.value;
+			
+			//종료일의 최소치를 시작일로 설정
+			// 終了日の最小値（min）を開始日に設定
+			endDateInput.min = startDate;
+
+			//이미 입력된 종료일이 새롭게 설정된 시작일보다 앞인 경우, 종료일 초기화
+			// すでに入力された終了日が新しく設定された開始日より前の場合、終了日の初期化
+			if (endDateInput.value && endDateInput.value < startDate) {
+				endDateInput.value = '';
+			}
+		});
+
+		//종료일이 변경되었을 때
+		// 終了日が変更されたとき
+		endDateInput.addEventListener('change', function() {
+			const endDate = endDateInput.value;
+
+			//시작일의 최대치를 종료일로 설정
+			// 開始日の最大値（max）を終了日に設定
+			startDateInput.max = endDate;
+
+			//이미 입력된 시작일이 새롭게 설정된 종료일보다 뒤인 경우, 시작일 초기화
+			// すでに入力された開始日が新しく設定された終了日より後の場合、開始日の初期化
+			if (startDateInput.value && startDateInput.value > endDate) {
+				startDateInput.value = '';
+			}
+		});
+	</script>
 </body>
 </html>
