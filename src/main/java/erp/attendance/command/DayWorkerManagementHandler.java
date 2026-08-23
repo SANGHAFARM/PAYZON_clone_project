@@ -1,6 +1,5 @@
 package erp.attendance.command;
 
-import java.sql.Connection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -13,31 +12,30 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import erp.attendance.dao.DailyWorkRecordDao;
-import erp.attendance.dao.ProjectDao;
 import erp.attendance.dto.DailyWorkRecordDto;
 import erp.attendance.model.Project;
 import erp.attendance.service.DailyWorkDeleteService;
+import erp.attendance.service.DailyWorkEmployeeListService;
 import erp.attendance.service.DailyWorkInsertService;
 import erp.attendance.service.DailyWorkUpdateService;
-import erp.attendance.service.ListDailyWorkRecordService;
+import erp.attendance.service.ProjectListService;
+import erp.attendance.service.request.DailyWorkRecordSearchRequest;
 import erp.attendance.service.request.DailyWorkInsertRequest;
-import erp.attendance.service.request.DailyWorkRecordRequest;
 import erp.attendance.service.request.DailyWorkUpdateRequest;
-import erp.employees.dao.EmployeeDao;
 import erp.employees.dto.DayWorkerDto;
-import jdbc.connection.ConnectionProvider;
+import erp.employees.service.EmployeeListService;
 import mvc.command.CommandHandler;
 
 // 일용직근로자입력·관리 화면의 HTTP 요청을 구분하고 적절한 서비스 호출과 화면 이동을 담당한다.
 // 日雇い労働者入力・管理画面のHTTPリクエストを判別し、適切なサービス呼び出しと画面遷移を担当する。
 public class DayWorkerManagementHandler implements CommandHandler {
 	private static final String FORM_VIEW = "/WEB-INF/view/attendance/day-worker-management.jsp";
-	private static final String SUCCESS_VIEW = "";
 
-	ListDailyWorkRecordService listService = new ListDailyWorkRecordService();
-	DailyWorkInsertService insertService = new DailyWorkInsertService();
-	DailyWorkUpdateService updateService = new DailyWorkUpdateService();
+	private DailyWorkEmployeeListService listService = new DailyWorkEmployeeListService();
+	private DailyWorkInsertService insertService = new DailyWorkInsertService();
+	private DailyWorkUpdateService updateService = new DailyWorkUpdateService();
+	private EmployeeListService employeeListService = new EmployeeListService();
+	private ProjectListService projectListService = new ProjectListService();
 
 	// 요청 방식과 작업 구분을 확인하여 일용직근로자입력·관리 조회·저장 작업을 적절한 처리로 연결한다.
 	// 요청 파라미터를 검증해 Service에 전달하고 처리 결과를 request 또는 session에 저장한 뒤 JSP 포워드나 리다이렉트 경로를 결정한다.
@@ -75,10 +73,11 @@ public class DayWorkerManagementHandler implements CommandHandler {
 				req.setAttribute("incomeTax", req.getParameter("incomeTax"));
 				req.setAttribute("localIncomeTax", req.getParameter("localIncomeTax"));
 				req.setAttribute("actualPay", req.getParameter("actualPay"));
-			} else {
+			} 
+			//사원별 근무기록
+			else {
 				req.setAttribute("employeeId", employeeId);
-				DailyWorkRecordDao dailyWorkRecordDao = DailyWorkRecordDao.getInstance();
-				DailyWorkRecordRequest request = new DailyWorkRecordRequest();
+				DailyWorkRecordSearchRequest request = new DailyWorkRecordSearchRequest();
 				String yearParam = req.getParameter("year");
 				String monthParam = req.getParameter("month");
 				int year = (yearParam != null && !yearParam.isEmpty()) ? Integer.parseInt(yearParam)
@@ -88,12 +87,12 @@ public class DayWorkerManagementHandler implements CommandHandler {
 				request.setEmployeeId(Integer.parseInt(employeeId));
 				request.setYear(year);
 				request.setMonth(month);
+				
 				req.setAttribute("year", year);
 				req.setAttribute("month", month);
-				try (Connection conn = ConnectionProvider.getConnection()) {
-					List<DailyWorkRecordDto> workRecords = dailyWorkRecordDao.selectByRequest(conn, request);
+				List<DailyWorkRecordDto> workRecords = listService.getDailyWorkEmployee(request);
+				
 					req.setAttribute("workRecords", workRecords);
-				}
 			}
 		}
 		String status = req.getParameter("status");
@@ -103,17 +102,15 @@ public class DayWorkerManagementHandler implements CommandHandler {
 		req.setAttribute("status", status);
 		String keyword = req.getParameter("keyword");
 		req.setAttribute("keyword", keyword);
-		EmployeeDao employeeDao = EmployeeDao.getInstance();
-		ProjectDao projectDao = ProjectDao.getInstance();
+
+		List<DayWorkerDto> dayWorkers = employeeListService.getDayWorkerList(keyword, status);
+		req.setAttribute("dayWorkers", dayWorkers);
+		List<Project> projects = projectListService.getProjects();
+		req.setAttribute("projects", projects);
+		
 		LocalDate today = LocalDate.now();
 		req.setAttribute("today", today);
-		try (Connection conn = ConnectionProvider.getConnection()){
-			List<DayWorkerDto> dayWorkers = employeeDao.selectDayWorkerListByKeywordAndStatus(conn, keyword, status);
-			req.setAttribute("dayWorkers", dayWorkers);
-			List<Project> projects = projectDao.selectAll(conn);
-			req.setAttribute("projects", projects);
 
-		}
 		return FORM_VIEW;
 
 	}

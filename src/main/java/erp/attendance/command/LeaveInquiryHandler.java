@@ -6,11 +6,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import erp.attendance.dto.AttendanceRecordDto;
+import erp.attendance.dto.AttendanceEmployeeRecordDto;
 import erp.attendance.dto.LeaveInquiryDto;
-import erp.attendance.service.LeaveInquiryService;
-import erp.attendance.service.LeaveRecordInquiryService;
-import erp.attendance.service.ListLeaveInquiryService;
+import erp.attendance.service.LeaveBalanceListService;
+import erp.attendance.service.LeaveEmployeeListService;
+import erp.attendance.service.LeaveInquiryPageService;
 import erp.attendance.service.page.LeaveInquiryPage;
 import erp.attendance.service.request.LeaveInquiryRequest;
 import erp.settings.model.LeaveItem;
@@ -24,8 +24,8 @@ public class LeaveInquiryHandler implements CommandHandler {
 	final String FORM_VIEW = "/WEB-INF/view/attendance/leave-inquiry.jsp";
 	AttendanceSettingService attendanceSettingService = AttendanceSettingService.getInstance();
 	DepartmentPositionService departmentPositionService = DepartmentPositionService.getInstance();
-	LeaveInquiryService leaveInquiryService = new LeaveInquiryService();
-	LeaveRecordInquiryService leaveRecordInquiryService = new LeaveRecordInquiryService();
+	LeaveBalanceListService leaveInquiryService = new LeaveBalanceListService();
+	LeaveEmployeeListService leaveRecordInquiryService = new LeaveEmployeeListService();
 	
 	@Override
 	// 요청 방식과 작업 구분을 확인하여 휴가조회 조회·저장 작업을 적절한 처리로 연결한다.
@@ -97,7 +97,7 @@ public class LeaveInquiryHandler implements CommandHandler {
 		
 		LeaveInquiryRequest request = new LeaveInquiryRequest(leaveItemId, keyword, status, empType, departmentId,
 				jobPositionId, pageSize);
-		ListLeaveInquiryService listLeaveInquiryService = new ListLeaveInquiryService();
+		LeaveInquiryPageService listLeaveInquiryService = new LeaveInquiryPageService();
 		LeaveInquiryPage leaveInquiryPage = listLeaveInquiryService.getInquiryPage(pageNum, request);
 		req.setAttribute("leaveInquiryPage", leaveInquiryPage);
 		req.setAttribute("empType", empType);
@@ -127,7 +127,7 @@ public class LeaveInquiryHandler implements CommandHandler {
 
 			// 상세 사용내역 조회
 			// 選択社員と休暇項目に該当する使用履歴を照会し、詳細一覧として画面へ渡す。
-			List<AttendanceRecordDto> leaveRecords = leaveRecordInquiryService.getLeaveRecords(employeeId, leaveItemId);
+			List<AttendanceEmployeeRecordDto> leaveRecords = leaveRecordInquiryService.getLeaveRecords(employeeId, leaveItemId);
 			req.setAttribute("leaveRecords", leaveRecords);
 		}
 

@@ -2,10 +2,10 @@ package erp.attendance.dto;
 
 import java.util.Date;
 
-//근태기록 입력 폼에 사용할 dto
+//근태기록 관리 폼에 사용할 dto
 // 근태기록 처리에 필요한 값을 계층 간에 전달한다.
 // 勤怠記録処理に必要な値を各階層間で受け渡す。
-public class AttendanceRecordDto {
+public class AttendanceEmployeeRecordDto {
 	private int employeeAttendanceId;
 	private Date inputDate;
 	private int attendanceItemId;
@@ -23,7 +23,7 @@ public class AttendanceRecordDto {
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
 	// 受け取った値で勤怠記録オブジェクトの初期状態を構成する。
 	// 生成時に受け取った必須値を各フィールドへ保持し、後続の照会と画面表示で再利用する。
-	public AttendanceRecordDto() {
+	public AttendanceEmployeeRecordDto() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -32,7 +32,7 @@ public class AttendanceRecordDto {
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
 	// 受け取った値で勤怠記録オブジェクトの初期状態を構成する。
 	// 生成時に受け取った必須値を各フィールドへ保持し、後続の照会と画面表示で再利用する。
-	public AttendanceRecordDto(int employeeAttendanceId, Date inputDate, int attendanceItemId, String attendName,
+	public AttendanceEmployeeRecordDto(int employeeAttendanceId, Date inputDate, int attendanceItemId, String attendName,
 			Date startDate, Date endDate, double attendValue, long payAmount, String note, String itemName) {
 		super();
 		this.employeeAttendanceId = employeeAttendanceId;

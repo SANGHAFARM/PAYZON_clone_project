@@ -5,7 +5,7 @@ import java.util.Map;
 //일용직 근무 월별 조회 결과를 담을 클래스
 // 일용직근무목록 처리에 필요한 값을 계층 간에 전달한다.
 // 日雇い勤務一覧処理に必要な値を各階層間で受け渡す。
-public class DailyWorkListDto {
+public class DailyWorkMonthlyDto {
 	// 구분, 사원번호, 성명, 부서, 근무기록, 합계, 소득세합계, 지방소득세 합계,실지급합계 
 	// 支給額・控除額・期間値を業務基準に従って計算し、合計と最終金額へ反映する。
 	private String empType;
@@ -21,13 +21,13 @@ public class DailyWorkListDto {
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
 	// 受け取った値で日雇い勤務一覧オブジェクトの初期状態を構成する。
 	// 生成時に受け取った必須値を各フィールドへ保持し、後続の照会と画面表示で再利用する。
-	public DailyWorkListDto() {
+	public DailyWorkMonthlyDto() {
 	}
 	// 전달받은 값으로 일용직근무목록 객체의 초기 상태를 구성한다.
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
 	// 受け取った値で日雇い勤務一覧オブジェクトの初期状態を構成する。
 	// 生成時に受け取った必須値を各フィールドへ保持し、後続の照会と画面表示で再利用する。
-	public DailyWorkListDto(String empType, String empNo, String empNameKr, String departmentName,
+	public DailyWorkMonthlyDto(String empType, String empNo, String empNameKr, String departmentName,
 			Map<Integer, DailyWorkRecordDto> workDayMap, int totalDays, long totalIncomeTax, long totalLocalIncomeTax,
 			long totalActualPay) {
 		super();

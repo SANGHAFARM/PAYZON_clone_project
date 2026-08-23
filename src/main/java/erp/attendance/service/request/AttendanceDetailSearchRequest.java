@@ -8,7 +8,7 @@ import java.util.Map;
 */
 // 근태상세정보요청정보 처리에 필요한 값을 계층 간에 전달한다.
 // 勤怠詳細情報リクエスト情報処理に必要な値を各階層間で受け渡す。
-public class AttendanceDetailRequest {
+public class AttendanceDetailSearchRequest {
 	private Date inputDate;
 	private Date startDate;
 	private Date endDate;
@@ -22,13 +22,13 @@ public class AttendanceDetailRequest {
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
 	// 受け取った値で勤怠詳細情報リクエスト情報オブジェクトの初期状態を構成する。
 	// 生成時に受け取った必須値を各フィールドへ保持し、後続の照会と画面表示で再利用する。
-	public AttendanceDetailRequest() {
+	public AttendanceDetailSearchRequest() {
 	}
 	// 전달받은 값으로 근태상세정보요청정보 객체의 초기 상태를 구성한다.
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
 	// 受け取った値で勤怠詳細情報リクエスト情報オブジェクトの初期状態を構成する。
 	// 生成時に受け取った必須値を各フィールドへ保持し、後続の照会と画面表示で再利用する。
-	public AttendanceDetailRequest(Date inputDate, Date startDate, Date endDate, Integer departmentId,
+	public AttendanceDetailSearchRequest(Date inputDate, Date startDate, Date endDate, Integer departmentId,
 			Integer attendanceGroupId, Integer attendanceItemId, Integer leaveItemId, String empNameKr, String note) {
 		super();
 		this.inputDate = inputDate;

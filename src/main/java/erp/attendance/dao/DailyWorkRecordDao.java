@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 import erp.attendance.dto.DailyWorkDetailDto;
-import erp.attendance.dto.DailyWorkListDto;
 import erp.attendance.dto.DailyWorkRecordDto;
+import erp.attendance.dto.DailyWorkMonthlyDto;
 import erp.attendance.model.DailyWorkRecord;
-import erp.attendance.service.request.DailyWorkDetailRequest;
-import erp.attendance.service.request.DailyWorkListRequest;
-import erp.attendance.service.request.DailyWorkRecordRequest;
+import erp.attendance.service.request.DailyWorkDetailSearchRequest;
+import erp.attendance.service.request.DailyWorkRecordSearchRequest;
+import erp.attendance.service.request.DailyWorkMonthlySearchRequest;
 
 // 일용직근무기록 데이터를 데이터베이스에서 조회하고 저장·수정·삭제한다.
 // 日雇い勤務記録データをデータベースから照会し、登録・更新・削除する。
@@ -65,7 +65,7 @@ public class DailyWorkRecordDao {
 	// 변환한다.
 	// 検索条件に合うByリクエスト情報データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
-	public List<DailyWorkRecordDto> selectByRequest(Connection conn, DailyWorkRecordRequest req) throws SQLException {
+	public List<DailyWorkRecordDto> selectDailyWorkRecord(Connection conn, DailyWorkRecordSearchRequest req) throws SQLException {
 		String sql = "SELECT dwr.DAILY_WORK_RECORD_ID, e.EMP_NAME_KR, dwr.WORK_DATE, "
 				+ "       dwr.PROJECT_ID, p.PROJECT_NAME, " + "       dwr.DAILY_PAY, dwr.PAY_RATE, "
 				+ "       dwr.INCOME_TAX, dwr.LOCAL_INCOME_TAX, dwr.ACTUAL_PAY " + "FROM DAILY_WORK_RECORD dwr "
@@ -90,7 +90,7 @@ public class DailyWorkRecordDao {
 
 			try (ResultSet rs = pstmt.executeQuery()) {
 				while (rs.next()) {
-					list.add(convertDailyWorkRecordDto(rs));
+					list.add(convertDailyWorkEmployeeDto(rs));
 				}
 			}
 		}
@@ -103,7 +103,7 @@ public class DailyWorkRecordDao {
 	// 변환한다.
 	// 検索条件に合う一覧Byリクエスト情報データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
-	public List<DailyWorkListDto> selectListByRequest(Connection conn, DailyWorkListRequest req) throws SQLException {
+	public List<DailyWorkMonthlyDto> selectDailyWorkMonthly(Connection conn, DailyWorkMonthlySearchRequest req) throws SQLException {
 		String sql = "SELECT e.EMPLOYEE_ID, e.EMP_TYPE, e.EMP_NO, e.EMP_NAME_KR, d.department_name, COUNT(dwr.work_date) AS TOTAL_DAYS,"
 				+ " SUM(dwr.income_tax) AS TOTAL_INCOME_TAX, SUM(dwr.local_income_tax) AS TOTAL_LOCAL_INCOME_TAX, SUM(dwr.actual_pay) AS TOTAL_ACTUAL_PAY "
 				+ "FROM DAILY_WORK_RECORD dwr " + "LEFT JOIN EMPLOYEE e ON e.EMPLOYEE_ID = dwr.EMPLOYEE_ID "
@@ -125,11 +125,11 @@ public class DailyWorkRecordDao {
 			pstmt.setString(2, end);
 			setIntOrNull(pstmt, 3, 4, req.getDeptId());
 			setIntOrNull(pstmt, 5, 6, req.getPosId());
-			List<DailyWorkListDto> list = new ArrayList<>();
+			List<DailyWorkMonthlyDto> list = new ArrayList<>();
 			try (ResultSet rs = pstmt.executeQuery()) {
 				while (rs.next()) {
 					int empoyeeId = rs.getInt("EMPLOYEE_ID");
-					DailyWorkListDto dailyWorkListDto = convertDailyWorkListDto(conn, rs, empoyeeId, start, end);
+					DailyWorkMonthlyDto dailyWorkListDto = convertDailyWorkMonthlyDto(conn, rs, empoyeeId, start, end);
 					list.add(dailyWorkListDto);
 				}
 			}
@@ -140,7 +140,7 @@ public class DailyWorkRecordDao {
 	}
 
 	//(3) 일용직 상세 조회의 조건에 맞는 기록 수 조회
-	public int selectDetailCountByRequest(Connection conn, DailyWorkDetailRequest req) throws SQLException{
+	public int selectDailyWorkDetailCount(Connection conn, DailyWorkDetailSearchRequest req) throws SQLException{
 		String sql = "select count(*) "
 				+ "from daily_work_record dwr "
 				+ "LEFT JOIN employee e ON dwr.employee_id = e.employee_id "
@@ -176,7 +176,7 @@ public class DailyWorkRecordDao {
 	
 	// (3) 근무일자/성명/부서/현장 상세 (상세조회에서 사용)
 	// 基準日と期間の境界を確認し、照会・計算に使用できる日付形式へ変換する。
-	public List<DailyWorkDetailDto> selectDetailByRequest(Connection conn, DailyWorkDetailRequest req, int firstRow,
+	public List<DailyWorkDetailDto> selectDailyWorkDetail(Connection conn, DailyWorkDetailSearchRequest req, int firstRow,
 			int endRow) throws SQLException {
 		String sql = "select * from (select rownum as rnum, a.* from (SELECT p.project_name, dwr.work_date, e.emp_no, e.employee_id, e.emp_name_kr, d.department_name, dwr.daily_pay, "
 				+ "dwr.pay_rate, dwr.income_tax, dwr.local_income_tax, dwr.actual_pay " + "FROM daily_work_record dwr "
@@ -220,7 +220,7 @@ public class DailyWorkRecordDao {
 	// 변환한다.
 	// 検索条件に合う詳細情報Byリクエスト情報データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
-	public List<DailyWorkDetailDto> selectDetailByRequest(Connection conn, DailyWorkDetailRequest req)
+	public List<DailyWorkDetailDto> selectDailyWorkDetail(Connection conn, DailyWorkDetailSearchRequest req)
 			throws SQLException {
 		String sql = "SELECT p.project_name AS PROJECT_NAME, dwr.work_date AS WORK_DATE, e.emp_no AS EMP_NO, e.emp_name_kr AS EMP_NAME_KR, "
 				+ "d.department_name AS DEPARTMENT_NAME, dwr.daily_pay AS DAILY_PAY, dwr.pay_rate AS PAY_RATE, "
@@ -307,7 +307,7 @@ public class DailyWorkRecordDao {
 	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
 	// 入力データを日雇い勤務記録転送データ処理に必要な形式へ変換する。
 	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
-	private DailyWorkRecordDto convertDailyWorkRecordDto(ResultSet rs) throws SQLException {
+	private DailyWorkRecordDto convertDailyWorkEmployeeDto(ResultSet rs) throws SQLException {
 		DailyWorkRecordDto dto = new DailyWorkRecordDto();
 		dto.setDailyWorkRecordId(rs.getInt("DAILY_WORK_RECORD_ID"));
 		dto.setEmpNameKr(rs.getString("EMP_NAME_KR"));
@@ -353,9 +353,9 @@ public class DailyWorkRecordDao {
 	// SQL 실행에 필요한 값과 NULL을 안전하게 바인딩하고 JDBC 자원은 사용이 끝난 뒤 정리한다.
 	// 入力データを日雇い勤務一覧転送データ処理に必要な形式へ変換する。
 	// SQL実行に必要な値とNULLを安全にバインドし、JDBCリソースは使用後に整理する。
-	private DailyWorkListDto convertDailyWorkListDto(Connection conn, ResultSet rs, int employeeId, String start,
+	private DailyWorkMonthlyDto convertDailyWorkMonthlyDto(Connection conn, ResultSet rs, int employeeId, String start,
 			String end) throws SQLException {
-		DailyWorkListDto dto = new DailyWorkListDto();
+		DailyWorkMonthlyDto dto = new DailyWorkMonthlyDto();
 		dto.setEmpType(rs.getString("EMP_TYPE"));
 		dto.setEmpNo(rs.getString("EMP_NO"));
 		dto.setEmpNameKr(rs.getString("EMP_NAME_KR"));
@@ -378,7 +378,7 @@ public class DailyWorkRecordDao {
 					java.sql.Date sqlDate = subRs.getDate("WORK_DATE");
 					if (sqlDate != null) {
 						int day = sqlDate.toLocalDate().getDayOfMonth();
-						DailyWorkRecordDto record = convertDailyWorkRecordDto(subRs);
+						DailyWorkRecordDto record = convertDailyWorkEmployeeDto(subRs);
 						workmap.put(day, record);
 					}
 				}

@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import erp.attendance.dao.EmployeeAttendanceDao;
 import erp.attendance.model.EmployeeAttendance;
-import erp.attendance.service.request.EmployeeAttendanceUpdateRequest;
+import erp.attendance.service.request.AttendanceRecordUpdateRequest;
 import erp.settings.dao.AttendanceItemDao;
 import erp.settings.model.AttendanceItem;
 import jdbc.JdbcUtil;
@@ -20,7 +20,7 @@ public class EmployeeAttendanceUpdateService {
 	// 하나의 Connection에서 자동 커밋을 해제하고 관련 DAO 작업을 묶어 성공 시 commit, 실패 시 rollback한다.
 	// 入力値を検証した後、社員勤怠Updateデータをトランザクションで登録または更新する。
 	// 一つのConnectionで自動コミットを無効化して関連DAO処理をまとめ、成功時はcommit、失敗時はrollbackする。
-	public Integer update(EmployeeAttendanceUpdateRequest req) {
+	public Integer update(AttendanceRecordUpdateRequest req) {
 		Connection conn = null;
 		try {
 			conn = ConnectionProvider.getConnection();
@@ -55,7 +55,7 @@ public class EmployeeAttendanceUpdateService {
 	// 여러 DAO와 입력값을 조합해 화면 또는 다음 업무 단계에서 바로 사용할 수 있는 결과 객체를 만든다.
 	// 入力データを社員勤怠処理に必要な形式へ変換する。
 	// 複数のDAO結果と入力値を組み合わせ、画面または次の業務段階で直ちに使用できる結果オブジェクトを作成する。
-	private EmployeeAttendance toEmployeeAttendance(EmployeeAttendanceUpdateRequest req, AttendanceItem attendanceItem) {
+	private EmployeeAttendance toEmployeeAttendance(AttendanceRecordUpdateRequest req, AttendanceItem attendanceItem) {
 		EmployeeAttendance record = new EmployeeAttendance();
 		record.setEmployeeAttendanceId(req.getEmployeeAttendanceId());
         record.setAttendanceItemId(req.getAttendanceItemId());

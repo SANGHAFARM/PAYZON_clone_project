@@ -1,6 +1,5 @@
 package erp.attendance.command;
 
-import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
@@ -9,26 +8,23 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import erp.attendance.dao.ProjectDao;
-import erp.attendance.dto.DailyWorkDetailDto;
-import erp.attendance.dto.DailyWorkListDto;
+import erp.attendance.dto.DailyWorkMonthlyDto;
 import erp.attendance.model.Project;
 import erp.attendance.service.DailyWorkDetailListService;
-import erp.attendance.service.DailyWorkDetailService;
-import erp.attendance.service.DailyWorkListService;
+import erp.attendance.service.DailyWorkMonthlyService;
+import erp.attendance.service.ProjectListService;
 import erp.attendance.service.page.DailyWorkDetailPage;
-import erp.attendance.service.request.DailyWorkDetailRequest;
-import erp.attendance.service.request.DailyWorkListRequest;
+import erp.attendance.service.request.DailyWorkDetailSearchRequest;
+import erp.attendance.service.request.DailyWorkMonthlySearchRequest;
 import erp.settings.service.DepartmentPositionService;
 import erp.settings.service.JobPositionListService;
-import jdbc.connection.ConnectionProvider;
 import mvc.command.CommandHandler;
 
 // 일용직근로자조회 화면의 HTTP 요청을 구분하고 적절한 서비스 호출과 화면 이동을 담당한다.
 // 日雇い労働者照会画面のHTTPリクエストを判別し、適切なサービス呼び出しと画面遷移を担当する。
 public class DayWorkerInquiryHandler implements CommandHandler{
 	final private String FORM_VIEW = "/WEB-INF/view/attendance/day-worker-inquiry.jsp";
-	
+	private ProjectListService projectListService = new ProjectListService();
 	
 	@Override
 	// 요청 방식과 작업 구분을 확인하여 일용직근로자조회 조회·저장 작업을 적절한 처리로 연결한다.
@@ -71,8 +67,10 @@ public class DayWorkerInquiryHandler implements CommandHandler{
 			Integer jobPositionId = (posIdParam!=null && !posIdParam.isEmpty())?Integer.parseInt(posIdParam):null;
 			req.setAttribute("departmentId", departmentId);
 			req.setAttribute("jobPositionId", jobPositionId);
-			DailyWorkListService dailyWorkListService = new DailyWorkListService();
-			List<DailyWorkListDto> list = dailyWorkListService.list(new DailyWorkListRequest(year, month, departmentId, jobPositionId));
+			
+			//월별 조회 
+			DailyWorkMonthlyService dailyWorkMonthlyService = new DailyWorkMonthlyService();
+			List<DailyWorkMonthlyDto> list = dailyWorkMonthlyService.getDailyWorkMonthly(new DailyWorkMonthlySearchRequest(year, month, departmentId, jobPositionId));
 			req.setAttribute("dailyWorkList", list);
 			JobPositionListService jobPositionListService = new JobPositionListService();
 			req.setAttribute("jobPositions", jobPositionListService.list());
@@ -85,12 +83,9 @@ public class DayWorkerInquiryHandler implements CommandHandler{
 
 
 			//현장/프로젝트 목록
-			// 対象一覧を順番に処理し、各行の入力値または照会結果を同じ基準で構成する。
-			ProjectDao projectDao = ProjectDao.getInstance();
-			try (Connection conn = ConnectionProvider.getConnection()){
-			List<Project> projects = projectDao.selectAll(conn);
+			// 対象一覧を順番に処理し、各行の入力値または照会結果を同じ基準で構成する。			
+			List<Project> projects = projectListService.getProjects();
 			req.setAttribute("projects", projects);
-			}
 			
 			//파라미터 기반으로 리퀘스트 생성
 			// リクエストから入力値を取得し、空白除去と形式変換を行って業務処理へ渡す。
@@ -99,7 +94,7 @@ public class DayWorkerInquiryHandler implements CommandHandler{
 			String empNameKr = req.getParameter("empNameKr");
 			String departmentIdStr = req.getParameter("departmentId");
 			String projectIdStr = req.getParameter("projectId");
-			DailyWorkDetailRequest request = new DailyWorkDetailRequest();
+			DailyWorkDetailSearchRequest request = new DailyWorkDetailSearchRequest();
 			request.setEmpNameKr(empNameKr);
 			Integer departmentId = (departmentIdStr!=null && !departmentIdStr.isEmpty())?Integer.parseInt(departmentIdStr):null;
 		    Integer projectId = (projectIdStr!=null && !projectIdStr.isEmpty())?Integer.parseInt(projectIdStr):null;

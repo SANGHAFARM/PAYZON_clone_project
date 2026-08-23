@@ -5,19 +5,15 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import erp.attendance.dto.AttendanceDetailDto;
-import erp.attendance.service.ListAttendanceDetailService;
-import erp.attendance.service.ListMonthlyAttendanceService;
+import erp.attendance.service.AttendanceDetailListService;
+import erp.attendance.service.AttendanceMonthlyListService;
 import erp.attendance.service.page.AttendanceDetailPage;
-import erp.attendance.service.request.AttendanceDetailRequest;
-import erp.attendance.service.request.MonthlyAttendanceRequest;
-import erp.settings.dao.DepartmentDao;
-import erp.settings.dao.JobPositionDao;
+import erp.attendance.service.request.AttendanceDetailSearchRequest;
+import erp.attendance.service.request.AttendanceMonthlySearchRequest;
 import erp.settings.service.AttendanceSettingService;
 import erp.settings.service.DepartmentPositionService;
 import mvc.command.CommandHandler;
@@ -28,10 +24,9 @@ public class AttendanceInquiryHandler implements CommandHandler {
 
 	final String FORM_VIEW = "/WEB-INF/view/attendance/attendance-inquiry.jsp";
 
-	ListMonthlyAttendanceService listService = new ListMonthlyAttendanceService();
-	DepartmentDao departmentDao = DepartmentDao.getInstance();
-	JobPositionDao jobPositionDao = JobPositionDao.getInstance();
-	ListAttendanceDetailService detailService = new ListAttendanceDetailService();
+	private AttendanceMonthlyListService listService = new AttendanceMonthlyListService();
+	private DepartmentPositionService departmentPositionService = DepartmentPositionService.getInstance();
+	private AttendanceDetailListService detailService = new AttendanceDetailListService();
 
 	@Override
 	// 요청 방식과 작업 구분을 확인하여 근태조회 조회·저장 작업을 적절한 처리로 연결한다.
@@ -53,7 +48,6 @@ public class AttendanceInquiryHandler implements CommandHandler {
 	// 勤怠照会画面に必要なデータを照会してrequestへ保存し、JSPパスを返す。
 	// リクエストパラメーターを検証してServiceへ渡し、処理結果をrequestまたはsessionへ保存した後、JSPフォワードまたはリダイレクト先を決定する。
 	public String processForm(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		DepartmentPositionService departmentPositionService = DepartmentPositionService.getInstance();
 		req.setAttribute("departments", departmentPositionService.getDepartmentOptions());
 		req.setAttribute("jobPositions", departmentPositionService.getJobPositionOptions());
 
@@ -89,9 +83,9 @@ public class AttendanceInquiryHandler implements CommandHandler {
 			req.setAttribute("departmentId", departmentId);
 			req.setAttribute("jobPositionId", jobPositionId);
 
-			MonthlyAttendanceRequest request = new MonthlyAttendanceRequest(year, month, status, empType, departmentId,
+			AttendanceMonthlySearchRequest request = new AttendanceMonthlySearchRequest(year, month, status, empType, departmentId,
 					jobPositionId);
-			req.setAttribute("monthlyEmployees", listService.getMonthlyAttendance(request));
+			req.setAttribute("monthlyEmployees", listService.getAttendanceMonthly(request));
 
 			String[] empTypes = { "정규직", "계약직", "임시직", "파견직", "위촉직", "일용직" };
 			req.setAttribute("empTypes", empTypes);
@@ -106,7 +100,7 @@ public class AttendanceInquiryHandler implements CommandHandler {
 			req.setAttribute("attendanceItems", attendanceSettingService.getAttendItems());
 			req.setAttribute("attendanceGroups", attendanceSettingService.getAttendGroups());
 
-			AttendanceDetailRequest request = createAttendanceDetailRequest(req, year, month);
+			AttendanceDetailSearchRequest request = createAttendanceDetailSearchRequest(req, year, month);
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 			req.setAttribute("inputDateStr", request.getInputDate() != null ? formatter.format(request.getInputDate()) : null);
 			req.setAttribute("startDateStr", request.getStartDate() != null ? formatter.format(request.getStartDate()) : null);
@@ -136,7 +130,7 @@ public class AttendanceInquiryHandler implements CommandHandler {
 	// 화면에서 전달된 값과 현재 조회조건을 유지하면서 필요한 request 속성 또는 이동 URL을 구성한다.
 	// 勤怠照会処理で使用する勤怠詳細情報リクエスト情報データまたはオブジェクトを生成する。
 	// 画面から渡された値と現在の検索条件を維持しながら、必要なrequest属性または遷移URLを構成する。
-	private AttendanceDetailRequest createAttendanceDetailRequest(HttpServletRequest req, int year, int month) {
+	private AttendanceDetailSearchRequest createAttendanceDetailSearchRequest(HttpServletRequest req, int year, int month) {
 		String inputDateStr = req.getParameter("inputDate");
 		String startDateStr = req.getParameter("startDate");
 		String endDateStr = req.getParameter("endDate");
@@ -179,7 +173,7 @@ public class AttendanceInquiryHandler implements CommandHandler {
 				: null;
 		String empNameKr = req.getParameter("empNameKr");
 		String note = req.getParameter("note");
-		AttendanceDetailRequest request = new AttendanceDetailRequest(inputDate, startDate, endDate, departmentId,
+		AttendanceDetailSearchRequest request = new AttendanceDetailSearchRequest(inputDate, startDate, endDate, departmentId,
 				attendanceGroupId, attendanceItemId, leaveItemId, empNameKr, note);
 		return request;
 	}

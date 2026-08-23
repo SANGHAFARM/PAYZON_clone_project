@@ -12,14 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 import erp.attendance.dto.AttendanceDetailDto;
-import erp.attendance.dto.AttendanceRecordDto;
-import erp.attendance.dto.MonthlyAttendanceDto;
+import erp.attendance.dto.AttendanceEmployeeRecordDto;
+import erp.attendance.dto.AttendanceMonthlyDto;
 import erp.attendance.model.EmployeeAttendance;
-import erp.attendance.service.request.AttendanceDetailRequest;
-import erp.attendance.service.request.MonthlyAttendanceRequest;
-/*import erp.attend.model.AttendDetailItem;
-import erp.attend.model.AttendSearchCondition;*/
-/*import erp.attend.model.EmpAttendRecord;*/
+import erp.attendance.service.request.AttendanceDetailSearchRequest;
+import erp.attendance.service.request.AttendanceEmployeeSearchRequest;
+import erp.attendance.service.request.AttendanceMonthlySearchRequest;
 import jdbc.JdbcUtil;
 
 //전체적으로 수정필요
@@ -78,7 +76,7 @@ public class EmployeeAttendanceDao {
 	// 변환한다.
 	// 検索条件に合うBy識別番号データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
-	public EmployeeAttendance selectById(Connection conn, int no) throws SQLException {
+	public EmployeeAttendance selectEmployeeAttendanceById(Connection conn, int no) throws SQLException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql = "SELECT * FROM EMPLOYEE_ATTENDANCE WHERE EMPLOYEE_ATTENDANCE_ID=?";
@@ -108,19 +106,19 @@ public class EmployeeAttendanceDao {
 	// 변환한다.
 	// 検索条件に合うByEmp識別番号And年度And月データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
-	public List<AttendanceRecordDto> selectByEmpIdAndYearAndMonth(Connection conn, int empId, int year, Integer month)
+	public List<AttendanceEmployeeRecordDto> selectAttendanceEmployee(Connection conn, AttendanceEmployeeSearchRequest req)
 			throws SQLException {
 		String sql = "SELECT A.EMPLOYEE_ATTENDANCE_ID, A.INPUT_DATE, A.ATTENDANCE_ITEM_ID, I.ATTEND_NAME, A.START_DATE, A.END_DATE, A.ATTEND_VALUE, A.PAY_AMOUNT, A.NOTE "
 				+ "FROM EMPLOYEE_ATTENDANCE A LEFT JOIN ATTENDANCE_ITEM I ON I.ATTENDANCE_ITEM_ID = A.ATTENDANCE_ITEM_ID "
 				+ "WHERE EMPLOYEE_ID = ? " + "AND TO_CHAR(START_DATE, 'YYYY') = ? "
 				+ "AND (? IS NULL OR TO_CHAR(START_DATE, 'MM') = ?)";
-		List<AttendanceRecordDto> list = new ArrayList<>();
+		List<AttendanceEmployeeRecordDto> list = new ArrayList<>();
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, empId);
-			pstmt.setString(2, String.valueOf(year));
-			if (month != null) {
-				pstmt.setString(3, String.format("%02d", month));
-				pstmt.setString(4, String.format("%02d", month));
+			pstmt.setInt(1, req.getEmployeeId());
+			pstmt.setString(2, String.valueOf(req.getYear()));
+			if (req.getMonth() != null) {
+				pstmt.setString(3, String.format("%02d", req.getMonth()));
+				pstmt.setString(4, String.format("%02d", req.getMonth()));
 
 			} else {
 				pstmt.setString(3, null);
@@ -128,7 +126,7 @@ public class EmployeeAttendanceDao {
 			}
 			try (ResultSet rs = pstmt.executeQuery()) {
 				while (rs.next()) {
-					AttendanceRecordDto dto = new AttendanceRecordDto();
+					AttendanceEmployeeRecordDto dto = new AttendanceEmployeeRecordDto();
 					dto.setEmployeeAttendanceId(rs.getInt("EMPLOYEE_ATTENDANCE_ID"));
 					dto.setInputDate(rs.getDate("INPUT_DATE"));
 					dto.setAttendanceItemId(rs.getInt("ATTENDANCE_ITEM_ID"));
@@ -212,7 +210,7 @@ public class EmployeeAttendanceDao {
 	// 변환한다.
 	// 検索条件に合うBy検索条件データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
-	public List<MonthlyAttendanceDto> selectByCondition(Connection conn, MonthlyAttendanceRequest req)
+	public List<AttendanceMonthlyDto> selectAttendanceMonthly(Connection conn, AttendanceMonthlySearchRequest req)
 			throws SQLException {
 		String sql = "SELECT E.EMPLOYEE_ID, E.EMP_TYPE, E.EMP_NO, E.EMP_NAME_KR, D.DEPARTMENT_NAME, J.JOB_POSITION_NAME "
 				+ "FROM EMPLOYEE E " + "LEFT JOIN DEPARTMENT D ON D.DEPARTMENT_ID = E.DEPARTMENT_ID "
@@ -227,10 +225,10 @@ public class EmployeeAttendanceDao {
 			pstmt.setString(4, req.getEmpType());
 			setIntOrNull(pstmt, 5, 6, req.getDepartmentId());
 			setIntOrNull(pstmt, 7, 8, req.getJobPositionId());
-			List<MonthlyAttendanceDto> list = new ArrayList<>();
+			List<AttendanceMonthlyDto> list = new ArrayList<>();
 			try (ResultSet rs = pstmt.executeQuery()) {
 				while (rs.next()) {
-					MonthlyAttendanceDto dto = new MonthlyAttendanceDto();
+					AttendanceMonthlyDto dto = new AttendanceMonthlyDto();
 					dto.setEmpType(rs.getString("EMP_TYPE"));
 					dto.setEmpNo(rs.getString("EMP_NO"));
 					dto.setEmpNameKr(rs.getString("EMP_NAME_KR"));
@@ -249,11 +247,10 @@ public class EmployeeAttendanceDao {
 
 	}
 
-	// ???????????????????????????????????????????????????????????????????????????????
-	// 조회 조건에 맞는 일용직근태 데이터를 데이터베이스에서 조회한다.
+	// 조회 조건에 맞는 사원근태 데이터를 한달 단위로 데이터베이스에서 조회한다.
 	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로
 	// 변환한다.
-	// 検索条件に合う日雇い勤怠データをデータベースから照会する。
+	// 検索条件に合う社員勤怠データを一か月単位でデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	private Map<Integer, String> selectDailyAttendance(Connection conn, int empId, int year, int month)
 			throws SQLException {
@@ -307,7 +304,7 @@ public class EmployeeAttendanceDao {
 	// 検索条件に合う合計Attend値データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	public Map<String, Double> selectTotalAttendValue(Connection conn, int empId, int year, int month,
-			MonthlyAttendanceDto dto) throws SQLException {
+			AttendanceMonthlyDto dto) throws SQLException {
 		// 해당 연월 문자열 생성 (예: "2026-08")
 		// 基準日と期間の境界を確認し、照会・計算に使用できる日付形式へ変換する。
 		String targetYearMonth = String.format("%d-%02d", year, month);
@@ -347,7 +344,7 @@ public class EmployeeAttendanceDao {
 	 * 検索語と選択条件を組み合わせ、利用者が指定した対象だけを照会する。
 	 */
 
-	public int selectCountDetailList(Connection conn, AttendanceDetailRequest req) throws SQLException {
+	public int selectAttendanceDetailCount(Connection conn, AttendanceDetailSearchRequest req) throws SQLException {
 		String sql = "SELECT COUNT(*) " + "FROM EMPLOYEE_ATTENDANCE ea "
 				+ "JOIN EMPLOYEE e ON ea.EMPLOYEE_ID = e.EMPLOYEE_ID "
 				+ "LEFT JOIN DEPARTMENT d ON e.DEPARTMENT_ID = d.DEPARTMENT_ID "
@@ -390,7 +387,7 @@ public class EmployeeAttendanceDao {
 	// 検索条件に合う詳細情報一覧データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
 	
-	public List<AttendanceDetailDto> selectDetailList(Connection conn, AttendanceDetailRequest req, int firstRow, int endRow)
+	public List<AttendanceDetailDto> selectDetailList(Connection conn, AttendanceDetailSearchRequest req, int firstRow, int endRow)
 			throws SQLException {
 		String sql = "select * from (select rownum as rnum, a.* from (SELECT ea.INPUT_DATE, e.EMP_TYPE, e.EMP_NAME_KR, "
 				+ "       d.DEPARTMENT_NAME, p.JOB_POSITION_NAME, ai.ATTEND_NAME, "
@@ -444,7 +441,7 @@ public class EmployeeAttendanceDao {
 		return list;
 	}
 		
-	public List<AttendanceDetailDto> selectDetailList(Connection conn, AttendanceDetailRequest req)
+	public List<AttendanceDetailDto> selectDetailList(Connection conn, AttendanceDetailSearchRequest req)
 			throws SQLException {
 		String sql = "SELECT ea.INPUT_DATE, e.EMP_TYPE, e.EMP_NAME_KR, "
 				+ "       d.DEPARTMENT_NAME, p.JOB_POSITION_NAME, ai.ATTEND_NAME, "
@@ -500,20 +497,20 @@ public class EmployeeAttendanceDao {
 	// 변환한다.
 	// 検索条件に合うByEmp識別番号And休暇項目識別番号データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
-	public List<AttendanceRecordDto> selectByEmpIdAndLeaveItemId(Connection conn, int empId, int leaveItemId)
+	public List<AttendanceEmployeeRecordDto> selectByEmpIdAndLeaveItemId(Connection conn, int empId, int leaveItemId)
 			throws SQLException {
 		String sql = "SELECT A.INPUT_DATE, I.ATTEND_NAME, "
 				+ "L.ITEM_NAME, A.START_DATE, A.END_DATE, A.ATTEND_VALUE, A.NOTE " + "FROM EMPLOYEE_ATTENDANCE A "
 				+ "LEFT JOIN ATTENDANCE_ITEM I ON I.ATTENDANCE_ITEM_ID = A.ATTENDANCE_ITEM_ID "
 				+ "LEFT JOIN LEAVE_ITEM L ON L.LEAVE_ITEM_ID = A.LEAVE_ITEM_ID "
 				+ "WHERE A.EMPLOYEE_ID = ? AND A.LEAVE_ITEM_ID = ? " + "ORDER BY A.START_DATE ASC";
-		List<AttendanceRecordDto> list = new ArrayList<>();
+		List<AttendanceEmployeeRecordDto> list = new ArrayList<>();
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, empId);
 			pstmt.setInt(2, leaveItemId);
 			try (ResultSet rs = pstmt.executeQuery()) {
 				while (rs.next()) {
-					AttendanceRecordDto dto = new AttendanceRecordDto();
+					AttendanceEmployeeRecordDto dto = new AttendanceEmployeeRecordDto();
 					dto.setInputDate(rs.getDate("INPUT_DATE"));
 					dto.setAttendName(rs.getString("ATTEND_NAME"));
 					dto.setItemName(rs.getString("ITEM_NAME"));

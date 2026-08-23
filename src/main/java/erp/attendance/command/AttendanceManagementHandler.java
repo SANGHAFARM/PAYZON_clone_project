@@ -12,14 +12,15 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import erp.attendance.dto.AttendanceRecordDto;
+import erp.attendance.dto.AttendanceEmployeeRecordDto;
 import erp.attendance.service.EmployeeAttendanceDeleteService;
 import erp.attendance.service.EmployeeAttendanceUpdateService;
-import erp.attendance.service.InsertEmployeeAttendanceService;
-import erp.attendance.service.ListAttendanceEmployeeService;
-import erp.attendance.service.ListEmployeeAttendanceService;
-import erp.attendance.service.request.EmployeeAttendanceUpdateRequest;
-import erp.attendance.service.request.InsertEmployeeAttendanceRequest;
+import erp.attendance.service.EmployeeAttendanceInsertService;
+import erp.attendance.service.AttendanceEmployeeListService;
+import erp.attendance.service.EmployeeAttendanceListService;
+import erp.attendance.service.request.AttendanceEmployeeSearchRequest;
+import erp.attendance.service.request.AttendanceRecordInsertRequest;
+import erp.attendance.service.request.AttendanceRecordUpdateRequest;
 import erp.employees.dto.AttendanceEmployeeDto;
 import erp.settings.model.AttendanceItem;
 import erp.settings.service.AttendanceSettingService;
@@ -37,9 +38,9 @@ public class AttendanceManagementHandler implements CommandHandler {
 	 * InsertEmpAttendRecordService();
 	 */
 	
-	InsertEmployeeAttendanceService insertService = new InsertEmployeeAttendanceService();
-	EmployeeAttendanceUpdateService updateService = new EmployeeAttendanceUpdateService();
-	EmployeeAttendanceDeleteService deleteService = new EmployeeAttendanceDeleteService();
+	private EmployeeAttendanceInsertService insertService = new EmployeeAttendanceInsertService();
+	private EmployeeAttendanceUpdateService updateService = new EmployeeAttendanceUpdateService();
+	private EmployeeAttendanceDeleteService deleteService = new EmployeeAttendanceDeleteService();
 	
 	// 요청 방식과 작업 구분을 확인하여 근태입력·관리 조회·저장 작업을 적절한 처리로 연결한다.
 	// 요청 파라미터를 검증해 Service에 전달하고 처리 결과를 request 또는 session에 저장한 뒤 JSP 포워드나 리다이렉트 경로를 결정한다.
@@ -93,9 +94,10 @@ public class AttendanceManagementHandler implements CommandHandler {
 						: LocalDate.now().getMonthValue();
 				req.setAttribute("year", year);
 				req.setAttribute("month", month);
-				ListEmployeeAttendanceService listEmployeeAttendanceService = new ListEmployeeAttendanceService();
-				List<AttendanceRecordDto> attendanceRecords = listEmployeeAttendanceService
-						.getEmployeeAttendance(employeeId, year, month);
+				AttendanceEmployeeSearchRequest request = new AttendanceEmployeeSearchRequest(employeeId, year, month);
+				EmployeeAttendanceListService listEmployeeAttendanceService = new EmployeeAttendanceListService();
+				List<AttendanceEmployeeRecordDto> attendanceRecords = listEmployeeAttendanceService
+						.getAttendanceEmployeeRecord(request);
 				req.setAttribute("attendanceRecords", attendanceRecords);
 			}
 		}
@@ -120,8 +122,8 @@ public class AttendanceManagementHandler implements CommandHandler {
 
 		// 사원목록 조회
 		// 社員の識別情報と在職・雇用・所属条件を確認し、対象社員データへ反映する。
-		ListAttendanceEmployeeService listAttendanceEmployeeService = new ListAttendanceEmployeeService();
-		List<AttendanceEmployeeDto> employees = listAttendanceEmployeeService.getAttendanceEmployeeDtos(keyword,
+		AttendanceEmployeeListService listAttendanceEmployeeService = new AttendanceEmployeeListService();
+		List<AttendanceEmployeeDto> employees = listAttendanceEmployeeService.getAttendanceEmployee(keyword,
 				status);
 		req.setAttribute("employees", employees);
 
@@ -154,14 +156,14 @@ public class AttendanceManagementHandler implements CommandHandler {
 		Map<String, Boolean> errors = new HashMap<>();
 		req.setAttribute("errors", errors);
 		if (editId != null) {
-			EmployeeAttendanceUpdateRequest request = createEmployeeAttendanceUpdateRequest(req, errors);
+			AttendanceRecordUpdateRequest request = createAttendanceRecordUpdateRequest(req, errors);
 			request.validate(errors);
 			if (!errors.isEmpty()) {
 				return processForm(req, res);
 			}
 			updateService.update(request);
 		} else {
-			InsertEmployeeAttendanceRequest request = createInsertEmployeeAttendanceRequest(req, errors);
+			AttendanceRecordInsertRequest request = createAttendanceRecordInsertRequest(req, errors);
 			request.validate(errors);
 			if (!errors.isEmpty()) {
 				return processForm(req, res);
@@ -176,8 +178,8 @@ public class AttendanceManagementHandler implements CommandHandler {
 	// 화면에서 전달된 값과 현재 조회조건을 유지하면서 필요한 request 속성 또는 이동 URL을 구성한다.
 	// 勤怠入力・管理処理で使用する社員勤怠Updateリクエスト情報データまたはオブジェクトを生成する。
 	// 画面から渡された値と現在の検索条件を維持しながら、必要なrequest属性または遷移URLを構成する。
-	private EmployeeAttendanceUpdateRequest createEmployeeAttendanceUpdateRequest(HttpServletRequest req, Map<String, Boolean> errors) {
-		EmployeeAttendanceUpdateRequest request = new EmployeeAttendanceUpdateRequest();
+	private AttendanceRecordUpdateRequest createAttendanceRecordUpdateRequest(HttpServletRequest req, Map<String, Boolean> errors) {
+		AttendanceRecordUpdateRequest request = new AttendanceRecordUpdateRequest();
 		int employeeAttendanceId = Integer.parseInt(req.getParameter("editId"));
 		request.setEmployeeAttendanceId(employeeAttendanceId);
 		
@@ -214,9 +216,9 @@ public class AttendanceManagementHandler implements CommandHandler {
 	// 화면에서 전달된 값과 현재 조회조건을 유지하면서 필요한 request 속성 또는 이동 URL을 구성한다.
 	// 勤怠入力・管理処理で使用するInsert社員勤怠リクエスト情報データまたはオブジェクトを生成する。
 	// 画面から渡された値と現在の検索条件を維持しながら、必要なrequest属性または遷移URLを構成する。
-	private InsertEmployeeAttendanceRequest createInsertEmployeeAttendanceRequest(HttpServletRequest req,
+	private AttendanceRecordInsertRequest createAttendanceRecordInsertRequest(HttpServletRequest req,
 			Map<String, Boolean> errors) {
-		InsertEmployeeAttendanceRequest request = new InsertEmployeeAttendanceRequest();
+		AttendanceRecordInsertRequest request = new AttendanceRecordInsertRequest();
 		String[] employeeIdsStr = req.getParameterValues("employeeIds");
 		List<Integer> employeeIds = new ArrayList<>();
 		if (employeeIdsStr != null) {
