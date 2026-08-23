@@ -6,7 +6,7 @@ import java.util.List;
 
 import erp.attendance.dao.DailyWorkRecordDao;
 import erp.attendance.dto.DailyWorkDetailDto;
-import erp.attendance.service.request.DailyWorkDetailRequest;
+import erp.attendance.service.request.DailyWorkDetailSearchRequest;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
@@ -18,12 +18,12 @@ public class DailyWorkDetailService {
 	// 조회 전용 Connection으로 관련 DAO 결과를 조합하며 데이터 변경이 없으므로 별도의 commit이나 rollback을 수행하지 않는다.
 	// 日雇い勤務詳細情報処理に必要な日雇い勤務詳細情報データを照会して返す。
 	// 照会専用Connectionで関連DAOの結果を組み合わせ、データ変更がないため個別のcommitやrollbackは実行しない。
-	public List<DailyWorkDetailDto> search(DailyWorkDetailRequest req){
+	public List<DailyWorkDetailDto> getDailyWorkDetail(DailyWorkDetailSearchRequest req){
 		Connection conn = null;
 		try {
 			conn = ConnectionProvider.getConnection();
 			conn.setAutoCommit(false);
-			List<DailyWorkDetailDto> list = dailyWorkRecordDao.selectDetailByRequest(conn, req);
+			List<DailyWorkDetailDto> list = dailyWorkRecordDao.selectDailyWorkDetail(conn, req);
 			conn.commit();
 			return list;
 		} catch (SQLException e) {

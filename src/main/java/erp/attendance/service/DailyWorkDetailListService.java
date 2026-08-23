@@ -7,8 +7,7 @@ import java.util.List;
 import erp.attendance.dao.DailyWorkRecordDao;
 import erp.attendance.dto.DailyWorkDetailDto;
 import erp.attendance.service.page.DailyWorkDetailPage;
-import erp.attendance.service.request.DailyWorkDetailRequest;
-import jdbc.JdbcUtil;
+import erp.attendance.service.request.DailyWorkDetailSearchRequest;
 import jdbc.connection.ConnectionProvider;
 
 //일용직근무상세정보 처리에 필요한 일용직근무상세정보 데이터를 조회하여 반환한다.
@@ -19,12 +18,12 @@ public class DailyWorkDetailListService {
 	private DailyWorkRecordDao dailyWorkRecordDao = DailyWorkRecordDao.getInstance();
 	private int size = 30;
 	
-	public DailyWorkDetailPage getDetailPage(int pageNum, DailyWorkDetailRequest req) {
+	public DailyWorkDetailPage getDetailPage(int pageNum, DailyWorkDetailSearchRequest req) {
 		try (Connection conn = ConnectionProvider.getConnection()){
-			int total = dailyWorkRecordDao.selectDetailCountByRequest(conn, req);
+			int total = dailyWorkRecordDao.selectDailyWorkDetailCount(conn, req);
 			int firstRow = (pageNum-1)*size;
 			int endRow = firstRow + size;
-			List<DailyWorkDetailDto> content = dailyWorkRecordDao.selectDetailByRequest(conn, req, firstRow, endRow);
+			List<DailyWorkDetailDto> content = dailyWorkRecordDao.selectDailyWorkDetail(conn, req, firstRow, endRow);
 			return new DailyWorkDetailPage(total, pageNum, size, content);
 		}
 		catch (SQLException e) {

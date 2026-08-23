@@ -7,13 +7,14 @@ import java.util.List;
 
 import erp.employees.dao.CertificateIssuanceDao;
 import erp.employees.dao.EmployeeDao;
+import erp.employees.dto.DayWorkerDto;
 import erp.employees.dto.EmployeeListItem;
 import erp.employees.dto.EmployeePageInfo;
 import erp.employees.dto.EmployeeSummary;
-import jdbc.connection.ConnectionProvider;
-import jdbc.JdbcUtil;
 import erp.payroll.dao.PayrollEmployeeDao;
 import erp.retirement.dao.RetirementCalculationDao;
+import jdbc.JdbcUtil;
+import jdbc.connection.ConnectionProvider;
 
 // 사원 목록 조회와 현황 집계 및 삭제를 처리한다.
 // 사원목록 업무 규칙과 데이터 변경 트랜잭션을 처리한다.
@@ -41,6 +42,19 @@ public class EmployeeListService {
 			EmployeeSummary summary = employeeDao.selectSummary(conn);
 			return new EmployeeListResult(employees, summary, pageInfo);
 		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	// 전체 사원 중 일용직 사원만 조회한다
+	// 호출자가 전달한 조회조건을 적용하고 결과가 없을 때도 빈 값이나 빈 목록을 안전하게 반환한다.
+	// 全社員の中で日雇い社員だけ照会する
+	// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
+	public List<DayWorkerDto> getDayWorkerList(String keyword, String status){
+		try(Connection conn = ConnectionProvider.getConnection()){
+			List<DayWorkerDto> list = employeeDao.selectDayWorkerListByKeywordAndStatus(conn, keyword, status);
+			return list;
+		}catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}

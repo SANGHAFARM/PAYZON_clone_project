@@ -11,7 +11,7 @@ import jdbc.connection.ConnectionProvider;
 
 // 휴가조회 업무 규칙과 데이터 변경 트랜잭션을 처리한다.
 // 休暇照会の業務ルールとデータ変更トランザクションを処理する。
-public class LeaveInquiryService {
+public class LeaveBalanceListService {
 	private EmployeeLeaveBalanceDao employeeLeaveBalanceDao = EmployeeLeaveBalanceDao.getInstance();
 
 	// 휴가조회 처리에 필요한 휴가사원를 조회하거나 계산하여 반환한다.

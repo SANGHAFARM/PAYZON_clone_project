@@ -10,7 +10,7 @@ import erp.attendance.service.page.LeaveInquiryPage;
 import erp.attendance.service.request.LeaveInquiryRequest;
 import jdbc.connection.ConnectionProvider;
 
-public class ListLeaveInquiryService {
+public class LeaveInquiryPageService {
 	private EmployeeLeaveBalanceDao leaveDao = EmployeeLeaveBalanceDao.getInstance();
 
 	public LeaveInquiryPage getInquiryPage(int pageNum, LeaveInquiryRequest req) {

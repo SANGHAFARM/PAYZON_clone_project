@@ -5,7 +5,7 @@ import java.util.Map;
 //근태조회 월별 조회에서 사용할 dto
 // 월간근태 처리에 필요한 값을 계층 간에 전달한다.
 // 月間勤怠処理に必要な値を各階層間で受け渡す。
-public class MonthlyAttendanceDto {
+public class AttendanceMonthlyDto {
 	private String empType;
 	private String empNo;
 	private String empNameKr;
@@ -18,13 +18,13 @@ public class MonthlyAttendanceDto {
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
 	// 受け取った値で月間勤怠オブジェクトの初期状態を構成する。
 	// 生成時に受け取った必須値を各フィールドへ保持し、後続の照会と画面表示で再利用する。
-	public MonthlyAttendanceDto() {
+	public AttendanceMonthlyDto() {
 	}
 	// 전달받은 값으로 월간근태 객체의 초기 상태를 구성한다.
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
 	// 受け取った値で月間勤怠オブジェクトの初期状態を構成する。
 	// 生成時に受け取った必須値を各フィールドへ保持し、後続の照会と画面表示で再利用する。
-	public MonthlyAttendanceDto(String empType, String empNo, String empNameKr, String departmentName,
+	public AttendanceMonthlyDto(String empType, String empNo, String empNameKr, String departmentName,
 			String jobPositionName, Map<Integer, String> dailyAttendance, Map<String, Double> totalAttendValue,
 			double totalLeaveDeduction) {
 		super();
