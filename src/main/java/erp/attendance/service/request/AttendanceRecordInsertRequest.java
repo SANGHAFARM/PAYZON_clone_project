@@ -9,7 +9,7 @@ import java.util.Map;
 public class AttendanceRecordInsertRequest {
 	private List<Integer> employeeIds;
 	private Date inputDate;
-	private int attendanceItemId;
+	private Integer attendanceItemId;
 	private Date startDate;
 	private Date endDate;
 	private double attendValue;
@@ -25,8 +25,16 @@ public class AttendanceRecordInsertRequest {
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
 	// 受け取った値でInsert社員勤怠リクエスト情報オブジェクトの初期状態を構成する。
 	// 生成時に受け取った必須値を各フィールドへ保持し、後続の照会と画面表示で再利用する。
-	public AttendanceRecordInsertRequest(List<Integer> employeeIds, Date inputDate, int attendanceItemId, Date startDate,
-			Date endDate, double attendValue, long payAmount, String note) {
+
+	// Insert사원근태요청정보 객체에 저장된 사원Ids 값을 반환한다.
+	// 저장된 필드를 외부에 직접 노출하지 않고 접근 메서드를 통해 필요한 계층에 제공한다.
+	// Insert社員勤怠リクエスト情報オブジェクトに保存された社員Idsの値を返す。
+	// 保持しているフィールドを直接公開せず、アクセサーメソッドを通して必要な階層へ提供する。
+	public List<Integer> getEmployeeIds() {
+		return employeeIds;
+	}
+	public AttendanceRecordInsertRequest(List<Integer> employeeIds, Date inputDate, Integer attendanceItemId,
+			Date startDate, Date endDate, double attendValue, long payAmount, String note) {
 		super();
 		this.employeeIds = employeeIds;
 		this.inputDate = inputDate;
@@ -37,13 +45,7 @@ public class AttendanceRecordInsertRequest {
 		this.payAmount = payAmount;
 		this.note = note;
 	}
-	// Insert사원근태요청정보 객체에 저장된 사원Ids 값을 반환한다.
-	// 저장된 필드를 외부에 직접 노출하지 않고 접근 메서드를 통해 필요한 계층에 제공한다.
-	// Insert社員勤怠リクエスト情報オブジェクトに保存された社員Idsの値を返す。
-	// 保持しているフィールドを直接公開せず、アクセサーメソッドを通して必要な階層へ提供する。
-	public List<Integer> getEmployeeIds() {
-		return employeeIds;
-	}
+
 	// 전달받은 사원Ids 값을 Insert사원근태요청정보 객체에 저장한다.
 	// 요청값이나 조회 결과로 전달된 값을 대응하는 필드에 반영하여 객체의 현재 상태를 갱신한다.
 	// 受け取った社員Idsの値をInsert社員勤怠リクエスト情報オブジェクトに保存する。
@@ -69,14 +71,15 @@ public class AttendanceRecordInsertRequest {
 	// 저장된 필드를 외부에 직접 노출하지 않고 접근 메서드를 통해 필요한 계층에 제공한다.
 	// Insert社員勤怠リクエスト情報オブジェクトに保存された勤怠項目識別番号の値を返す。
 	// 保持しているフィールドを直接公開せず、アクセサーメソッドを通して必要な階層へ提供する。
-	public int getAttendanceItemId() {
+	
+	public Integer getAttendanceItemId() {
 		return attendanceItemId;
 	}
 	// 전달받은 근태항목식별번호 값을 Insert사원근태요청정보 객체에 저장한다.
 	// 요청값이나 조회 결과로 전달된 값을 대응하는 필드에 반영하여 객체의 현재 상태를 갱신한다.
 	// 受け取った勤怠項目識別番号の値をInsert社員勤怠リクエスト情報オブジェクトに保存する。
 	// リクエスト値または照会結果として渡された値を対応フィールドへ反映し、オブジェクトの現在状態を更新する。
-	public void setAttendanceItemId(int attendanceItemId) {
+	public void setAttendanceItemId(Integer attendanceItemId) {
 		this.attendanceItemId = attendanceItemId;
 	}
 	// Insert사원근태요청정보 객체에 저장된 Start일자 값을 반환한다.
@@ -155,13 +158,10 @@ public class AttendanceRecordInsertRequest {
 	// Controller・Service・DAO・JSP間で同じデータを一貫した構造として受け渡すために使用する。
 	public void validate(Map<String, Boolean> errors) {
 		if (employeeIds==null||employeeIds.isEmpty()||employeeIds.size()==0) {
-			errors.put("empIds", Boolean.TRUE);
+			errors.put("employeeIds", Boolean.TRUE);
 		}
-		if (attendanceItemId<=0) {
+		if (attendanceItemId==null) {
 			errors.put("attendanceItemId", Boolean.TRUE);
-		}
-		if (endDate.before(startDate)) {
-			errors.put("dateError", Boolean.TRUE);
 		}
 		if (attendValue<=0) {
 			errors.put("attendValue", Boolean.TRUE);

@@ -196,13 +196,15 @@ public class AttendanceManagementHandler implements CommandHandler {
 			endDate = formatter.parse(endDateStr);
 			inputDate = formatter.parse(inputDateStr);
 		} catch (ParseException e) {
-			errors.put("ParseException", Boolean.TRUE);
+			errors.put("date", Boolean.TRUE);
 		}
 		
 		request.setInputDate(inputDate);
-		request.setAttendanceItemId(Integer.parseInt(req.getParameter("attendanceItemId")));
 		request.setStartDate(startDate);
 		request.setEndDate(endDate);
+		String attendanceItemIdStr = req.getParameter("attendanceItemId");
+		request.setAttendanceItemId((attendanceItemIdStr!=null&&!attendanceItemIdStr.trim().isEmpty())?Integer.parseInt(attendanceItemIdStr):null);
+		
 		String attendValue = req.getParameter("attendValue");
 		request.setAttendValue(
 				(attendValue != null && !attendValue.trim().isEmpty()) ? Double.parseDouble(attendValue) : 0.0);
@@ -238,14 +240,17 @@ public class AttendanceManagementHandler implements CommandHandler {
 			endDate = formatter.parse(endDateStr);
 			inputDate = formatter.parse(inputDateStr);
 		} catch (ParseException e) {
-			errors.put("ParseException", Boolean.TRUE);
+			errors.put("date", Boolean.TRUE);
 		}
 
 		request.setEmployeeIds(employeeIds);
 		request.setInputDate(inputDate);
-		request.setAttendanceItemId(Integer.parseInt(req.getParameter("attendanceItemId")));
 		request.setStartDate(startDate);
 		request.setEndDate(endDate);
+		
+		String attendanceItemIdStr = req.getParameter("attendanceItemId");
+		request.setAttendanceItemId((attendanceItemIdStr!=null&&!attendanceItemIdStr.trim().isEmpty())?Integer.parseInt(attendanceItemIdStr):null);
+		
 		String attendValue = req.getParameter("attendValue");
 		request.setAttendValue(
 				(attendValue != null && !attendValue.trim().isEmpty()) ? Double.parseDouble(attendValue) : 0.0);

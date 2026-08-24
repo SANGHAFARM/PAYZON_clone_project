@@ -95,7 +95,7 @@
                                     <td><c:out value="${dayworker.empNameKr}" /></td>
                                     <td><c:out value="${dayworker.departmentName}" /></td>
                                     <td><a class="button button-small"
-                                        href="${pageContext.request.contextPath}/attendance/day-worker-management.do?employeeId=${dayworker.employeeId}#work-history-${dayworker.employeeId}">管理</a></td>
+                                        href="${pageContext.request.contextPath}/attendance/day-worker-management.do?employeeId=${dayworker.employeeId}&status=${status}&keyword=${keyword}#work-history-${dayworker.employeeId}">管理</a></td>
                                 </tr>
                             </c:forEach>
                             <c:if test="${empty dayWorkers}">
@@ -135,7 +135,7 @@
 
                         </label> <label> <span>日当</span> <span class="amount-control">
                                 <input type="number" id="dailyPay" name="dailyPay" min="0"
-                                value="${dailyPay}" placeholder="日給を入力してください"> <em>円</em>
+                                value="${empty dailyPay ? 0 : dailyPay}" placeholder="日給を入力してください"> <em>円</em>
                         </span></label> <label> <span>支給率</span> <input type="number"
                             id="payRate" name="payRate" min="0" step="0.1"
                             value="${empty editId ? 1.0 : payRate}"></label> <label
@@ -198,9 +198,7 @@
                         aria-labelledby="history-title-${dayworker.employeeId}">
                         <header>
                             <h2 id="history-title-${dayworker.employeeId}">社員別勤務記録</h2>
-                            <a
-                                href="${pageContext.request.contextPath}/attendance/day-worker-management.do"
-                                aria-label="閉じる">&times;</a>
+                            <a href="${pageContext.request.contextPath}/attendance/day-worker-management.do?status=${status}&keyword=${keyword}" aria-label="閉じる">&times;</a>
                         </header>
                         <div class="modal-body">
                             <div class="record-summary">
@@ -290,9 +288,7 @@
             aria-labelledby="project-title">
             <header>
                 <h2 id="project-title">フィールド/プロジェクトリスト管理</h2>
-                <a
-                    href="${pageContext.request.contextPath}/attendance/day-worker-management.do"
-                    aria-label="閉じる">&times;</a>
+                <a href="${pageContext.request.contextPath}/attendance/day-worker-management.do?status=${status}&keyword=${keyword}" aria-label="閉じる">&times;</a>
             </header>
             <div class="modal-body">
                 <ul class="project-list">
@@ -375,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 非課税15万円控除後2.7%適用
         let taxableAmount = totalPay - 150000;
-        if (taxableAmount c 0) taxableAmount = 0;
+        if (taxableAmount < 0) taxableAmount = 0;
 
         let incomeTax = 0;
         if (totalPay > 150000) {
@@ -396,6 +392,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 </script>
+<!-- 필수 항목이 입력되지 않았을 경우 에러 메시지 출력 -->
+<!-- 必須項目が入力されない場合、エラーメッセージを出力 -->
+
+<c:if test="${not empty errors }">
+	<script>
+		document.addEventListener('DOMContentLoaded', function(){
+			<c:if test="${errors.employeeIds}">
+				alert("社員を選択してください");
+			</c:if>
+			<c:if test="${errors.projectId}">
+				alert("現場・プロジェクトを選択してください");
+			</c:if>
+			<c:if test="${errors.workDate}">
+			alert("勤務日を入力してください");
+		</c:if>			
+		});
+	</script>
+</c:if>
     <%@ include file="/WEB-INF/view/common/footer.jspf"%>
 </body>
 </html>
