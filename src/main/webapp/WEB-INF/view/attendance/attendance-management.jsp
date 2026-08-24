@@ -111,9 +111,12 @@
 							<input type="hidden" name="editId" value="${editId }">
 						</c:if>
 
-						<label><span>入力日</span><input type="date" lang="ja-JP"
-							name="inputDate" value="${empty editId ? today : inputDate}"></label>
-						<label><span>勤怠項目</span> <select name="attendanceItemId">
+						<!-- 휴가조회 후에도 키워드와 재직 상태가 유지되도록 hidden타입 -->
+						<input type="hidden" name="status" value="${status }"> <input
+							type="hidden" name="keyword" value="${keyword }"> <label><span>入力日</span><input
+							type="date" lang="ja-JP" name="inputDate"
+							value="${empty editId ? today : inputDate}"></label> <label><span>勤怠項目</span>
+							<select name="attendanceItemId">
 								<option value="">選択してください。</option>
 								<c:forEach var="item" items="${attendanceItems}">
 									<option value="${item.attendanceItemId}"
@@ -128,14 +131,18 @@
 								value="${empty editId ? '' : endDate }"></span></label> <label><span>勤怠日数</span><span
 							class="days-field"> <input type="number"
 								name="attendValue" min="0" step="0.5"
-								value="${empty editId ? 0 : attendValue }"><em>日</em><a
-								href="#holiday-status-modal">休暇日数の状況</a></span></label> <label><span>金額（手当）</span>
-							<input type="number" name="payAmount" min="0"
-							value="${empty editId ? 0 : payAmount }"
+								value="${empty editId ? 0 : attendValue }"><em>日</em>
+								<button type="submit" name="holidayView" value="Y"
+									class="manage-button" formmethod="get"
+									formaction="${pageContext.request.contextPath}/attendance/attendance-management.do#holiday-status-modal">休暇日数の状況</button>
+						</span></label> <label><span>金額（手当）</span> <input type="number"
+							name="payAmount" min="0" value="${empty editId ? 0 : payAmount }"
 							placeholder="勤怠項目が支給手当の場合"></label> <label><span>摘要</span><input
 							type="text" name="note" value="${empty editId ? '' : note }"
 							placeholder="必要がある場合は入力してください。"></label>
 						<div class="editor-actions">
+
+
 
 							<c:choose>
 								<c:when test="${empty editId}">
@@ -267,14 +274,18 @@
 			aria-labelledby="holiday-title">
 			<header>
 				<h2 id="holiday-title">休暇日数の状況</h2>
-				<a href="#" aria-label="閉じる">&times;</a>
+				<a
+					href="${pageContext.request.contextPath}/attendance/attendance-management.do?status=${status}&keyword=${keyword}"
+					aria-label="閉じる">&times;</a>
 			</header>
 			<div class="modal-body">
 				<table>
 					<thead>
 						<tr>
 							<th>区分</th>
+							<th>社員番号</th>
 							<th>氏名</th>
+							<th>部署</th>
 							<th>役職</th>
 							<th>休暇項目</th>
 							<th>全体</th>
@@ -283,21 +294,24 @@
 						</tr>
 					</thead>
 					<tbody>
-						<c:forEach var="holiday" items="${holidayStatuses}">
+						<c:forEach var="leaveBalance" items="${leaveBalances}">
 							<tr>
-								<td><ui:code-label value="${holiday.employmentType}" /></td>
-								<td><c:out value="${holiday.employeeName}" /></td>
-								<td><c:out value="${holiday.positionName}" /></td>
-								<td><c:out value="${holiday.holidayName}" /></td>
-								<td><c:out value="${holiday.totalDays}" /></td>
-								<td class="used-days"><c:out value="${holiday.usedDays}" /></td>
+								<td><ui:code-label value="${leaveBalance.empType}" /></td>
+								<td><c:out value="${leaveBalance.empNo}" /></td>
+								<td><c:out value="${leaveBalance.empNameKr}" /></td>
+								<td><c:out value="${leaveBalance.departmentName}" /></td>
+								<td><c:out value="${leaveBalance.jobPositionName}" /></td>
+								<td><c:out value="${leaveBalance.itemName}" /></td>
+								<td><c:out value="${leaveBalance.totalDays}" /></td>
+								<td class="used-days"><c:out
+										value="${leaveBalance.usedDays}" /></td>
 								<td class="remaining-days"><c:out
-										value="${holiday.remainingDays}" /></td>
+										value="${leaveBalance.remainingDays}" /></td>
 							</tr>
 						</c:forEach>
-						<c:if test="${empty holidayStatuses}">
+						<c:if test="${empty leaveBalances}">
 							<tr>
-								<td colspan="7" class="empty-row">照会された休暇日数の状況はありません。</td>
+								<td colspan="9" class="empty-row">照会された休暇日数の状況はありません。</td>
 							</tr>
 						</c:if>
 					</tbody>
@@ -349,19 +363,19 @@
 		<script>
 			document.addEventListener('DOMContentLoaded', function() {
 				<c:choose>
-			    <c:when test="${errors.employeeIds}">
-			        alert("社員を選択してください");
-			    </c:when>
-			    <c:when test="${errors.attendanceItemId}">
-			        alert("勤怠項目を選択してください");
-			    </c:when>
-			    <c:when test="${errors.attendValue}">
-			        alert("勤怠日数は正数だけ入力できます");
-			    </c:when>
-			    <c:when test="${errors.date}">
-			        alert("正しい日付を入力してください");
-			    </c:when>
-			</c:choose>
+				<c:when test="${errors.employeeIds}">
+				alert("社員を選択してください");
+				</c:when>
+				<c:when test="${errors.attendanceItemId}">
+				alert("勤怠項目を選択してください");
+				</c:when>
+				<c:when test="${errors.attendValue}">
+				alert("勤怠日数は正数だけ入力できます");
+				</c:when>
+				<c:when test="${errors.date}">
+				alert("正しい日付を入力してください");
+				</c:when>
+				</c:choose>
 			});
 		</script>
 	</c:if>

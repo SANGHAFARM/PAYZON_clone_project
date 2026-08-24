@@ -13,11 +13,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import erp.attendance.dto.AttendanceEmployeeRecordDto;
-import erp.attendance.service.EmployeeAttendanceDeleteService;
-import erp.attendance.service.EmployeeAttendanceUpdateService;
-import erp.attendance.service.EmployeeAttendanceInsertService;
+import erp.attendance.dto.LeaveInquiryDto;
 import erp.attendance.service.AttendanceEmployeeListService;
+import erp.attendance.service.EmployeeAttendanceDeleteService;
+import erp.attendance.service.EmployeeAttendanceInsertService;
 import erp.attendance.service.EmployeeAttendanceListService;
+import erp.attendance.service.EmployeeAttendanceUpdateService;
+import erp.attendance.service.LeaveBalanceListService;
 import erp.attendance.service.request.AttendanceEmployeeSearchRequest;
 import erp.attendance.service.request.AttendanceRecordInsertRequest;
 import erp.attendance.service.request.AttendanceRecordUpdateRequest;
@@ -79,8 +81,6 @@ public class AttendanceManagementHandler implements CommandHandler {
 				req.setAttribute("attendValue", req.getParameter("attendValue"));
 				req.setAttribute("payAmount", req.getParameter("payAmount"));
 				req.setAttribute("note", req.getParameter("note"));
-
-				
 			} 
 			//개별 근태 기록
 			// 社員の勤務・休暇記録と適用期間を確認し、勤怠照会または残日数計算へ反映する。
@@ -132,7 +132,35 @@ public class AttendanceManagementHandler implements CommandHandler {
 
 		// 사원 휴가 조회
 		// 社員の識別情報と在職・雇用・所属条件を確認し、対象社員データへ反映する。
+		String[] employeeIdsStr = req.getParameterValues("employeeIds");
+		String attendanceItemIdStr = req.getParameter("attendanceItemId");
 
+		if (employeeIdsStr != null && employeeIdsStr.length > 0
+				&& attendanceItemIdStr != null && !attendanceItemIdStr.trim().isEmpty()) {
+
+			int selectedAttendanceItemId = Integer.parseInt(attendanceItemIdStr);
+
+			//현재 근태 항목 중 휴가id와 일치하는 항목을 탐색
+			Integer leaveItemId = null;
+			for (AttendanceItem item : attendanceItems) {
+				if (item.getAttendanceItemId() == selectedAttendanceItemId) {
+					leaveItemId = item.getDeductLeaveId();
+					break;
+				}
+			}
+
+			if (leaveItemId != null) {
+				List<Integer> employeeIds = new ArrayList<>();
+				for (String idStr : employeeIdsStr) {
+					employeeIds.add(Integer.parseInt(idStr));
+				}
+
+				LeaveBalanceListService leaveBalanceListService = new LeaveBalanceListService();
+				List<LeaveInquiryDto> leaveBalances = leaveBalanceListService.getLeaveEmployees(employeeIds, leaveItemId);
+				req.setAttribute("leaveBalances", leaveBalances);
+			}
+		}
+		
 		return FORM_VIEW;
 
 	}

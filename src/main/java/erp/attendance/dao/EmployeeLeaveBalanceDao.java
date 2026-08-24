@@ -116,6 +116,9 @@ public class EmployeeLeaveBalanceDao {
 		}
 	}
 
+	
+	//휴가조회(페이징 처리)
+	//休暇照会（ページング処理）
 	public List<LeaveInquiryDto> selectLeaveBalance(Connection conn, LeaveInquiryRequest req, int firstRow, int endRow)
 			throws SQLException {
 		String sql = "select * from (select rownum as rnum, a.* from (SELECT E.EMPLOYEE_ID, E.EMP_TYPE, E.EMP_NO, E.EMP_NAME_KR, D.DEPARTMENT_NAME, J.JOB_POSITION_NAME, "
@@ -163,38 +166,25 @@ public class EmployeeLeaveBalanceDao {
 	// 변환한다.
 	// 検索条件に合う休暇Balanceデータをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
-	public List<LeaveInquiryDto> selectLeaveBalance(Connection conn, LeaveInquiryRequest req) throws SQLException {
+	public List<LeaveInquiryDto> selectLeaveBalance(Connection conn, int employeeId, int leaveItemId) throws SQLException {
 		String sql = "SELECT E.EMPLOYEE_ID, E.EMP_TYPE, E.EMP_NO, E.EMP_NAME_KR, D.DEPARTMENT_NAME, J.JOB_POSITION_NAME, "
-				+ "LI.ITEM_NAME, NVL(ELB.TOTAL_DAYS, 0) AS TOTAL_DAYS " + "FROM EMPLOYEE E "
+				+ "LI.ITEM_NAME, NVL(ELB.TOTAL_DAYS, 0) AS TOTAL_DAYS "
+				+ "FROM EMPLOYEE E "
 				+ "LEFT JOIN EMPLOYEE_LEAVE_BALANCE ELB ON ELB.EMPLOYEE_ID = E.EMPLOYEE_ID AND ELB.LEAVE_ITEM_ID = ? "
 				+ "LEFT JOIN DEPARTMENT D ON D.DEPARTMENT_ID = E.DEPARTMENT_ID "
 				+ "LEFT JOIN JOB_POSITION J ON J.JOB_POSITION_ID = E.JOB_POSITION_ID "
-				+ "LEFT JOIN LEAVE_ITEM LI ON LI.LEAVE_ITEM_ID = ? " + "WHERE (? IS NULL OR "
-				+ "      E.EMP_TYPE LIKE '%' || ? || '%' OR " + "      E.EMP_NO LIKE '%' || ? || '%' OR "
-				+ "      E.EMP_NAME_KR LIKE '%' || ? || '%' OR " + "      D.DEPARTMENT_NAME LIKE '%' || ? || '%' OR "
-				+ "      J.JOB_POSITION_NAME LIKE '%' || ? || '%' OR " + "      LI.ITEM_NAME LIKE '%' || ? || '%') "
-				+ "AND (? IS NULL OR E.STATUS = ?) " + "AND (? IS NULL OR E.EMP_TYPE = ?) "
-				+ "AND (? IS NULL OR D.DEPARTMENT_ID = ?) " + "AND (? IS NULL OR J.JOB_POSITION_ID = ?)";
+				+ "LEFT JOIN LEAVE_ITEM LI ON LI.LEAVE_ITEM_ID = ? "
+				+ "WHERE E.EMPLOYEE_ID = ?";
+
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, req.getLeaveItemId());
-			pstmt.setInt(2, req.getLeaveItemId());
-			pstmt.setString(3, req.getKeyword());
-			pstmt.setString(4, req.getKeyword());
-			pstmt.setString(5, req.getKeyword());
-			pstmt.setString(6, req.getKeyword());
-			pstmt.setString(7, req.getKeyword());
-			pstmt.setString(8, req.getKeyword());
-			pstmt.setString(9, req.getKeyword());
-			pstmt.setString(10, req.getStatus());
-			pstmt.setString(11, req.getStatus());
-			pstmt.setString(12, req.getEmpType());
-			pstmt.setString(13, req.getEmpType());
-			setIntOrNull(pstmt, 14, 15, req.getDepartmentId());
-			setIntOrNull(pstmt, 16, 17, req.getJobPositionId());
+			pstmt.setInt(1, leaveItemId);
+			pstmt.setInt(2, leaveItemId);
+			pstmt.setInt(3, employeeId);
+
 			List<LeaveInquiryDto> list = new ArrayList<>();
 			try (ResultSet rs = pstmt.executeQuery()) {
 				while (rs.next()) {
-					list.add(convertLeaveInquiryDto(conn, rs, req.getLeaveItemId()));
+					list.add(convertLeaveInquiryDto(conn, rs, leaveItemId));
 				}
 			}
 			return list;
