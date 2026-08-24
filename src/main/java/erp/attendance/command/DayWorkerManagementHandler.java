@@ -12,6 +12,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jasper.tagplugins.jstl.core.If;
+
 import erp.attendance.dto.DailyWorkRecordDto;
 import erp.attendance.model.Project;
 import erp.attendance.service.DailyWorkDeleteService;
@@ -120,6 +122,8 @@ public class DayWorkerManagementHandler implements CommandHandler {
 	// 日雇い労働者入力・管理の入力リクエストを検証し、サービスへ保存を委譲して処理結果を渡す。
 	// リクエストパラメーターを検証してServiceへ渡し、処理結果をrequestまたはsessionへ保存した後、JSPフォワードまたはリダイレクト先を決定する。
 	private String processSubmit(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		//삭제 작업
+		//削除作業
 		String deleteId = req.getParameter("deleteId");
 		if (deleteId != null) {
 			DailyWorkDeleteService dailyWorkDeleteService = new DailyWorkDeleteService();
@@ -135,6 +139,8 @@ public class DayWorkerManagementHandler implements CommandHandler {
 					+ "&year=" + year + "&month=" + month + "#work-history-" + empId);
 			return null; // 리다이렉트를 직접 처리했으므로 뷰 경로는 null 리턴
 		}
+		// 수정 작업
+		// 修正作業
 		String editId = req.getParameter("editId");
 		Map<String, Boolean> errors = new HashMap<>();
 		req.setAttribute("errors", errors);
@@ -142,14 +148,17 @@ public class DayWorkerManagementHandler implements CommandHandler {
 			DailyWorkUpdateRequest request = createDailyWorkUpdateRequest(req, errors);
 			request.validate(errors);
 			if (!errors.isEmpty()) {
-				return processForm(req, res); // <-수정해야 할지도
+				return processForm(req, res);
 			}
 			updateService.update(request);
-		} else {
+		} 
+		// 입력 작업
+		// 入力作業
+		else {
 			DailyWorkInsertRequest request = createDailyWorkInsertRequest(req, errors);
 			request.validate(errors);
 			if (!errors.isEmpty()) {
-				return processForm(req, res); // <-수정해야 할지도
+				return processForm(req, res);
 			}
 			insertService.insert(request);
 		}
@@ -171,9 +180,11 @@ public class DayWorkerManagementHandler implements CommandHandler {
 		} catch (ParseException e) {
 			errors.put("ParseException", Boolean.TRUE);
 		}
-
+		
 		request.setWorkDate(workDate);
-		request.setProjectId(Integer.parseInt(req.getParameter("projectId")));
+		
+		String proejctIdStr = req.getParameter("projectId");
+		request.setProjectId((proejctIdStr!=null&&!proejctIdStr.trim().isEmpty())?Integer.parseInt(proejctIdStr):null);
 		
 		String dailyPayStr = req.getParameter("dailyPay");
 		long dailyPay = (dailyPayStr!=null&&!dailyPayStr.trim().isEmpty())?Long.parseLong(dailyPayStr):0L;
@@ -224,7 +235,8 @@ public class DayWorkerManagementHandler implements CommandHandler {
 		}
 		request.setEmployeeIds(employeeIds);
 		request.setWorkDate(workDate);
-		request.setProjectId(Integer.parseInt(req.getParameter("projectId")));
+		String proejctIdStr = req.getParameter("projectId");
+		request.setProjectId((proejctIdStr!=null&&!proejctIdStr.trim().isEmpty())?Integer.parseInt(proejctIdStr):null);
 		
 		String dailyPayStr = req.getParameter("dailyPay");
 		long dailyPay = (dailyPayStr!=null&&!dailyPayStr.trim().isEmpty())?Long.parseLong(dailyPayStr):0L;
