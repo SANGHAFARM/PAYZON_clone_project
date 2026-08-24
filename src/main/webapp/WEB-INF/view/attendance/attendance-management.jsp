@@ -348,18 +348,20 @@
 	<c:if test="${not empty errors }">
 		<script>
 			document.addEventListener('DOMContentLoaded', function() {
-				<c:if test="${errors.employeeIds}">
-				alert("社員を選択してください");
-				</c:if>
-				<c:if test="${errors.attendanceItemId}">
-				alert("勤怠項目を選択してください");
-				</c:if>
-				<c:if test="${errors.attendValue}">
-				alert("勤怠日数は正数だけ入力できます");
-				</c:if>
-				<c:if test="${errors.date}">
-				alert("正しい日付を入力してください");
-				</c:if>
+				<c:choose>
+			    <c:when test="${errors.employeeIds}">
+			        alert("社員を選択してください");
+			    </c:when>
+			    <c:when test="${errors.attendanceItemId}">
+			        alert("勤怠項目を選択してください");
+			    </c:when>
+			    <c:when test="${errors.attendValue}">
+			        alert("勤怠日数は正数だけ入力できます");
+			    </c:when>
+			    <c:when test="${errors.date}">
+			        alert("正しい日付を入力してください");
+			    </c:when>
+			</c:choose>
 			});
 		</script>
 	</c:if>
