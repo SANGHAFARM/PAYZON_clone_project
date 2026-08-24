@@ -470,8 +470,8 @@
                                                     value="<c:out value='${dep.depName}' />"></td>
                                                 <td><select name="dependents[${row.index}].nationality"><option
                                                             value="">選択</option>
-                                                        <option ${dep.nationalType eq '내국인' ? 'selected' : ''}>内国人</option>
-                                                        <option ${dep.nationalType eq '외국인' ? 'selected' : ''}>外国人</option></select></td>
+                                                        <option value="내국인" ${dep.nationalType eq '내국인' ? 'selected' : ''}>内国人</option>
+    													<option value="외국인" ${dep.nationalType eq '외국인' ? 'selected' : ''}>外国人</option></select></td>
                                                 <td><input name="dependents[${row.index}].juminNo"
                                                     value="<c:out value='${dep.juminNo}' />"></td>
                                                 <td><input type="checkbox"
