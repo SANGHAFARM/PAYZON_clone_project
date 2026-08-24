@@ -244,7 +244,7 @@
                 <div class="previous-payment-body">
                     <select name="previousPaymentPeriod" required>
                         <option value="">対象年月・回目を選択</option>
-                        <c:forEach var="period" items="${previousPaymentPeriods}"><option value="${period.periodId}"><c:out value="${period.periodName}" /></option></c:forEach>
+                        <c:forEach var="period" items="${previousPaymentPeriods}"><option value="${period.periodId}"><ui:code-label value="${period.periodName}" /></option></c:forEach>
                     </select>
                     <button type="submit" class="button button-primary">給与情報を読み込む</button>
                 </div>
