@@ -89,9 +89,8 @@ public class AttendanceManagementHandler implements CommandHandler {
 				String yearParam = req.getParameter("year");
 				String monthParam = req.getParameter("month");
 				int year = (yearParam != null && !yearParam.isEmpty()) ? Integer.parseInt(yearParam)
-						: LocalDate.now().getYear();
-				int month = (monthParam != null && !monthParam.isEmpty()) ? Integer.parseInt(monthParam)
-						: LocalDate.now().getMonthValue();
+				        : LocalDate.now().getYear();
+				Integer month = (monthParam != null && !monthParam.isEmpty()) ? Integer.parseInt(monthParam) : null;
 				req.setAttribute("year", year);
 				req.setAttribute("month", month);
 				AttendanceEmployeeSearchRequest request = new AttendanceEmployeeSearchRequest(employeeId, year, month);
