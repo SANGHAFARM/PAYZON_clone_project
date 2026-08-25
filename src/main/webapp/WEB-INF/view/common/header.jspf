@@ -46,7 +46,7 @@
 				<span>勤怠記録/管理</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
-			href="${pageContext.request.contextPath}/example.do?menu=leave">
+			href="${pageContext.request.contextPath}/attendance/leave-inquiry.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/leave.png">
 				<span>休暇照会</span>
