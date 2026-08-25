@@ -195,12 +195,16 @@
 								</span> <span>役職： <c:out value="${employee.jobPositionName}" /></span>
 								<form method="get">
 									<input type="hidden" name="employeeId"
-										value="${employee.employeeId}"> <select name="year"
-										aria-label="年">
+										value="${employee.employeeId}"> <input type="hidden"
+										name="employeeId" value="${employee.employeeId}"> <input
+										type="hidden" name="status" value="${status}"> <input
+										type="hidden" name="keyword" value="${keyword}"> <select
+										name="year" aria-label="年">
 										<c:forEach var="y" begin="2015" end="2026">
 											<option value="${y}" ${y eq year ? 'selected' : ''}>${y}年</option>
 										</c:forEach>
 									</select> <select name="month" aria-label="月">
+										<option value="" ${empty month ? 'selected' : ''}>全体</option>
 										<c:forEach var="monthNo" begin="1" end="12">
 											<option value="${monthNo}"
 												${monthNo eq month ? 'selected' : ''}>${monthNo}月</option>
