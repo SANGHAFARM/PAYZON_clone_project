@@ -135,8 +135,8 @@
 
 						</label> <label> <span>日当</span> <span class="amount-control">
 								<input type="number" id="dailyPay" name="dailyPay" min="0"
-								value="${empty dailyPay ? 0 : dailyPay}"
-								placeholder="日給を入力してください"> <em>円</em>
+								value="${empty dailyPay ? '' : dailyPay}"
+								placeholder="日当を入力してください"> <em>円</em>
 						</span></label> <label> <span>支給率</span> <input type="number"
 							id="payRate" name="payRate" min="0" step="0.1"
 							value="${empty editId ? 1.0 : payRate}"></label> <label

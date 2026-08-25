@@ -111,11 +111,16 @@ public class DayWorkerInquiryHandler implements CommandHandler{
 					 */
 					request.setStartDate(startDate);
 					request.setEndDate(endDate);
-					req.setAttribute("startDate", startDate!=null?startStr:null);
-					req.setAttribute("endDate", endDate!=null?endStr:null);
+					req.setAttribute("startDate", startDate);
+					req.setAttribute("endDate", endDate);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+			}else {
+			    // 파라미터가 없을 때(=처음 진입 시)는 오늘 날짜를 기본값으로 화면에만 표시
+			    String todayStr = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+			    req.setAttribute("startDate", todayStr);
+			    req.setAttribute("endDate", todayStr);
 			}
 
 			

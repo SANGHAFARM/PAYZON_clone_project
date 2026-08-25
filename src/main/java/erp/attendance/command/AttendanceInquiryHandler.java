@@ -102,9 +102,23 @@ public class AttendanceInquiryHandler implements CommandHandler {
 
 			AttendanceDetailSearchRequest request = createAttendanceDetailSearchRequest(req, year, month);
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-			req.setAttribute("inputDateStr", request.getInputDate() != null ? formatter.format(request.getInputDate()) : null);
-			req.setAttribute("startDateStr", request.getStartDate() != null ? formatter.format(request.getStartDate()) : null);
-			req.setAttribute("endDateStr", request.getEndDate() != null ? formatter.format(request.getEndDate()) : null);
+			String todayStr = formatter.format(new Date());
+
+			req.setAttribute("inputDateStr",
+			    request.getInputDate() != null ? formatter.format(request.getInputDate()) : todayStr);
+
+			if (year == 0 && month == 0) {
+			    req.setAttribute("startDateStr",
+			        request.getStartDate() != null ? formatter.format(request.getStartDate()) : todayStr);
+			    req.setAttribute("endDateStr",
+			        request.getEndDate() != null ? formatter.format(request.getEndDate()) : todayStr);
+			} else {
+			    req.setAttribute("startDateStr",
+			        request.getStartDate() != null ? formatter.format(request.getStartDate()) : null);
+			    req.setAttribute("endDateStr",
+			        request.getEndDate() != null ? formatter.format(request.getEndDate()) : null);
+			}
+			
 			req.setAttribute("departmentId", request.getDepartmentId());
 			req.setAttribute("attendanceGroupId", request.getAttendanceGroupId());
 			req.setAttribute("attendanceItemId", request.getAttendanceItemId());
@@ -138,6 +152,7 @@ public class AttendanceInquiryHandler implements CommandHandler {
 		Date inputDate = null;
 		Date startDate = null;
 		Date endDate = null;
+		
 		try {
 			if (year != 0 && month != 0) {
 				LocalDate firstDay = LocalDate.of(year, month, 1);
