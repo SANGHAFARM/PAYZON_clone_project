@@ -172,7 +172,7 @@
 								<input type="checkbox" name="useInputDate" value="Y"
 								${param.useInputDate eq 'Y' ? 'checked' : ''}> <span>入力日</span>
 								<input type="date" lang="ja-JP" name="inputDate"
-								value="${param.inputDate}">
+								value="${inputDateStr}">
 							</label> <label> <input type="checkbox" name="usePeriod"
 								value="Y" ${param.usePeriod eq 'Y' ? 'checked' : ''}> <span>勤怠期間</span>
 								<span class="detail-period"> <input type="date"

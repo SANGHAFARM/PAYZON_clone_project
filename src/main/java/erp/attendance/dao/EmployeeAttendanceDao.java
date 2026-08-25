@@ -401,7 +401,7 @@ public class EmployeeAttendanceDao {
 				+ "AND (? IS NULL OR e.EMP_NAME_KR LIKE '%' || ? || '%') "
 				+ "AND (? IS NULL OR ai.ATTENDANCE_GROUP_ID = ?) " + "AND (? IS NULL OR ea.ATTENDANCE_ITEM_ID = ?) "
 				+ "AND (? IS NULL OR ai.DEDUCT_LEAVE_ID = ?) " + "AND (? IS NULL OR ea.NOTE LIKE '%' || ? || '%') "
-				+ "ORDER BY ea.INPUT_DATE DESC) a where rownum <= ? ) where rnum > ?";
+				+ "ORDER BY ea.INPUT_DATE DESC, EMPLOYEE_ATTENDANCE_ID DESC) a where rownum <= ? ) where rnum > ?";
 		List<AttendanceDetailDto> list = new ArrayList<>();
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			java.sql.Date inputdate = dateToSQLDate(req.getInputDate());

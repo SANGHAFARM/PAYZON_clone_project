@@ -34,3 +34,13 @@
 .work-history-modal .data-table th:nth-child(8){width:76px}
 .work-history-modal .data-table th:last-child{width:94px}
 .work-history-modal .mini-button{height:23px;padding:0 5px}
+.work-history-modal .record-summary form button {
+    height: 27px;
+    padding: 0 12px;
+    border: 1px solid #2877ba;
+    border-radius: 4px;
+    color: #fff;
+    background: #3284c8;
+    font-weight: 700;
+    cursor: pointer;
+}
