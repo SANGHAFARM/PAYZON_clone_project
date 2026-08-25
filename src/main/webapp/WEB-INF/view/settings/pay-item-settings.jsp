@@ -61,10 +61,9 @@
                                                 href="${pageContext.request.contextPath}/settings/pay-item.do?payItemId=${item.payItemId}#payment-settings"><c:if test="${item.payName eq '기본급'}"><b class="required-item-mark">*</b></c:if><ui:code-label
                                                         value="${item.payName}" /></a></td>
                                             <td><ui:code-label value="${item.taxType}" />
-                                                <c:if
-                                                test="${item.taxType eq '비과세' and not empty item.taxFreeName}">_<ui:code-label
-                                                                value="${item.taxFreeName}" />
-                                                </c:if></td>
+                                                <c:if test="${item.taxType eq '비과세' and not empty item.taxFreeName}">
+    												_<ui:tax-free-label code="${item.taxFreeCode}" field="name" value="${item.taxFreeName}" />
+												</c:if></td>
                                             <td class="number"><c:if
                                                     test="${not empty item.taxFreeLimit}">
                                                     <c:out value="${item.taxFreeLimit}" />円</c:if></td>
@@ -126,10 +125,10 @@
                         <div class="editor-field tax-free-field tax-free-selector-field">
                             <span>非課税名</span>
                             <div class="input-with-button">
-                                <input name="taxFreeName"
-                                    value="<c:out value='${selectedPaymentItem.taxFreeName}' />"
-                                    readonly><a href="#tax-free-modal">選択</a>
-                            </div>
+    							<c:set var="translatedEditorTaxFreeName"><ui:tax-free-label code="${selectedPaymentItem.taxFreeCode}" field="name" value="${selectedPaymentItem.taxFreeName}" /></c:set>
+    							<input name="taxFreeName" value="<c:out value='${translatedEditorTaxFreeName}' />" readonly>
+    							<a href="#tax-free-modal">選択</a>
+							</div>
                         </div>
                         <label class="editor-field tax-free-field standard-tax-free-field"><span>非課税限度額</span>
                         <div class="amount-input">

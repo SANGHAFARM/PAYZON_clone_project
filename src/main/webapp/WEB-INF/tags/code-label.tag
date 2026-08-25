@@ -85,6 +85,7 @@
 	<c:when test="${value eq '공군'}">空軍</c:when>
 	<c:when test="${value eq '상비군'}">常備軍</c:when>
 	<c:when test="${value eq '기타'}">その他</c:when>
+	<c:when test="${value eq '일용직 급여' or value eq '일용직급여'}">日雇い社員給与</c:when>
 	<c:when test="${fn:contains(value, '급여-') or fn:contains(value, '사업/기타') or fn:contains(value, '사업·기타') or fn:contains(value, '일반') or fn:contains(value, '일용직')}">
 		<c:set var="localizedRound" value="${fn:replace(value, '급여-', '給与-')}" />
 		<c:set var="localizedRound" value="${fn:replace(localizedRound, '차', '回目')}" />
@@ -93,6 +94,12 @@
 		<c:set var="localizedRound" value="${fn:replace(localizedRound, '사업·기타', '事業・その他')}" />
 		<c:set var="localizedRound" value="${fn:replace(localizedRound, '일용직', '日雇い社員')}" />
 		<c:out value="${localizedRound}" />
+	</c:when>
+	<c:when test="${fn:contains(value, '년') or fn:contains(value, '개월')}">
+		<c:set var="localizedPeriod" value="${fn:replace(value, '년', '年')}" />
+		<c:set var="localizedPeriod" value="${fn:replace(localizedPeriod, '개월', 'ヶ月')}" />
+		<c:set var="localizedPeriod" value="${fn:replace(localizedPeriod, '일', '日')}" />
+		<c:out value="${localizedPeriod}" />
 	</c:when>
 	<c:otherwise><c:out value="${value}" /></c:otherwise>
 </c:choose>

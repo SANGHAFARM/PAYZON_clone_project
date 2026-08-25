@@ -75,7 +75,7 @@ public class PayItemHandler implements CommandHandler {
 			if ("DIRECT".equals(selectedTaxFreeCode)) {
 				selectedPaymentItem.setTaxType("비과세");
 				selectedPaymentItem.setTaxFreeCode("DIRECT");
-				selectedPaymentItem.setTaxFreeName("직접입력");
+				selectedPaymentItem.setTaxFreeName("直接入力");
 			} else {
 				TaxFreeItem taxFreeItem = payService.getTaxFreeItem(selectedTaxFreeCode);
 				if (taxFreeItem != null) {
