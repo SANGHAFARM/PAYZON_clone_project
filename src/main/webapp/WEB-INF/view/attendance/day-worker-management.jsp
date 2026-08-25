@@ -416,6 +416,20 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	</script>
 	</c:if>
+	<%
+	String projectError = (String) session.getAttribute("projectError");
+	if (projectError != null) {
+		session.removeAttribute("projectError");
+		pageContext.setAttribute("projectError", projectError);
+	}
+	%>
+	<c:if test="${not empty projectError}">
+		<script>
+        document.addEventListener('DOMContentLoaded', function () {
+            alert("<c:out value='${projectError}' />");
+        });
+    </script>
+	</c:if>
 	<%@ include file="/WEB-INF/view/common/footer.jspf"%>
 </body>
 </html>
