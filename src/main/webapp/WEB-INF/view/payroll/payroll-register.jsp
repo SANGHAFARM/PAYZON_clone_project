@@ -64,8 +64,8 @@
             <form class="register-delete-alert__panel" method="post"
                 action="${pageContext.request.contextPath}/payroll/register/delete.do">
                 <p id="register-delete-message">
-                    <strong><c:out value="${deleteRegisterName}" /></strong> 給与台帳を削除してもよろしいですか？
-                </p>
+    				<strong><ui:code-label value="${deleteRegisterName}" /></strong> 給与台帳を削除してもよろしいですか？
+				</p>
                 <p class="register-delete-alert__warning">削除した給与台帳は復元できません。</p>
                 <input type="hidden" name="registerId" value="${deleteRegisterId}">
                 <input type="hidden" name="year" value="${selectedYear}">

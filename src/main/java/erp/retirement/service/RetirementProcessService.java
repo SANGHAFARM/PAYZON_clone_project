@@ -22,7 +22,7 @@ import jdbc.connection.ConnectionProvider;
 // 退職給与処理の業務ルールとデータ変更トランザクションを処理する。
 public class RetirementProcessService {
 	private static final Set<String> RETIREMENT_TYPES = new HashSet<>(Arrays.asList(
-			"자진퇴사", "권고사직", "계약만료", "정년퇴직", "해고", "기타"));
+			"自己都合退職", "勧奨退職", "契約期間満了", "定年退職", "解雇", "その他"));
 
 	private final EmployeeDao employeeDao = EmployeeDao.getInstance();
 
@@ -103,10 +103,12 @@ public class RetirementProcessService {
 	// 退職給与処理処理に必要な退職給与Typesを照会または計算して返す。
 	// 呼び出し側から受け取った検索条件を適用し、結果がない場合も空値または空一覧を安全に返す。
 	public List<RetirementTypeItem> getRetirementTypes() {
-		return Arrays.asList(new RetirementTypeItem("자진퇴사", "자진퇴사"),
-				new RetirementTypeItem("권고사직", "권고사직"), new RetirementTypeItem("계약만료", "계약만료"),
-				new RetirementTypeItem("정년퇴직", "정년퇴직"), new RetirementTypeItem("해고", "해고"),
-				new RetirementTypeItem("기타", "기타"));
+		return Arrays.asList(new RetirementTypeItem("自己都合退職", "自己都合退職"),
+                new RetirementTypeItem("勧奨退職", "勧奨退職"),
+                new RetirementTypeItem("契約期間満了", "契約期間満了"),
+                new RetirementTypeItem("定年退職", "定年退職"),
+                new RetirementTypeItem("解雇", "解雇"),
+                new RetirementTypeItem("その他", "その他"));
 	}
 
 	public static class RetirementEmployeePage {
