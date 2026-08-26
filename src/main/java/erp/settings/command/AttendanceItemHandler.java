@@ -89,7 +89,9 @@ public class AttendanceItemHandler implements CommandHandler {
 
 			// 중복 에러(SQLIntegrityConstraintViolationException)인지 확인
 			// 業務条件に合うSQLを準備し、入力値をバインドしてデータベースで実行する。
-			if (cause instanceof java.sql.SQLIntegrityConstraintViolationException) {
+			if ("confirmDelete".equals(action)) {
+				req.getSession().setAttribute("message", "勤怠項目を削除できませんでした。");
+			} else if (cause instanceof java.sql.SQLIntegrityConstraintViolationException) {
 				req.getSession().setAttribute("message", "이미 추가된 근태항목입니다.");
 			} else {
 				req.getSession().setAttribute("message", "오류 발생: " + e.getMessage());

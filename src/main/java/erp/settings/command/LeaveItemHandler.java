@@ -78,6 +78,11 @@ public class LeaveItemHandler implements CommandHandler {
 				item.setApplyEndDate(sdf.parse(endDate));
 			}
 
+			if (item.getApplyStartDate() != null && item.getApplyEndDate() != null
+					&& item.getApplyEndDate().before(item.getApplyStartDate())) {
+				throw new IllegalArgumentException("휴가 적용 종료일은 시작일보다 빠를 수 없습니다.");
+			}
+
 			// 내용 지우기 액션 외에는 서비스 로직 호출
 			// 処理区分と現在状態を確認し、条件に合う業務処理だけを実行する。
 			if (!"clear".equals(action)) {
@@ -96,7 +101,11 @@ public class LeaveItemHandler implements CommandHandler {
 
 			// 중복 에러(SQLIntegrityConstraintViolationException)인지 확인
 			// 業務条件に合うSQLを準備し、入力値をバインドしてデータベースで実行する。
-			if (cause instanceof java.sql.SQLIntegrityConstraintViolationException) {
+			if (e instanceof IllegalArgumentException) {
+				req.getSession().setAttribute("message", e.getMessage());
+			} else if ("confirmDelete".equals(action)) {
+				req.getSession().setAttribute("message", "休暇項目を削除できませんでした。");
+			} else if (cause instanceof java.sql.SQLIntegrityConstraintViolationException) {
 				req.getSession().setAttribute("message", "이미 등록된 휴가항목입니다. 다른 이름이나 날짜를 선택해 주세요.");
 			} else {
 				req.getSession().setAttribute("message", "오류 발생: " + e.getMessage());

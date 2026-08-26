@@ -288,6 +288,13 @@ public class AttendanceSettingService {
 			} else if ("update".equals(action)) {
 				attendGroupDao.update(conn, group);
 			} else if ("delete".equals(action)) {
+				// 그룹에 포함된 근태항목과 연결 기록을 먼저 삭제한 뒤 그룹을 제거한다.
+				// グループに含まれる勤怠項目と関連履歴を先に削除してからグループを削除する。
+				for (AttendanceItem item : attendItemDao.selectAll(conn)) {
+					if (item.getAttendanceGroupId() == group.getAttendanceGroupId()) {
+						attendItemDao.delete(conn, item.getAttendanceItemId());
+					}
+				}
 				attendGroupDao.delete(conn, group.getAttendanceGroupId());
 			}
 

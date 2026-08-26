@@ -180,14 +180,21 @@ public class LeaveItemDao {
 	// 選択または識別された休暇項目データを削除し、関連状態を整理する。
 	// 受け取ったConnection内でSQLパラメーターをバインドして実行し、commitとrollbackは呼び出し元のServiceが制御する。
 	public int delete(Connection conn, int leaveItemId) throws SQLException {
-		PreparedStatement pstmt = null;
-		try {
-			String sql = "DELETE FROM LEAVE_ITEM WHERE LEAVE_ITEM_ID = ?";
-			pstmt = conn.prepareStatement(sql);
+		// 선택한 휴가항목이 처음부터 없었던 것처럼 보이도록 사용 기록과 잔여일수 및 근태 연동을 함께 정리한다.
+		// 選択した休暇項目が最初から存在しなかった状態になるよう、利用履歴・残日数・勤怠連携をまとめて整理する。
+		executeReferenceCleanup(conn, "DELETE FROM EMPLOYEE_ATTENDANCE WHERE LEAVE_ITEM_ID = ?", leaveItemId);
+		executeReferenceCleanup(conn, "DELETE FROM EMPLOYEE_LEAVE_BALANCE WHERE LEAVE_ITEM_ID = ?", leaveItemId);
+		executeReferenceCleanup(conn, "UPDATE ATTENDANCE_ITEM SET DEDUCT_LEAVE_ID = NULL WHERE DEDUCT_LEAVE_ID = ?",
+				leaveItemId);
+		return executeReferenceCleanup(conn, "DELETE FROM LEAVE_ITEM WHERE LEAVE_ITEM_ID = ?", leaveItemId);
+	}
+
+	// 동일한 휴가항목 식별번호를 참조하는 데이터를 Service의 단일 트랜잭션 안에서 순서대로 정리한다.
+	// 同じ休暇項目IDを参照するデータをServiceの単一トランザクション内で順番に整理する。
+	private int executeReferenceCleanup(Connection conn, String sql, int leaveItemId) throws SQLException {
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, leaveItemId);
 			return pstmt.executeUpdate();
-		} finally {
-			JdbcUtil.close(pstmt);
 		}
 	}
 

@@ -183,21 +183,18 @@ public class DeductItemDao {
 	// 選択または識別された控除項目データを削除し、関連状態を整理する。
 	// 受け取ったConnection内でSQLパラメーターをバインドして実行し、commitとrollbackは呼び出し元のServiceが制御する。
 	public void delete(Connection conn, int deductItemId) throws SQLException {
-		PreparedStatement pstmt = null;
-		try {
-			// 기본키 기반 레코드 삭제 쿼리문 작성
-			// 業務条件に合うSQLを準備し、入力値をバインドしてデータベースで実行する。
-			String sql = "DELETE FROM DEDUCT_ITEM WHERE DEDUCT_ITEM_ID = ?";
-			pstmt = conn.prepareStatement(sql);
+		// 사용자 추가 공제항목이 처음부터 없었던 것처럼 급여내역을 먼저 삭제한 뒤 항목을 제거한다.
+		// ユーザー追加の控除項目が最初から存在しなかった状態になるよう、給与履歴を先に削除してから項目を削除する。
+		executeReferenceCleanup(conn, "DELETE FROM PAYROLL_ENTRY WHERE DEDUCT_ITEM_ID = ?", deductItemId);
+		executeReferenceCleanup(conn, "DELETE FROM DEDUCT_ITEM WHERE DEDUCT_ITEM_ID = ?", deductItemId);
+	}
+
+	// 동일한 공제항목 식별번호를 참조하는 데이터를 Service의 단일 트랜잭션 안에서 정리한다.
+	// 同じ控除項目IDを参照するデータをServiceの単一トランザクション内で整理する。
+	private int executeReferenceCleanup(Connection conn, String sql, int deductItemId) throws SQLException {
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, deductItemId);
-			
-			// 쿼리 실행 수행
-			// 業務条件に合うSQLを準備し、入力値をバインドしてデータベースで実行する。
-			pstmt.executeUpdate();
-		} finally {
-			// 자원 반환 처리
-			// 使用済みのJDBCリソースを安全に閉じ、接続漏れやリソース漏れを防止する。
-			JdbcUtil.close(pstmt);
+			return pstmt.executeUpdate();
 		}
 	}
 }

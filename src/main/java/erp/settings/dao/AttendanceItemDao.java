@@ -200,23 +200,19 @@ public class AttendanceItemDao {
 	// 選択または識別された勤怠項目データを削除し、関連状態を整理する。
 	// 受け取ったConnection内でSQLパラメーターをバインドして実行し、commitとrollbackは呼び出し元のServiceが制御する。
 	public void delete(Connection conn, int attendItemId) throws SQLException {
-		PreparedStatement pstmt = null;
-		try {
-			// 기본키 기반 레코드 삭제 쿼리문 작성
-			// 業務条件に合うSQLを準備し、入力値をバインドしてデータベースで実行する。
-			String sql = "DELETE FROM ATTENDANCE_ITEM WHERE ATTENDANCE_ITEM_ID = ?";
+		// 선택한 근태항목이 처음부터 없었던 것처럼 보이도록 근태기록을 삭제하고 지급항목 연동을 해제한다.
+		// 選択した勤怠項目が最初から存在しなかった状態になるよう、勤怠履歴を削除して支給項目との連携を解除する。
+		executeReferenceCleanup(conn, "DELETE FROM EMPLOYEE_ATTENDANCE WHERE ATTENDANCE_ITEM_ID = ?", attendItemId);
+		executeReferenceCleanup(conn, "UPDATE PAY_ITEM SET LINK_ATTEND_ID = NULL WHERE LINK_ATTEND_ID = ?", attendItemId);
+		executeReferenceCleanup(conn, "DELETE FROM ATTENDANCE_ITEM WHERE ATTENDANCE_ITEM_ID = ?", attendItemId);
+	}
 
-			pstmt = conn.prepareStatement(sql);
+	// 동일한 근태항목 식별번호를 참조하는 데이터를 Service의 단일 트랜잭션 안에서 순서대로 정리한다.
+	// 同じ勤怠項目IDを参照するデータをServiceの単一トランザクション内で順番に整理する。
+	private int executeReferenceCleanup(Connection conn, String sql, int attendItemId) throws SQLException {
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, attendItemId);
-
-			// 쿼리 실행 수행
-			// 業務条件に合うSQLを準備し、入力値をバインドしてデータベースで実行する。
-			pstmt.executeUpdate();
-
-		} finally {
-			// 자원 누수 방지를 위한 객체 반환 처리
-			// 使用済みのJDBCリソースを安全に閉じ、接続漏れやリソース漏れを防止する。
-			JdbcUtil.close(pstmt);
+			return pstmt.executeUpdate();
 		}
 	}
 }
