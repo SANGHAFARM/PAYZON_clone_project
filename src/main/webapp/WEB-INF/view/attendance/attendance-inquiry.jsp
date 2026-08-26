@@ -125,28 +125,13 @@
 										</c:forEach>
 										<td class="summary-cell"><a href="${detailUrl}"><ul
 													class="summary-list">
-													<c:forEach var="entry" items="${employee.totalAttendValue}">
-														<li><c:out value="${entry.key}: ${entry.value}" /> <c:choose>
-																<%-- 이부분은 수정 해야할듯 --%>
-																<%-- 이부분은 수정 해야할듯 --%>
-																<%-- 이부분은 수정 해야할듯 --%>
-																<%-- 이부분은 수정 해야할듯 --%>
-																<%-- 이부분은 수정 해야할듯 --%>
-																<%-- 이부분은 수정 해야할듯 --%>
-																<%-- 이부분은 수정 해야할듯 --%>
-																<c:when
-																	test="${entry.key eq '연차' or entry.key eq '반차' or entry.key eq '포상휴가' or entry.key eq '청원휴가'}">
-                (d)
-            </c:when>
-																<c:otherwise>
-                (h)
-            </c:otherwise>
+													<c:forEach var="item" items="${employee.totalAttendValue}">
+														<li><c:out
+																value="${item.attendName}: ${item.totalValue}" /> <c:choose>
+																<c:when test="${item.unitType eq '일'}"> (d) </c:when>
+																<c:otherwise> (h) </c:otherwise>
 															</c:choose></li>
 													</c:forEach>
-													<%-- 																										<c:if
-                                                        test="${empty employee.attendanceSummaryItems and not empty employee.attendanceSummary}">
-                                                        <li><c:out value="${employee.attendanceSummary}" /></li>
-                                                    </c:if> --%>
 												</ul></a></td>
 										<td><a href="${detailUrl}"><c:out
 													value="${employee.totalLeaveDeduction}" /></a></td>
@@ -270,60 +255,55 @@
 														<c:out value="${record.endDate}" />
 													</c:if></td>
 												<td><c:out value="${record.attendValue}" /> <c:choose>
-														<c:when
-															test="${record.attendName eq '연차' or record.attendName eq '반차' or record.attendName eq '포상휴가' or record.attendName eq '청원휴가'}">
-                (d)
-            </c:when>
-														<c:otherwise>
-                (h)
-            </c:otherwise>
-													</c:choose> <%-- <c:out
-                                                    value="${record.unit}" /></td> --%>
-													<td><c:out value="${record.payAmount}" /></td>
-											<td><c:out value="${record.note}" /></td>
-										</tr>
-									</c:forEach>
-									<c:if test="${empty attendanceDetail.content}">
-										<tr>
-											<td colspan="10" class="empty-row">照会された詳細な勤労履歴はありません。</td>
-										</tr>
-									</c:if>
-								</tbody>
-							</table>
-						</div>
+														<c:when test="${record.unitType eq '일'}"> (d) </c:when>
+														<c:otherwise> (h) </c:otherwise>
+													</c:choose></td>
+												<td><c:out value="${record.payAmount}" /></td>
+												<td><c:out value="${record.note}" /></td>
+											</tr>
+										</c:forEach>
+										<c:if test="${empty attendanceDetail.content}">
+											<tr>
+												<td colspan="10" class="empty-row">照会された詳細な勤労履歴はありません。</td>
+											</tr>
+										</c:if>
+									</tbody>
+								</table>
+							</div>
 
-						<c:if
+							<c:if
 								test="${not empty attendanceDetail and attendanceDetail.total > 0}">
-							<nav class="pagination" aria-label="ページ移動">
-								<c:if test="${attendanceDetail.startPage > 10}">
-									<a
+								<nav class="pagination" aria-label="ページ移動">
+									<c:if test="${attendanceDetail.startPage > 10}">
+										<a
 											href="?view=DETAIL&pageNo=${attendanceDetail.startPage - 10}${param.useInputDate eq 'Y' ? '&useInputDate=Y&inputDate='.concat(param.inputDate) : ''}${param.usePeriod eq 'Y' ? '&usePeriod=Y&startDate='.concat(param.startDate).concat('&endDate=').concat(param.endDate) : ''}${param.useDepartment eq 'Y' ? '&useDepartment=Y&departmentId='.concat(param.departmentId) : ''}${param.useName eq 'Y' ? '&useName=Y&empNameKr='.concat(param.empNameKr) : ''}${param.useGroup eq 'Y' ? '&useGroup=Y&attendanceGroupId='.concat(param.attendanceGroupId) : ''}${param.useItem eq 'Y' ? '&useItem=Y&attendanceItemId='.concat(param.attendanceItemId) : ''}${param.useHoliday eq 'Y' ? '&useHoliday=Y&leaveItemId='.concat(param.leaveItemId) : ''}${param.useNote eq 'Y' ? '&useNote=Y&note='.concat(param.note) : ''}">[이전]</a>
-								</c:if>
+									</c:if>
 
-								<c:forEach var="pNo" begin="${attendanceDetail.startPage}"
+									<c:forEach var="pNo" begin="${attendanceDetail.startPage}"
 										end="${attendanceDetail.endPage}">
-									<c:choose>
-										<c:when test="${pNo eq attendanceDetail.currentPage}">
-											<strong
+										<c:choose>
+											<c:when test="${pNo eq attendanceDetail.currentPage}">
+												<strong
 													style="margin: 0 4px; color: #007bff; font-weight: bold;">${pNo}</strong>
-										</c:when>
-										<c:otherwise>
-											<a
+											</c:when>
+											<c:otherwise>
+												<a
 													href="?view=DETAIL&pageNo=${pNo}${param.useInputDate eq 'Y' ? '&useInputDate=Y&inputDate='.concat(param.inputDate) : ''}${param.usePeriod eq 'Y' ? '&usePeriod=Y&startDate='.concat(param.startDate).concat('&endDate=').concat(param.endDate) : ''}${param.useDepartment eq 'Y' ? '&useDepartment=Y&departmentId='.concat(param.departmentId) : ''}${param.useName eq 'Y' ? '&useName=Y&empNameKr='.concat(param.empNameKr) : ''}${param.useGroup eq 'Y' ? '&useGroup=Y&attendanceGroupId='.concat(param.attendanceGroupId) : ''}${param.useItem eq 'Y' ? '&useItem=Y&attendanceItemId='.concat(param.attendanceItemId) : ''}${param.useHoliday eq 'Y' ? '&useHoliday=Y&leaveItemId='.concat(param.leaveItemId) : ''}${param.useNote eq 'Y' ? '&useNote=Y&note='.concat(param.note) : ''}"
 													style="margin: 0 4px;">${pNo}</a>
-										</c:otherwise>
-									</c:choose>
-								</c:forEach>
+											</c:otherwise>
+										</c:choose>
+									</c:forEach>
 
-								<c:if
+									<c:if
 										test="${attendanceDetail.endPage < attendanceDetail.totalPages}">
-									<a
+										<a
 											href="?view=DETAIL&pageNo=${attendanceDetail.startPage + 10}${param.useInputDate eq 'Y' ? '&useInputDate=Y&inputDate='.concat(param.inputDate) : ''}${param.usePeriod eq 'Y' ? '&usePeriod=Y&startDate='.concat(param.startDate).concat('&endDate=').concat(param.endDate) : ''}${param.useDepartment eq 'Y' ? '&useDepartment=Y&departmentId='.concat(param.departmentId) : ''}${param.useName eq 'Y' ? '&useName=Y&empNameKr='.concat(param.empNameKr) : ''}${param.useGroup eq 'Y' ? '&useGroup=Y&attendanceGroupId='.concat(param.attendanceGroupId) : ''}${param.useItem eq 'Y' ? '&useItem=Y&attendanceItemId='.concat(param.attendanceItemId) : ''}${param.useHoliday eq 'Y' ? '&useHoliday=Y&leaveItemId='.concat(param.leaveItemId) : ''}${param.useNote eq 'Y' ? '&useNote=Y&note='.concat(param.note) : ''}">[다음]</a>
-								</c:if>
-							
-						</nav> </c:if>
-					
-												</div>
+									</c:if>
+
+								</nav>
+							</c:if>
+
+						</div>
 					</div>
 
 				</c:otherwise>
