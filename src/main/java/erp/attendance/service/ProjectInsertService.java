@@ -27,7 +27,7 @@ public class ProjectInsertService {
 			//만약 해당 이름의 프로젝트가 존재하면 중복 오류 발생
 			// 重複値とデータベース制約違反を確認し、保存可能なデータだけを処理する。
 			if (project!=null) {
-				throw new RuntimeException("해당 이름의 프로젝트가 이미 존재합니다 : " + projectName );
+				throw new RuntimeException("同じ名前のプロジェクトがあります : " + projectName );
 			}
 			project = new Project();
 			project.setProjectName(projectName);

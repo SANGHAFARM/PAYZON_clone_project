@@ -416,6 +416,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	</script>
 	</c:if>
+	
 	<%
 	String projectError = (String) session.getAttribute("projectError");
 	if (projectError != null) {
@@ -430,6 +431,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     </script>
 	</c:if>
+		<c:if test="${not empty successMessage}">
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				alert("${successMessage}");
+			});
+		</script>
+	</c:if>
+	
 	<%@ include file="/WEB-INF/view/common/footer.jspf"%>
 </body>
 </html>
