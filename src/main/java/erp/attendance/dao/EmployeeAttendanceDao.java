@@ -14,6 +14,7 @@ import java.util.Map;
 import erp.attendance.dto.AttendanceDetailDto;
 import erp.attendance.dto.AttendanceEmployeeRecordDto;
 import erp.attendance.dto.AttendanceMonthlyDto;
+import erp.attendance.dto.AttendanceSummaryItemDto;
 import erp.attendance.model.EmployeeAttendance;
 import erp.attendance.service.request.AttendanceDetailSearchRequest;
 import erp.attendance.service.request.AttendanceEmployeeSearchRequest;
@@ -106,8 +107,8 @@ public class EmployeeAttendanceDao {
 	// 변환한다.
 	// 検索条件に合うByEmp識別番号And年度And月データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
-	public List<AttendanceEmployeeRecordDto> selectAttendanceEmployee(Connection conn, AttendanceEmployeeSearchRequest req)
-			throws SQLException {
+	public List<AttendanceEmployeeRecordDto> selectAttendanceEmployee(Connection conn,
+			AttendanceEmployeeSearchRequest req) throws SQLException {
 		String sql = "SELECT A.EMPLOYEE_ATTENDANCE_ID, A.INPUT_DATE, A.ATTENDANCE_ITEM_ID, I.ATTEND_NAME, A.START_DATE, A.END_DATE, A.ATTEND_VALUE, A.PAY_AMOUNT, A.NOTE "
 				+ "FROM EMPLOYEE_ATTENDANCE A LEFT JOIN ATTENDANCE_ITEM I ON I.ATTENDANCE_ITEM_ID = A.ATTENDANCE_ITEM_ID "
 				+ "WHERE EMPLOYEE_ID = ? " + "AND TO_CHAR(START_DATE, 'YYYY') = ? "
@@ -303,38 +304,42 @@ public class EmployeeAttendanceDao {
 	// 변환한다.
 	// 検索条件に合う合計Attend値データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
-	public Map<String, Double> selectTotalAttendValue(Connection conn, int empId, int year, int month,
+	public List<AttendanceSummaryItemDto> selectTotalAttendValue(Connection conn, int empId, int year, int month,
 			AttendanceMonthlyDto dto) throws SQLException {
-		// 해당 연월 문자열 생성 (예: "2026-08")
-		// 基準日と期間の境界を確認し、照会・計算に使用できる日付形式へ変換する。
 		String targetYearMonth = String.format("%d-%02d", year, month);
 
-		String sql = "SELECT i.attend_name, SUM(e.attend_value) AS TOTAL_ATTEND_VALUE " + "FROM employee_attendance e "
-				+ "JOIN attendance_item i " + "  ON i.attendance_item_id = e.attendance_item_id "
-				+ "WHERE e.employee_id = ? " + "  AND e.start_date <= LAST_DAY(TO_DATE(?, 'YYYY-MM')) "
-				+ "  AND e.end_date >= TO_DATE(?, 'YYYY-MM') " + "GROUP BY i.attend_name";
+		String sql = "SELECT i.attend_name, i.unit_type, SUM(e.attend_value) AS TOTAL_ATTEND_VALUE, "
+				+ "       MAX(CASE WHEN e.leave_item_id IS NOT NULL THEN 1 ELSE 0 END) AS IS_LEAVE_DEDUCT "
+				+ "FROM employee_attendance e "
+				+ "JOIN attendance_item i ON i.attendance_item_id = e.attendance_item_id " + "WHERE e.employee_id = ? "
+				+ "  AND e.start_date <= LAST_DAY(TO_DATE(?, 'YYYY-MM')) "
+				+ "  AND e.end_date >= TO_DATE(?, 'YYYY-MM') " + "GROUP BY i.attend_name, i.unit_type";
 
-		Map<String, Double> map = new HashMap<>();
+		List<AttendanceSummaryItemDto> list = new ArrayList<>();
 
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, empId);
-			pstmt.setString(2, targetYearMonth); // start_date 비교용
-			pstmt.setString(3, targetYearMonth); // end_date 비교용
+			pstmt.setString(2, targetYearMonth);
+			pstmt.setString(3, targetYearMonth);
 
 			try (ResultSet rs = pstmt.executeQuery()) {
 				double sum = 0;
 				while (rs.next()) {
-					String key = rs.getString("ATTEND_NAME");
+					String attendName = rs.getString("ATTEND_NAME");
+					String unitType = rs.getString("UNIT_TYPE");
 					double value = rs.getDouble("TOTAL_ATTEND_VALUE");
-					if (key.equals("연차") || key.equals("반차") || key.equals("포상휴가")) {
+					boolean isLeaveDeduct = rs.getInt("IS_LEAVE_DEDUCT") == 1;
+
+					if (isLeaveDeduct) {
 						sum += value;
 						dto.setTotalLeaveDeduction(sum);
 					}
-					map.put(key, value);
+
+					list.add(new AttendanceSummaryItemDto(attendName, value, unitType, isLeaveDeduct));
 				}
 			}
 		}
-		return map;
+		return list;
 	}
 
 	/*
@@ -357,7 +362,7 @@ public class EmployeeAttendanceDao {
 				+ "AND (? IS NULL OR ai.DEDUCT_LEAVE_ID = ?) " + "AND (? IS NULL OR ea.NOTE LIKE '%' || ? || '%') ";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			setDateOrNull(pstmt, 1, 2, req.getInputDate());
-			setDateOrNull(pstmt, 3,4, req.getStartDate());
+			setDateOrNull(pstmt, 3, 4, req.getStartDate());
 			setDateOrNull(pstmt, 5, 6, req.getEndDate());
 			setIntOrNull(pstmt, 7, 8, req.getDepartmentId());
 
@@ -372,9 +377,9 @@ public class EmployeeAttendanceDao {
 			pstmt.setString(17, req.getNote());
 			pstmt.setString(18, req.getNote());
 			int result = 0;
-			try(ResultSet rs = pstmt.executeQuery()){
+			try (ResultSet rs = pstmt.executeQuery()) {
 				if (rs.next()) {
-					result =  rs.getInt("COUNT(*)");
+					result = rs.getInt("COUNT(*)");
 				}
 			}
 			return result;
@@ -386,11 +391,11 @@ public class EmployeeAttendanceDao {
 	// 변환한다.
 	// 検索条件に合う詳細情報一覧データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
-	
-	public List<AttendanceDetailDto> selectDetailList(Connection conn, AttendanceDetailSearchRequest req, int firstRow, int endRow)
-			throws SQLException {
+
+	public List<AttendanceDetailDto> selectDetailList(Connection conn, AttendanceDetailSearchRequest req, int firstRow,
+			int endRow) throws SQLException {
 		String sql = "select * from (select rownum as rnum, a.* from (SELECT ea.INPUT_DATE, e.EMP_TYPE, e.EMP_NAME_KR, "
-				+ "       d.DEPARTMENT_NAME, p.JOB_POSITION_NAME, ai.ATTEND_NAME, "
+				+ "       d.DEPARTMENT_NAME, p.JOB_POSITION_NAME, ai.ATTEND_NAME, ai.UNIT_TYPE, "
 				+ "       ea.START_DATE, ea.END_DATE, ea.ATTEND_VALUE, ea.PAY_AMOUNT, ea.NOTE "
 				+ "FROM EMPLOYEE_ATTENDANCE ea " + "JOIN EMPLOYEE e ON ea.EMPLOYEE_ID = e.EMPLOYEE_ID "
 				+ "LEFT JOIN DEPARTMENT d ON e.DEPARTMENT_ID = d.DEPARTMENT_ID "
@@ -428,7 +433,7 @@ public class EmployeeAttendanceDao {
 
 			pstmt.setString(17, req.getNote());
 			pstmt.setString(18, req.getNote());
-			
+
 			pstmt.setInt(19, endRow);
 			pstmt.setInt(20, firstRow);
 
@@ -440,7 +445,7 @@ public class EmployeeAttendanceDao {
 		}
 		return list;
 	}
-		
+
 	public List<AttendanceDetailDto> selectDetailList(Connection conn, AttendanceDetailSearchRequest req)
 			throws SQLException {
 		String sql = "SELECT ea.INPUT_DATE, e.EMP_TYPE, e.EMP_NAME_KR, "
@@ -640,6 +645,7 @@ public class EmployeeAttendanceDao {
 		dto.setAttendValue(rs.getDouble("ATTEND_VALUE"));
 		dto.setPayAmount(rs.getLong("PAY_AMOUNT"));
 		dto.setNote(rs.getString("NOTE"));
+		dto.setUnitType(rs.getString("UNIT_TYPE"));
 		return dto;
 	}
 

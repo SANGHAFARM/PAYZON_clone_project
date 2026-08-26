@@ -18,7 +18,8 @@ public class AttendanceDetailDto {
     private double attendValue;
     private long payAmount;
     private String note;
-
+    private String unitType;
+    
 	// 전달받은 값으로 근태상세정보 객체의 초기 상태를 구성한다.
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
 	// 受け取った値で勤怠詳細情報オブジェクトの初期状態を構成する。
@@ -200,6 +201,13 @@ public class AttendanceDetailDto {
 	// リクエスト値または照会結果として渡された値を対応フィールドへ反映し、オブジェクトの現在状態を更新する。
 	public void setNote(String note) {
 		this.note = note;
+	}
+	
+	public String getUnitType() {
+		return unitType;
+	}
+	public void setUnitType(String unitType) {
+		this.unitType = unitType;
 	}
 	
     
