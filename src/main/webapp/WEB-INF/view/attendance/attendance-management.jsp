@@ -136,7 +136,8 @@
 									class="manage-button" formmethod="get"
 									formaction="${pageContext.request.contextPath}/attendance/attendance-management.do#holiday-status-modal">休暇日数の状況</button>
 						</span></label> <label><span>金額（手当）</span> <input type="number"
-							name="payAmount" min="0" value="${empty editId ? '' : payAmount }"
+							name="payAmount" min="0"
+							value="${empty editId ? '' : payAmount }"
 							placeholder="勤怠項目が支給手当の場合"></label> <label><span>摘要</span><input
 							type="text" name="note" value="${empty editId ? '' : note }"
 							placeholder="必要がある場合は入力してください。"></label>
@@ -363,6 +364,13 @@
 			}
 		});
 	</script>
+	<c:if test="${not empty successMessage}">
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				alert("${successMessage}");
+			});
+		</script>
+	</c:if>
 	<c:if test="${not empty errors }">
 		<script>
 			document.addEventListener('DOMContentLoaded', function() {
@@ -383,6 +391,6 @@
 			});
 		</script>
 	</c:if>
-	
+
 </body>
 </html>

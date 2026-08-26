@@ -111,7 +111,7 @@ public class EmployeeAttendanceDao {
 		String sql = "SELECT A.EMPLOYEE_ATTENDANCE_ID, A.INPUT_DATE, A.ATTENDANCE_ITEM_ID, I.ATTEND_NAME, A.START_DATE, A.END_DATE, A.ATTEND_VALUE, A.PAY_AMOUNT, A.NOTE "
 				+ "FROM EMPLOYEE_ATTENDANCE A LEFT JOIN ATTENDANCE_ITEM I ON I.ATTENDANCE_ITEM_ID = A.ATTENDANCE_ITEM_ID "
 				+ "WHERE EMPLOYEE_ID = ? " + "AND TO_CHAR(START_DATE, 'YYYY') = ? "
-				+ "AND (? IS NULL OR TO_CHAR(START_DATE, 'MM') = ?)";
+				+ "AND (? IS NULL OR TO_CHAR(START_DATE, 'MM') = ?) ORDER BY A.START_DATE ASC";
 		List<AttendanceEmployeeRecordDto> list = new ArrayList<>();
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, req.getEmployeeId());

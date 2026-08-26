@@ -151,6 +151,7 @@ public class DayWorkerManagementHandler implements CommandHandler {
 				return processForm(req, res);
 			}
 			updateService.update(request);
+			req.setAttribute("successMessage", "修正しました");
 		} 
 		// 입력 작업
 		// 入力作業
@@ -161,6 +162,7 @@ public class DayWorkerManagementHandler implements CommandHandler {
 				return processForm(req, res);
 			}
 			insertService.insert(request);
+			req.setAttribute("successMessage", "保存しました");
 		}
 		return processForm(req, res);
 	}

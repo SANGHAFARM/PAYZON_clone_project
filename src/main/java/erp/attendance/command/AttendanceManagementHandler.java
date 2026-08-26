@@ -189,6 +189,7 @@ public class AttendanceManagementHandler implements CommandHandler {
 				return processForm(req, res);
 			}
 			updateService.update(request);
+			req.setAttribute("successMessage", "修正しました");
 		} else {
 			AttendanceRecordInsertRequest request = createAttendanceRecordInsertRequest(req, errors);
 			request.validate(errors);
@@ -196,6 +197,7 @@ public class AttendanceManagementHandler implements CommandHandler {
 				return processForm(req, res);
 			}
 			insertService.insert(request);
+			req.setAttribute("successMessage", "保存しました");
 		}
 		return processForm(req, res);
 
