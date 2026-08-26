@@ -138,7 +138,13 @@ public class PayItemHandler implements CommandHandler {
 			// 複数のデータ変更を一つのトランザクションとして処理し、成功時はコミット、失敗時はロールバックする。
 			if (!"clear".equals(action)) {
 				payService.processPayItemAction(item, action);
-				req.getSession().setAttribute("message", "지급항목 설정이 완료되었습니다.");
+				if ("insert".equals(action)) {
+					req.getSession().setAttribute("message", "지급항목이 추가되었습니다.");
+				} else if ("update".equals(action)) {
+					req.getSession().setAttribute("message", "지급항목이 수정되었습니다.");
+				} else if ("delete".equals(action)) {
+					req.getSession().setAttribute("message", "지급항목이 삭제되었습니다.");
+				}
 				req.getSession().setAttribute("messageAnchor", "#payment-settings");
 			}
 

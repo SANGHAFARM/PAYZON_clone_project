@@ -87,7 +87,11 @@ public class AttendanceGroupHandler implements CommandHandler {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			req.getSession().setAttribute("message", "오류 발생: " + e.getMessage());
+			if ("confirmDelete".equals(action)) {
+				req.getSession().setAttribute("message", "勤怠グループを削除できませんでした。");
+			} else {
+				req.getSession().setAttribute("message", "오류 발생: " + e.getMessage());
+			}
 			req.getSession().setAttribute("messageReturnTarget", "group");
 		}
 
