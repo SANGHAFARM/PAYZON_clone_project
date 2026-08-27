@@ -5,11 +5,11 @@ import java.util.Date;
 // 일용직근무상세정보요청정보 처리에 필요한 값을 계층 간에 전달한다.
 // 日雇い勤務詳細情報リクエスト情報処理に必要な値を各階層間で受け渡す。
 public class DailyWorkDetailSearchRequest {
-	private Date startDate;
-	private Date endDate;
-	private String empNameKr;
-	private Integer departmentId;
-	private Integer projectId;
+	private Date startDate;         // 시작일자(開始日)
+	private Date endDate;           // 종료일자(終了日)
+	private String empNameKr;       // 사원명(氏名)
+	private Integer departmentId;   // 부서ID(部署ID)
+	private Integer projectId;      // 프로젝트ID(プロジェクトID)
 	// 전달받은 값으로 일용직근무상세정보요청정보 객체의 초기 상태를 구성한다.
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
 	// 受け取った値で日雇い勤務詳細情報リクエスト情報オブジェクトの初期状態を構成する。

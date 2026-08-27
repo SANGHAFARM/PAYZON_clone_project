@@ -7,14 +7,14 @@ import java.util.Map;
 // Insert사원근태요청정보 처리에 필요한 값을 계층 간에 전달한다.
 // Insert社員勤怠リクエスト情報処理に必要な値を各階層間で受け渡す。
 public class AttendanceRecordInsertRequest {
-	private List<Integer> employeeIds;
-	private Date inputDate;
-	private Integer attendanceItemId;
-	private Date startDate;
-	private Date endDate;
-	private double attendValue;
-	private long payAmount;
-	private String note;
+	private List<Integer> employeeIds;    // 사원ID 목록(社員ID一覧)
+	private Date inputDate;               // 입력일자(入力日)
+	private Integer attendanceItemId;     // 근태항목ID(勤怠項目ID)
+	private Date startDate;               // 시작일자(開始日)
+	private Date endDate;                 // 종료일자(終了日)
+	private double attendValue;           // 근태값(勤怠値) - 일수/시간 등
+	private long payAmount;               // 지급액(支給額)
+	private String note;                  // 비고(備考)
 	// 전달받은 값으로 Insert사원근태요청정보 객체의 초기 상태를 구성한다.
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
 	// 受け取った値でInsert社員勤怠リクエスト情報オブジェクトの初期状態を構成する。

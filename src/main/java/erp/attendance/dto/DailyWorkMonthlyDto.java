@@ -8,15 +8,15 @@ import java.util.Map;
 public class DailyWorkMonthlyDto {
 	// 구분, 사원번호, 성명, 부서, 근무기록, 합계, 소득세합계, 지방소득세 합계,실지급합계 
 	// 支給額・控除額・期間値を業務基準に従って計算し、合計と最終金額へ反映する。
-	private String empType;
-	private String empNo;
-	private String empNameKr;
-	private String departmentName;
-	private Map<Integer, DailyWorkRecordDto> workDayMap;
-	private int totalDays;
-	private long totalIncomeTax;
-	private long totalLocalIncomeTax;
-	private long totalActualPay;
+	private String empType;              // 구분(社員区分)
+	private String empNo;                // 사원번호(社員番号)
+	private String empNameKr;             // 사원명(氏名)
+	private String departmentName;        // 부서(部署)
+	private Map<Integer, DailyWorkRecordDto> workDayMap;  // 일별 근무기록 맵(日別勤怠記録)
+	private int totalDays;                // 총 근무일수(総勤務日数)
+	private long totalIncomeTax;          // 소득세 합계(所得税合計)
+	private long totalLocalIncomeTax;     // 지방소득세 합계(地方所得税合計)
+	private long totalActualPay;          // 실지급액(差引支給額合計)
 	// 전달받은 값으로 일용직근무목록 객체의 초기 상태를 구성한다.
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
 	// 受け取った値で日雇い勤務一覧オブジェクトの初期状態を構成する。

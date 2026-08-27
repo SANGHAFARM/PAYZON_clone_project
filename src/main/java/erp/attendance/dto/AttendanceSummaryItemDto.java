@@ -3,10 +3,10 @@ package erp.attendance.dto;
 // 근태항목별 합계, 표시단위, 휴가공제 여부를 담는 모델
 // 勤怠項目別合計、表示単位、休暇控除の有無を保持するモデル
 public class AttendanceSummaryItemDto {
-	private String attendName;
-	private double totalValue;
-	private String unitType;
-	private boolean leaveDeduct;
+	private String attendName;	//근태항목(勤怠項目)
+	private double totalValue;	//합계(合計)
+	private String unitType;	//단위(単位)
+	private boolean leaveDeduct;	//휴가공제여부(休暇控除有無)
 
 	public AttendanceSummaryItemDto() {
 	}

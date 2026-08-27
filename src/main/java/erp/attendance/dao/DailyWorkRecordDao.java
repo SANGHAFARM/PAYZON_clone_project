@@ -65,7 +65,8 @@ public class DailyWorkRecordDao {
 	// 변환한다.
 	// 検索条件に合うByリクエスト情報データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
-	public List<DailyWorkRecordDto> selectDailyWorkRecord(Connection conn, DailyWorkRecordSearchRequest req) throws SQLException {
+	public List<DailyWorkRecordDto> selectDailyWorkRecord(Connection conn, DailyWorkRecordSearchRequest req)
+			throws SQLException {
 		String sql = "SELECT dwr.DAILY_WORK_RECORD_ID, e.EMP_NAME_KR, dwr.WORK_DATE, "
 				+ "       dwr.PROJECT_ID, p.PROJECT_NAME, " + "       dwr.DAILY_PAY, dwr.PAY_RATE, "
 				+ "       dwr.INCOME_TAX, dwr.LOCAL_INCOME_TAX, dwr.ACTUAL_PAY " + "FROM DAILY_WORK_RECORD dwr "
@@ -103,7 +104,8 @@ public class DailyWorkRecordDao {
 	// 변환한다.
 	// 検索条件に合う一覧Byリクエスト情報データをデータベースから照会する。
 	// Connectionと検索条件でPreparedStatementを実行し、ResultSetの各カラムをModelまたはDTOへ変換する。
-	public List<DailyWorkMonthlyDto> selectDailyWorkMonthly(Connection conn, DailyWorkMonthlySearchRequest req) throws SQLException {
+	public List<DailyWorkMonthlyDto> selectDailyWorkMonthly(Connection conn, DailyWorkMonthlySearchRequest req)
+			throws SQLException {
 		String sql = "SELECT e.EMPLOYEE_ID, e.EMP_TYPE, e.EMP_NO, e.EMP_NAME_KR, d.department_name, COUNT(dwr.work_date) AS TOTAL_DAYS,"
 				+ " SUM(dwr.income_tax) AS TOTAL_INCOME_TAX, SUM(dwr.local_income_tax) AS TOTAL_LOCAL_INCOME_TAX, SUM(dwr.actual_pay) AS TOTAL_ACTUAL_PAY "
 				+ "FROM DAILY_WORK_RECORD dwr " + "LEFT JOIN EMPLOYEE e ON e.EMPLOYEE_ID = dwr.EMPLOYEE_ID "
@@ -116,7 +118,7 @@ public class DailyWorkRecordDao {
 			int month = req.getMonth();
 
 			// 해당 연도, 월의 시작일과 마지막일을 구하는 작업
-			// 基準日と期間の境界を確認し、照会・計算に使用できる日付形式へ変換する。
+			// 該当年度、月の開始日と最終日を調べる作業
 			String start = String.format("%04d%02d01", year, month);
 			java.time.YearMonth yearMonth = java.time.YearMonth.of(year, month);
 			String end = yearMonth.atEndOfMonth().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -139,17 +141,17 @@ public class DailyWorkRecordDao {
 
 	}
 
-	//(3) 일용직 상세 조회의 조건에 맞는 기록 수 조회
-	public int selectDailyWorkDetailCount(Connection conn, DailyWorkDetailSearchRequest req) throws SQLException{
-		String sql = "select count(*) "
-				+ "from daily_work_record dwr "
+	// (3) 일용직 상세 조회의 조건에 맞는 기록 수 조회
+	// (3) 日雇い詳細照会の条件に合う記録数を照会
+	public int selectDailyWorkDetailCount(Connection conn, DailyWorkDetailSearchRequest req) throws SQLException {
+		String sql = "select count(*) " + "from daily_work_record dwr "
 				+ "LEFT JOIN employee e ON dwr.employee_id = e.employee_id "
 				+ "LEFT JOIN department d ON e.department_id = d.department_id "
 				+ "LEFT JOIN project p ON dwr.project_id = p.project_id "
 				+ "WHERE (? IS NULL OR dwr.work_date BETWEEN TO_DATE(?, 'YYYYMMDD') AND TO_DATE(?, 'YYYYMMDD')) "
 				+ "AND (? IS NULL OR e.emp_name_kr LIKE '%' || ? || '%') " + "AND (? IS NULL OR d.department_id = ?) "
 				+ "AND (? IS NULL OR p.project_id = ?) ";
-		try(PreparedStatement pstmt = conn.prepareStatement(sql)){
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 			String startStr = (req.getStartDate() != null) ? sdf.format(req.getStartDate()) : null;
 			String endStr = (req.getEndDate() != null) ? sdf.format(req.getEndDate()) : null;
@@ -164,20 +166,20 @@ public class DailyWorkRecordDao {
 			setIntOrNull(pstmt, 6, 7, req.getDepartmentId());
 			setIntOrNull(pstmt, 8, 9, req.getProjectId());
 			int result = 0;
-			try(ResultSet rs = pstmt.executeQuery()){
+			try (ResultSet rs = pstmt.executeQuery()) {
 				if (rs.next()) {
 					result = rs.getInt("COUNT(*)");
 				}
 			}
 			return result;
 		}
-		
+
 	}
-	
+
 	// (3) 근무일자/성명/부서/현장 상세 (상세조회에서 사용)
-	// 基準日と期間の境界を確認し、照会・計算に使用できる日付形式へ変換する。
-	public List<DailyWorkDetailDto> selectDailyWorkDetail(Connection conn, DailyWorkDetailSearchRequest req, int firstRow,
-			int endRow) throws SQLException {
+	// (3) 勤務日/氏名/部署/現場詳細(詳細照会で使う)
+	public List<DailyWorkDetailDto> selectDailyWorkDetail(Connection conn, DailyWorkDetailSearchRequest req,
+			int firstRow, int endRow) throws SQLException {
 		String sql = "select * from (select rownum as rnum, a.* from (SELECT p.project_name, dwr.work_date, e.emp_no, e.employee_id, e.emp_name_kr, d.department_name, dwr.daily_pay, "
 				+ "dwr.pay_rate, dwr.income_tax, dwr.local_income_tax, dwr.actual_pay " + "FROM daily_work_record dwr "
 				+ "LEFT JOIN employee e ON dwr.employee_id = e.employee_id "
@@ -215,6 +217,7 @@ public class DailyWorkRecordDao {
 	}
 
 	// (3) 근무일자/성명/부서/현장 상세 (상세조회에서 사용 - 페이징 제거)
+	// (3) 勤務日/氏名/部署/現場詳細(詳細照会で使う-　ページングなし)
 	// 조회 조건에 맞는 상세정보By요청정보 데이터를 데이터베이스에서 조회한다.
 	// Connection과 조회조건으로 PreparedStatement를 실행하고 ResultSet의 각 컬럼을 Model 또는 DTO로
 	// 변환한다.

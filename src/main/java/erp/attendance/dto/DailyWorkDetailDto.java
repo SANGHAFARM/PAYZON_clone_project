@@ -5,16 +5,16 @@ import java.util.Date;
 // 일용직근무상세정보 처리에 필요한 값을 계층 간에 전달한다.
 // 日雇い勤務詳細情報処理に必要な値を各階層間で受け渡す。
 public class DailyWorkDetailDto {
-	private Date workDate;//근무일자
-	private String empNo;//사원번호
-	private String empNameKr;//성명(EMPLOYEE)
-	private String departmentName;//부서(DEPARTMNET)
-	private String projectName;//현장/프로젝트(PROJECT)
-	private long dailyPay;//일당
-	private double payRate;//지급율
-	private long incomeTax;//소득세
-	private long localIncomeTax;//지방소득세
-	private long actualPay;//실지급액
+	private Date workDate;//근무일자(勤務日)
+	private String empNo;//사원번호(社員番号)
+	private String empNameKr;//사원명()
+	private String departmentName;//부서(部署)
+	private String projectName;//현장/프로젝트(現場・プロジェクト)
+	private long dailyPay;//일당(日当)
+	private double payRate;//지급율(支給率)
+	private long incomeTax;//소득세(所得税)
+	private long localIncomeTax;//지방소득세(地方所得税)
+	private long actualPay;//실지급액(差引支給額)
 	// 전달받은 값으로 일용직근무상세정보 객체의 초기 상태를 구성한다.
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
 	// 受け取った値で日雇い勤務詳細情報オブジェクトの初期状態を構成する。

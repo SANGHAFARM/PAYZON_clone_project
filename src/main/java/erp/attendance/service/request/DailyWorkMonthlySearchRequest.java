@@ -5,10 +5,10 @@ package erp.attendance.service.request;
 // 일용직근무목록요청정보 처리에 필요한 값을 계층 간에 전달한다.
 // 日雇い勤務一覧リクエスト情報処理に必要な値を各階層間で受け渡す。
 public class DailyWorkMonthlySearchRequest {
-	private int year;
-	private int month;
-	private Integer deptId;
-	private Integer posId;
+	private int year;         // 연도(年度)
+	private int month;        // 월(月)
+	private Integer deptId;   // 부서ID(部署ID)
+	private Integer posId;    // 직위ID(役職ID)
 
 	// 전달받은 값으로 일용직근무목록요청정보 객체의 초기 상태를 구성한다.
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.

@@ -6,17 +6,17 @@ import java.util.Date;
 // 일용직근무기록 처리에 필요한 값을 계층 간에 전달한다.
 // 日雇い勤務記録処理に必要な値を各階層間で受け渡す。
 public class DailyWorkRecordDto {
-    private int dailyWorkRecordId; //일용직 근무기록ID
-    private String empNameKr; //근무자 이름
-    private Date workDate; //근무일자
-    private Integer projectId; //프로젝트ID
-    private String projectName;//프로젝트 이름
-    private long dailyPay; //일당
-    private double payRate; //지급율
-    private long grossPay;   // 지급액(일당*지급율)
-    private long incomeTax; //소득세
-    private long localIncomeTax; //지방소득세
-    private long actualPay; //실지급액
+	private int dailyWorkRecordId;    // 일용직 근무기록ID(日雇い勤務記録ID)
+	private String empNameKr;         // 사원명(氏名)
+	private Date workDate;            // 근무일(勤務日)
+	private Integer projectId;        // 프로젝트ID(プロジェクトID)
+	private String projectName;       // 프로젝트 이름(プロジェクト名)
+	private long dailyPay;            // 일당(日当)
+	private double payRate;           // 지급율(支給率)
+	private long grossPay;            // 지급액(支給額) - 일당*지급율
+	private long incomeTax;           // 소득세(所得税)
+	private long localIncomeTax;      // 지방소득세(地方所得税)
+	private long actualPay;           // 실지급액(実支給額)
     
 	// 전달받은 값으로 일용직근무기록 객체의 초기 상태를 구성한다.
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
