@@ -8,14 +8,14 @@ import java.util.Map;
 // 일용직근무Insert요청정보 처리에 필요한 값을 계층 간에 전달한다.
 // 日雇い勤務Insertリクエスト情報処理に必要な値を各階層間で受け渡す。
 public class DailyWorkInsertRequest {
-	private List<Integer> employeeIds;
-	private Date workDate;
-	private Integer projectId;
-	private long dailyPay;
-	private double payRate;
-	private long incomeTax;
-	private long localIncomeTax;
-	private long actualPay;
+	private List<Integer> employeeIds;    // 사원ID 목록(社員ID一覧)
+	private Date workDate;                // 근무일자(勤務日)
+	private Integer projectId;            // 프로젝트ID(プロジェクトID)
+	private long dailyPay;                // 일당(日当)
+	private double payRate;               // 지급율(支給率)
+	private long incomeTax;               // 소득세(所得税)
+	private long localIncomeTax;          // 지방소득세(地方所得税)
+	private long actualPay;               // 실지급액(差引支給額)
 
 	// 전달받은 값으로 일용직근무Insert요청정보 객체의 초기 상태를 구성한다.
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.

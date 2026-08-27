@@ -3,16 +3,16 @@ package erp.attendance.dto;
 // 휴가조회 처리에 필요한 값을 계층 간에 전달한다.
 // 休暇照会処理に必要な値を各階層間で受け渡す。
 public class LeaveInquiryDto {
-	private int employeeId;
-	private String empType;
-	private String empNo;
-	private String empNameKr;
-	private String departmentName;
-	private String jobPositionName;
-	private String itemName;
-	private long totalDays;
-	private double usedDays;
-	private double remainingDays;
+	private int employeeId;           // 사원ID(社員ID)
+	private String empType;           // 구분(社員区分)
+	private String empNo;             // 사원번호(社員番号)
+	private String empNameKr;         // 사원명(氏名)
+	private String departmentName;    // 부서(部署)
+	private String jobPositionName;   // 직위(役職)
+	private String itemName;          // 휴가항목(項目)
+	private long totalDays;           // 총 일수(総日数)
+	private double usedDays;          // 사용 일수(使用)
+	private double remainingDays;     // 잔여 일수(残り)
 
 	// 전달받은 값으로 휴가조회 객체의 초기 상태를 구성한다.
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.

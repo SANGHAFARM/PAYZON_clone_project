@@ -31,7 +31,7 @@
 			href="${pageContext.request.contextPath}/employees/employees.do">
 				<img class="quick-menu__icon-image"
 				src="${pageContext.request.contextPath}/images/header/employee-status.png">
-				<span>社員状況</span>
+				<span>社員一覧</span>
 		</a></li>
 		<li class="quick-menu__item"><a class="quick-menu__link"
 			href="${pageContext.request.contextPath}/employees/certificate.do">
@@ -102,7 +102,7 @@
 				href="${pageContext.request.contextPath}/employees/employees.do">人事管理</a>
 				<ul class="dropdown-menu">
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/employees/employees.do">社員現況/管理</a></li>
+						href="${pageContext.request.contextPath}/employees/employees.do">社員一覧/管理</a></li>
 					<li><a class="dropdown-menu__link"
 						href="${pageContext.request.contextPath}/employees/employee-card.do">人事記録カード</a></li>
 					<li><a class="dropdown-menu__link"
@@ -121,9 +121,9 @@
 					<li><a class="dropdown-menu__link"
 						href="${pageContext.request.contextPath}/attendance/leave-inquiry.do">休暇照会</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/attendance/day-worker-management.do">日雇い写真勤務記録/管理</a></li>
+						href="${pageContext.request.contextPath}/attendance/day-worker-management.do">日雇い社員勤務記録/管理</a></li>
 					<li><a class="dropdown-menu__link"
-						href="${pageContext.request.contextPath}/attendance/day-worker-inquiry.do">日雇い写真勤務照会</a></li>
+						href="${pageContext.request.contextPath}/attendance/day-worker-inquiry.do">日雇い社員勤務照会</a></li>
 				</ul></li>
 			<li class="main-nav__item"><a class="main-nav__trigger"
 				href="${pageContext.request.contextPath}/payroll/management.do">給与管理</a>

@@ -4,17 +4,18 @@ import java.util.Date;
 import java.util.Map;
 
 //일용직 근무기록 수정 리퀘스트
+//日雇い勤務記録修正に使うクラス
 // 일용직근무Update요청정보 처리에 필요한 값을 계층 간에 전달한다.
 // 日雇い勤務Updateリクエスト情報処理に必要な値を各階層間で受け渡す。
 public class DailyWorkUpdateRequest {
-	private int dailyWorkRecordId;
-	private Date workDate;
-	private Integer projectId;
-	private long dailyPay;
-	private double payRate;
-	private long incomeTax;
-	private long localIncomeTax;
-	private long actualPay;
+	private int dailyWorkRecordId;    // 일용직 근무기록ID(日雇い勤務記録ID)
+	private Date workDate;            // 근무일자(勤務日)
+	private Integer projectId;        // 프로젝트ID(プロジェクトID)
+	private long dailyPay;            // 일당(日当)
+	private double payRate;           // 지급율(支給率)
+	private long incomeTax;           // 소득세(所得税)
+	private long localIncomeTax;      // 지방소득세(地方所得税)
+	private long actualPay;           // 실지급액(実支給額)
 	
 	
 

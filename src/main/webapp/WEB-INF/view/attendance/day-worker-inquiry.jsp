@@ -1,6 +1,10 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags"%>
+<c:set var="monthDayCount" value="31" />
+<c:if test="${not empty daysInMonth}">
+	<c:set var="monthDayCount" value="${daysInMonth}" />
+</c:if>
 <!DOCTYPE html>
 <html lang="ja-JP">
 <head>
@@ -125,43 +129,43 @@
 										</c:if>
 									</tbody>
 								</table>
-								</div>
-
-								<c:if
-									test="${not empty dailyWorkDetail and dailyWorkDetail.total > 0}">
-									<nav class="pagination" aria-label="ページ移動">
-
-										<c:if test="${dailyWorkDetail.startPage > 10}">
-											<a
-												href="?view=detail&pageNo=${dailyWorkDetail.startPage - 10}${param.usePeriod eq 'Y' ? '&usePeriod=Y&startDate='.concat(param.startDate).concat('&endDate=').concat(param.endDate) : ''}${param.useName eq 'Y' ? '&useName=Y&empNameKr='.concat(param.empNameKr) : ''}${param.useDepartment eq 'Y' ? '&useDepartment=Y&departmentId='.concat(param.departmentId) : ''}${param.useProject eq 'Y' ? '&useProject=Y&projectId='.concat(param.projectId) : ''}">[이전]</a>
-										</c:if>
-
-
-										<c:forEach var="pNo" begin="${dailyWorkDetail.startPage}"
-											end="${dailyWorkDetail.endPage}">
-											<c:choose>
-												<c:when test="${pNo eq dailyWorkDetail.currentPage}">
-													<strong
-														style="margin: 0 4px; color: #007bff; font-weight: bold;">${pNo}</strong>
-												</c:when>
-												<c:otherwise>
-													<a
-														href="?view=detail&pageNo=${pNo}${param.usePeriod eq 'Y' ? '&usePeriod=Y&startDate='.concat(param.startDate).concat('&endDate=').concat(param.endDate) : ''}${param.useName eq 'Y' ? '&useName=Y&empNameKr='.concat(param.empNameKr) : ''}${param.useDepartment eq 'Y' ? '&useDepartment=Y&departmentId='.concat(param.departmentId) : ''}${param.useProject eq 'Y' ? '&useProject=Y&projectId='.concat(param.projectId) : ''}"
-														style="margin: 0 4px;">${pNo}</a>
-												</c:otherwise>
-											</c:choose>
-										</c:forEach>
-
-										<c:if
-											test="${dailyWorkDetail.endPage < dailyWorkDetail.totalPages}">
-											<a
-												href="?view=detail&pageNo=${dailyWorkDetail.startPage + 10}${param.usePeriod eq 'Y' ? '&usePeriod=Y&startDate='.concat(param.startDate).concat('&endDate=').concat(param.endDate) : ''}${param.useName eq 'Y' ? '&useName=Y&empNameKr='.concat(param.empNameKr) : ''}${param.useDepartment eq 'Y' ? '&useDepartment=Y&departmentId='.concat(param.departmentId) : ''}${param.useProject eq 'Y' ? '&useProject=Y&projectId='.concat(param.projectId) : ''}">[다음]</a>
-										</c:if>
-
-									</nav>
-								</c:if>
 							</div>
+
+							<c:if
+								test="${not empty dailyWorkDetail and dailyWorkDetail.total > 0}">
+								<nav class="pagination" aria-label="ページ移動">
+
+									<c:if test="${dailyWorkDetail.startPage > 10}">
+										<a
+											href="?view=detail&pageNo=${dailyWorkDetail.startPage - 10}${param.usePeriod eq 'Y' ? '&usePeriod=Y&startDate='.concat(param.startDate).concat('&endDate=').concat(param.endDate) : ''}${param.useName eq 'Y' ? '&useName=Y&empNameKr='.concat(param.empNameKr) : ''}${param.useDepartment eq 'Y' ? '&useDepartment=Y&departmentId='.concat(param.departmentId) : ''}${param.useProject eq 'Y' ? '&useProject=Y&projectId='.concat(param.projectId) : ''}">[이전]</a>
+									</c:if>
+
+
+									<c:forEach var="pNo" begin="${dailyWorkDetail.startPage}"
+										end="${dailyWorkDetail.endPage}">
+										<c:choose>
+											<c:when test="${pNo eq dailyWorkDetail.currentPage}">
+												<strong
+													style="margin: 0 4px; color: #007bff; font-weight: bold;">${pNo}</strong>
+											</c:when>
+											<c:otherwise>
+												<a
+													href="?view=detail&pageNo=${pNo}${param.usePeriod eq 'Y' ? '&usePeriod=Y&startDate='.concat(param.startDate).concat('&endDate=').concat(param.endDate) : ''}${param.useName eq 'Y' ? '&useName=Y&empNameKr='.concat(param.empNameKr) : ''}${param.useDepartment eq 'Y' ? '&useDepartment=Y&departmentId='.concat(param.departmentId) : ''}${param.useProject eq 'Y' ? '&useProject=Y&projectId='.concat(param.projectId) : ''}"
+													style="margin: 0 4px;">${pNo}</a>
+											</c:otherwise>
+										</c:choose>
+									</c:forEach>
+
+									<c:if
+										test="${dailyWorkDetail.endPage < dailyWorkDetail.totalPages}">
+										<a
+											href="?view=detail&pageNo=${dailyWorkDetail.startPage + 10}${param.usePeriod eq 'Y' ? '&usePeriod=Y&startDate='.concat(param.startDate).concat('&endDate=').concat(param.endDate) : ''}${param.useName eq 'Y' ? '&useName=Y&empNameKr='.concat(param.empNameKr) : ''}${param.useDepartment eq 'Y' ? '&useDepartment=Y&departmentId='.concat(param.departmentId) : ''}${param.useProject eq 'Y' ? '&useProject=Y&projectId='.concat(param.projectId) : ''}">[다음]</a>
+									</c:if>
+
+								</nav>
+							</c:if>
 						</div>
+					</div>
 				</c:when>
 
 				<%--=========================== --%>
@@ -212,7 +216,7 @@
 									<th>部署</th>
 									<th class="days-heading"><span>労働日</span>
 										<div>
-											<c:forEach var="dayNo" begin="1" end="31">
+											<c:forEach var="dayNo" begin="1" end="${monthDayCount}">
 												<b>${dayNo}</b>
 											</c:forEach>
 										</div></th>
@@ -230,7 +234,7 @@
 										<td><c:out value="${employee.empNameKr}" /></td>
 										<td><c:out value="${employee.departmentName}" /></td>
 										<td class="day-cells"><c:forEach var="dayNo" begin="1"
-												end="31">
+												end="${monthDayCount}">
 												<c:set var="work" value="${employee.workDayMap[dayNo]}" />
 												<span><c:if test="${not empty work}">
 														<a href="#work-detail-${work.dailyWorkRecordId}"

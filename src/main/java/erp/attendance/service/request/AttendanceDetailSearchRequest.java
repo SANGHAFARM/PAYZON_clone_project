@@ -9,15 +9,15 @@ import java.util.Map;
 // 근태상세정보요청정보 처리에 필요한 값을 계층 간에 전달한다.
 // 勤怠詳細情報リクエスト情報処理に必要な値を各階層間で受け渡す。
 public class AttendanceDetailSearchRequest {
-	private Date inputDate;
-	private Date startDate;
-	private Date endDate;
-	private Integer departmentId;
-	private Integer attendanceGroupId;
-    private Integer attendanceItemId;
-    private Integer leaveItemId;
-	private String empNameKr;
-    private String note;
+	private Date inputDate;              // 입력일자(入力日)
+	private Date startDate;              // 시작일자(開始日)
+	private Date endDate;                // 종료일자(終了日)
+	private Integer departmentId;        // 부서ID(部署ID)
+	private Integer attendanceGroupId;   // 근태그룹ID(勤怠グループID)
+	private Integer attendanceItemId;    // 근태항목ID(勤怠項目ID)
+	private Integer leaveItemId;         // 휴가항목ID(休暇項目ID)
+	private String empNameKr;            // 사원명(氏名)
+	private String note;                 // 비고(備考)
 	// 전달받은 값으로 근태상세정보요청정보 객체의 초기 상태를 구성한다.
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
 	// 受け取った値で勤怠詳細情報リクエスト情報オブジェクトの初期状態を構成する。

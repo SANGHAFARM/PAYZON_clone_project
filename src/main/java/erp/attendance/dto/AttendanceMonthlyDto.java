@@ -7,14 +7,14 @@ import java.util.Map;
 // 월간근태 처리에 필요한 값을 계층 간에 전달한다.
 // 月間勤怠処理に必要な値を各階層間で受け渡す。
 public class AttendanceMonthlyDto {
-	private String empType;
-	private String empNo;
-	private String empNameKr;
-	private String departmentName;
-	private String jobPositionName;
-	private Map<Integer, String> dailyAttendance;
-	private List<AttendanceSummaryItemDto> totalAttendValue;
-	private double totalLeaveDeduction;
+	private String empType; // 구분(区分)
+	private String empNo;// 사원번호(社員番号)
+	private String empNameKr;// 사원명(社員名)
+	private String departmentName;// 부서(部署)
+	private String jobPositionName;// 직위(役職)
+	private Map<Integer, String> dailyAttendance;// 일별 근태 기록 유무(1~31, 유무)(日別勤怠記録有無(1~31, 有無))
+	private List<AttendanceSummaryItemDto> totalAttendValue;// 합계(合計)
+	private double totalLeaveDeduction;// 휴가공제 합계(休暇控除合計)
 
 	// 전달받은 값으로 월간근태 객체의 초기 상태를 구성한다.
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
@@ -28,8 +28,8 @@ public class AttendanceMonthlyDto {
 	// 受け取った値で月間勤怠オブジェクトの初期状態を構成する。
 	// 生成時に受け取った必須値を各フィールドへ保持し、後続の照会と画面表示で再利用する。
 	public AttendanceMonthlyDto(String empType, String empNo, String empNameKr, String departmentName,
-			String jobPositionName, Map<Integer, String> dailyAttendance, List<AttendanceSummaryItemDto> totalAttendValue,
-			double totalLeaveDeduction) {
+			String jobPositionName, Map<Integer, String> dailyAttendance,
+			List<AttendanceSummaryItemDto> totalAttendValue, double totalLeaveDeduction) {
 		super();
 		this.empType = empType;
 		this.empNo = empNo;
@@ -137,13 +137,11 @@ public class AttendanceMonthlyDto {
 		this.dailyAttendance = dailyAttendance;
 	}
 
-	
-	
 	// 월간근태 객체에 저장된 합계Attend값 값을 반환한다.
 	// 저장된 필드를 외부에 직접 노출하지 않고 접근 메서드를 통해 필요한 계층에 제공한다.
 	// 月間勤怠オブジェクトに保存された合計Attend値の値を返す。
 	// 保持しているフィールドを直接公開せず、アクセサーメソッドを通して必要な階層へ提供する。
-	public List<AttendanceSummaryItemDto> getTotalAttendValue(){
+	public List<AttendanceSummaryItemDto> getTotalAttendValue() {
 		return totalAttendValue;
 	}
 

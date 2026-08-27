@@ -45,8 +45,7 @@
 						<input type="hidden" name="view" value="MONTH"> <select
 							name="year" aria-label="照会年">
 							<option value="">年を選択</option>
-							<%-- itemsをクリアしてbegin、endだけ書くと2015から2030まで数字が順番に入ります --%>
-							<c:forEach var="y" begin="2015" end="2030">
+							<c:forEach var="y" begin="2020" end="2027">
 								<option value="${y}" ${year eq y ? 'selected' : ''}>
 									<c:out value="${y}" />年
 								</option>

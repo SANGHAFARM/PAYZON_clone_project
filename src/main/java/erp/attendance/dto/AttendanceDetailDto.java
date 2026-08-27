@@ -7,18 +7,18 @@ import java.util.Date;
 // 근태상세정보 처리에 필요한 값을 계층 간에 전달한다.
 // 勤怠詳細情報処理に必要な値を各階層間で受け渡す。
 public class AttendanceDetailDto {
-    private Date inputDate;
-    private String empType;
-    private String empNameKr;
-    private String departmentName;
-    private String jobPositionName;
-    private String attendName;
-    private Date startDate;
-    private Date endDate;
-    private double attendValue;
-    private long payAmount;
-    private String note;
-    private String unitType;
+    private Date inputDate;	//입력일(入力日)
+    private String empType;	//구분(区分)
+    private String empNameKr;	//사원명(社員名)
+    private String departmentName;	//부서(部署)
+    private String jobPositionName;	//직위(役職)
+    private String attendName;	//근태항목(勤怠項目)
+    private Date startDate;	//시작일(開始日)
+    private Date endDate;	//종료일(終了日)
+    private double attendValue;	//근태일수(勤怠日数)
+    private long payAmount;	//금액(金額)
+    private String note;	//적요(摘要)
+    private String unitType;	//단위(単位)
     
 	// 전달받은 값으로 근태상세정보 객체의 초기 상태를 구성한다.
 	// 생성 시 전달된 필수값을 각 필드에 보관하여 이후 조회와 화면 출력에서 재사용한다.
@@ -203,9 +203,18 @@ public class AttendanceDetailDto {
 		this.note = note;
 	}
 	
+	// 근태상세정보 객체에 저장된 단위 값을 반환한다.
+	// 저장된 필드를 외부에 직접 노출하지 않고 접근 메서드를 통해 필요한 계층에 제공한다.
+	// 勤怠詳細情報オブジェクトに保存された単位の値を返す。
+	// 保持しているフィールドを直接公開せず、アクセサーメソッドを通して必要な階層へ提供する。
 	public String getUnitType() {
 		return unitType;
 	}
+	
+	// 전달받은 단위 값을 근태상세정보 객체에 저장한다.
+	// 요청값이나 조회 결과로 전달된 값을 대응하는 필드에 반영하여 객체의 현재 상태를 갱신한다.
+	// 受け取った単位の値を勤怠詳細情報オブジェクトに保存する。
+	// リクエスト値または照会結果として渡された値を対応フィールドへ反映し、オブジェクトの現在状態を更新する。
 	public void setUnitType(String unitType) {
 		this.unitType = unitType;
 	}

@@ -34,28 +34,40 @@ public class ProjectManagerHandler implements CommandHandler {
 	// 現場・プロジェクト管理の入力リクエストを検証し、サービスへ保存を委譲して処理結果を渡す。
 	// リクエストパラメーターを検証してServiceへ渡し、処理結果をrequestまたはsessionへ保存した後、JSPフォワードまたはリダイレクト先を決定する。
 	private String processSubmit(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		//projectAction 파라미터를 분석하여 요청 분석
+		//projectActionパラメータを分析して要請分析
 		String projectAction = req.getParameter("projectAction");
 		try {
+			// 현장, 프로젝트 추가
+			// 現場・プロジェクト追加
 			if ("add".equals(projectAction)) {
 				String projectName = req.getParameter("projectName");
 				ProjectInsertService projectInsertService = new ProjectInsertService();
 				projectInsertService.insert(projectName);
-			} else if ("edit".equals(projectAction)) {
+			} 
+			// 현장, 프로젝트 수정
+			// 現場・プロジェクト修正	
+			else if ("edit".equals(projectAction)) {
 				int projectId = Integer.parseInt(req.getParameter("projectId"));
 				String projectName = req.getParameter("projectName");
 				ProjectModifyService projectModifyService = new ProjectModifyService();
 				projectModifyService.modify(new Project(projectId, projectName));
 
-			} else if ("delete".equals(projectAction)) {
+			} 
+			// 현장, 프로젝트 삭제
+			// 現場・プロジェクト削除
+			else if ("delete".equals(projectAction)) {
 				int projectId = Integer.parseInt(req.getParameter("projectId"));
 				ProjectDeleteService projectDeleteService = new ProjectDeleteService();
 				projectDeleteService.delete(projectId);
 			}
 		} catch (RuntimeException e) {
+			//작업 중 에러 발생시 request영역에 에러 저장
 			req.getSession().setAttribute("projectError", e.getMessage());
 		}
+		//리다이렉트
 		res.sendRedirect(req.getContextPath() + "/attendance/day-worker-management.do#project-manager");
-		return null; // 컨트롤러에서 직접 응답을 처리한 경우
+		return null; 
 	}
 
 }
