@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>人事管理>社員現況/管理</title>
+    <title>人事管理>社員一覧/管理</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/employees/employees-list.css?v=20260822-1">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/payzon-ui.css?v=20260821-1">
     <style>
@@ -49,7 +49,7 @@
     <main class="page-content">
         <div class="employee-list-page">
             <c:url var="currentEmployeeListUrl" value="/employees/employees.do"><c:param name="page" value="${condition.page}"/><c:param name="pageSize" value="${condition.pageSize}"/><c:param name="searchTarget" value="${condition.searchTarget}"/><c:param name="keyword" value="${condition.keyword}"/><c:param name="employmentType" value="${condition.employmentType}"/><c:param name="status" value="${condition.status}"/></c:url>
-            <header class="page-heading"><div><p>人事管理</p><h1>社員状況/管理</h1></div></header>
+            <header class="page-heading"><div><p>人事管理</p><h1>社員一覧/管理</h1></div></header>
 
             <%--  DBで集計した在職/退職および雇用形態別社員数 --%>
             <nav class="summary-grid" aria-label="社員状況のまとめ">
